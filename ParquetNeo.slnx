@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/ParquetNeo.Benchmarks/ParquetNeo.Benchmarks.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/ParquetNeo/ParquetNeo.csproj" />
   </Folder>
