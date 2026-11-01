@@ -10,4 +10,10 @@
     <ProjectReference Include="..\..\src\ParquetNeo\ParquetNeo.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Fixtures\**\*.parquet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
