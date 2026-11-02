@@ -17,7 +17,7 @@ public class PyArrowFixtureTests
     [Arguments("pyarrow-v2.parquet")]
     public async Task Footer_ParsesAndReserializesToIdenticalBytes(string fixture)
     {
-        var footer = ReadFooterBytes(File.ReadAllBytes(TestBytes.FixturePath(fixture)));
+        var footer = TestBytes.ReadFooterBytes(File.ReadAllBytes(TestBytes.FixturePath(fixture)));
 
         var metadata = FileMetaData.Deserialize(footer);
 
@@ -127,7 +127,7 @@ public class PyArrowFixtureTests
     public async Task EveryPageHeader_CanBeWalkedAcrossAllColumnChunks(string fixture, PageType expectedDataPageType)
     {
         var file = File.ReadAllBytes(TestBytes.FixturePath(fixture));
-        var metadata = FileMetaData.Deserialize(ReadFooterBytes(file));
+        var metadata = FileMetaData.Deserialize(TestBytes.ReadFooterBytes(file));
         int chunks = 0;
         int dictionaryPages = 0;
 
@@ -165,21 +165,7 @@ public class PyArrowFixtureTests
         await Assert.That(dictionaryPages > 0).IsTrue();
     }
 
-    private static FileMetaData Parse(string fixture) =>
-        FileMetaData.Deserialize(ReadFooterBytes(File.ReadAllBytes(TestBytes.FixturePath(fixture))));
+    private static FileMetaData Parse(string fixture) => TestBytes.ReadMetadata(fixture);
 
     private static SchemaElement Find(List<SchemaElement> schema, string name) => schema.First(e => e.Name == name);
-
-    /// <summary>Footer layout: ... footer | 4-byte little-endian footer length | "PAR1".</summary>
-    private static byte[] ReadFooterBytes(byte[] file)
-    {
-        var tail = file.AsSpan(file.Length - 8);
-        if (!tail[4..].SequenceEqual("PAR1"u8))
-        {
-            throw new InvalidDataException("Missing trailing PAR1 magic.");
-        }
-
-        int length = BinaryPrimitives.ReadInt32LittleEndian(tail);
-        return file.AsSpan(file.Length - 8 - length, length).ToArray();
-    }
 }
