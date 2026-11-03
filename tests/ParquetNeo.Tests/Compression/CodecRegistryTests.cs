@@ -1,5 +1,6 @@
 using ParquetNeo.Compression;
 using ParquetNeo.Compression.Lz4;
+using ParquetNeo.Compression.Snappy;
 using ParquetNeo.Compression.Zstd;
 using ParquetNeo.Metadata;
 
@@ -12,10 +13,13 @@ public class CodecRegistryTests
     {
         var registry = new CodecRegistry();
 
-        foreach (var id in new[] { CompressionCodec.Uncompressed, CompressionCodec.Snappy, CompressionCodec.Gzip, CompressionCodec.Brotli })
+        foreach (var id in new[] { CompressionCodec.Uncompressed, CompressionCodec.Gzip, CompressionCodec.Brotli })
         {
             await Assert.That(registry.Get(id).Id).IsEqualTo(id);
         }
+
+        // Snappy, Zstd and LZ4_RAW come from add-on packages and are not registered by default.
+        await Assert.That(registry.TryGet(CompressionCodec.Snappy, out _)).IsFalse();
     }
 
     [Test]
@@ -23,12 +27,14 @@ public class CodecRegistryTests
     {
         var registry = new CodecRegistry();
 
+        var snappy = Assert.Throws<NotSupportedException>(() => registry.Get(CompressionCodec.Snappy));
         var zstd = Assert.Throws<NotSupportedException>(() => registry.Get(CompressionCodec.Zstd));
         var lz4Raw = Assert.Throws<NotSupportedException>(() => registry.Get(CompressionCodec.Lz4Raw));
         var lz4 = Assert.Throws<NotSupportedException>(() => registry.Get(CompressionCodec.Lz4));
         var lzo = Assert.Throws<NotSupportedException>(() => registry.Get(CompressionCodec.Lzo));
         var unknown = Assert.Throws<NotSupportedException>(() => registry.Get((CompressionCodec)99));
 
+        await Assert.That(snappy.Message).Contains("ParquetNeo.Compression.Snappy");
         await Assert.That(zstd.Message).Contains("ParquetNeo.Compression.Zstd");
         await Assert.That(lz4Raw.Message).Contains("ParquetNeo.Compression.Lz4");
         await Assert.That(lz4.Message).Contains("LZ4_RAW");
@@ -40,8 +46,9 @@ public class CodecRegistryTests
     [Test]
     public async Task AddOnCodecs_RegisterThroughExtensionMethods()
     {
-        var registry = new CodecRegistry().AddZstd(level: 5).AddLz4Raw();
+        var registry = new CodecRegistry().AddSnappy().AddZstd(level: 5).AddLz4Raw();
 
+        await Assert.That(registry.Get(CompressionCodec.Snappy)).IsTypeOf<SnappyCodec>();
         await Assert.That(registry.Get(CompressionCodec.Zstd)).IsTypeOf<ZstdCodec>();
         await Assert.That(registry.Get(CompressionCodec.Lz4Raw)).IsTypeOf<Lz4RawCodec>();
         await Assert.That(registry.TryGet(CompressionCodec.Zstd, out var codec)).IsTrue();
@@ -82,13 +89,13 @@ public class CodecRegistryTests
     public async Task Default_IsASharedInstanceWithTheBuiltIns()
     {
         await Assert.That(CodecRegistry.Default).IsSameReferenceAs(CodecRegistry.Default);
-        await Assert.That(CodecRegistry.Default.Get(CompressionCodec.Snappy)).IsTypeOf<SnappyCodec>();
+        await Assert.That(CodecRegistry.Default.Get(CompressionCodec.Gzip)).IsTypeOf<GzipCodec>();
     }
 
     [Test]
     public async Task Registry_IsSafeToUseFromManyThreads()
     {
-        var registry = new CodecRegistry();
+        var registry = new CodecRegistry().AddSnappy();
         var data = CodecTestData.Cases["mixed"];
 
         var results = await Task.WhenAll(Enumerable.Range(0, 16).Select(i => Task.Run(() =>

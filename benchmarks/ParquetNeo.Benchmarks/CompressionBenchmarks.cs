@@ -1,6 +1,7 @@
 using BenchmarkDotNet.Attributes;
 using ParquetNeo.Compression;
 using ParquetNeo.Compression.Lz4;
+using ParquetNeo.Compression.Snappy;
 using ParquetNeo.Compression.Zstd;
 
 namespace ParquetNeo.Benchmarks;

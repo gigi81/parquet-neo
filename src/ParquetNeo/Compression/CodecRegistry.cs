@@ -4,8 +4,8 @@ using ParquetNeo.Metadata;
 namespace ParquetNeo.Compression;
 
 /// <summary>
-/// The codecs available to readers and writers. A new registry holds the built-in ones (uncompressed, Snappy,
-/// Gzip, Brotli); codecs from add-on packages such as ParquetNeo.Compression.Zstd are registered explicitly.
+/// The codecs available to readers and writers. A new registry holds the built-in ones (uncompressed, Gzip,
+/// Brotli); codecs from add-on packages (ParquetNeo.Compression.Snappy, .Zstd and .Lz4) are registered explicitly.
 /// </summary>
 public sealed class CodecRegistry
 {
@@ -14,7 +14,6 @@ public sealed class CodecRegistry
     public CodecRegistry()
     {
         Register(new UncompressedCodec());
-        Register(new SnappyCodec());
         Register(new GzipCodec());
         Register(new BrotliCodec());
     }
@@ -43,6 +42,7 @@ public sealed class CodecRegistry
 
         throw new NotSupportedException(id switch
         {
+            CompressionCodec.Snappy => "The SNAPPY codec is not registered. Add the ParquetNeo.Compression.Snappy package and register SnappyCodec.",
             CompressionCodec.Zstd => "The ZSTD codec is not registered. Add the ParquetNeo.Compression.Zstd package and register ZstdCodec.",
             CompressionCodec.Lz4Raw => "The LZ4_RAW codec is not registered. Add the ParquetNeo.Compression.Lz4 package and register Lz4RawCodec.",
             CompressionCodec.Lz4 => "The deprecated Hadoop-framed LZ4 codec is not supported; use LZ4_RAW.",

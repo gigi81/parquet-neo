@@ -5,6 +5,7 @@
   <Folder Name="/src/">
     <Project Path="src/ParquetNeo/ParquetNeo.csproj" />
     <Project Path="src/ParquetNeo.Compression.Lz4/ParquetNeo.Compression.Lz4.csproj" />
+    <Project Path="src/ParquetNeo.Compression.Snappy/ParquetNeo.Compression.Snappy.csproj" />
     <Project Path="src/ParquetNeo.Compression.Zstd/ParquetNeo.Compression.Zstd.csproj" />
   </Folder>
   <Folder Name="/tests/">

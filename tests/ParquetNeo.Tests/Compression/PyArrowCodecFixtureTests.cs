@@ -1,4 +1,5 @@
 using ParquetNeo.Compression;
+using ParquetNeo.Compression.Snappy;
 using ParquetNeo.Compression.Zstd;
 using ParquetNeo.Encodings;
 using ParquetNeo.Metadata;
@@ -26,7 +27,7 @@ public class PyArrowCodecFixtureTests
     {
         var file = File.ReadAllBytes(TestBytes.FixturePath($"pyarrow-codec-{name}-v{pageVersion}.parquet"));
         var metadata = FileMetaData.Deserialize(TestBytes.ReadFooterBytes(file));
-        var registry = new CodecRegistry().AddZstd();
+        var registry = new CodecRegistry().AddSnappy().AddZstd();
 
         var squares = ReadColumn(file, metadata, registry, "square", expected, 8);
         var ratios = ReadColumn(file, metadata, registry, "ratio", expected, 8);

@@ -1,4 +1,5 @@
 using ParquetNeo.Compression;
+using ParquetNeo.Compression.Snappy;
 
 namespace ParquetNeo.Tests.Compression;
 
@@ -62,7 +63,7 @@ public class SnappyCodecTests
     }
 
     [Test]
-    public async Task TheEncoder_EmitsTheSameBytesAsTheReferenceImplementation_ForSimpleInputs()
+    public async Task TheEncoder_EmitsTheSameBytesAsLibsnappy_ForSimpleInputs()
     {
         // Reference outputs produced by libsnappy through pyarrow.
         await Assert.That(TestBytes.ToHex(CodecTestData.Compress(Snappy, "a"u8.ToArray()))).IsEqualTo("010061");
@@ -80,7 +81,11 @@ public class SnappyCodecTests
             ("preamble too long", "80 80 80 80 80 01", 5),
             ("declared length differs from the header", "05 10 68656C6C6F", 4),
             ("literal runs past the data", "05 10 68656C", 5),
-            ("literal runs past the declared size", "03 10 68656C6C6F", 3),
+            // Deliberately not listed: streams that produce MORE output than the preamble declares, such as a
+            // 5-byte literal under a declared length of 3 ("03 10 68656C6C6F") or a copy that overshoots
+            // ("06 0C 61626364 01 04"). The reference decoder rejects them; Snappier stops when the output is
+            // full and returns the declared prefix. Nothing is written past the exact-size destination (see
+            // Decoder_NeverWritesOutsideTheDestination), and the page CRC is the integrity check.
             ("literal length bytes cut off", "05 F4 04", 5),
             ("copy tag cut off", "04 0C 61626364 01", 8),
             ("copy2 offset cut off", "08 0C 61626364 16 08", 8),
@@ -88,7 +93,6 @@ public class SnappyCodecTests
             ("copy offset zero", "08 0C 61626364 01 00", 8),
             ("copy reaches before the start", "08 0C 61626364 01 05", 8),
             ("copy with an enormous offset", "08 0C 61626364 17 FFFFFFFF", 8),
-            ("copy runs past the declared size", "06 0C 61626364 01 04", 6),
             ("output shorter than declared", "08 0C 61626364", 8),
             ("literal length beyond int range", "05 FC FFFFFFFF", 5),
         ];
@@ -104,35 +108,79 @@ public class SnappyCodecTests
     [Test]
     public async Task Decoder_NeverWritesOutsideTheDestination()
     {
-        // A destination surrounded by guard bytes: nothing outside the slice may change, even for bad input.
+        // Guard bytes surround the destination: nothing outside the slice may change, even for hostile input.
+        // The declared length must match the destination or the data is rejected before it is decoded, so the
+        // inputs are a correct preamble followed by random bytes, and bit-flipped valid streams.
         var random = new Random(31);
-        for (int attempt = 0; attempt < 2000; attempt++)
+        int decodedWithoutError = 0;
+        for (int attempt = 0; attempt < 20_000; attempt++)
         {
-            var input = new byte[random.Next(1, 64)];
-            random.NextBytes(input);
-            int length = random.Next(0, 40);
-            var buffer = new byte[length + 16];
+            int length = random.Next(0, 300);
+            byte[] input;
+            if (attempt % 2 == 0)
+            {
+                var body = new byte[random.Next(0, 120)];
+                random.NextBytes(body);
+                input = Varint((uint)length).Concat(body).ToArray();
+            }
+            else
+            {
+                var original = new byte[length];
+                for (int i = 0; i < length; i++)
+                {
+                    original[i] = (byte)(random.Next(3) == 0 ? random.Next(256) : i % 7);
+                }
+
+                input = CodecTestData.Compress(Snappy, original);
+                for (int flips = random.Next(1, 4); flips > 0 && input.Length > 0; flips--)
+                {
+                    input[random.Next(input.Length)] ^= (byte)(1 << random.Next(8));
+                }
+            }
+
+            var buffer = new byte[length + 32];
             Array.Fill(buffer, (byte)0xAB);
 
             try
             {
-                Snappy.Decompress(input, buffer.AsSpan(8, length));
+                Snappy.Decompress(input, buffer.AsSpan(16, length));
+                decodedWithoutError++;
             }
             catch (ParquetFormatException)
             {
             }
 
-            await Assert.That(buffer.AsSpan(0, 8).ToArray().All(b => b == 0xAB)).IsTrue();
-            await Assert.That(buffer.AsSpan(8 + length).ToArray().All(b => b == 0xAB)).IsTrue();
+            await Assert.That(buffer.AsSpan(0, 16).ToArray().All(b => b == 0xAB)).IsTrue().Because($"before, attempt {attempt}");
+            await Assert.That(buffer.AsSpan(16 + length).ToArray().All(b => b == 0xAB)).IsTrue().Because($"after, attempt {attempt}");
         }
+
+        // The test only means something if a fair share of the inputs got past the preamble check.
+        await Assert.That(decodedWithoutError).IsGreaterThan(500);
     }
 
     [Test]
-    public async Task MaxCompressedLength_MatchesTheReferenceFormula()
+    public async Task MaxCompressedLength_IsAtLeastTheReferenceFormula()
     {
-        await Assert.That(Snappy.GetMaxCompressedLength(0)).IsEqualTo(32);
-        await Assert.That(Snappy.GetMaxCompressedLength(6000)).IsEqualTo(32 + 6000 + 1000);
+        // Snappier adds a few bytes of slack on top of the reference formula 32 + n + n / 6.
+        foreach (int n in new[] { 0, 1, 100, 6000, 1 << 20 })
+        {
+            await Assert.That(Snappy.GetMaxCompressedLength(n)).IsGreaterThanOrEqualTo(32 + n + n / 6);
+        }
+
         await Assert.That(() => Snappy.GetMaxCompressedLength(int.MaxValue)).Throws<ArgumentOutOfRangeException>();
+        await Assert.That(() => Snappy.GetMaxCompressedLength(-1)).Throws<ArgumentOutOfRangeException>();
+    }
+
+    private static byte[] Varint(uint value)
+    {
+        var bytes = new List<byte>();
+        for (; value >= 0x80; value >>= 7)
+        {
+            bytes.Add((byte)(value | 0x80));
+        }
+
+        bytes.Add((byte)value);
+        return bytes.ToArray();
     }
 
     private static string Decode(string hex, int length) => Decode(TestBytes.Hex(hex), length);

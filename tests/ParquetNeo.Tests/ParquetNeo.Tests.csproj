@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ParquetNeo\ParquetNeo.csproj" />
     <ProjectReference Include="..\..\src\ParquetNeo.Compression.Lz4\ParquetNeo.Compression.Lz4.csproj" />
+    <ProjectReference Include="..\..\src\ParquetNeo.Compression.Snappy\ParquetNeo.Compression.Snappy.csproj" />
     <ProjectReference Include="..\..\src\ParquetNeo.Compression.Zstd\ParquetNeo.Compression.Zstd.csproj" />
   </ItemGroup>
 

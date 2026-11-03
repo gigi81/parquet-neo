@@ -81,6 +81,25 @@ public class CodecRobustnessTests
     }
 
     [Test]
+    public async Task SnappyStreamsWithACorrectPreamble_AndGarbageBodies_OnlyFailWithParquetFormatException()
+    {
+        // Random garbage almost never declares the destination's length, so it is rejected before decoding.
+        // Declare it correctly so the element decoder itself sees hostile bytes.
+        var codec = CodecTestData.Codecs.First(c => c.Name == "snappy").Codec;
+        var random = new Random(17);
+        for (int attempt = 0; attempt < 5000; attempt++)
+        {
+            int length = random.Next(0, 400);
+            var body = new byte[random.Next(0, 150)];
+            random.NextBytes(body);
+            var preamble = length < 128 ? new[] { (byte)length } : new[] { (byte)(length | 0x80), (byte)(length >> 7) };
+            var input = preamble.Concat(body).ToArray();
+
+            await Assert.That(Probe(() => codec.Decompress(input, new byte[length]))).IsNull().Because($"attempt {attempt}");
+        }
+    }
+
+    [Test]
     public async Task CorruptedValidData_OnlyEverFailsWithParquetFormatException()
     {
         var original = CodecTestData.Cases["mixed"][..20_000];

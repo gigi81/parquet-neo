@@ -15,8 +15,8 @@ spec in [`specs/`](../specs) (`File Format _ Parquet.html` and `parquet.thrift`)
     `DeserializeAsync<T>(...)` / `IAsyncEnumerable<T>` over plain DTOs. Built on top of the
     low-level layer; users never touch columns.
 - **Minimal dependencies.** Core depends only on the BCL. Thrift compact protocol and all
-  encodings are hand-written. Gzip/Brotli via `System.IO.Compression`. Snappy is managed.
-  Zstd and LZ4_RAW live in optional add-on packages.
+  encodings are hand-written. Gzip/Brotli via `System.IO.Compression`.
+  Snappy (via the managed Snappier library), Zstd and LZ4_RAW live in optional add-on packages.
 - **Tested.** Every step ships with TUnit unit tests (see [Testing](#testing)).
 
 ## Decisions / assumptions (change in review if you disagree)
@@ -70,7 +70,7 @@ plus tests).
 | # | Step | Deliverable |
 |---|---|---|
 | 3 | **Level & primitive encodings** | RLE/bit-packed hybrid (SIMD unpack/pack), `PLAIN` for all physical types, boolean bit-packing. |
-| 4 | **Compression** | `ICodec` abstraction; Uncompressed, Snappy, Gzip (multi-member read), Brotli built in; Zstd and LZ4_RAW in add-on packages. |
+| 4 | **Compression** | `ICodec` abstraction; Uncompressed, Gzip (multi-member read) and Brotli built in; Snappy (Snappier), Zstd and LZ4_RAW in add-on packages. |
 | 5 | **Low-level writer (flat)** | `PAR1` magic, data page v1, required and optional flat columns, `PLAIN`, row-group builder, footer. |
 | 6 | **Low-level reader (flat)** | Footer parsing, column chunk/page iteration, read into spans. Tests: files from step 5 and external fixtures. |
 | 7 | **Dictionary encoding & statistics** | Dictionary page write/read, `RLE_DICTIONARY`, fallback to `PLAIN` when the dictionary grows too large, min/max/null-count statistics. |
