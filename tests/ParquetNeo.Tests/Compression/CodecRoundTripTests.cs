@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using ParquetNeo.Compression;
 using ParquetNeo.Metadata;
 
@@ -50,6 +51,60 @@ public class CodecRoundTripTests
             await Assert.That(CodecTestData.Decompress(codec, compressed, noise.Length).AsSpan().SequenceEqual(noise))
                 .IsTrue().Because(codecName);
         }
+    }
+
+    [Test]
+    public async Task GzipMaxLength_CoversTheWorstCaseOfAnyDeflateEncoder()
+    {
+        // Fixed-Huffman blocks spend 9 bits on bytes 144-255, so a DEFLATE encoder with no stored-block fallback
+        // can grow random data by 12.5% (zlib-ng's fastest level reaches ~5.5%). Plus 18 bytes of gzip framing.
+        var gzip = new GzipCodec();
+
+        foreach (int n in new[] { 0, 1, 10, 100, 5000, 70_000, 1 << 20, 100_000_000 })
+        {
+            await Assert.That(gzip.GetMaxCompressedLength(n)).IsGreaterThanOrEqualTo((int)(n * 9L / 8) + 18).Because($"n={n}");
+        }
+    }
+
+    [Test]
+    public async Task Gzip_StaysWithinItsBound_AtEveryLevel_ForIncompressibleData()
+    {
+        foreach (var level in new[] { CompressionLevel.NoCompression, CompressionLevel.Fastest, CompressionLevel.Optimal, CompressionLevel.SmallestSize })
+        {
+            var codec = new GzipCodec(level);
+            foreach (int size in new[] { 1, 100, 5000, 70_000, 1 << 20 })
+            {
+                var noise = CodecTestData.Lcg(size, (uint)size);
+
+                var compressed = CodecTestData.Compress(codec, noise);
+
+                await Assert.That(compressed.Length).IsLessThanOrEqualTo(codec.GetMaxCompressedLength(size)).Because($"{level}/{size}");
+                await Assert.That(CodecTestData.Decompress(codec, compressed, size).AsSpan().SequenceEqual(noise)).IsTrue().Because($"{level}/{size}");
+            }
+        }
+    }
+
+    [Test]
+    public async Task EmptyInput_ProducesAValidNonEmptyStream_ForEveryCodec()
+    {
+        // Other readers reject a zero-byte compressed page for a codec that frames its data.
+        foreach (var (name, codec) in CodecTestData.Codecs.Where(c => c.Name != "uncompressed"))
+        {
+            var compressed = CodecTestData.Compress(codec, []);
+
+            await Assert.That(compressed.Length).IsGreaterThan(0).Because(name);
+        }
+    }
+
+    [Test]
+    public async Task GzipEmptyMember_MatchesWhatPythonWrites()
+    {
+        // The reference bytes from Python's gzip.compress(b"", mtime=0).
+        var reference = CodecTestData.Vector("empty", "gz");
+
+        var ours = CodecTestData.Compress(new GzipCodec(), []);
+
+        await Assert.That(TestBytes.ToHex(ours)).IsEqualTo(TestBytes.ToHex(reference));
     }
 
     [Test]
