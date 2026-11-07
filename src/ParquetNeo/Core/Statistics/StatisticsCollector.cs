@@ -1,6 +1,9 @@
 using ParquetNeo.Metadata;
 
-namespace ParquetNeo.Core.Stats;
+namespace ParquetNeo.Core.Statistics;
+
+// A namespace called Statistics would otherwise hide the Statistics type of the metadata.
+using Statistics = ParquetNeo.Metadata.Statistics;
 
 /// <summary>
 /// Gathers the minimum, maximum and counts of the values written to one column chunk, to be stored in the chunk's

@@ -1,17 +1,20 @@
 using System.Text;
 using ParquetNeo.Core;
-using ParquetNeo.Core.Stats;
+using ParquetNeo.Core.Statistics;
 using ParquetNeo.Metadata;
 
-namespace ParquetNeo.Tests.Core.Stats;
+namespace ParquetNeo.Tests.Core.Statistics;
+
+// A namespace called Statistics would otherwise hide the Statistics type of the metadata.
+using Statistics = ParquetNeo.Metadata.Statistics;
 
 public class StatisticsReaderTests
 {
     // ---- statistics written by pyarrow for the sample dataset ----
 
     [Test]
-    [Arguments("pyarrow-flat-optional-stats.parquet", true)]
-    [Arguments("pyarrow-flat-required-stats-dict.parquet", false)]
+    [Arguments("pyarrow-flat-optional-statistics.parquet", true)]
+    [Arguments("pyarrow-flat-required-statistics-dictionary.parquet", false)]
     public async Task ThePyArrowSampleStatistics_MatchTheData(string fixture, bool optional)
     {
         using var reader = ReadHelper.OpenFixture(fixture);
@@ -46,8 +49,8 @@ public class StatisticsReaderTests
     // ---- awkward values, from pyarrow ----
 
     [Test]
-    [Arguments("pyarrow-stats-plain.parquet")]
-    [Arguments("pyarrow-stats-dict.parquet")]
+    [Arguments("pyarrow-statistics-plain.parquet")]
+    [Arguments("pyarrow-statistics-dictionary.parquet")]
     public async Task TheAwkwardCases_ReadAsPyArrowWroteThem(string fixture)
     {
         using var reader = ReadHelper.OpenFixture(fixture);
@@ -114,7 +117,7 @@ public class StatisticsReaderTests
 
     // ---- statistics that cannot be trusted ----
 
-    private static byte[] StatsFile() => File.ReadAllBytes(TestBytes.FixturePath("pyarrow-stats-plain.parquet"));
+    private static byte[] StatisticsFile() => File.ReadAllBytes(TestBytes.FixturePath("pyarrow-statistics-plain.parquet"));
 
     private static ColumnStatistics? Read(byte[] bytes, string column)
     {
@@ -133,7 +136,7 @@ public class StatisticsReaderTests
     {
         foreach (var orders in new List<ColumnOrder>?[] { null, Enumerable.Repeat(ColumnOrder.Unrecognized, 14).ToList(), Enumerable.Repeat(ColumnOrder.Int96Timestamp, 14).ToList() })
         {
-            var bytes = FooterEditor.Rewrite(StatsFile(), f => f.ColumnOrders = orders);
+            var bytes = FooterEditor.Rewrite(StatisticsFile(), f => f.ColumnOrders = orders);
 
             var statistics = Read(bytes, "i64")!;
 
@@ -146,7 +149,7 @@ public class StatisticsReaderTests
     [Test]
     public async Task TheDeprecatedMinAndMaxFields_AreNotUsed()
     {
-        var bytes = StatsFile();
+        var bytes = StatisticsFile();
         Edit(ref bytes, "i64", s =>
         {
             s.Min = BitConverter.GetBytes(3L);
@@ -164,7 +167,7 @@ public class StatisticsReaderTests
     [Test]
     public async Task ANaNBound_IsDropped()
     {
-        var bytes = StatsFile();
+        var bytes = StatisticsFile();
         Edit(ref bytes, "f64", s =>
         {
             s.MinValue = BitConverter.GetBytes(double.NaN);
@@ -183,7 +186,7 @@ public class StatisticsReaderTests
     {
         foreach (var (column, size) in new[] { ("i64", 4), ("i64", 9), ("f32", 8), ("flag", 0), ("fixed", 3), ("u32", 8) })
         {
-            var bytes = StatsFile();
+            var bytes = StatisticsFile();
             Edit(ref bytes, column, s => s.MinValue = new byte[size]);
 
             await Assert.That(() => Read(bytes, column)).Throws<ParquetFormatException>().Because($"{column} with {size} bytes");
@@ -193,7 +196,7 @@ public class StatisticsReaderTests
     [Test]
     public async Task TheExactFlags_ArePassedThrough()
     {
-        var bytes = StatsFile();
+        var bytes = StatisticsFile();
         Edit(ref bytes, "text", s =>
         {
             s.IsMinValueExact = false;
@@ -209,7 +212,7 @@ public class StatisticsReaderTests
     [Test]
     public async Task AskingForTheStatisticsOfAnUnknownColumn_IsAnError()
     {
-        using var reader = ReadHelper.OpenFixture("pyarrow-stats-plain.parquet");
+        using var reader = ReadHelper.OpenFixture("pyarrow-statistics-plain.parquet");
         var group = reader.OpenRowGroup(0);
 
         await Assert.That(() => group.GetStatistics("nope")).Throws<ArgumentException>();
@@ -221,7 +224,7 @@ public class StatisticsReaderTests
     [Test]
     public async Task StatisticsOfAClosedFile_CannotBeRead()
     {
-        var reader = ReadHelper.OpenFixture("pyarrow-stats-plain.parquet");
+        var reader = ReadHelper.OpenFixture("pyarrow-statistics-plain.parquet");
         var group = reader.OpenRowGroup(0);
         reader.Dispose();
 

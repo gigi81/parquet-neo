@@ -1,11 +1,11 @@
 using System.Text;
 using ParquetNeo.Compression;
 using ParquetNeo.Core;
-using ParquetNeo.Core.Stats;
+using ParquetNeo.Core.Statistics;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Tests.Core.Stats;
+namespace ParquetNeo.Tests.Core.Statistics;
 
 public class StatisticsWriterTests
 {
@@ -144,7 +144,7 @@ public class StatisticsWriterTests
         return stream.ToArray();
     }
 
-    private static ColumnStatistics Stats(byte[] bytes)
+    private static ColumnStatistics ReadStatistics(byte[] bytes)
     {
         using var reader = ReadHelper.Open(bytes);
         return reader.OpenRowGroup(0).GetStatistics(0)!;
@@ -173,7 +173,7 @@ public class StatisticsWriterTests
             w.WriteBatch(ReadOnlySpan<int>.Empty, [0]);
         });
 
-        var statistics = Stats(bytes);
+        var statistics = ReadStatistics(bytes);
 
         await Assert.That(statistics.Min).IsEqualTo(-7);
         await Assert.That(statistics.Max).IsEqualTo(900);
@@ -188,14 +188,14 @@ public class StatisticsWriterTests
         var u8 = WriteOne(new PrimitiveNode("u", PhysicalType.Int32, FieldRepetitionType.Required, LogicalType.Integer(8, false)), w => w.WriteBatch([200, 5, 255, 0]));
         var signed = WriteOne(new PrimitiveNode("s", PhysicalType.Int32, FieldRepetitionType.Required, LogicalType.Integer(32, true)), w => w.WriteBatch([5, -1, 7, int.MinValue]));
 
-        await Assert.That(Stats(u32).Min).IsEqualTo(5);
-        await Assert.That(Stats(u32).Max).IsEqualTo(-1); // 0xFFFFFFFF
-        await Assert.That(Stats(u64).Min).IsEqualTo(5L);
-        await Assert.That(Stats(u64).Max).IsEqualTo(-1L);
-        await Assert.That(Stats(u8).Min).IsEqualTo(0);
-        await Assert.That(Stats(u8).Max).IsEqualTo(255);
-        await Assert.That(Stats(signed).Min).IsEqualTo(int.MinValue);
-        await Assert.That(Stats(signed).Max).IsEqualTo(7);
+        await Assert.That(ReadStatistics(u32).Min).IsEqualTo(5);
+        await Assert.That(ReadStatistics(u32).Max).IsEqualTo(-1); // 0xFFFFFFFF
+        await Assert.That(ReadStatistics(u64).Min).IsEqualTo(5L);
+        await Assert.That(ReadStatistics(u64).Max).IsEqualTo(-1L);
+        await Assert.That(ReadStatistics(u8).Min).IsEqualTo(0);
+        await Assert.That(ReadStatistics(u8).Max).IsEqualTo(255);
+        await Assert.That(ReadStatistics(signed).Min).IsEqualTo(int.MinValue);
+        await Assert.That(ReadStatistics(signed).Max).IsEqualTo(7);
     }
 
     [Test]
@@ -204,23 +204,23 @@ public class StatisticsWriterTests
         var ints = WriteOne(new PrimitiveNode("i", PhysicalType.Int32, FieldRepetitionType.Required), w => w.WriteBatch([int.MaxValue, 0, int.MinValue]));
         var longs = WriteOne(new PrimitiveNode("i", PhysicalType.Int64, FieldRepetitionType.Required), w => w.WriteBatch([long.MaxValue, 0, long.MinValue]));
 
-        await Assert.That(Stats(ints).Min).IsEqualTo(int.MinValue);
-        await Assert.That(Stats(ints).Max).IsEqualTo(int.MaxValue);
-        await Assert.That(Stats(longs).Min).IsEqualTo(long.MinValue);
-        await Assert.That(Stats(longs).Max).IsEqualTo(long.MaxValue);
+        await Assert.That(ReadStatistics(ints).Min).IsEqualTo(int.MinValue);
+        await Assert.That(ReadStatistics(ints).Max).IsEqualTo(int.MaxValue);
+        await Assert.That(ReadStatistics(longs).Min).IsEqualTo(long.MinValue);
+        await Assert.That(ReadStatistics(longs).Max).IsEqualTo(long.MaxValue);
     }
 
     [Test]
     public async Task FloatingPoint_FollowsTheNaNAndZeroRules()
     {
         var bytes = WriteOne(new PrimitiveNode("d", PhysicalType.Double, FieldRepetitionType.Required), w => w.WriteBatch([double.NaN, 0.0, -0.0, 2.5, double.NaN]));
-        var statistics = Stats(bytes);
+        var statistics = ReadStatistics(bytes);
 
         await Assert.That(BitConverter.DoubleToInt64Bits((double)statistics.Min!)).IsEqualTo(BitConverter.DoubleToInt64Bits(-0.0));
         await Assert.That(statistics.Max).IsEqualTo(2.5);
         await Assert.That(statistics.NanCount).IsEqualTo(2L);
 
-        var allNaN = Stats(WriteOne(new PrimitiveNode("d", PhysicalType.Double, FieldRepetitionType.Required), w => w.WriteBatch([double.NaN, double.NaN])));
+        var allNaN = ReadStatistics(WriteOne(new PrimitiveNode("d", PhysicalType.Double, FieldRepetitionType.Required), w => w.WriteBatch([double.NaN, double.NaN])));
         await Assert.That(allNaN.Min).IsNull();
         await Assert.That(allNaN.Max).IsNull();
         await Assert.That(allNaN.NanCount).IsEqualTo(2L);
@@ -230,13 +230,13 @@ public class StatisticsWriterTests
     public async Task Booleans_HaveBounds_AndNullCounts()
     {
         var bytes = WriteOne(new PrimitiveNode("b", PhysicalType.Boolean, FieldRepetitionType.Optional), w => w.WriteBatch([true, true], [1, 0, 1, 0]));
-        var statistics = Stats(bytes);
+        var statistics = ReadStatistics(bytes);
 
         await Assert.That(statistics.Min is true).IsTrue();
         await Assert.That(statistics.Max is true).IsTrue();
         await Assert.That(statistics.NullCount).IsEqualTo(2L);
 
-        var mixed = Stats(WriteOne(new PrimitiveNode("b", PhysicalType.Boolean, FieldRepetitionType.Required), w => w.WriteBatch([true, false])));
+        var mixed = ReadStatistics(WriteOne(new PrimitiveNode("b", PhysicalType.Boolean, FieldRepetitionType.Required), w => w.WriteBatch([true, false])));
         await Assert.That(mixed.Min is false).IsTrue();
         await Assert.That(mixed.Max is true).IsTrue();
     }
@@ -245,7 +245,7 @@ public class StatisticsWriterTests
     public async Task Strings_AreOrderedAsUnsignedUtf8Bytes()
     {
         var bytes = WriteOne(new PrimitiveNode("s", PhysicalType.ByteArray, FieldRepetitionType.Optional, LogicalType.String), w => w.WriteStrings(["z", "é", "Z", "", "apple"], [1, 1, 0, 1, 1, 1]));
-        var statistics = Stats(bytes);
+        var statistics = ReadStatistics(bytes);
 
         await Assert.That(Encoding.UTF8.GetString((byte[])statistics.Min!)).IsEqualTo("");
         await Assert.That(Encoding.UTF8.GetString((byte[])statistics.Max!)).IsEqualTo("é");
@@ -258,8 +258,8 @@ public class StatisticsWriterTests
         string[] values = Enumerable.Range(0, 400).Select(i => "key-" + (i * 37 % 101)).ToArray();
         static PrimitiveNode Node() => new("s", PhysicalType.ByteArray, FieldRepetitionType.Required, LogicalType.String);
 
-        var plain = Stats(WriteOne(Node(), w => w.WriteStrings(values), new ParquetWriterOptions { DictionaryEnabled = false }));
-        var dictionary = Stats(WriteOne(Node(), w => w.WriteStrings(values)));
+        var plain = ReadStatistics(WriteOne(Node(), w => w.WriteStrings(values), new ParquetWriterOptions { DictionaryEnabled = false }));
+        var dictionary = ReadStatistics(WriteOne(Node(), w => w.WriteStrings(values)));
 
         await Assert.That(Encoding.UTF8.GetString((byte[])plain.Min!)).IsEqualTo("key-0");
         await Assert.That(Encoding.UTF8.GetString((byte[])plain.Max!)).IsEqualTo("key-99");
@@ -272,10 +272,10 @@ public class StatisticsWriterTests
         var bytes = WriteOne(new PrimitiveNode("b", PhysicalType.ByteArray, FieldRepetitionType.Required), w => w.WriteByteArrays([new byte[] { 0x7F }, new byte[] { 0x80 }, new byte[] { 0x01, 0x02 }]));
         var fixedBytes = WriteOne(new PrimitiveNode("f", PhysicalType.FixedLenByteArray, FieldRepetitionType.Required, typeLength: 2), w => w.WriteFixedLengthByteArrays([0x7F, 0x00, 0x80, 0x00, 0x00, 0xFF]));
 
-        await Assert.That((byte[])Stats(bytes).Min!).IsEquivalentTo(new byte[] { 0x01, 0x02 });
-        await Assert.That((byte[])Stats(bytes).Max!).IsEquivalentTo(new byte[] { 0x80 });
-        await Assert.That((byte[])Stats(fixedBytes).Min!).IsEquivalentTo(new byte[] { 0x00, 0xFF });
-        await Assert.That((byte[])Stats(fixedBytes).Max!).IsEquivalentTo(new byte[] { 0x80, 0x00 });
+        await Assert.That((byte[])ReadStatistics(bytes).Min!).IsEquivalentTo(new byte[] { 0x01, 0x02 });
+        await Assert.That((byte[])ReadStatistics(bytes).Max!).IsEquivalentTo(new byte[] { 0x80 });
+        await Assert.That((byte[])ReadStatistics(fixedBytes).Min!).IsEquivalentTo(new byte[] { 0x00, 0xFF });
+        await Assert.That((byte[])ReadStatistics(fixedBytes).Max!).IsEquivalentTo(new byte[] { 0x80, 0x00 });
     }
 
     [Test]
@@ -290,7 +290,7 @@ public class StatisticsWriterTests
             0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
         ];
         var bytes = WriteOne(new PrimitiveNode("d", PhysicalType.FixedLenByteArray, FieldRepetitionType.Required, LogicalType.Decimal(2, 10), typeLength: 5), w => w.WriteFixedLengthByteArrays(values));
-        var statistics = Stats(bytes);
+        var statistics = ReadStatistics(bytes);
 
         await Assert.That((byte[])statistics.Min!).IsEquivalentTo(values[..5]);
         await Assert.That((byte[])statistics.Max!).IsEquivalentTo(values[5..10]);

@@ -1,8 +1,11 @@
 using System.Text;
-using ParquetNeo.Core.Stats;
+using ParquetNeo.Core.Statistics;
 using ParquetNeo.Metadata;
 
-namespace ParquetNeo.Tests.Core.Stats;
+namespace ParquetNeo.Tests.Core.Statistics;
+
+// A namespace called Statistics would otherwise hide the Statistics type of the metadata.
+using Statistics = ParquetNeo.Metadata.Statistics;
 
 public class StatisticsCollectorTests
 {

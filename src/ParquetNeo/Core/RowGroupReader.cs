@@ -1,5 +1,5 @@
 using ParquetNeo.Metadata;
-using ParquetNeo.Core.Stats;
+using ParquetNeo.Core.Statistics;
 
 namespace ParquetNeo.Core;
 

@@ -2,7 +2,10 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using ParquetNeo.Metadata;
 
-namespace ParquetNeo.Core.Stats;
+namespace ParquetNeo.Core.Statistics;
+
+// A namespace called Statistics would otherwise hide the Statistics type of the metadata.
+using Statistics = ParquetNeo.Metadata.Statistics;
 
 /// <summary>
 /// Statistics of INT32, INT64, FLOAT or DOUBLE values.

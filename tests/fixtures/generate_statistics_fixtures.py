@@ -1,7 +1,7 @@
 """Writes files whose column statistics exercise the awkward cases, with pyarrow.
 
     pip install pyarrow
-    python tests/fixtures/generate_stats_fixtures.py
+    python tests/fixtures/generate_statistics_fixtures.py
 
 Output goes to tests/ParquetNeo.Tests/Fixtures.
 """
@@ -42,11 +42,11 @@ table = pa.table(
     }
 )
 
-for name, dictionary in [("pyarrow-stats-plain", False), ("pyarrow-stats-dict", True)]:
+for name, dictionary in [("pyarrow-statistics-plain", False), ("pyarrow-statistics-dictionary", True)]:
     pq.write_table(table, OUT / f"{name}.parquet", use_dictionary=dictionary, write_statistics=True,
                    data_page_version="2.0", store_schema=False)
     print("wrote", name)
 
 for c in range(table.num_columns):
-    s = pq.ParquetFile(OUT / "pyarrow-stats-plain.parquet").metadata.row_group(0).column(c).statistics
+    s = pq.ParquetFile(OUT / "pyarrow-statistics-plain.parquet").metadata.row_group(0).column(c).statistics
     print(table.column_names[c], s.has_min_max, s.min if s.has_min_max else None, s.max if s.has_min_max else None, s.null_count)

@@ -83,5 +83,5 @@ write("pyarrow-flat-required-dict-fallback", 3000, False, "1.0", dictionary=True
 # pages and for the data pages that use them.
 write("pyarrow-flat-optional-dict-legacy", 1000, True, "1.0", dictionary=True, version="1.0")
 # With statistics, over several row groups (400 rows each; the last one has 200).
-write("pyarrow-flat-optional-stats", 1000, True, "1.0", statistics=True, row_group_size=400)
-write("pyarrow-flat-required-stats-dict", 1000, False, "2.0", dictionary=True, statistics=True, row_group_size=400)
+write("pyarrow-flat-optional-statistics", 1000, True, "1.0", statistics=True, row_group_size=400)
+write("pyarrow-flat-required-statistics-dictionary", 1000, False, "2.0", dictionary=True, statistics=True, row_group_size=400)

@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace ParquetNeo.Core.Stats;
+namespace ParquetNeo.Core.Statistics;
 
 /// <summary>Finds the smallest and largest value of a span, a vector at a time where the hardware allows.</summary>
 internal static class VectorMinMax

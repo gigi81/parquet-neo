@@ -1,4 +1,4 @@
-namespace ParquetNeo.Core.Stats;
+namespace ParquetNeo.Core.Statistics;
 
 /// <summary>Takes the values of a batch for a <see cref="StatisticsCollector"/>.</summary>
 internal interface IStatisticsSink<T>

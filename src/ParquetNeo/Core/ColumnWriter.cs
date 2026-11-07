@@ -7,7 +7,7 @@ using ParquetNeo.Encodings;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 using System.Text;
-using ParquetNeo.Core.Stats;
+using ParquetNeo.Core.Statistics;
 
 namespace ParquetNeo.Core;
 
@@ -44,7 +44,7 @@ public sealed class ColumnWriter
     private DictionaryBuilder? _dictionary;
     private readonly List<EncodedPage> _pending = new();
     private byte[]? _stringScratch;
-    private readonly StatisticsCollector? _stats;
+    private readonly StatisticsCollector? _statistics;
     private long _valueCount; // non-null values written, so that rows minus values is the null count
 
     private int _pageLevelCount;
@@ -71,7 +71,7 @@ public sealed class ColumnWriter
         _maxDefinitionLevel = column.MaxDefinitionLevel;
         _levelBitWidth = 32 - BitOperations.LeadingZeroCount((uint)_maxDefinitionLevel);
         _dictionary = options.DictionaryEnabled ? CreateDictionary(column.Type, column.TypeLength) : null;
-        _stats = StatisticsFactory.Create(column, options);
+        _statistics = StatisticsFactory.Create(column, options);
         _buffers.Reset();
     }
 
@@ -114,7 +114,7 @@ public sealed class ColumnWriter
             int take = (int)Math.Min(Math.Min(rows - row, remainingBits), RowsFree);
             int valueCount = AppendLevels(definitionLevels, row, take);
             _buffers.Booleans.Write(values.Slice(next, valueCount));
-            _stats?.Add(values.Slice(next, valueCount));
+            _statistics?.Add(values.Slice(next, valueCount));
             _valueCount += valueCount;
             CompleteChunk(take);
             row += take;
@@ -193,11 +193,11 @@ public sealed class ColumnWriter
             int take = (int)Math.Min(Math.Min(rows - row, Math.Max(1, (_pageSize - PageBytes) / length)), RowsFree);
             int valueCount = AppendLevels(definitionLevels, row, take);
             var chunk = values.Slice(next * length, valueCount * length);
-            if (_stats is not null)
+            if (_statistics is not null)
             {
                 for (int i = 0; i < valueCount; i++)
                 {
-                    _stats.AddBinary(chunk.Slice(i * length, length));
+                    _statistics.AddBinary(chunk.Slice(i * length, length));
                 }
             }
 
@@ -281,7 +281,7 @@ public sealed class ColumnWriter
                 DataPageOffset = _dataPageOffset,
                 DictionaryPageOffset = _dictionaryPageOffset >= 0 ? _dictionaryPageOffset : null,
                 EncodingStats = pageStats,
-                Statistics = _stats?.Build(_rows - _valueCount),
+                Statistics = _statistics?.Build(_rows - _valueCount),
             },
         };
     }
@@ -306,7 +306,7 @@ public sealed class ColumnWriter
             int take = (int)Math.Min(Math.Min(rows - row, Math.Max(1, (_pageSize - PageBytes) / valueBytes)), RowsFree);
             int valueCount = AppendLevels(levels, row, take);
             var chunk = values.Slice(next, valueCount);
-            _stats?.Add(chunk);
+            _statistics?.Add(chunk);
             _valueCount += valueCount;
             if (_dictionary is not null)
             {
@@ -326,7 +326,7 @@ public sealed class ColumnWriter
 
     private void AppendByteArray(ReadOnlySpan<byte> value)
     {
-        _stats?.AddBinary(value);
+        _statistics?.AddBinary(value);
         _valueCount++;
         if (_dictionary is BinaryDictionary dictionary)
         {
@@ -346,10 +346,10 @@ public sealed class ColumnWriter
         {
             int start = _buffers.Values.WrittenCount;
             PlainEncoder.WriteString(value, _buffers.Values);
-            if (_stats is not null)
+            if (_statistics is not null)
             {
                 // The string was encoded straight into the page buffer; the statistics read it back from there.
-                _stats.AddBinary(_buffers.Values.WrittenSpan[(start + sizeof(int))..]);
+                _statistics.AddBinary(_buffers.Values.WrittenSpan[(start + sizeof(int))..]);
             }
 
             return;
@@ -363,7 +363,7 @@ public sealed class ColumnWriter
         }
 
         Encoding.UTF8.GetBytes(value, _stringScratch);
-        _stats?.AddBinary(_stringScratch.AsSpan(0, length));
+        _statistics?.AddBinary(_stringScratch.AsSpan(0, length));
         AddIndex(dictionary.GetOrAdd(_stringScratch.AsSpan(0, length)));
         _pageLogicalBytes += sizeof(int) + length;
     }

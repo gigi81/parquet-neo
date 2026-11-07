@@ -544,8 +544,8 @@ public class ReaderRobustnessTests
             ("pyarrow dictionary legacy", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-optional-dict-legacy.parquet"))),
             ("pyarrow dictionary fallback", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-required-dict-fallback.parquet"))),
             ("our dictionary file", ThreeValueDictionaryFile()),
-            ("pyarrow statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-stats-plain.parquet"))),
-            ("pyarrow sample statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-optional-stats.parquet"))),
+            ("pyarrow statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-statistics-plain.parquet"))),
+            ("pyarrow sample statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-optional-statistics.parquet"))),
         };
 
         foreach (var (name, original) in files)

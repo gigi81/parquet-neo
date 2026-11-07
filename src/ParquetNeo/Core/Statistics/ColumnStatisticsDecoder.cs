@@ -2,7 +2,7 @@ using System.Buffers.Binary;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Core.Stats;
+namespace ParquetNeo.Core.Statistics;
 
 /// <summary>Turns the raw <see cref="Statistics"/> of a column chunk into a <see cref="ColumnStatistics"/>.</summary>
 internal static class ColumnStatisticsDecoder
