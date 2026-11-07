@@ -544,6 +544,8 @@ public class ReaderRobustnessTests
             ("pyarrow dictionary legacy", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-optional-dict-legacy.parquet"))),
             ("pyarrow dictionary fallback", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-required-dict-fallback.parquet"))),
             ("our dictionary file", ThreeValueDictionaryFile()),
+            ("pyarrow statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-statistics-plain.parquet"))),
+            ("pyarrow sample statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-optional-statistics.parquet"))),
         };
 
         foreach (var (name, original) in files)
@@ -691,6 +693,7 @@ public class ReaderRobustnessTests
                 {
                     try
                     {
+                        reader.OpenRowGroup(g).GetStatistics(c);
                         ReadHelper.ReadColumn(reader, g, c, 100);
                     }
                     catch (NotSupportedException)
@@ -730,19 +733,8 @@ public class ReaderRobustnessTests
     }
 
     /// <summary>Replaces the footer of a file with a modified copy of its metadata.</summary>
-    private static byte[] Rewrite(byte[] bytes, Action<FileMetaData> change, int? footerStart = null)
-    {
-        var file = TestParquetFile.Parse(bytes);
-        change(file.Metadata);
-        var footer = new ArrayBufferWriter<byte>();
-        file.Metadata.Serialize(footer);
-
-        var result = new List<byte>(bytes.AsSpan(0, footerStart ?? (int)file.FooterStart).ToArray());
-        result.AddRange(footer.WrittenSpan.ToArray());
-        result.AddRange(BitConverter.GetBytes(footer.WrittenCount));
-        result.AddRange("PAR1"u8.ToArray());
-        return result.ToArray();
-    }
+    private static byte[] Rewrite(byte[] bytes, Action<FileMetaData> change, int? footerStart = null) =>
+        FooterEditor.Rewrite(bytes, change, footerStart);
 
     private sealed class TrackingStream(byte[] bytes) : MemoryStream(bytes)
     {

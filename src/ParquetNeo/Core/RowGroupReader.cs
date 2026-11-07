@@ -1,4 +1,5 @@
 using ParquetNeo.Metadata;
+using ParquetNeo.Core.Statistics;
 
 namespace ParquetNeo.Core;
 
@@ -30,6 +31,27 @@ public sealed class RowGroupReader
         ArgumentOutOfRangeException.ThrowIfNegative(index);
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, ColumnCount);
         return new ColumnReader(_file, _file.Schema.Columns[index], Metadata.Columns[index]);
+    }
+
+    /// <summary>
+    /// Returns the statistics recorded for a column in this row group, or <c>null</c> when the writer recorded none.
+    /// Works for every column, including nested ones the reader cannot open yet.
+    /// </summary>
+    /// <exception cref="ParquetFormatException">The recorded minimum or maximum has the wrong size for the column's type.</exception>
+    public ColumnStatistics? GetStatistics(int index)
+    {
+        _file.EnsureOpen();
+        ArgumentOutOfRangeException.ThrowIfNegative(index);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, ColumnCount);
+        return ColumnStatisticsDecoder.Decode(_file.Schema.Columns[index], Metadata.Columns[index], _file.Metadata.ColumnOrders);
+    }
+
+    /// <summary>Returns the statistics of a top-level column by name; see <see cref="GetStatistics(int)"/>.</summary>
+    public ColumnStatistics? GetStatistics(string name)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        var column = _file.Schema.FindColumn([name]) ?? throw new ArgumentException($"There is no column named '{name}'.", nameof(name));
+        return GetStatistics(column.ColumnIndex);
     }
 
     /// <summary>Opens a top-level column by name.</summary>

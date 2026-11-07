@@ -215,10 +215,10 @@ internal sealed class TestParquetFile
                 }
 
                 Require(dictionaryPages == (hasDictionary ? 1 : 0), "at most one dictionary page");
-                Require(chunk.EncodingStats is not null, "encoding_stats are written");
-                Require(StatsCount(chunk, PageType.DictionaryPage, ParquetEncoding.Plain) == dictionaryPages, "encoding_stats for the dictionary page");
-                Require(StatsCount(chunk, PageType.DataPage, ParquetEncoding.RleDictionary) == dictionaryDataPages, "encoding_stats for dictionary-encoded pages");
-                Require(StatsCount(chunk, PageType.DataPage, ParquetEncoding.Plain) == plainDataPages, "encoding_stats for plain pages");
+                Require(chunk.EncodingStats is not null, "encoding_statistics are written");
+                Require(EncodingStatisticsCount(chunk, PageType.DictionaryPage, ParquetEncoding.Plain) == dictionaryPages, "encoding_statistics for the dictionary page");
+                Require(EncodingStatisticsCount(chunk, PageType.DataPage, ParquetEncoding.RleDictionary) == dictionaryDataPages, "encoding_statistics for dictionary-encoded pages");
+                Require(EncodingStatisticsCount(chunk, PageType.DataPage, ParquetEncoding.Plain) == plainDataPages, "encoding_statistics for plain pages");
                 Require(chunk.Encodings.Contains(ParquetEncoding.RleDictionary) == dictionaryDataPages > 0, "encodings lists RLE_DICTIONARY exactly when it is used");
                 Require(chunk.Encodings.Contains(ParquetEncoding.Plain), "PLAIN is always listed (the dictionary page or plain pages use it)");
 
@@ -240,7 +240,7 @@ internal sealed class TestParquetFile
         Require(Metadata.ColumnOrders!.Count == Schema.Columns.Count, "one column order per column");
     }
 
-    private static int StatsCount(ColumnMetaData chunk, PageType type, ParquetEncoding encoding) =>
+    private static int EncodingStatisticsCount(ColumnMetaData chunk, PageType type, ParquetEncoding encoding) =>
         chunk.EncodingStats!.Where(s => s.PageType == type && s.Encoding == encoding).Sum(s => s.Count);
 
     /// <summary>Decodes a dictionary-encoded page body: a bit-width byte, then RLE/bit-packed indexes.</summary>
