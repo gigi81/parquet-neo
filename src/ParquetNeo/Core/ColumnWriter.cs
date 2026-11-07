@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using ParquetNeo.Compression;
 using ParquetNeo.Encodings;
 using ParquetNeo.Metadata;
+using ParquetNeo.Nested;
 using ParquetNeo.Schema;
 using System.Text;
 using ParquetNeo.Core.Statistics;
@@ -244,6 +245,69 @@ public sealed class ColumnWriter
             entry += take;
             next += valueCount;
         }
+    }
+
+    // ---- the same, with the shape of the data given as a ColumnStructure instead of levels ----
+
+    /// <summary>Writes INT32 values whose nesting is given as validity and offsets; the structure supplies the levels.</summary>
+    public void WriteBatch(ReadOnlySpan<int> values, ColumnStructure structure)
+    {
+        var (definition, repetition) = LevelsOf(structure);
+        WriteBatch(values, definition, repetition);
+    }
+
+    public void WriteBatch(ReadOnlySpan<long> values, ColumnStructure structure)
+    {
+        var (definition, repetition) = LevelsOf(structure);
+        WriteBatch(values, definition, repetition);
+    }
+
+    public void WriteBatch(ReadOnlySpan<float> values, ColumnStructure structure)
+    {
+        var (definition, repetition) = LevelsOf(structure);
+        WriteBatch(values, definition, repetition);
+    }
+
+    public void WriteBatch(ReadOnlySpan<double> values, ColumnStructure structure)
+    {
+        var (definition, repetition) = LevelsOf(structure);
+        WriteBatch(values, definition, repetition);
+    }
+
+    public void WriteBatch(ReadOnlySpan<bool> values, ColumnStructure structure)
+    {
+        var (definition, repetition) = LevelsOf(structure);
+        WriteBatch(values, definition, repetition);
+    }
+
+    public void WriteByteArrays(ReadOnlySpan<ReadOnlyMemory<byte>> values, ColumnStructure structure)
+    {
+        var (definition, repetition) = LevelsOf(structure);
+        WriteByteArrays(values, definition, repetition);
+    }
+
+    public void WriteStrings(ReadOnlySpan<string> values, ColumnStructure structure)
+    {
+        var (definition, repetition) = LevelsOf(structure);
+        WriteStrings(values, definition, repetition);
+    }
+
+    public void WriteFixedLengthByteArrays(ReadOnlySpan<byte> values, ColumnStructure structure)
+    {
+        var (definition, repetition) = LevelsOf(structure);
+        WriteFixedLengthByteArrays(values, definition, repetition);
+    }
+
+    private (int[] Definition, int[] Repetition) LevelsOf(ColumnStructure structure)
+    {
+        ArgumentNullException.ThrowIfNull(structure);
+        if (!ReferenceEquals(structure.Column, Column))
+        {
+            throw new ArgumentException($"The structure is for column '{string.Join('.', structure.Column.Path)}', not '{string.Join('.', Column.Path)}'.", nameof(structure));
+        }
+
+        structure.GetLevels(out int[] definition, out int[] repetition);
+        return (definition, repetition);
     }
 
     internal ColumnChunk Complete()
