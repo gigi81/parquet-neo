@@ -7,6 +7,7 @@ using ParquetNeo.Encodings;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 using System.Text;
+using ParquetNeo.Core.Stats;
 
 namespace ParquetNeo.Core;
 

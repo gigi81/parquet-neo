@@ -1,7 +1,7 @@
 using System.Buffers;
 using System.Text;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo.Core.Stats;
 
 /// <summary>
 /// Shortens minimum and maximum values of binary columns so that long values cannot bloat the file footer. A shortened

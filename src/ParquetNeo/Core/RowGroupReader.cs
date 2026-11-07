@@ -1,4 +1,5 @@
 using ParquetNeo.Metadata;
+using ParquetNeo.Core.Stats;
 
 namespace ParquetNeo.Core;
 

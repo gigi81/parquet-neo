@@ -1,6 +1,6 @@
 using ParquetNeo.Metadata;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo.Core.Stats;
 
 /// <summary>Statistics of BYTE_ARRAY and FIXED_LEN_BYTE_ARRAY values.</summary>
 /// <remarks>

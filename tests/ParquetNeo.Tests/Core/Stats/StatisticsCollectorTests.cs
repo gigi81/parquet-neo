@@ -1,7 +1,8 @@
 using System.Text;
+using ParquetNeo.Core.Stats;
 using ParquetNeo.Metadata;
 
-namespace ParquetNeo.Tests.Core;
+namespace ParquetNeo.Tests.Core.Stats;
 
 public class StatisticsCollectorTests
 {
@@ -32,7 +33,7 @@ public class StatisticsCollectorTests
 
     private static void Check<T>(List<string> failures, T[] values) where T : unmanaged, System.Numerics.INumber<T>
     {
-        bool ok = ParquetNeo.Core.VectorMinMax.TryGetMinMax<T>(values, out T min, out T max);
+        bool ok = VectorMinMax.TryGetMinMax<T>(values, out T min, out T max);
         if (!ok || min != values.Min() || max != values.Max())
         {
             failures.Add($"{typeof(T).Name} x{values.Length}: got ({min}, {max}), expected ({values.Min()}, {values.Max()})");
@@ -55,8 +56,8 @@ public class StatisticsCollectorTests
                 Array.Fill(high, 1, 0, length);
                 high[position] = int.MaxValue;
 
-                ParquetNeo.Core.VectorMinMax.TryGetMinMax<int>(low, out int min, out _);
-                ParquetNeo.Core.VectorMinMax.TryGetMinMax<int>(high, out _, out int max);
+                VectorMinMax.TryGetMinMax<int>(low, out int min, out _);
+                VectorMinMax.TryGetMinMax<int>(high, out _, out int max);
 
                 await Assert.That(min).IsEqualTo(int.MinValue).Because($"length {length} position {position}");
                 await Assert.That(max).IsEqualTo(int.MaxValue).Because($"length {length} position {position}");
@@ -74,7 +75,7 @@ public class StatisticsCollectorTests
                 var values = new double[length];
                 values[position] = double.NaN;
 
-                await Assert.That(ParquetNeo.Core.VectorMinMax.TryGetMinMax<double>(values, out _, out _)).IsFalse().Because($"length {length} position {position}");
+                await Assert.That(VectorMinMax.TryGetMinMax<double>(values, out _, out _)).IsFalse().Because($"length {length} position {position}");
             }
         }
     }
@@ -85,13 +86,13 @@ public class StatisticsCollectorTests
     {
         if (unsigned)
         {
-            var collector = new ParquetNeo.Core.ScalarStatistics<int, uint>();
+            var collector = new ScalarStatistics<int, uint>();
             foreach (var batch in batches) collector.Add<int>(batch);
             return collector.Build(0);
         }
         else
         {
-            var collector = new ParquetNeo.Core.ScalarStatistics<int, int>();
+            var collector = new ScalarStatistics<int, int>();
             foreach (var batch in batches) collector.Add<int>(batch);
             return collector.Build(0);
         }
@@ -123,7 +124,7 @@ public class StatisticsCollectorTests
     [Test]
     public async Task UnsignedLongs_UseUnsignedOrder()
     {
-        var collector = new ParquetNeo.Core.ScalarStatistics<long, ulong>();
+        var collector = new ScalarStatistics<long, ulong>();
         collector.Add<long>([5L, -1L, long.MinValue, long.MaxValue]);
 
         var statistics = collector.Build(0);
@@ -135,7 +136,7 @@ public class StatisticsCollectorTests
     [Test]
     public async Task NoValues_GiveOnlyTheCounts()
     {
-        var statistics = new ParquetNeo.Core.ScalarStatistics<long, long>().Build(12);
+        var statistics = new ScalarStatistics<long, long>().Build(12);
 
         await Assert.That(statistics.NullCount).IsEqualTo(12L);
         await Assert.That(statistics.MinValue).IsNull();
@@ -146,7 +147,7 @@ public class StatisticsCollectorTests
     [Test]
     public async Task EmptyBatches_AreIgnored()
     {
-        var collector = new ParquetNeo.Core.ScalarStatistics<int, int>();
+        var collector = new ScalarStatistics<int, int>();
         collector.Add<int>([]);
         collector.Add<int>([3]);
         collector.Add<int>([]);
@@ -158,7 +159,7 @@ public class StatisticsCollectorTests
 
     private static Statistics Doubles(params double[][] batches)
     {
-        var collector = new ParquetNeo.Core.ScalarStatistics<double, double>();
+        var collector = new ScalarStatistics<double, double>();
         foreach (var batch in batches) collector.Add<double>(batch);
         return collector.Build(0);
     }
@@ -222,7 +223,7 @@ public class StatisticsCollectorTests
     [Test]
     public async Task SinglePrecision_UsesFourByteBounds()
     {
-        var collector = new ParquetNeo.Core.ScalarStatistics<float, float>();
+        var collector = new ScalarStatistics<float, float>();
         collector.Add<float>([1.5f, float.NaN, -4.25f]);
 
         var statistics = collector.Build(2);
@@ -242,7 +243,7 @@ public class StatisticsCollectorTests
     [Arguments(new[] { true, false }, (byte)0, (byte)1)]
     public async Task Booleans_OrderFalseBeforeTrue(bool[] values, byte min, byte max)
     {
-        var collector = new ParquetNeo.Core.BooleanStatistics();
+        var collector = new BooleanStatistics();
         collector.Add<bool>(values);
 
         var statistics = collector.Build(0);
@@ -253,9 +254,9 @@ public class StatisticsCollectorTests
 
     // ---- binary ----
 
-    private static ParquetNeo.Core.BinaryStatistics Binary(ParquetNeo.Core.BinaryOrder order, bool utf8, int truncate, params byte[][] values)
+    private static BinaryStatistics Binary(BinaryOrder order, bool utf8, int truncate, params byte[][] values)
     {
-        var collector = new ParquetNeo.Core.BinaryStatistics(order, utf8, truncate);
+        var collector = new BinaryStatistics(order, utf8, truncate);
         foreach (var value in values) collector.AddBinary(value);
         return collector;
     }
@@ -265,7 +266,7 @@ public class StatisticsCollectorTests
     [Test]
     public async Task Binary_ComparesBytesAsUnsigned()
     {
-        var statistics = Binary(ParquetNeo.Core.BinaryOrder.UnsignedBytes, false, 64, [0x7F], [0x80], [0xFF, 0x00], [0x00, 0xFF], []).Build(0);
+        var statistics = Binary(BinaryOrder.UnsignedBytes, false, 64, [0x7F], [0x80], [0xFF, 0x00], [0x00, 0xFF], []).Build(0);
 
         await Assert.That(statistics.MinValue).IsEquivalentTo(Array.Empty<byte>());
         await Assert.That(statistics.MaxValue).IsEquivalentTo(new byte[] { 0xFF, 0x00 });
@@ -274,7 +275,7 @@ public class StatisticsCollectorTests
     [Test]
     public async Task Binary_ALongerValueWithTheSamePrefixIsGreater()
     {
-        var statistics = Binary(ParquetNeo.Core.BinaryOrder.UnsignedBytes, false, 64, [1, 2], [1, 2, 0], [1]).Build(0);
+        var statistics = Binary(BinaryOrder.UnsignedBytes, false, 64, [1, 2], [1, 2, 0], [1]).Build(0);
 
         await Assert.That(statistics.MinValue).IsEquivalentTo(new byte[] { 1 });
         await Assert.That(statistics.MaxValue).IsEquivalentTo(new byte[] { 1, 2, 0 });
@@ -284,7 +285,7 @@ public class StatisticsCollectorTests
     public async Task Strings_OrderByUtf8Bytes_NotByUtf16()
     {
         // "é" is 0xC3 0xA9 and sorts after "z"; a U+FFFF character (0xEF 0xBF 0xBF) sorts after both.
-        var statistics = Binary(ParquetNeo.Core.BinaryOrder.UnsignedBytes, true, 64, Utf8("z"), Utf8("é"), Utf8("￿"), Utf8("Z")).Build(0);
+        var statistics = Binary(BinaryOrder.UnsignedBytes, true, 64, Utf8("z"), Utf8("é"), Utf8("￿"), Utf8("Z")).Build(0);
 
         await Assert.That(Encoding.UTF8.GetString(statistics.MinValue!)).IsEqualTo("Z");
         await Assert.That(Encoding.UTF8.GetString(statistics.MaxValue!)).IsEqualTo("￿");
@@ -293,7 +294,7 @@ public class StatisticsCollectorTests
     [Test]
     public async Task ShortValues_AreStoredWhole_AndExact()
     {
-        var statistics = Binary(ParquetNeo.Core.BinaryOrder.UnsignedBytes, true, 8, Utf8("abcdefgh"), Utf8("b")).Build(0);
+        var statistics = Binary(BinaryOrder.UnsignedBytes, true, 8, Utf8("abcdefgh"), Utf8("b")).Build(0);
 
         await Assert.That(statistics.IsMinValueExact).IsTrue();
         await Assert.That(statistics.IsMaxValueExact).IsTrue();
@@ -302,7 +303,7 @@ public class StatisticsCollectorTests
     [Test]
     public async Task LongMinimums_AreCutToAPrefix_AndLongMaximumsGrow()
     {
-        var statistics = Binary(ParquetNeo.Core.BinaryOrder.UnsignedBytes, true, 4, Utf8("abcdefgh"), Utf8("mnopqrst")).Build(0);
+        var statistics = Binary(BinaryOrder.UnsignedBytes, true, 4, Utf8("abcdefgh"), Utf8("mnopqrst")).Build(0);
 
         await Assert.That(Encoding.UTF8.GetString(statistics.MinValue!)).IsEqualTo("abcd");
         await Assert.That(statistics.IsMinValueExact).IsFalse();
@@ -314,7 +315,7 @@ public class StatisticsCollectorTests
     public async Task Truncation_NeverSplitsACharacter()
     {
         // "aé" is 3 bytes (0x61 0xC3 0xA9): a limit of 2 would cut é in half.
-        var statistics = Binary(ParquetNeo.Core.BinaryOrder.UnsignedBytes, true, 2, Utf8("aéz"), Utf8("aéy")).Build(0);
+        var statistics = Binary(BinaryOrder.UnsignedBytes, true, 2, Utf8("aéz"), Utf8("aéy")).Build(0);
 
         await Assert.That(Encoding.UTF8.GetString(statistics.MinValue!)).IsEqualTo("a");
         await Assert.That(Encoding.UTF8.GetString(statistics.MaxValue!)).IsEqualTo("b");
@@ -324,7 +325,7 @@ public class StatisticsCollectorTests
     public async Task ABoundIsKept_EvenWhenALaterValueTiesWithItsPrefix()
     {
         // The stored minimum "abc" is a prefix of "abcdef"; a later "abcd" is above it, so the minimum stays valid.
-        var statistics = Binary(ParquetNeo.Core.BinaryOrder.UnsignedBytes, false, 3, Utf8("abcdef"), Utf8("abcd")).Build(0);
+        var statistics = Binary(BinaryOrder.UnsignedBytes, false, 3, Utf8("abcdef"), Utf8("abcd")).Build(0);
 
         await Assert.That(Encoding.UTF8.GetString(statistics.MinValue!)).IsEqualTo("abc");
         await Assert.That(Encoding.UTF8.GetString(statistics.MaxValue!)).IsEqualTo("abd");
@@ -333,7 +334,7 @@ public class StatisticsCollectorTests
     [Test]
     public async Task AMaximumThatCannotGrow_IsLeftOut()
     {
-        var statistics = Binary(ParquetNeo.Core.BinaryOrder.UnsignedBytes, false, 2, [0xFF, 0xFF, 0x01], [0x01]).Build(0);
+        var statistics = Binary(BinaryOrder.UnsignedBytes, false, 2, [0xFF, 0xFF, 0x01], [0x01]).Build(0);
 
         await Assert.That(statistics.MaxValue).IsNull();
         await Assert.That(statistics.IsMaxValueExact).IsNull();
@@ -343,7 +344,7 @@ public class StatisticsCollectorTests
     [Test]
     public async Task AMaximumThatCannotGrow_StaysLeftOut_EvenIfSmallerValuesFollow()
     {
-        var statistics = Binary(ParquetNeo.Core.BinaryOrder.UnsignedBytes, false, 2, [0xFF, 0xFF, 0x01], [0x02], [0xFF, 0xFF, 0x05]).Build(0);
+        var statistics = Binary(BinaryOrder.UnsignedBytes, false, 2, [0xFF, 0xFF, 0x01], [0x02], [0xFF, 0xFF, 0x05]).Build(0);
 
         await Assert.That(statistics.MaxValue).IsNull();
     }
@@ -351,7 +352,7 @@ public class StatisticsCollectorTests
     [Test]
     public async Task Binary_WithAZeroLimit_StillWorks()
     {
-        var statistics = Binary(ParquetNeo.Core.BinaryOrder.UnsignedBytes, false, 0, [5, 6, 7], [1, 2, 3]).Build(0);
+        var statistics = Binary(BinaryOrder.UnsignedBytes, false, 0, [5, 6, 7], [1, 2, 3]).Build(0);
 
         await Assert.That(statistics.MinValue).IsEquivalentTo(new byte[] { 1 });
         await Assert.That(statistics.MaxValue).IsEquivalentTo(new byte[] { 6 });
@@ -370,7 +371,7 @@ public class StatisticsCollectorTests
                 .Select(_ => string.Concat(Enumerable.Range(0, random.Next(0, 14)).Select(_ => runes[random.Next(runes.Length)].ToString())))
                 .Select(Utf8)
                 .ToArray();
-            var statistics = Binary(ParquetNeo.Core.BinaryOrder.UnsignedBytes, true, limit, values).Build(0);
+            var statistics = Binary(BinaryOrder.UnsignedBytes, true, limit, values).Build(0);
 
             var min = values.MinBy(v => v, Comparer<byte[]>.Create((a, b) => a.AsSpan().SequenceCompareTo(b)))!;
             var max = values.MaxBy(v => v, Comparer<byte[]>.Create((a, b) => a.AsSpan().SequenceCompareTo(b)))!;
@@ -395,7 +396,7 @@ public class StatisticsCollectorTests
     public async Task Decimals_CompareAsSignedBigEndianNumbers()
     {
         // As numbers: 0xFF00 = -256, 0x8000 = -32768, 0x7F00 = 32512, 0x0001 = 1.
-        var statistics = Binary(ParquetNeo.Core.BinaryOrder.SignedBigEndian, false, 64, [0xFF, 0x00], [0x80, 0x00], [0x7F, 0x00], [0x00, 0x01]).Build(0);
+        var statistics = Binary(BinaryOrder.SignedBigEndian, false, 64, [0xFF, 0x00], [0x80, 0x00], [0x7F, 0x00], [0x00, 0x01]).Build(0);
 
         await Assert.That(statistics.MinValue).IsEquivalentTo(new byte[] { 0x80, 0x00 });
         await Assert.That(statistics.MaxValue).IsEquivalentTo(new byte[] { 0x7F, 0x00 });
@@ -413,14 +414,14 @@ public class StatisticsCollectorTests
     [Arguments(new byte[] { 0x80, 0x00, 0x00 }, new byte[] { 0x80, 0x00 }, -1)] // -8388608 < -32768
     public async Task SignedComparison_ExtendsShorterNumbers(byte[] left, byte[] right, int expectedSign)
     {
-        await Assert.That(Math.Sign(ParquetNeo.Core.BinaryStatistics.CompareSigned(left, right))).IsEqualTo(expectedSign);
-        await Assert.That(Math.Sign(ParquetNeo.Core.BinaryStatistics.CompareSigned(right, left))).IsEqualTo(-expectedSign);
+        await Assert.That(Math.Sign(BinaryStatistics.CompareSigned(left, right))).IsEqualTo(expectedSign);
+        await Assert.That(Math.Sign(BinaryStatistics.CompareSigned(right, left))).IsEqualTo(-expectedSign);
     }
 
     [Test]
     public async Task Decimals_AreNeverTruncated()
     {
-        var statistics = Binary(ParquetNeo.Core.BinaryOrder.SignedBigEndian, false, 2, [1, 2, 3, 4, 5], [9, 8, 7, 6, 5]).Build(0);
+        var statistics = Binary(BinaryOrder.SignedBigEndian, false, 2, [1, 2, 3, 4, 5], [9, 8, 7, 6, 5]).Build(0);
 
         await Assert.That(statistics.MinValue).IsEquivalentTo(new byte[] { 1, 2, 3, 4, 5 });
         await Assert.That(statistics.IsMinValueExact).IsTrue();
@@ -434,7 +435,7 @@ public class StatisticsCollectorTests
     public async Task UpperBound_IncreasesTheLastByte(string text, int limit, bool utf8, string expected)
     {
         // A value that is not longer than the limit is not shortened by the collector, but the helper still increments.
-        bool ok = ParquetNeo.Core.BinaryTruncation.TryCreateUpperBound(Utf8(text), limit, utf8, out var bound);
+        bool ok = BinaryTruncation.TryCreateUpperBound(Utf8(text), limit, utf8, out var bound);
 
         await Assert.That(ok).IsTrue();
         await Assert.That(Encoding.UTF8.GetString(bound)).IsEqualTo(expected == "ab" ? "ac" : expected);
@@ -443,7 +444,7 @@ public class StatisticsCollectorTests
     [Test]
     public async Task UpperBound_SkipsTrailingFFBytes()
     {
-        bool ok = ParquetNeo.Core.BinaryTruncation.TryCreateUpperBound([0x01, 0xFF, 0xFF, 0x05], 3, false, out var bound);
+        bool ok = BinaryTruncation.TryCreateUpperBound([0x01, 0xFF, 0xFF, 0x05], 3, false, out var bound);
 
         await Assert.That(ok).IsTrue();
         await Assert.That(bound).IsEquivalentTo(new byte[] { 0x02 });
@@ -452,17 +453,17 @@ public class StatisticsCollectorTests
     [Test]
     public async Task UpperBound_OfAllFFBytes_DoesNotExist()
     {
-        await Assert.That(ParquetNeo.Core.BinaryTruncation.TryCreateUpperBound([0xFF, 0xFF, 0xFF], 2, false, out _)).IsFalse();
+        await Assert.That(BinaryTruncation.TryCreateUpperBound([0xFF, 0xFF, 0xFF], 2, false, out _)).IsFalse();
     }
 
     [Test]
     public async Task UpperBound_OfText_StepsOverSurrogatesAndTheLastCodePoint()
     {
         // U+D7FF is followed by the surrogates, which are not characters: the next one is U+E000.
-        ParquetNeo.Core.BinaryTruncation.TryCreateUpperBound(Utf8("a퟿zz"), 4, true, out var surrogates);
+        BinaryTruncation.TryCreateUpperBound(Utf8("a퟿zz"), 4, true, out var surrogates);
         // U+10FFFF cannot grow, so it is dropped and the character before it grows.
-        ParquetNeo.Core.BinaryTruncation.TryCreateUpperBound(Utf8("a\U0010FFFFx"), 5, true, out var largest);
-        bool allLargest = ParquetNeo.Core.BinaryTruncation.TryCreateUpperBound(Utf8("\U0010FFFF\U0010FFFFz"), 8, true, out _);
+        BinaryTruncation.TryCreateUpperBound(Utf8("a\U0010FFFFx"), 5, true, out var largest);
+        bool allLargest = BinaryTruncation.TryCreateUpperBound(Utf8("\U0010FFFF\U0010FFFFz"), 8, true, out _);
 
         await Assert.That(Encoding.UTF8.GetString(surrogates)).IsEqualTo("a");
         await Assert.That(Encoding.UTF8.GetString(largest)).IsEqualTo("b");
@@ -473,7 +474,7 @@ public class StatisticsCollectorTests
     public async Task UpperBound_OfText_NeverExceedsTheLimit()
     {
         // U+07FF is 2 bytes and its successor U+0800 is 3: with a limit of 3 and "a" before it, the grown character would not fit.
-        bool ok = ParquetNeo.Core.BinaryTruncation.TryCreateUpperBound(Utf8("a\u07FFz"), 3, true, out var bound);
+        bool ok = BinaryTruncation.TryCreateUpperBound(Utf8("a\u07FFz"), 3, true, out var bound);
 
         await Assert.That(ok).IsTrue();
         await Assert.That(Encoding.UTF8.GetString(bound)).IsEqualTo("b");
@@ -483,7 +484,7 @@ public class StatisticsCollectorTests
     [Test]
     public async Task UpperBound_OfInvalidUtf8_FallsBackToBytes()
     {
-        bool ok = ParquetNeo.Core.BinaryTruncation.TryCreateUpperBound([0x61, 0xC3, 0x28, 0x62], 3, true, out var bound);
+        bool ok = BinaryTruncation.TryCreateUpperBound([0x61, 0xC3, 0x28, 0x62], 3, true, out var bound);
 
         await Assert.That(ok).IsTrue();
         await Assert.That(bound.AsSpan().SequenceCompareTo(new byte[] { 0x61, 0xC3, 0x28, 0x62 }) > 0).IsTrue();
@@ -498,12 +499,12 @@ public class StatisticsCollectorTests
     [Arguments("é", 1, 0)]
     public async Task PrefixLength_StopsAtACharacterBoundary(string text, int limit, int expected)
     {
-        await Assert.That(ParquetNeo.Core.BinaryTruncation.PrefixLength(Utf8(text), limit, utf8: true)).IsEqualTo(expected);
+        await Assert.That(BinaryTruncation.PrefixLength(Utf8(text), limit, utf8: true)).IsEqualTo(expected);
     }
 
     [Test]
     public async Task PrefixLength_ForBinary_IsJustTheLimit()
     {
-        await Assert.That(ParquetNeo.Core.BinaryTruncation.PrefixLength([1, 0x80, 0x80, 4], 2, utf8: false)).IsEqualTo(2);
+        await Assert.That(BinaryTruncation.PrefixLength([1, 0x80, 0x80, 4], 2, utf8: false)).IsEqualTo(2);
     }
 }

@@ -2,7 +2,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using ParquetNeo.Metadata;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo.Core.Stats;
 
 /// <summary>
 /// Statistics of INT32, INT64, FLOAT or DOUBLE values.

@@ -1,6 +1,6 @@
 using ParquetNeo.Metadata;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo.Core.Stats;
 
 /// <summary>
 /// Gathers the minimum, maximum and counts of the values written to one column chunk, to be stored in the chunk's

@@ -1,4 +1,4 @@
-namespace ParquetNeo.Core;
+namespace ParquetNeo.Core.Stats;
 
 /// <summary>
 /// The statistics of one column chunk, decoded to .NET values. Obtain it from

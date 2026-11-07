@@ -1,7 +1,7 @@
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo.Core.Stats;
 
 /// <summary>Chooses how to collect statistics for a column from its physical and logical type.</summary>
 internal static class StatisticsFactory

@@ -1,8 +1,9 @@
 using System.Text;
 using ParquetNeo.Core;
+using ParquetNeo.Core.Stats;
 using ParquetNeo.Metadata;
 
-namespace ParquetNeo.Tests.Core;
+namespace ParquetNeo.Tests.Core.Stats;
 
 public class StatisticsReaderTests
 {

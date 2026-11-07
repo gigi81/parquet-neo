@@ -1,6 +1,6 @@
 using ParquetNeo.Metadata;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo.Core.Stats;
 
 /// <summary>Statistics of BOOLEAN values, ordered false before true and stored as one byte.</summary>
 internal sealed class BooleanStatistics : StatisticsCollector, IStatisticsSink<bool>
