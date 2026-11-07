@@ -1,4 +1,5 @@
 using ParquetNeo.Metadata;
+using ParquetNeo.Nested;
 using ParquetNeo.Schema;
 
 namespace ParquetNeo.Tests.Core.Nested;
@@ -39,21 +40,15 @@ internal static class NestedDataset
                 new PrimitiveNode("kind", PhysicalType.ByteArray, FieldRepetitionType.Optional, LogicalType.String),
                 new PrimitiveNode("count", PhysicalType.Int32, FieldRepetitionType.Optional),
             ])),
-        new GroupNode("attributes", FieldRepetitionType.Optional,
-            [
-                new GroupNode("key_value", FieldRepetitionType.Repeated,
-                [
-                    new PrimitiveNode("key", PhysicalType.ByteArray, FieldRepetitionType.Required, LogicalType.String),
-                    new PrimitiveNode("value", PhysicalType.Int32, FieldRepetitionType.Optional),
-                ]),
-            ],
-            LogicalType.Map),
+        NestedSchema.Map("attributes", FieldRepetitionType.Optional,
+            new PrimitiveNode("key", PhysicalType.ByteArray, FieldRepetitionType.Required, LogicalType.String),
+            new PrimitiveNode("value", PhysicalType.Int32, FieldRepetitionType.Optional)),
         ListOf("labels", FieldRepetitionType.Required, new PrimitiveNode("element", PhysicalType.ByteArray, FieldRepetitionType.Required, LogicalType.String)),
     ]);
 
     /// <summary>A LIST: a group holding one repeated group <c>list</c> that holds the <paramref name="element"/>.</summary>
     public static GroupNode ListOf(string name, FieldRepetitionType repetition, SchemaNode element) =>
-        new(name, repetition, [new GroupNode("list", FieldRepetitionType.Repeated, [element])], LogicalType.List);
+        NestedSchema.List(name, repetition, element);
 
     public static IEnumerable<StructValue> Rows() => Enumerable.Range(0, RowCount).Select(Row);
 

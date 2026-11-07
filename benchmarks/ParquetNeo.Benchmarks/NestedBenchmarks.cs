@@ -1,6 +1,7 @@
 using BenchmarkDotNet.Attributes;
 using ParquetNeo.Core;
 using ParquetNeo.Metadata;
+using ParquetNeo.Nested;
 using ParquetNeo.Schema;
 
 namespace ParquetNeo.Benchmarks;
@@ -18,6 +19,8 @@ public class NestedBenchmarks
     private readonly int[] _readValues = new int[BatchSize];
     private readonly int[] _readDefinition = new int[BatchSize];
     private readonly int[] _readRepetition = new int[BatchSize];
+    private ParquetSchema _schema = null!;
+    private ColumnStructure _structure = null!;
 
     [GlobalSetup]
     public void Setup()
@@ -56,6 +59,7 @@ public class NestedBenchmarks
         var stream = new MemoryStream();
         WriteTo(stream);
         _file = stream.ToArray();
+        _structure = ColumnStructure.FromLevels(_schema.Columns[0], _definitionLevels, _repetitionLevels);
     }
 
     [Benchmark]
@@ -80,15 +84,22 @@ public class NestedBenchmarks
         return total;
     }
 
+    /// <summary>The levels of the whole column turned into validity and offsets.</summary>
+    [Benchmark]
+    public int LevelsToStructure() => ColumnStructure.FromLevels(_schema.Columns[0], _definitionLevels, _repetitionLevels).RowCount;
+
+    /// <summary>The validity and offsets turned back into levels.</summary>
+    [Benchmark]
+    public int StructureToLevels()
+    {
+        _structure.GetLevels(out int[] definition, out _);
+        return definition.Length;
+    }
+
     private long WriteTo(Stream stream)
     {
-        var schema = new ParquetSchema(
-        [
-            new GroupNode("l", FieldRepetitionType.Optional,
-                [new GroupNode("list", FieldRepetitionType.Repeated, [new PrimitiveNode("element", PhysicalType.Int32, FieldRepetitionType.Optional)])],
-                LogicalType.List),
-        ]);
-        using var writer = new ParquetFileWriter(stream, schema, leaveOpen: true);
+        _schema = new ParquetSchema([NestedSchema.List("l", FieldRepetitionType.Optional, new PrimitiveNode("element", PhysicalType.Int32, FieldRepetitionType.Optional))]);
+        using var writer = new ParquetFileWriter(stream, _schema, leaveOpen: true);
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(_values, _definitionLevels, _repetitionLevels);
