@@ -26,4 +26,22 @@ jobs:
         run: dotnet build -c Release --no-restore
 
       - name: Test
-        run: dotnet test -c Release --no-build
+        run: dotnet test -c Release --no-build --coverage --coverage-output-format cobertura --results-directory TestResults
+
+      - name: Coverage summary
+        if: always()
+        shell: bash
+        run: |
+          for f in TestResults/*.cobertura.xml; do
+            [ -e "$f" ] || continue
+            rate=$(grep -o -m1 'line-rate="[0-9.]*"' "$f" | head -1 | grep -o '[0-9.]*')
+            echo "Line coverage (${{ matrix.os }}): $(awk "BEGIN { printf \"%.1f%%\", $rate * 100 }")" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.os }}
+          path: TestResults/*.cobertura.xml
+          if-no-files-found: warn
