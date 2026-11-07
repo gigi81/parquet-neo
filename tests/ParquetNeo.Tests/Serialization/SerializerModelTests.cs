@@ -272,11 +272,11 @@ public class SerializerModelTests
 
     // ---- models that cannot be written ----
 
-    private sealed class Nested
+    private sealed class Unsupported
     {
         public int Id { get; set; }
 
-        public List<int> Numbers { get; set; } = [];
+        public TimeSpan Duration { get; set; }
     }
 
     private sealed class Clash
@@ -314,10 +314,10 @@ public class SerializerModelTests
     [Test]
     public async Task APropertyOfAnUnsupportedType_IsReported_WithItsName()
     {
-        var exception = Assert.Throws<NotSupportedException>(() => ParquetSerializer.GetSchema<Nested>());
+        var exception = Assert.Throws<NotSupportedException>(() => ParquetSerializer.GetSchema<Unsupported>());
 
-        await Assert.That(exception.Message).Contains("Nested.Numbers");
-        await Assert.That(exception.Message).Contains("List");
+        await Assert.That(exception.Message).Contains("Unsupported.Duration");
+        await Assert.That(exception.Message).Contains("TimeSpan");
         await Assert.That(() => ParquetSerializer.GetSchema<int>()).Throws<InvalidOperationException>();
     }
 

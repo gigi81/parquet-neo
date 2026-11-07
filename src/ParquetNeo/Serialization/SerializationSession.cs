@@ -12,9 +12,11 @@ internal sealed class SerializationSession<TRow> : IDisposable
 {
     private readonly MemoryStream _staging = new();
     private readonly ParquetFileWriter _writer;
-    private readonly IColumnBuffer<TRow>[] _buffers;
+    private readonly RowModel<TRow> _model;
+    private readonly ILeafBuffer[] _buffers;
     private readonly int _rowGroupSize;
     private int _rowsInGroup;
+    private long _totalRows;
 
     public SerializationSession(ParquetSerializerOptions? options)
     {
@@ -22,12 +24,12 @@ internal sealed class SerializationSession<TRow> : IDisposable
         ArgumentOutOfRangeException.ThrowIfLessThan(options.RowGroupSize, 1, nameof(options));
         ArgumentNullException.ThrowIfNull(options.Writer, nameof(options));
 
-        var columns = RowModel<TRow>.Columns;
+        _model = RowModel<TRow>.Get();
         _rowGroupSize = options.RowGroupSize;
-        _buffers = columns.Select(c => c.CreateBuffer(_rowGroupSize)).ToArray();
+        _buffers = _model.CreateBuffers();
 
         var writerOptions = options.Writer;
-        var encodings = columns.Where(c => c.Encoding is not null).ToDictionary(c => c.Name, c => c.Encoding!.Value);
+        var encodings = _model.Columns.Where(c => c.Encoding is not null).ToDictionary(c => c.Path, c => c.Encoding!.Value);
         if (encodings.Count > 0)
         {
             foreach (var (column, encoding) in writerOptions.ColumnEncodings ?? new Dictionary<string, ParquetEncoding>() as IReadOnlyDictionary<string, ParquetEncoding>)
@@ -38,7 +40,7 @@ internal sealed class SerializationSession<TRow> : IDisposable
             writerOptions = writerOptions with { ColumnEncodings = encodings };
         }
 
-        _writer = new ParquetFileWriter(_staging, new ParquetSchema(columns.Select(c => c.CreateNode())), writerOptions, leaveOpen: true);
+        _writer = new ParquetFileWriter(_staging, new ParquetSchema(_model.CreateSchemaNodes()), writerOptions, leaveOpen: true);
     }
 
     /// <summary>Whether the row group holds as many rows as the options ask for.</summary>
@@ -52,12 +54,17 @@ internal sealed class SerializationSession<TRow> : IDisposable
     public void Add(TRow row)
     {
         ArgumentNullException.ThrowIfNull(row, nameof(row));
-        foreach (var buffer in _buffers)
+        try
         {
-            buffer.Append(row);
+            _model.Row.ShredProperties(row, 0, 0, _buffers);
+        }
+        catch (MissingRequiredValueException exception)
+        {
+            throw new ArgumentException($"{exception.Message} (row {_totalRows})");
         }
 
         _rowsInGroup++;
+        _totalRows++;
     }
 
     /// <summary>Encodes the rows collected so far as a row group.</summary>

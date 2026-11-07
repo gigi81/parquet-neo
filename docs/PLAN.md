@@ -92,7 +92,7 @@ plus tests).
 | # | Step | Deliverable |
 |---|---|---|
 | 11 | **High-level write (flat rows)** | `ParquetSerializer.Serialize` / `SerializeAsync` (sync, `IEnumerable<T>` and `IAsyncEnumerable<T>`) writing rows as a Parquet file: a schema inferred from the public properties (primitives, `decimal`, strings, binary, `Guid`, date and time types, `Nullable<T>` and nullable reference types), attributes to rename, order, ignore, and set decimal precision, time units and encodings, and rows batched into row groups that are encoded and written as they fill. |
-| 11b | **High-level write (nested)** | Nested objects, collections (`List<T>`, arrays), dictionaries and enums as properties, written as structs, lists and maps through the nested layer. |
+| 11b | **High-level write (nested)** | Nested objects, collections (arrays, `List<T>`, any `IEnumerable<T>`), dictionaries and enums as properties, written as groups, LISTs and MAPs through the Dremel levels; nullability from nullable reference types at every level; attributes reaching the elements, keys and values. |
 | 12 | **High-level read** | `DeserializeAsync<T>` and streaming `IAsyncEnumerable<T>` per row group; column projection driven by the DTO; clear errors for missing/mismatched columns. |
 
 ### Milestone 5 – Performance, extras, release
