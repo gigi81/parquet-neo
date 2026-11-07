@@ -36,6 +36,18 @@ public sealed record ParquetWriterOptions
     /// </summary>
     public int DictionaryPageSizeLimit { get; init; } = 1024 * 1024;
 
+    /// <summary>
+    /// Whether the minimum, maximum and null count of every column chunk are recorded in the footer, which lets readers
+    /// skip data that cannot match a filter. Costs a pass over the values. Defaults to <c>true</c>.
+    /// </summary>
+    public bool StatisticsEnabled { get; init; } = true;
+
+    /// <summary>
+    /// The longest minimum or maximum, in bytes, kept for string and binary columns. Longer ones are shortened to a
+    /// bound (a prefix for a minimum, an increased prefix for a maximum) and marked as not exact. Defaults to 64.
+    /// </summary>
+    public int StatisticsTruncateLength { get; init; } = 64;
+
     /// <summary>Free-form key/value pairs stored in the file footer.</summary>
     public IReadOnlyDictionary<string, string>? KeyValueMetadata { get; init; }
 

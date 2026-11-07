@@ -52,14 +52,14 @@ def table(rows, optional):
     return pa.table(arrays, schema=schema)
 
 
-def write(name, rows, optional, page_version, compression="none", dictionary=False, **options):
+def write(name, rows, optional, page_version, compression="none", dictionary=False, statistics=False, **options):
     pq.write_table(
         table(rows, optional),
         OUT / f"{name}.parquet",
         compression=compression,
         use_dictionary=dictionary,
         data_page_version=page_version,
-        write_statistics=False,
+        write_statistics=statistics,
         store_schema=False,
         **options,
     )
@@ -82,3 +82,6 @@ write("pyarrow-flat-required-dict-fallback", 3000, False, "1.0", dictionary=True
 # Format version 1.0 writers (and the Parquet 1.x era in general) use the deprecated PLAIN_DICTIONARY for dictionary
 # pages and for the data pages that use them.
 write("pyarrow-flat-optional-dict-legacy", 1000, True, "1.0", dictionary=True, version="1.0")
+# With statistics, over several row groups (400 rows each; the last one has 200).
+write("pyarrow-flat-optional-stats", 1000, True, "1.0", statistics=True, row_group_size=400)
+write("pyarrow-flat-required-stats-dict", 1000, False, "2.0", dictionary=True, statistics=True, row_group_size=400)
