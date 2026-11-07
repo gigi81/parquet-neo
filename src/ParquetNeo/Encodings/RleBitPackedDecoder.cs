@@ -41,7 +41,7 @@ internal ref struct RleBitPackedDecoder
 
     /// <summary>Decodes up to <paramref name="destination"/>.Length values; returns fewer only when the data ends.</summary>
     /// <exception cref="ParquetFormatException">A run header or repeated value is truncated or malformed.</exception>
-    public int ReadValues(Span<int> destination)
+    public int ReadValues(scoped Span<int> destination)
     {
         var output = MemoryMarshal.Cast<int, uint>(destination);
         int written = 0;
@@ -122,7 +122,7 @@ internal ref struct RleBitPackedDecoder
     }
 
     /// <summary>Reads <paramref name="destination"/>.Length values of the current bit-packed run.</summary>
-    private void ReadPacked(Span<uint> destination)
+    private void ReadPacked(scoped Span<uint> destination)
     {
         int done = 0;
 
