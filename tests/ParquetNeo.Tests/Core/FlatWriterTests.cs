@@ -50,7 +50,7 @@ public class FlatWriterTests
 
         for (int column = 0; column < SampleFile.ColumnNames.Length; column++)
         {
-            await Assert.That(file.Pages(0, column).Count).IsEqualTo(1).Because(SampleFile.ColumnNames[column]);
+            await Assert.That(file.DataPages(0, column).Count).IsEqualTo(1).Because(SampleFile.ColumnNames[column]);
         }
     }
 
@@ -61,7 +61,7 @@ public class FlatWriterTests
         var file = TestParquetFile.Parse(bytes);
 
         // Column 1 is a required INT64: 8 bytes per value, so 512 values fill a 4096-byte page.
-        var pages = file.Pages(0, 1);
+        var pages = file.DataPages(0, 1);
 
         await Assert.That(pages.Take(pages.Count - 1).All(p => p.Header.DataPageHeader!.NumValues == 512)).IsTrue();
         await Assert.That(pages.Count).IsEqualTo((20_000 + 511) / 512);

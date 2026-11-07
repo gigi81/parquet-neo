@@ -46,13 +46,16 @@ internal sealed class TestParquetFile
 
     public ColumnMetaData Chunk(int rowGroup, int column) => Metadata.RowGroups[rowGroup].Columns[column].MetaData!;
 
+    /// <summary>A chunk starts with its dictionary page when it has one.</summary>
+    public static long FirstPageOffset(ColumnMetaData chunk) => chunk.DictionaryPageOffset ?? chunk.DataPageOffset;
+
     /// <summary>The pages of a column chunk, found by walking the headers from the chunk's first page.</summary>
     public List<PageInfo> Pages(int rowGroup, int column)
     {
         var chunk = Chunk(rowGroup, column);
         var pages = new List<PageInfo>();
-        long position = chunk.DataPageOffset;
-        long end = chunk.DataPageOffset + chunk.TotalCompressedSize;
+        long position = FirstPageOffset(chunk);
+        long end = position + chunk.TotalCompressedSize;
         while (position < end)
         {
             var header = PageHeader.Deserialize(Bytes.AsSpan((int)position), out int headerLength);
@@ -68,12 +71,17 @@ internal sealed class TestParquetFile
         return pages;
     }
 
+    /// <summary>The data pages of a column chunk (all pages except the dictionary page).</summary>
+    public List<PageInfo> DataPages(int rowGroup, int column) =>
+        Pages(rowGroup, column).Where(p => p.Header.Type != PageType.DictionaryPage).ToList();
+
     /// <summary>Decodes a whole column chunk; null entries are nulls. Values are int, long, float, double, bool or byte[].</summary>
     public object?[] ReadColumn(int rowGroup, int column)
     {
         var node = Schema.Columns[column];
         var codec = Registry.Get(Chunk(rowGroup, column).Codec);
         var result = new List<object?>();
+        object[]? dictionary = null;
 
         foreach (var page in Pages(rowGroup, column))
         {
@@ -81,6 +89,12 @@ internal sealed class TestParquetFile
             var compressed = Bytes.AsSpan((int)page.Offset + page.HeaderLength, header.CompressedPageSize);
             var data = new byte[header.UncompressedPageSize];
             codec.Decompress(compressed, data);
+
+            if (header.Type == PageType.DictionaryPage)
+            {
+                dictionary = DecodeValues(node, data, header.DictionaryPageHeader!.NumValues);
+                continue;
+            }
 
             int rows = header.DataPageHeader!.NumValues;
             int position = 0;
@@ -99,7 +113,9 @@ internal sealed class TestParquetFile
             }
 
             int present = levels.Count(l => l == node.MaxDefinitionLevel);
-            var values = DecodeValues(node, data.AsSpan(position), present);
+            var values = header.DataPageHeader.Encoding == ParquetEncoding.RleDictionary
+                ? DecodeIndexed(dictionary ?? throw new InvalidDataException("A dictionary-encoded page without a dictionary page."), data.AsSpan(position), present)
+                : DecodeValues(node, data.AsSpan(position), present);
             int next = 0;
             foreach (int level in levels)
             {
@@ -147,22 +163,64 @@ internal sealed class TestParquetFile
             {
                 var chunk = group.Columns[c].MetaData!;
                 Require(group.Columns[c].FileOffset == 0, "ColumnChunk.file_offset is deprecated and must be 0");
-                Require(chunk.DataPageOffset == position, $"chunk {g}/{c} starts at {chunk.DataPageOffset}, expected {position}");
+                Require(FirstPageOffset(chunk) == position, $"chunk {g}/{c} starts at {FirstPageOffset(chunk)}, expected {position}");
                 Require(chunk.PathInSchema.SequenceEqual(Schema.Columns[c].Path), $"chunk {g}/{c} path");
                 Require(chunk.Type == Schema.Columns[c].Type, $"chunk {g}/{c} type");
-                Require(chunk.DictionaryPageOffset is null, "no dictionary pages are written yet");
 
                 var pages = Pages(g, c);
                 Require(pages.Count > 0, $"chunk {g}/{c} has no pages");
+                bool hasDictionary = chunk.DictionaryPageOffset is not null;
+                Require(hasDictionary == (pages[0].Header.Type == PageType.DictionaryPage), $"chunk {g}/{c}: the dictionary page is first exactly when dictionary_page_offset is set");
+                if (hasDictionary)
+                {
+                    Require(chunk.DictionaryPageOffset == position, $"chunk {g}/{c}: dictionary page offset");
+                    Require(chunk.DataPageOffset == position + pages[0].HeaderLength + pages[0].Header.CompressedPageSize, $"chunk {g}/{c}: data_page_offset is the first data page");
+                    Require(pages[0].Header.DictionaryPageHeader!.Encoding == ParquetEncoding.Plain, "the dictionary is PLAIN");
+                }
+                else
+                {
+                    Require(chunk.DataPageOffset == position, $"chunk {g}/{c}: data_page_offset");
+                }
+
                 long values = 0, chunkUncompressed = 0, chunkCompressed = 0;
+                int dictionaryPages = 0, dictionaryDataPages = 0, plainDataPages = 0;
+                bool seenPlain = false;
                 foreach (var page in pages)
                 {
-                    Require(page.Header.Type == PageType.DataPage, "only data page v1 is written");
-                    Require(page.Header.DataPageHeader!.Encoding == ParquetEncoding.Plain, "values are PLAIN");
-                    values += page.Header.DataPageHeader.NumValues;
+                    if (page.Header.Type == PageType.DictionaryPage)
+                    {
+                        dictionaryPages++;
+                    }
+                    else
+                    {
+                        Require(page.Header.Type == PageType.DataPage, "only data page v1 is written");
+                        var encoding = page.Header.DataPageHeader!.Encoding;
+                        Require(encoding is ParquetEncoding.Plain or ParquetEncoding.RleDictionary, $"unexpected value encoding {encoding}");
+                        if (encoding == ParquetEncoding.Plain)
+                        {
+                            plainDataPages++;
+                            seenPlain = true;
+                        }
+                        else
+                        {
+                            Require(hasDictionary && !seenPlain, "dictionary-encoded pages come first, and only in a chunk with a dictionary");
+                            dictionaryDataPages++;
+                        }
+
+                        values += page.Header.DataPageHeader.NumValues;
+                    }
+
                     chunkUncompressed += page.HeaderLength + page.Header.UncompressedPageSize;
                     chunkCompressed += page.HeaderLength + page.Header.CompressedPageSize;
                 }
+
+                Require(dictionaryPages == (hasDictionary ? 1 : 0), "at most one dictionary page");
+                Require(chunk.EncodingStats is not null, "encoding_stats are written");
+                Require(StatsCount(chunk, PageType.DictionaryPage, ParquetEncoding.Plain) == dictionaryPages, "encoding_stats for the dictionary page");
+                Require(StatsCount(chunk, PageType.DataPage, ParquetEncoding.RleDictionary) == dictionaryDataPages, "encoding_stats for dictionary-encoded pages");
+                Require(StatsCount(chunk, PageType.DataPage, ParquetEncoding.Plain) == plainDataPages, "encoding_stats for plain pages");
+                Require(chunk.Encodings.Contains(ParquetEncoding.RleDictionary) == dictionaryDataPages > 0, "encodings lists RLE_DICTIONARY exactly when it is used");
+                Require(chunk.Encodings.Contains(ParquetEncoding.Plain), "PLAIN is always listed (the dictionary page or plain pages use it)");
 
                 Require(values == chunk.NumValues && values == group.NumRows, $"chunk {g}/{c} holds {values} values, expected {group.NumRows}");
                 Require(chunkUncompressed == chunk.TotalUncompressedSize, $"chunk {g}/{c} uncompressed size");
@@ -180,6 +238,21 @@ internal sealed class TestParquetFile
         Require(position == FooterStart, $"column data ends at {position} but the footer starts at {FooterStart}");
         Require(Metadata.NumRows == rows, "file num_rows");
         Require(Metadata.ColumnOrders!.Count == Schema.Columns.Count, "one column order per column");
+    }
+
+    private static int StatsCount(ColumnMetaData chunk, PageType type, ParquetEncoding encoding) =>
+        chunk.EncodingStats!.Where(s => s.PageType == type && s.Encoding == encoding).Sum(s => s.Count);
+
+    /// <summary>Decodes a dictionary-encoded page body: a bit-width byte, then RLE/bit-packed indexes.</summary>
+    private static object[] DecodeIndexed(object[] dictionary, ReadOnlySpan<byte> data, int count)
+    {
+        var indexes = new int[count];
+        if (count > 0 && new RleBitPackedDecoder(data[1..], data[0]).ReadValues(indexes) != count)
+        {
+            throw new InvalidDataException("Fewer dictionary indexes than values.");
+        }
+
+        return indexes.Select(i => dictionary[i]).ToArray();
     }
 
     private static object[] DecodeValues(PrimitiveNode node, ReadOnlySpan<byte> data, int count)

@@ -1,7 +1,9 @@
 using System.Buffers;
 using System.Buffers.Binary;
 using ParquetNeo.Core;
+using ParquetNeo.Compression;
 using ParquetNeo.Metadata;
+using ParquetNeo.Schema;
 
 namespace ParquetNeo.Tests.Core;
 
@@ -106,14 +108,24 @@ public class ReaderRobustnessTests
 
     // ---- metadata that contradicts the file ----
 
+    /// <summary>Points the chunk at <paramref name="offset"/>, whether it starts with a dictionary page or a data page.</summary>
+    private static void MoveChunk(ColumnMetaData chunk, long offset)
+    {
+        chunk.DataPageOffset = offset;
+        if (chunk.DictionaryPageOffset is not null)
+        {
+            chunk.DictionaryPageOffset = offset;
+        }
+    }
+
     [Test]
     public async Task ColumnChunksOutsideTheFile_AreRejectedWhenTheColumnIsOpened()
     {
         foreach (var edit in new (string Name, Action<ColumnMetaData> Change)[]
         {
-            ("page offset past the end", m => m.DataPageOffset = 1_000_000_000),
-            ("page offset before the magic", m => m.DataPageOffset = 1),
-            ("negative page offset", m => m.DataPageOffset = -5),
+            ("page offset past the end", m => MoveChunk(m, 1_000_000_000)),
+            ("page offset before the magic", m => MoveChunk(m, 1)),
+            ("negative page offset", m => MoveChunk(m, -5)),
             ("size past the end", m => m.TotalCompressedSize = 1_000_000_000),
             ("negative size", m => m.TotalCompressedSize = -1),
             ("negative value count", m => m.NumValues = -1),
@@ -189,7 +201,7 @@ public class ReaderRobustnessTests
     {
         var bytes = ValidFile();
         var file = TestParquetFile.Parse(bytes);
-        long pageStart = file.Chunk(0, 0).DataPageOffset;
+        long pageStart = TestParquetFile.FirstPageOffset(file.Chunk(0, 0));
         for (int i = 0; i < 12; i++)
         {
             bytes[pageStart + i] = 0xFF;
@@ -236,6 +248,286 @@ public class ReaderRobustnessTests
         }
     }
 
+    // ---- damaged dictionaries ----
+
+    /// <summary>A required INT32 column of 300 values with 3 distinct ones: one dictionary page, one dictionary-encoded data page.</summary>
+    private static byte[] ThreeValueDictionaryFile(CompressionCodec codec = CompressionCodec.Uncompressed)
+    {
+        var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.Int32, FieldRepetitionType.Required)]);
+        var stream = new MemoryStream();
+        using (var writer = new ParquetFileWriter(stream, schema, new ParquetWriterOptions { Compression = codec, Codecs = TestParquetFile.Registry }, leaveOpen: true))
+        using (var group = writer.AppendRowGroup())
+        {
+            group.NextColumn().WriteBatch(Enumerable.Range(0, 300).Select(i => i % 3).ToArray());
+        }
+
+        return stream.ToArray();
+    }
+
+    /// <summary>
+    /// Replaces the header of page <paramref name="pageIndex"/> of the only column chunk, which may change its length;
+    /// the chunk's sizes and the footer are updated to match.
+    /// </summary>
+    private static byte[] PatchPageHeader(byte[] original, int pageIndex, Action<PageHeader> change)
+    {
+        var file = TestParquetFile.Parse(original);
+        var page = file.Pages(0, 0)[pageIndex];
+        var header = PageHeader.Deserialize(original.AsSpan((int)page.Offset), out _);
+        change(header);
+        var buffer = new ArrayBufferWriter<byte>();
+        header.Serialize(buffer);
+        int delta = buffer.WrittenCount - page.HeaderLength;
+
+        var body = new List<byte>(original.AsSpan(0, (int)page.Offset).ToArray());
+        body.AddRange(buffer.WrittenSpan.ToArray());
+        body.AddRange(original.AsSpan((int)page.Offset + page.HeaderLength, (int)file.FooterStart - (int)page.Offset - page.HeaderLength).ToArray());
+        bool dictionaryFirst = file.Chunk(0, 0).DictionaryPageOffset is not null;
+
+        return Rewrite(body.Concat(original[(int)file.FooterStart..]).ToArray(), f =>
+        {
+            var group = f.RowGroups[0];
+            var chunk = group.Columns[0].MetaData!;
+            chunk.TotalCompressedSize += delta;
+            chunk.TotalUncompressedSize += delta;
+            group.TotalByteSize += delta;
+            group.TotalCompressedSize += delta;
+            if (dictionaryFirst && pageIndex == 0)
+            {
+                chunk.DataPageOffset += delta;
+            }
+        }, body.Count);
+    }
+
+    private static Exception? ReadAll(byte[] bytes)
+    {
+        try
+        {
+            using var reader = ReadHelper.Open(bytes);
+            ReadHelper.ReadColumn(reader, 0, 0, 100);
+            return null;
+        }
+        catch (Exception exception)
+        {
+            return exception;
+        }
+    }
+
+    [Test]
+    public async Task TheUndamagedDictionaryFile_Reads()
+    {
+        await Assert.That(ReadAll(ThreeValueDictionaryFile())).IsNull();
+        await Assert.That(ReadAll(ThreeValueDictionaryFile(CompressionCodec.Gzip))).IsNull();
+    }
+
+    [Test]
+    public async Task IndexesPastTheEndOfTheDictionary_AreReported()
+    {
+        // Claim the dictionary has 2 entries while the pages index 3.
+        var bytes = PatchPageHeader(ThreeValueDictionaryFile(), 0, h => h.DictionaryPageHeader!.NumValues = 2);
+
+        var exception = ReadAll(bytes);
+
+        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+        await Assert.That(exception!.Message).Contains("dictionary");
+    }
+
+    [Test]
+    public async Task ADictionaryLargerThanItsPage_IsReported()
+    {
+        var bytes = PatchPageHeader(ThreeValueDictionaryFile(), 0, h => h.DictionaryPageHeader!.NumValues = 9);
+
+        await Assert.That(ReadAll(bytes)).IsTypeOf<ParquetFormatException>();
+    }
+
+    [Test]
+    public async Task ANegativeOrHugeDictionaryCount_IsReported()
+    {
+        foreach (int count in new[] { -1, 63, 100_000_000, int.MaxValue })
+        {
+            var bytes = PatchPageHeader(ThreeValueDictionaryFile(), 0, h => h.DictionaryPageHeader!.NumValues = count);
+
+            await Assert.That(ReadAll(bytes)).IsTypeOf<ParquetFormatException>().Because($"count {count}");
+        }
+    }
+
+    [Test]
+    public async Task ADictionaryCountThatTheBytesCannotHold_IsRejectedBeforeAnythingIsAllocated()
+    {
+        var strings = StringDictionaryFile();
+        foreach (var original in new[] { ThreeValueDictionaryFile(), strings })
+        {
+            var bytes = PatchPageHeader(original, 0, h => h.DictionaryPageHeader!.NumValues = 10_000_000);
+            _ = ReadAll(bytes); // warm up, so one-time initialization is not counted
+
+            long before = GC.GetAllocatedBytesForCurrentThread();
+            var exception = ReadAll(bytes);
+            long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+
+            // "does not fit" comes from the size check; without it the failure would only surface after allocating the lot.
+            await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+            await Assert.That(exception!.Message).Contains("does not fit");
+            await Assert.That(allocated).IsLessThan(2_000_000);
+        }
+    }
+
+    /// <summary>A required BYTE_ARRAY column of 300 values with 3 distinct strings.</summary>
+    private static byte[] StringDictionaryFile()
+    {
+        var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.ByteArray, FieldRepetitionType.Required, LogicalType.String)]);
+        var stream = new MemoryStream();
+        using (var writer = new ParquetFileWriter(stream, schema, leaveOpen: true))
+        using (var group = writer.AppendRowGroup())
+        {
+            group.NextColumn().WriteStrings(Enumerable.Range(0, 300).Select(i => "value" + i % 3).ToArray());
+        }
+
+        return stream.ToArray();
+    }
+
+    [Test]
+    public async Task ADictionaryPageAfterADataPage_IsReported()
+    {
+        // A plain file whose second page claims to be a dictionary page.
+        var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.Int32, FieldRepetitionType.Required)]);
+        var stream = new MemoryStream();
+        using (var writer = new ParquetFileWriter(stream, schema, new ParquetWriterOptions { DictionaryEnabled = false, DataPageSize = 400 }, leaveOpen: true))
+        using (var group = writer.AppendRowGroup())
+        {
+            group.NextColumn().WriteBatch(Enumerable.Range(0, 300).ToArray());
+        }
+
+        var bytes = PatchPageHeader(stream.ToArray(), 1, h =>
+        {
+            int count = h.DataPageHeader!.NumValues;
+            h.Type = PageType.DictionaryPage;
+            h.DataPageHeader = null;
+            h.DictionaryPageHeader = new DictionaryPageHeader { NumValues = count, Encoding = ParquetEncoding.Plain };
+        });
+
+        var exception = ReadAll(bytes);
+
+        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+        await Assert.That(exception!.Message).Contains("after a data page");
+    }
+
+    [Test]
+    public async Task APageThatUsesADictionaryWithoutOne_IsReported()
+    {
+        // Turn the dictionary page into an index page, which readers skip.
+        var bytes = PatchPageHeader(ThreeValueDictionaryFile(), 0, h =>
+        {
+            h.Type = PageType.IndexPage;
+        });
+
+        var exception = ReadAll(bytes);
+
+        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+        await Assert.That(exception!.Message).Contains("no dictionary page");
+    }
+
+    [Test]
+    public async Task ADictionaryEncodingOtherThanPlain_IsReportedAsUnsupported()
+    {
+        var bytes = PatchPageHeader(ThreeValueDictionaryFile(), 0, h => h.DictionaryPageHeader!.Encoding = ParquetEncoding.DeltaBinaryPacked);
+
+        await Assert.That(ReadAll(bytes)).IsTypeOf<NotSupportedException>();
+    }
+
+    [Test]
+    public async Task ADictionaryEncodedPageWithoutADictionaryPage_IsReported()
+    {
+        // The dictionary page's bytes are cut out of the file and the metadata updated to match.
+        var original = ThreeValueDictionaryFile();
+        var file = TestParquetFile.Parse(original);
+        var pages = file.Pages(0, 0);
+        int dictionaryBytes = pages[0].HeaderLength + pages[0].Header.CompressedPageSize;
+        var withoutDictionary = original.AsSpan(0, (int)pages[0].Offset).ToArray()
+            .Concat(original.AsSpan((int)pages[1].Offset, (int)file.FooterStart - (int)pages[1].Offset).ToArray()).ToArray();
+        var rebuilt = Rewrite(withoutDictionary.Concat(original[(int)file.FooterStart..]).ToArray(), f =>
+        {
+            var chunk = f.RowGroups[0].Columns[0].MetaData!;
+            chunk.DictionaryPageOffset = null;
+            chunk.DataPageOffset = pages[0].Offset;
+            chunk.TotalCompressedSize -= dictionaryBytes;
+            chunk.TotalUncompressedSize -= dictionaryBytes;
+            f.RowGroups[0].TotalByteSize -= dictionaryBytes;
+            f.RowGroups[0].TotalCompressedSize -= dictionaryBytes;
+        }, withoutDictionary.Length);
+
+        var exception = ReadAll(rebuilt);
+
+        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+        await Assert.That(exception!.Message).Contains("no dictionary page");
+    }
+
+    [Test]
+    public async Task ASecondDictionaryPage_IsReported()
+    {
+        var original = ThreeValueDictionaryFile();
+        var pages = TestParquetFile.Parse(original).Pages(0, 0);
+        int dictionaryLength = pages[0].HeaderLength + pages[0].Header.CompressedPageSize;
+        int footerStart = (int)TestParquetFile.Parse(original).FooterStart;
+
+        // Insert a copy of the dictionary page right after the original; the chunk grows by one page.
+        var body = new List<byte>(original.AsSpan(0, footerStart).ToArray());
+        body.InsertRange((int)pages[0].Offset + dictionaryLength, original.AsSpan((int)pages[0].Offset, dictionaryLength).ToArray());
+        var spliced = Rewrite(body.Concat(original[footerStart..]).ToArray(), f =>
+        {
+            var chunk = f.RowGroups[0].Columns[0].MetaData!;
+            chunk.DataPageOffset += dictionaryLength;
+            chunk.TotalCompressedSize += dictionaryLength;
+            chunk.TotalUncompressedSize += dictionaryLength;
+        }, footerStart + dictionaryLength);
+
+        var exception = ReadAll(spliced);
+
+        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+        await Assert.That(exception!.Message).Contains("more than one dictionary page");
+    }
+
+    [Test]
+    public async Task ABitWidthAbove32_IsReported()
+    {
+        var bytes = ThreeValueDictionaryFile();
+        var page = TestParquetFile.Parse(bytes).Pages(0, 0)[1];
+        bytes[page.Offset + page.HeaderLength] = 33;
+
+        var exception = ReadAll(bytes);
+
+        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+        await Assert.That(exception!.Message).Contains("bit width");
+    }
+
+    [Test]
+    public async Task ADictionaryEncodedBooleanColumn_IsReported()
+    {
+        var schema = new ParquetSchema([new PrimitiveNode("b", PhysicalType.Boolean, FieldRepetitionType.Required)]);
+        var stream = new MemoryStream();
+        using (var writer = new ParquetFileWriter(stream, schema, leaveOpen: true))
+        using (var group = writer.AppendRowGroup())
+        {
+            group.NextColumn().WriteBatch(new bool[40]);
+        }
+
+        var bytes = PatchPageHeader(stream.ToArray(), 0, h => h.DataPageHeader!.Encoding = ParquetEncoding.RleDictionary);
+
+        var exception = ReadAll(bytes);
+
+        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+        await Assert.That(exception!.Message).Contains("boolean");
+    }
+
+    [Test]
+    public async Task MoreValuesThanIndexes_AreReported()
+    {
+        // The page header promises 400 values; its index data only holds 300 (rounded up to 304 by bit packing).
+        var bytes = PatchPageHeader(ThreeValueDictionaryFile(), 1, h => h.DataPageHeader!.NumValues = 400);
+
+        var exception = ReadAll(bytes);
+
+        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+    }
+
     // ---- fuzzing ----
 
     [Test]
@@ -248,6 +540,10 @@ public class ReaderRobustnessTests
             ("snappy", SampleFile.Build(false, 300, 2, new ParquetWriterOptions { Compression = CompressionCodec.Snappy, Codecs = TestParquetFile.Registry })),
             ("pyarrow v2", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-optional-v2.parquet"))),
             ("pyarrow v1 snappy", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-optional-v1-smallpages.parquet"))),
+            ("pyarrow dictionary v1 snappy", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-optional-dict-v1-snappy-smallpages.parquet"))),
+            ("pyarrow dictionary legacy", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-optional-dict-legacy.parquet"))),
+            ("pyarrow dictionary fallback", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-required-dict-fallback.parquet"))),
+            ("our dictionary file", ThreeValueDictionaryFile()),
         };
 
         foreach (var (name, original) in files)
@@ -434,14 +730,14 @@ public class ReaderRobustnessTests
     }
 
     /// <summary>Replaces the footer of a file with a modified copy of its metadata.</summary>
-    private static byte[] Rewrite(byte[] bytes, Action<FileMetaData> change)
+    private static byte[] Rewrite(byte[] bytes, Action<FileMetaData> change, int? footerStart = null)
     {
         var file = TestParquetFile.Parse(bytes);
         change(file.Metadata);
         var footer = new ArrayBufferWriter<byte>();
         file.Metadata.Serialize(footer);
 
-        var result = new List<byte>(bytes.AsSpan(0, (int)file.FooterStart).ToArray());
+        var result = new List<byte>(bytes.AsSpan(0, footerStart ?? (int)file.FooterStart).ToArray());
         result.AddRange(footer.WrittenSpan.ToArray());
         result.AddRange(BitConverter.GetBytes(footer.WrittenCount));
         result.AddRange("PAR1"u8.ToArray());

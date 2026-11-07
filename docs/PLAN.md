@@ -73,7 +73,8 @@ plus tests).
 | 4 | **Compression** | `ICodec` abstraction; Uncompressed, Gzip (multi-member read) and Brotli built in; Snappy (Snappier), Zstd and LZ4_RAW in add-on packages. |
 | 5 | **Low-level writer (flat)** | `PAR1` magic, data page v1, required and optional flat columns, `PLAIN`, row-group builder, footer. |
 | 6 | **Low-level reader (flat)** | Footer parsing, column chunk/page iteration, read into spans. Tests: files from step 5 and external fixtures. |
-| 7 | **Dictionary encoding & statistics** | Dictionary page write/read, `RLE_DICTIONARY`, fallback to `PLAIN` when the dictionary grows too large, min/max/null-count statistics. |
+| 7 | **Dictionary encoding** | Dictionary page write/read, `RLE_DICTIONARY` (and legacy `PLAIN_DICTIONARY` on read), fallback to `PLAIN` when the dictionary grows too large. |
+| 7b | **Statistics** | Min/max/null-count statistics per column chunk (type-correct ordering, exact flags), exposed on the metadata. |
 
 ### Milestone 3 – Full format coverage
 
@@ -100,7 +101,7 @@ plus tests).
 | 16 | **Release** | README with examples, XML docs, NuGet packaging. |
 | 17 | **Preview & new types** | ALP encoding, then Variant / Variant shredding and Geospatial (GEOMETRY/GEOGRAPHY). |
 
-Steps 0–7 are the minimum for flat tables, 8 is needed for real-world files, and 11–12
+Steps 0–7b are the minimum for flat tables, 8 is needed for real-world files, and 11–12
 deliver the DTO API. Steps 13–15 may be reordered based on benchmark results.
 
 ## Testing
