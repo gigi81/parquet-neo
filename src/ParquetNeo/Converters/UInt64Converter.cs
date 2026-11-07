@@ -1,7 +1,7 @@
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Logical;
+namespace ParquetNeo.Converters;
 
 /// <summary>Reads and writes an unsigned 64-bit INTEGER column (UINT_64), stored as the signed bits of an INT64, as ulong.</summary>
 internal readonly struct UInt64Converter : IValueConverter<long, ulong, UInt64Converter>

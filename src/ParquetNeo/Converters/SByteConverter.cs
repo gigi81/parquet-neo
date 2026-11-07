@@ -1,7 +1,7 @@
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Logical;
+namespace ParquetNeo.Converters;
 
 /// <summary>Reads and writes a signed 8-bit INTEGER column (INT_8) as sbyte.</summary>
 internal readonly struct SByteConverter : IValueConverter<int, sbyte, SByteConverter>

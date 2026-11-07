@@ -1,7 +1,7 @@
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Logical;
+namespace ParquetNeo.Converters;
 
 /// <summary>The arithmetic shared by the TIMESTAMP converters: counts of milliseconds, microseconds or nanoseconds since 1970 and .NET ticks.</summary>
 internal static class TimestampTicks

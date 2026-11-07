@@ -1,7 +1,7 @@
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Logical;
+namespace ParquetNeo.Converters;
 
 /// <summary>
 /// Reads and writes a TIME column in microseconds or nanoseconds (INT64) as <see cref="TimeOnly"/>, which counts 100 ns

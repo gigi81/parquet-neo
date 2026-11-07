@@ -1,7 +1,7 @@
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Logical;
+namespace ParquetNeo.Converters;
 
 /// <summary>Reads and writes an unsigned 8-bit INTEGER column (UINT_8) as byte.</summary>
 internal readonly struct ByteConverter : IValueConverter<int, byte, ByteConverter>

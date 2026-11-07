@@ -1,7 +1,7 @@
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Logical;
+namespace ParquetNeo.Converters;
 
 /// <summary>Reads and writes a UUID column (FIXED_LEN_BYTE_ARRAY of 16 bytes in RFC 4122 order) as <see cref="Guid"/>.</summary>
 internal readonly struct GuidConverter : IFixedLengthConverter<Guid, GuidConverter>

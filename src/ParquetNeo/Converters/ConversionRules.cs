@@ -1,7 +1,7 @@
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Logical;
+namespace ParquetNeo.Converters;
 
 /// <summary>The checks the converters make of a column before they read or write it as a .NET type.</summary>
 internal static class ConversionRules

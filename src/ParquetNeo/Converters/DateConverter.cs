@@ -1,7 +1,7 @@
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Logical;
+namespace ParquetNeo.Converters;
 
 /// <summary>Reads and writes a DATE column (INT32 days since 1970-01-01) as <see cref="DateOnly"/>.</summary>
 internal readonly struct DateConverter : IValueConverter<int, DateOnly, DateConverter>

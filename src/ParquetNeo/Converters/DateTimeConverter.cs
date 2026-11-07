@@ -1,7 +1,7 @@
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Logical;
+namespace ParquetNeo.Converters;
 
 /// <summary>
 /// Reads and writes a TIMESTAMP column as <see cref="DateTime"/>. A timestamp that is adjusted to UTC reads as

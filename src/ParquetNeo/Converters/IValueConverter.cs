@@ -1,6 +1,6 @@
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Logical;
+namespace ParquetNeo.Converters;
 
 /// <summary>
 /// Converts one value at a time between the <see cref="int"/> (INT32) or <see cref="long"/> (INT64) that the column's

@@ -1,6 +1,6 @@
 using System.Buffers;
 using System.Runtime.InteropServices;
-using ParquetNeo.Logical;
+using ParquetNeo.Converters;
 using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Core;

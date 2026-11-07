@@ -1,7 +1,7 @@
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Logical;
+namespace ParquetNeo.Converters;
 
 /// <summary>Reads and writes a signed 16-bit INTEGER column (INT_16) as short.</summary>
 internal readonly struct Int16Converter : IValueConverter<int, short, Int16Converter>

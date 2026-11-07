@@ -1,7 +1,7 @@
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Logical;
+namespace ParquetNeo.Converters;
 
 /// <summary>Reads and writes a TIME column in milliseconds (INT32) as <see cref="TimeOnly"/>.</summary>
 internal readonly struct TimeMillisecondsConverter : IValueConverter<int, TimeOnly, TimeMillisecondsConverter>

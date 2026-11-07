@@ -1,6 +1,6 @@
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Logical;
+namespace ParquetNeo.Converters;
 
 /// <summary>Converts between the FIXED_LEN_BYTE_ARRAY values of a column and the .NET type its logical type stands for.</summary>
 internal interface IFixedLengthConverter<TValue, TSelf>
