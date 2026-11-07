@@ -34,7 +34,7 @@ namespace ParquetNeo.Core;
 /// <para>Values are buffered into pages of about <see cref="ParquetWriterOptions.DataPageSize"/> bytes, which are
 /// compressed and written to the stream as they fill. Instances are not thread safe.</para>
 /// </remarks>
-public sealed class ColumnWriter
+public sealed partial class ColumnWriter
 {
     /// <summary>
     /// A page also closes after this many rows. A page of nulls takes almost no bytes, so without a row limit an

@@ -522,6 +522,7 @@ public class ReaderRobustnessTests
             ("our encodings", File.ReadAllBytes(TestBytes.FixturePath("golden-encodings.parquet"))),
             ("our nested v2", File.ReadAllBytes(TestBytes.FixturePath("golden-nested-v2.parquet"))),
             ("our encodings v2", File.ReadAllBytes(TestBytes.FixturePath("golden-encodings-v2.parquet"))),
+            ("our logical types", File.ReadAllBytes(TestBytes.FixturePath("golden-logical.parquet"))),
             ("pyarrow statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-statistics-plain.parquet"))),
             ("pyarrow sample statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-optional-statistics.parquet"))),
         };

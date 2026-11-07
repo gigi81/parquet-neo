@@ -22,7 +22,7 @@ namespace ParquetNeo.Core;
 /// </para>
 /// <para>Pages are read one at a time, so memory stays bounded by the largest page. Not thread safe.</para>
 /// </remarks>
-public sealed class ColumnReader : IDisposable
+public sealed partial class ColumnReader : IDisposable
 {
     private const int HeaderPrefetch = 8 * 1024;
     private const int MaxHeaderSize = 4 * 1024 * 1024;

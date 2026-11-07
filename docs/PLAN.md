@@ -84,7 +84,8 @@ plus tests).
 | 8b | **Nested assembly** | Converting between levels and offsets/validity for structs, lists and maps (shredding and assembly), standard LIST/MAP schema builders, and recognition of the legacy LIST/MAP layouts on read. |
 | 9 | **Advanced encodings** | `DELTA_BINARY_PACKED`, `DELTA_LENGTH_BYTE_ARRAY`, `DELTA_BYTE_ARRAY`, `BYTE_STREAM_SPLIT` in the reader and writer; the writer takes them per column (`ColumnEncodings`, PLAIN by default). |
 | 9b | **Data page v2 writing** | The writer can produce data page v2 (levels uncompressed, `is_compressed`, `num_rows`/`num_nulls`), chosen by an option; the reader already reads it. |
-| 10 | **Logical types** | String, enum, JSON, UUID, date, time, timestamp, decimal, sized ints, float16, mapped to .NET types (`DateOnly`, `TimeOnly`, `DateTimeOffset`, `decimal`, `Guid`, `Half`); `ConvertedType` dual-write and fallback; unknown-type fallback; read-only INT96. |
+| 10 | **Logical types (numbers, time, identifiers)** | Typed read and write overloads on the column reader and writer: sized and unsigned integers, `DateOnly`, `TimeOnly`, `DateTime`, `DateTimeOffset`, `Guid`, `Half`; checks of the column's logical type; `ConvertedType` written alongside. |
+| 10b | **Logical types (decimal, text, INT96)** | `decimal` for DECIMAL columns of every physical type, `string` reads for STRING/ENUM/JSON, read-only INT96 timestamps, and the fallback to the physical type for unknown logical types. |
 
 ### Milestone 4 – High-level DTO API
 
