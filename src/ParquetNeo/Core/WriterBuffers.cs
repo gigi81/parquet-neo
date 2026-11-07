@@ -9,12 +9,19 @@ internal sealed class WriterBuffers
 
     public ArrayBufferWriter<int> Levels { get; } = new();
 
+    public ArrayBufferWriter<int> RepetitionLevels { get; } = new();
+
     /// <summary>Dictionary indexes of the values buffered for the current page.</summary>
     public ArrayBufferWriter<int> Indices { get; } = new();
 
     public ArrayBufferWriter<bool> Booleans { get; } = new();
 
     public ArrayBufferWriter<byte> LevelBytes { get; } = new();
+
+    public ArrayBufferWriter<byte> RepetitionBytes { get; } = new();
+
+    /// <summary>The repetition and definition level sections of a page of a repeated column, back to back.</summary>
+    public ArrayBufferWriter<byte> LevelBlock { get; } = new();
 
     public ArrayBufferWriter<byte> Header { get; } = new();
 
@@ -25,5 +32,8 @@ internal sealed class WriterBuffers
         Indices.ResetWrittenCount();
         Booleans.ResetWrittenCount();
         LevelBytes.ResetWrittenCount();
+        RepetitionLevels.ResetWrittenCount();
+        RepetitionBytes.ResetWrittenCount();
+        LevelBlock.ResetWrittenCount();
     }
 }

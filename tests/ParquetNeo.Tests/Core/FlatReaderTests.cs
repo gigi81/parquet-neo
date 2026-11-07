@@ -103,7 +103,7 @@ public class FlatReaderTests
 
         await Assert.That(byName.Column.Name).IsEqualTo("i64");
         await Assert.That(byIndex.Column).IsSameReferenceAs(byName.Column);
-        await Assert.That(byName.RowCount).IsEqualTo(20L);
+        await Assert.That(byName.EntryCount).IsEqualTo(20L);
         await Assert.That(() => group.OpenColumn("missing")).Throws<ArgumentException>();
         await Assert.That(() => group.OpenColumn(13)).Throws<ArgumentOutOfRangeException>();
         await Assert.That(() => group.OpenColumn(-1)).Throws<ArgumentOutOfRangeException>();
@@ -124,7 +124,7 @@ public class FlatReaderTests
         await Assert.That(first).IsEqualTo(new BatchRead(10, 10));
         await Assert.That(second).IsEqualTo(new BatchRead(0, 0));
         await Assert.That(third).IsEqualTo(new BatchRead(0, 0));
-        await Assert.That(column.RowsRead).IsEqualTo(10L);
+        await Assert.That(column.EntriesRead).IsEqualTo(10L);
     }
 
     [Test]
@@ -136,9 +136,9 @@ public class FlatReaderTests
 
         var batches = new List<int[]>();
         BatchRead read;
-        while ((read = column.ReadBatch(values)).Rows > 0)
+        while ((read = column.ReadBatch(values)).Entries > 0)
         {
-            batches.Add(values[..read.Rows]);
+            batches.Add(values[..read.Entries]);
         }
 
         await Assert.That(batches.Select(b => b.Length)).IsEquivalentTo(new[] { 10, 10, 5 });
@@ -170,7 +170,7 @@ public class FlatReaderTests
         var read = column.ReadByteArrays(views);
         var decoded = views.Select(v => System.Text.Encoding.UTF8.GetString(v.Span)).ToArray();
 
-        await Assert.That(read.Rows).IsEqualTo(10);
+        await Assert.That(read.Entries).IsEqualTo(10);
         await Assert.That(decoded).IsEquivalentTo(Enumerable.Range(0, 10).Select(i => new string('é', i % 4) + i));
     }
 
@@ -228,7 +228,7 @@ public class FlatReaderTests
             while (done < rows)
             {
                 var read = idColumn.ReadBatch(readIds.AsSpan(done, Math.Min(8192, rows - done)));
-                done += read.Rows;
+                done += read.Entries;
             }
         }
 
@@ -241,7 +241,7 @@ public class FlatReaderTests
                 var scratch = new double[batch];
                 var read = valueColumn.ReadBatch(scratch, readLevels.AsSpan(rowsDone, batch));
                 scratch.AsSpan(0, read.Values).CopyTo(readValues.AsSpan(valuesDone));
-                rowsDone += read.Rows;
+                rowsDone += read.Entries;
                 valuesDone += read.Values;
             }
         }
@@ -271,10 +271,10 @@ public class FlatReaderTests
         var values = new int[100_000];
         long total = 0;
         BatchRead read;
-        while ((read = column.ReadBatch(values, levels)).Rows > 0)
+        while ((read = column.ReadBatch(values, levels)).Entries > 0)
         {
-            total += read.Rows;
-            if (read.Values != 0 || levels.AsSpan(0, read.Rows).IndexOfAnyExcept(0) >= 0)
+            total += read.Entries;
+            if (read.Values != 0 || levels.AsSpan(0, read.Entries).IndexOfAnyExcept(0) >= 0)
             {
                 throw new InvalidOperationException("Expected only nulls.");
             }

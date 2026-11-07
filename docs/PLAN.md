@@ -80,7 +80,8 @@ plus tests).
 
 | # | Step | Deliverable |
 |---|---|---|
-| 8 | **Nested data** | Repetition levels; Dremel shredding and assembly for structs, lists, maps at the low-level API (including legacy LIST/MAP layouts on read). |
+| 8 | **Nested columns** | Repetition levels in the low-level reader and writer: nested schemas, leaf columns written and read with definition and repetition levels, pages that never split a row, row and entry counts. |
+| 8b | **Nested assembly** | Converting between levels and offsets/validity for structs, lists and maps (shredding and assembly), standard LIST/MAP schema builders, and recognition of the legacy LIST/MAP layouts on read. |
 | 9 | **Advanced encodings** | `DELTA_BINARY_PACKED`, `DELTA_LENGTH_BYTE_ARRAY`, `DELTA_BYTE_ARRAY`, `BYTE_STREAM_SPLIT`, data page v2. |
 | 10 | **Logical types** | String, enum, JSON, UUID, date, time, timestamp, decimal, sized ints, float16, mapped to .NET types (`DateOnly`, `TimeOnly`, `DateTimeOffset`, `decimal`, `Guid`, `Half`); `ConvertedType` dual-write and fallback; unknown-type fallback; read-only INT96. |
 
@@ -101,7 +102,7 @@ plus tests).
 | 16 | **Release** | README with examples, XML docs, NuGet packaging. |
 | 17 | **Preview & new types** | ALP encoding, then Variant / Variant shredding and Geospatial (GEOMETRY/GEOGRAPHY). |
 
-Steps 0–7b are the minimum for flat tables, 8 is needed for real-world files, and 11–12
+Steps 0–7b are the minimum for flat tables, 8 and 8b are needed for real-world files, and 11–12
 deliver the DTO API. Steps 13–15 may be reordered based on benchmark results.
 
 ## Testing

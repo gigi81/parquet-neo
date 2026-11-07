@@ -6,8 +6,8 @@ using ParquetNeo.Schema;
 namespace ParquetNeo.Core;
 
 /// <summary>
-/// Reads a Parquet file with flat (non-nested) columns, one row group and one column at a time. The stream must
-/// be readable and seekable, because the metadata sits at the end of the file.
+/// Reads a Parquet file one row group and one leaf column at a time, with the definition and repetition levels of
+/// nested columns. The stream must be readable and seekable, because the metadata sits at the end of the file.
 /// </summary>
 /// <example>
 /// <code>
@@ -15,7 +15,7 @@ namespace ParquetNeo.Core;
 /// using var column = reader.OpenRowGroup(0).OpenColumn(0);
 /// var values = new long[1000];
 /// BatchRead read;
-/// while ((read = column.ReadBatch(values)).Rows > 0) { /* use values[..read.Rows] */ }
+/// while ((read = column.ReadBatch(values)).Entries > 0) { /* use values[..read.Entries] */ }
 /// </code>
 /// Nothing here is thread safe: readers opened from one file share its stream.
 /// </example>

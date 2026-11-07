@@ -41,13 +41,13 @@ internal static class ReadHelper
                 _ => throw new NotSupportedException(column.Column.Type.ToString()),
             };
 
-            if (read.Rows == 0)
+            if (read.Entries == 0)
             {
                 return result.ToArray();
             }
 
             int next = 0;
-            for (int row = 0; row < read.Rows; row++)
+            for (int row = 0; row < read.Entries; row++)
             {
                 if (optional && levels[row] != column.Column.MaxDefinitionLevel)
                 {
@@ -71,6 +71,70 @@ internal static class ReadHelper
             if (next != read.Values)
             {
                 throw new InvalidOperationException($"Read {read.Values} values but the levels mark {next} rows as non-null.");
+            }
+        }
+    }
+
+    /// <summary>Reads a whole column chunk with its levels: the definition and repetition level of every entry and the non-null values (byte arrays as <c>byte[]</c>).</summary>
+    public static (int[] Definition, int[] Repetition, object[] Values) ReadEntries(ParquetFileReader reader, int rowGroup, int column, int batchSize)
+    {
+        using var columnReader = reader.OpenRowGroup(rowGroup).OpenColumn(column);
+        var node = columnReader.Column;
+        var definition = new List<int>();
+        var repetition = new List<int>();
+        var values = new List<object>();
+        var definitionBuffer = node.MaxDefinitionLevel > 0 ? new int[batchSize] : [];
+        var repetitionBuffer = node.MaxRepetitionLevel > 0 ? new int[batchSize] : [];
+        var ints = new int[batchSize];
+        var longs = new long[batchSize];
+        var floats = new float[batchSize];
+        var doubles = new double[batchSize];
+        var bools = new bool[batchSize];
+        var arrays = new ReadOnlyMemory<byte>[batchSize];
+        int fixedLength = node.TypeLength ?? 1;
+        var fixedBytes = new byte[batchSize * fixedLength];
+
+        while (true)
+        {
+            BatchRead read = node.Type switch
+            {
+                PhysicalType.Int32 => columnReader.ReadBatch(ints, definitionBuffer, repetitionBuffer),
+                PhysicalType.Int64 => columnReader.ReadBatch(longs, definitionBuffer, repetitionBuffer),
+                PhysicalType.Float => columnReader.ReadBatch(floats, definitionBuffer, repetitionBuffer),
+                PhysicalType.Double => columnReader.ReadBatch(doubles, definitionBuffer, repetitionBuffer),
+                PhysicalType.Boolean => columnReader.ReadBatch(bools, definitionBuffer, repetitionBuffer),
+                PhysicalType.ByteArray => columnReader.ReadByteArrays(arrays, definitionBuffer, repetitionBuffer),
+                PhysicalType.FixedLenByteArray => columnReader.ReadFixedLengthByteArrays(fixedBytes, definitionBuffer, repetitionBuffer),
+                _ => throw new NotSupportedException(node.Type.ToString()),
+            };
+
+            if (read.Entries == 0)
+            {
+                return (definition.ToArray(), repetition.ToArray(), values.ToArray());
+            }
+
+            if (node.MaxDefinitionLevel > 0)
+            {
+                definition.AddRange(definitionBuffer.AsSpan(0, read.Entries).ToArray());
+            }
+            else
+            {
+                definition.AddRange(Enumerable.Repeat(0, read.Entries));
+            }
+
+            repetition.AddRange(node.MaxRepetitionLevel > 0 ? repetitionBuffer.AsSpan(0, read.Entries).ToArray() : Enumerable.Repeat(0, read.Entries));
+            for (int i = 0; i < read.Values; i++)
+            {
+                values.Add(node.Type switch
+                {
+                    PhysicalType.Int32 => ints[i],
+                    PhysicalType.Int64 => longs[i],
+                    PhysicalType.Float => floats[i],
+                    PhysicalType.Double => doubles[i],
+                    PhysicalType.Boolean => bools[i],
+                    PhysicalType.ByteArray => arrays[i].ToArray(),
+                    _ => fixedBytes.AsSpan(i * fixedLength, fixedLength).ToArray(),
+                });
             }
         }
     }

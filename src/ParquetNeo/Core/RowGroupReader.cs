@@ -24,18 +24,18 @@ public sealed class RowGroupReader
     public int ColumnCount => _file.Schema.Columns.Count;
 
     /// <summary>Opens a column by its position in the schema (depth-first order).</summary>
-    /// <exception cref="NotSupportedException">The column is nested or repeated, uses an unsupported encoding or lives in another file.</exception>
+    /// <exception cref="NotSupportedException">The column uses an unsupported encoding or lives in another file.</exception>
     public ColumnReader OpenColumn(int index)
     {
         _file.EnsureOpen();
         ArgumentOutOfRangeException.ThrowIfNegative(index);
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, ColumnCount);
-        return new ColumnReader(_file, _file.Schema.Columns[index], Metadata.Columns[index]);
+        return new ColumnReader(_file, _file.Schema.Columns[index], Metadata.Columns[index], Metadata.NumRows);
     }
 
     /// <summary>
     /// Returns the statistics recorded for a column in this row group, or <c>null</c> when the writer recorded none.
-    /// Works for every column, including nested ones the reader cannot open yet.
+    /// Works for every column.
     /// </summary>
     /// <exception cref="ParquetFormatException">The recorded minimum or maximum has the wrong size for the column's type.</exception>
     public ColumnStatistics? GetStatistics(int index)
