@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Buffers.Binary;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Runtime.Intrinsics;
 
 namespace ParquetNeo.Encodings;
@@ -120,6 +121,16 @@ internal static class PlainEncoder
         }
 
         output.Advance(bytes);
+    }
+
+    /// <summary>Appends one string as a BYTE_ARRAY value, UTF-8 encoded straight into the output.</summary>
+    public static void WriteString(string value, IBufferWriter<byte> output)
+    {
+        int length = Encoding.UTF8.GetByteCount(value);
+        var span = output.GetSpan(sizeof(int) + length);
+        BinaryPrimitives.WriteInt32LittleEndian(span, length);
+        Encoding.UTF8.GetBytes(value, span.Slice(sizeof(int)));
+        output.Advance(sizeof(int) + length);
     }
 
     /// <summary>Appends one value: a 4-byte little-endian length followed by the bytes.</summary>
