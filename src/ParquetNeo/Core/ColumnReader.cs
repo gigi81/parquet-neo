@@ -74,11 +74,6 @@ public sealed partial class ColumnReader : IDisposable
         Column = column;
         string name = string.Join('.', column.Path);
 
-        if (column.Type == PhysicalType.Int96)
-        {
-            throw new NotSupportedException($"Column '{name}' is INT96, a deprecated type that cannot be read yet.");
-        }
-
         _meta = chunk.MetaData ?? throw new NotSupportedException($"Column '{name}' has no metadata in this file (its data may live in another file).");
         if (chunk.FilePath is not null)
         {
@@ -546,6 +541,9 @@ public sealed partial class ColumnReader : IDisposable
                 PlainDecoder.ReadByteArrays(source, _dictionaryRanges.AsSpan(0, count));
                 CopyDictionaryBytes(source);
                 break;
+            case PhysicalType.Int96:
+                _dictionaryValues = ReadDictionary<Int96>(source, count, 12, PlainDecoder.ReadInt96s);
+                break;
             case PhysicalType.FixedLenByteArray:
                 int length = Column.TypeLength ?? 0;
                 if (length <= 0 || (long)count * length > uncompressedSize)
@@ -1011,6 +1009,11 @@ public sealed partial class ColumnReader : IDisposable
     private readonly struct Int32Decoder : IPlainValueDecoder<int>
     {
         public static int Read(ReadOnlySpan<byte> source, Span<int> destination) => PlainDecoder.ReadInt32s(source, destination);
+    }
+
+    private readonly struct Int96Decoder : IPlainValueDecoder<Int96>
+    {
+        public static int Read(ReadOnlySpan<byte> source, Span<Int96> destination) => PlainDecoder.ReadInt96s(source, destination);
     }
 
     private readonly struct Int64Decoder : IPlainValueDecoder<long>

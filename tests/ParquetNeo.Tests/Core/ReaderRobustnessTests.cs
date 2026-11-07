@@ -524,6 +524,10 @@ public class ReaderRobustnessTests
             ("our nested v2", File.ReadAllBytes(TestBytes.FixturePath("golden-nested-v2.parquet"))),
             ("our encodings v2", File.ReadAllBytes(TestBytes.FixturePath("golden-encodings-v2.parquet"))),
             ("our logical types", File.ReadAllBytes(TestBytes.FixturePath("golden-logical.parquet"))),
+            ("our decimals and text", File.ReadAllBytes(TestBytes.FixturePath("golden-decimal.parquet"))),
+            ("pyarrow decimals dictionary", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-decimal-optional-dictionary.parquet"))),
+            ("pyarrow int96 dictionary", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-int96-optional-dictionary.parquet"))),
+            ("pyarrow int96 v2", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-int96-optional-v2-snappy.parquet"))),
             ("pyarrow statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-statistics-plain.parquet"))),
             ("pyarrow sample statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-optional-statistics.parquet"))),
         };
@@ -674,7 +678,12 @@ public class ReaderRobustnessTests
                     try
                     {
                         reader.OpenRowGroup(g).GetStatistics(c);
-                        ReadHelper.ReadEntries(reader, g, c, 100);
+                        if (reader.Schema.Columns[c].Type != PhysicalType.Int96)
+                        {
+                            ReadHelper.ReadEntries(reader, g, c, 100);
+                        }
+
+                        ReadTyped(reader, g, c);
                     }
                     catch (NotSupportedException)
                     {
@@ -696,6 +705,40 @@ public class ReaderRobustnessTests
         catch (Exception exception)
         {
             return $"{exception.GetType().Name}: {exception.Message}";
+        }
+    }
+
+    /// <summary>Reads the column as the .NET type its logical type stands for, when there is such a read (decimals, text, INT96).</summary>
+    private static void ReadTyped(ParquetFileReader reader, int group, int columnIndex)
+    {
+        using var column = reader.OpenRowGroup(group).OpenColumn(columnIndex);
+        var node = column.Column;
+        var definition = node.MaxDefinitionLevel > 0 ? new int[100] : [];
+        var repetition = node.MaxRepetitionLevel > 0 ? new int[100] : [];
+        while (true)
+        {
+            BatchRead read;
+            if (node.Type == PhysicalType.Int96)
+            {
+                read = column.ReadBatch(new DateTime[100], definition, repetition);
+            }
+            else if (node.LogicalType is { Kind: LogicalTypeKind.Decimal, Scale: <= 28 })
+            {
+                read = column.ReadBatch(new decimal[100], definition, repetition);
+            }
+            else if (node.Type == PhysicalType.ByteArray && node.LogicalType?.Kind is null or LogicalTypeKind.String or LogicalTypeKind.Enum or LogicalTypeKind.Json)
+            {
+                read = column.ReadStrings(new string[100], definition, repetition);
+            }
+            else
+            {
+                return;
+            }
+
+            if (read.Entries == 0)
+            {
+                return;
+            }
         }
     }
 

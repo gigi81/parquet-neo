@@ -112,17 +112,6 @@ public class ReaderFixtureTests
         }
     }
 
-    [Test]
-    public async Task Int96Columns_AreReportedAsUnsupported()
-    {
-        using var reader = ReadHelper.OpenFixture("pyarrow-plain-v1.parquet");
-        var group = reader.OpenRowGroup(0);
-
-        var exception = Assert.Throws<NotSupportedException>(() => group.OpenColumn("ts96"));
-
-        await Assert.That(exception.Message).Contains("INT96");
-    }
-
     // ---- the extremes of every integer type ----
 
     [Test]
