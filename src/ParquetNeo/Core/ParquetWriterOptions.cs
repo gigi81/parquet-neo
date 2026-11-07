@@ -48,6 +48,16 @@ public sealed record ParquetWriterOptions
     /// </summary>
     public int StatisticsTruncateLength { get; init; } = 64;
 
+    /// <summary>
+    /// The encoding to use for the values of chosen columns, keyed by column path with dots (<c>scores.list.element</c>).
+    /// The default is PLAIN. A column chosen here uses its encoding for every page that is not dictionary encoded: all of
+    /// them when <see cref="DictionaryEnabled"/> is off, otherwise the pages after the dictionary is given up.
+    /// DELTA_BINARY_PACKED suits integers that change steadily, DELTA_LENGTH_BYTE_ARRAY and DELTA_BYTE_ARRAY strings
+    /// (the latter when they share prefixes), and BYTE_STREAM_SPLIT floating-point numbers before compression.
+    /// </summary>
+    /// <exception cref="ArgumentException">Reported when the writer is created: a column that does not exist, or an encoding its type cannot use.</exception>
+    public IReadOnlyDictionary<string, ParquetEncoding>? ColumnEncodings { get; init; }
+
     /// <summary>Free-form key/value pairs stored in the file footer.</summary>
     public IReadOnlyDictionary<string, string>? KeyValueMetadata { get; init; }
 

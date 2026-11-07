@@ -73,6 +73,7 @@ public sealed class ColumnWriter
     private int _dictionaryPages;
     private int _dictionaryEncodedPages;
     private int _plainPages;
+    private readonly ParquetEncoding _valueEncoding; // for the pages that are not dictionary encoded
     private bool _completed;
 
     internal ColumnWriter(ParquetFileWriter file, PrimitiveNode column, ICodec codec, ParquetWriterOptions options)
@@ -89,6 +90,7 @@ public sealed class ColumnWriter
         _repetitionBitWidth = 32 - BitOperations.LeadingZeroCount((uint)_maxRepetitionLevel);
         _dictionary = options.DictionaryEnabled ? CreateDictionary(column.Type, column.TypeLength) : null;
         _statistics = StatisticsFactory.Create(column, options);
+        _valueEncoding = ValueEncodingRules.For(column, options.ColumnEncodings);
         _buffers.Reset();
     }
 
@@ -331,7 +333,18 @@ public sealed class ColumnWriter
             throw new InvalidOperationException($"No values were written to column '{Column.Name}'.");
         }
 
-        var encodings = new List<ParquetEncoding> { ParquetEncoding.Plain };
+        // Every encoding some page uses: the dictionary page is PLAIN, and the other pages use the column's own encoding.
+        var encodings = new List<ParquetEncoding>();
+        if (_dictionaryPages > 0 || _plainPages > 0)
+        {
+            encodings.Add(_dictionaryPages > 0 ? ParquetEncoding.Plain : _valueEncoding);
+        }
+
+        if (_plainPages > 0 && !encodings.Contains(_valueEncoding))
+        {
+            encodings.Add(_valueEncoding);
+        }
+
         if (HasLevels)
         {
             encodings.Add(ParquetEncoding.Rle);
@@ -351,7 +364,7 @@ public sealed class ColumnWriter
 
         if (_plainPages > 0)
         {
-            pageStats.Add(new PageEncodingStats { PageType = PageType.DataPage, Encoding = ParquetEncoding.Plain, Count = _plainPages });
+            pageStats.Add(new PageEncodingStats { PageType = PageType.DataPage, Encoding = _valueEncoding, Count = _plainPages });
         }
 
         return new ColumnChunk
@@ -719,6 +732,11 @@ public sealed class ColumnWriter
         }
 
         var values = _buffers.Values.WrittenSpan;
+        if (_valueEncoding != ParquetEncoding.Plain)
+        {
+            values = ConvertValues(values);
+        }
+
         long uncompressedLength = levelPrefix.Length + levelData.Length + (long)values.Length;
         if (uncompressedLength > int.MaxValue)
         {
@@ -739,7 +757,7 @@ public sealed class ColumnWriter
         if (_codec.Id == CompressionCodec.Uncompressed)
         {
             // No copy needed: the three parts go straight to the stream.
-            int headerLength = WriteHeader(PageType.DataPage, _pageLevelCount, ParquetEncoding.Plain, uncompressedSize, uncompressedSize);
+            int headerLength = WriteHeader(PageType.DataPage, _pageLevelCount, _valueEncoding, uncompressedSize, uncompressedSize);
             _file.Write(_buffers.Header.WrittenSpan);
             _file.Write(levelPrefix);
             _file.Write(levelData);
@@ -748,10 +766,45 @@ public sealed class ColumnWriter
         }
         else
         {
-            WriteEncoded(BuildPage(PageType.DataPage, _pageLevelCount, ParquetEncoding.Plain, levelPrefix, levelData, values));
+            WriteEncoded(BuildPage(PageType.DataPage, _pageLevelCount, _valueEncoding, levelPrefix, levelData, values));
         }
 
         _plainPages++;
+    }
+
+    /// <summary>Converts the PLAIN values of the page to the encoding chosen for the column.</summary>
+    private ReadOnlySpan<byte> ConvertValues(ReadOnlySpan<byte> plain)
+    {
+        var encoded = _buffers.Encoded;
+        encoded.ResetWrittenCount();
+        int count = HasLevels ? _buffers.Levels.WrittenSpan.Count(_maxDefinitionLevel) : _pageLevelCount;
+        int fixedLength = Column.Type == PhysicalType.FixedLenByteArray ? Column.TypeLength ?? 0 : 0;
+        switch (_valueEncoding)
+        {
+            case ParquetEncoding.DeltaBinaryPacked when Column.Type == PhysicalType.Int32:
+                DeltaBinaryPackedEncoder.Encode(MemoryMarshal.Cast<byte, int>(plain), encoded);
+                break;
+            case ParquetEncoding.DeltaBinaryPacked:
+                DeltaBinaryPackedEncoder.Encode(MemoryMarshal.Cast<byte, long>(plain), encoded);
+                break;
+            case ParquetEncoding.DeltaLengthByteArray:
+                DeltaLengthByteArrayEncoder.Encode(plain, count, encoded);
+                break;
+            case ParquetEncoding.DeltaByteArray:
+                DeltaByteArrayEncoder.Encode(plain, count, fixedLength, encoded);
+                break;
+            default:
+                int width = Column.Type switch
+                {
+                    PhysicalType.Int32 or PhysicalType.Float => sizeof(int),
+                    PhysicalType.Int64 or PhysicalType.Double => sizeof(long),
+                    _ => fixedLength,
+                };
+                ByteStreamSplitEncoder.Encode(plain, width, encoded);
+                break;
+        }
+
+        return encoded.WrittenSpan;
     }
 
     /// <summary>Writes the dictionary page followed by the data pages that were held back for it.</summary>

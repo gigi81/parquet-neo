@@ -23,6 +23,9 @@ internal sealed class WriterBuffers
     /// <summary>The repetition and definition level sections of a page of a repeated column, back to back.</summary>
     public ArrayBufferWriter<byte> LevelBlock { get; } = new();
 
+    /// <summary>The values of a page converted from PLAIN to the encoding chosen for the column.</summary>
+    public ArrayBufferWriter<byte> Encoded { get; } = new();
+
     public ArrayBufferWriter<byte> Header { get; } = new();
 
     public void Reset()
@@ -35,5 +38,6 @@ internal sealed class WriterBuffers
         RepetitionLevels.ResetWrittenCount();
         RepetitionBytes.ResetWrittenCount();
         LevelBlock.ResetWrittenCount();
+        Encoded.ResetWrittenCount();
     }
 }

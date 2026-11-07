@@ -45,6 +45,8 @@ public sealed class ColumnReader : IDisposable
     private byte[]? _headerBuffer;
     private byte[]? _compressed;
     private byte[]? _page;
+    private ReadOnlyMemory<byte> _valueSource; // where PLAIN values are read from: the page, or the page converted to PLAIN
+    private readonly ArrayBufferWriter<byte> _converted = new();
     private int[]? _levels;
     private int[]? _repetitionLevels;
     private bool[]? _booleans;
@@ -194,11 +196,11 @@ public sealed class ColumnReader : IDisposable
                 for (int done = 0; done < present;)
                 {
                     int count = Math.Min(ranges.Length, present - done);
-                    var source = _page.AsSpan(_valuePosition, _valueEnd - _valuePosition);
+                    var source = _valueSource.Span.Slice(_valuePosition, _valueEnd - _valuePosition);
                     int consumed = PlainDecoder.ReadByteArrays(source, ranges[..count]);
                     for (int i = 0; i < count; i++)
                     {
-                        values[valuesRead + done + i] = _page.AsMemory(_valuePosition + ranges[i].Offset, ranges[i].Length);
+                        values[valuesRead + done + i] = _valueSource.Slice(_valuePosition + ranges[i].Offset, ranges[i].Length);
                     }
 
                     _valuePosition += consumed;
@@ -245,7 +247,7 @@ public sealed class ColumnReader : IDisposable
             }
             else
             {
-                var source = _page.AsSpan(_valuePosition, _valueEnd - _valuePosition);
+                var source = _valueSource.Span.Slice(_valuePosition, _valueEnd - _valuePosition);
                 PlainDecoder.ReadFixedLengthByteArrays(source, present, length).CopyTo(values.Slice(valuesRead * length));
                 _valuePosition += present * length;
             }
@@ -331,7 +333,7 @@ public sealed class ColumnReader : IDisposable
             }
             else
             {
-                var source = _page.AsSpan(_valuePosition, _valueEnd - _valuePosition);
+                var source = _valueSource.Span.Slice(_valuePosition, _valueEnd - _valuePosition);
                 _valuePosition += TDecoder.Read(source, values.Slice(valuesRead, present));
             }
 
@@ -784,6 +786,13 @@ public sealed class ColumnReader : IDisposable
         _recordsLoaded += _maxRepetitionLevel == 0 ? entries : _repetitionLevels.AsSpan(0, entries).Count(0);
         _valuePosition = valuesStart;
         _valueEnd = valuesEnd;
+        _valueSource = _page;
+
+        if (encoding is ParquetEncoding.DeltaBinaryPacked or ParquetEncoding.DeltaLengthByteArray or ParquetEncoding.DeltaByteArray or ParquetEncoding.ByteStreamSplit)
+        {
+            int present = _maxDefinitionLevel == 0 ? entries : _levels.AsSpan(0, entries).Count(_maxDefinitionLevel);
+            ConvertToPlain(encoding, _page.AsSpan(valuesStart, valuesEnd - valuesStart), present);
+        }
 
         _pageIsDictionary = encoding is ParquetEncoding.PlainDictionary or ParquetEncoding.RleDictionary;
         if (Column.Type == PhysicalType.Boolean || _pageIsDictionary)
@@ -867,9 +876,80 @@ public sealed class ColumnReader : IDisposable
                 }
 
                 return;
+            case ParquetEncoding.DeltaBinaryPacked:
+                RequireTypes(encoding, PhysicalType.Int32, PhysicalType.Int64);
+                return;
+            case ParquetEncoding.DeltaLengthByteArray:
+                RequireTypes(encoding, PhysicalType.ByteArray);
+                return;
+            case ParquetEncoding.DeltaByteArray:
+                RequireTypes(encoding, PhysicalType.ByteArray, PhysicalType.FixedLenByteArray);
+                return;
+            case ParquetEncoding.ByteStreamSplit:
+                RequireTypes(encoding, PhysicalType.Int32, PhysicalType.Int64, PhysicalType.Float, PhysicalType.Double, PhysicalType.FixedLenByteArray);
+                return;
             default:
                 throw new NotSupportedException($"Column '{Column.Name}' uses the {encoding} encoding, which is not supported yet.");
         }
+    }
+
+    private void RequireTypes(ParquetEncoding encoding, params PhysicalType[] allowed)
+    {
+        if (Array.IndexOf(allowed, Column.Type) < 0)
+        {
+            throw Corrupt($"a {Column.Type} column cannot use the {encoding} encoding");
+        }
+    }
+
+    /// <summary>
+    /// Rewrites the values of a page encoded with a delta or byte-stream-split encoding in PLAIN layout, so that the batch
+    /// methods read every encoding the same way. The converted page takes memory in proportion to its values, bounded by
+    /// the limits on page size and rows per page.
+    /// </summary>
+    private void ConvertToPlain(ParquetEncoding encoding, ReadOnlySpan<byte> source, int count)
+    {
+        _converted.ResetWrittenCount();
+        int fixedLength = Column.Type == PhysicalType.FixedLenByteArray ? Column.TypeLength ?? 0 : 0;
+        switch (encoding)
+        {
+            case ParquetEncoding.DeltaBinaryPacked when Column.Type == PhysicalType.Int32:
+                var ints = new int[count];
+                DeltaBinaryPackedDecoder.Decode(source, ints);
+                PlainEncoder.WriteInt32s(ints, _converted);
+                break;
+            case ParquetEncoding.DeltaBinaryPacked:
+                var longs = new long[count];
+                DeltaBinaryPackedDecoder.Decode(source, longs);
+                PlainEncoder.WriteInt64s(longs, _converted);
+                break;
+            case ParquetEncoding.DeltaLengthByteArray:
+                DeltaLengthByteArrayDecoder.Decode(source, count, _converted);
+                break;
+            case ParquetEncoding.DeltaByteArray:
+                DeltaByteArrayDecoder.Decode(source, count, fixedLength, _file.Options.MaxPageSize, _converted);
+                break;
+            default:
+                int width = Column.Type switch
+                {
+                    PhysicalType.Int32 or PhysicalType.Float => sizeof(int),
+                    PhysicalType.Int64 or PhysicalType.Double => sizeof(long),
+                    _ => fixedLength,
+                };
+                long size = (long)count * width;
+                if (size > _file.Options.MaxPageSize)
+                {
+                    throw Corrupt($"{count} values of {width} bytes are over the page size limit of {_file.Options.MaxPageSize}");
+                }
+
+                var plain = _converted.GetSpan((int)size);
+                ByteStreamSplitDecoder.Decode(source, count, width, plain);
+                _converted.Advance((int)size);
+                break;
+        }
+
+        _valueSource = _converted.WrittenMemory;
+        _valuePosition = 0;
+        _valueEnd = _converted.WrittenCount;
     }
 
     private ParquetFormatException Corrupt(string detail) => new($"Column '{Column.Name}' is corrupt: {detail}.");

@@ -53,6 +53,7 @@ public sealed class ParquetFileWriter : IDisposable, IAsyncDisposable
         _options = options ?? new ParquetWriterOptions();
         ArgumentOutOfRangeException.ThrowIfLessThan(_options.DataPageSize, 1, nameof(options));
         ValidateSchema(schema);
+        ValueEncodingRules.Validate(schema, _options.ColumnEncodings);
 
         _output = output;
         _leaveOpen = leaveOpen;
