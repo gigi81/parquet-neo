@@ -2,7 +2,10 @@ using ParquetNeo.Schema;
 
 namespace ParquetNeo.Logical;
 
-/// <summary>Converts between the INT32 or INT64 values stored in a column and the .NET type its logical type stands for.</summary>
+/// <summary>
+/// Converts one value at a time between the <see cref="int"/> (INT32) or <see cref="long"/> (INT64) that the column's
+/// physical type reads and writes as, <typeparamref name="TPhysical"/>, and the .NET type of its logical type annotation, <typeparamref name="TValue"/>.
+/// </summary>
 internal interface IValueConverter<TPhysical, TValue, TSelf>
     where TPhysical : unmanaged
     where TSelf : IValueConverter<TPhysical, TValue, TSelf>
