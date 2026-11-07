@@ -15,6 +15,12 @@ public class ReaderFixtureTests
     [Arguments("pyarrow-flat-optional-v2.parquet", true, 1000)]
     [Arguments("pyarrow-flat-required-v2-snappy.parquet", false, 1000)]
     [Arguments("pyarrow-flat-optional-v1-smallpages.parquet", true, 3000)]
+    [Arguments("pyarrow-flat-required-dict-v1.parquet", false, 1000)]
+    [Arguments("pyarrow-flat-optional-dict-v1.parquet", true, 1000)]
+    [Arguments("pyarrow-flat-optional-dict-v2.parquet", true, 1000)]
+    [Arguments("pyarrow-flat-optional-dict-v1-snappy-smallpages.parquet", true, 3000)]
+    [Arguments("pyarrow-flat-required-dict-fallback.parquet", false, 3000)]
+    [Arguments("pyarrow-flat-optional-dict-legacy.parquet", true, 1000)]
     public async Task ThePyArrowSampleDataset_ReadsBackExactly(string fixture, bool optional, int rows)
     {
         using var reader = ReadHelper.OpenFixture(fixture);
@@ -29,6 +35,41 @@ public class ReaderFixtureTests
                 await Assert.That(SampleFile.FirstDifference(actual, optional, 0, rows, column)).IsNull().Because($"{fixture} {SampleFile.ColumnNames[column]} batch {batchSize}");
             }
         }
+    }
+
+    [Test]
+    [Arguments("pyarrow-flat-required-dict-v1.parquet")]
+    [Arguments("pyarrow-flat-optional-dict-v2.parquet")]
+    [Arguments("pyarrow-flat-optional-dict-v1-snappy-smallpages.parquet")]
+    public async Task TheDictionaryFixtures_ReallyAreDictionaryEncoded(string fixture)
+    {
+        var file = TestParquetFile.Parse(File.ReadAllBytes(TestBytes.FixturePath(fixture)));
+        file.AssertStructureLoosely();
+
+        // Booleans (column 4) are never dictionary encoded; every other column is.
+        for (int column = 0; column < SampleFile.ColumnNames.Length; column++)
+        {
+            var pages = file.Pages(0, column);
+            bool dictionaryFirst = pages[0].Header.Type == PageType.DictionaryPage;
+            bool indexed = pages.Skip(1).All(p => p.Header.Type == PageType.DataPage
+                ? p.Header.DataPageHeader!.Encoding == ParquetEncoding.RleDictionary
+                : p.Header.DataPageHeader?.Encoding == ParquetEncoding.RleDictionary
+                  || p.Header.DataPageHeaderV2!.Encoding == ParquetEncoding.RleDictionary);
+
+            await Assert.That(dictionaryFirst && indexed).IsEqualTo(column != 4).Because(SampleFile.ColumnNames[column]);
+        }
+    }
+
+    [Test]
+    public async Task TheFallbackFixture_SwitchesFromDictionaryPagesToPlainPages()
+    {
+        var file = TestParquetFile.Parse(File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-required-dict-fallback.parquet")));
+
+        // Column 1 (i64) has 3000 distinct values, which outgrow the 2000-byte dictionary limit.
+        var encodings = file.DataPages(0, 1).Select(p => p.Header.DataPageHeader!.Encoding).ToList();
+
+        await Assert.That(encodings[0]).IsEqualTo(ParquetEncoding.RleDictionary);
+        await Assert.That(encodings[^1]).IsEqualTo(ParquetEncoding.Plain);
     }
 
     [Test]
@@ -87,6 +128,8 @@ public class ReaderFixtureTests
     [Test]
     [Arguments("pyarrow-int-extremes-plain-v1.parquet")]
     [Arguments("pyarrow-int-extremes-plain-v2.parquet")]
+    [Arguments("pyarrow-int-extremes-dict-v1.parquet")]
+    [Arguments("pyarrow-int-extremes-dict-v2.parquet")]
     public async Task IntegerExtremes_AreReadAsTheirPhysicalBits(string fixture)
     {
         using var reader = ReadHelper.OpenFixture(fixture);
@@ -110,19 +153,6 @@ public class ReaderFixtureTests
 
             await Assert.That(actual.Select(SampleFile.Canonical)).IsEquivalentTo(values.Select(SampleFile.Canonical)).Because(column);
         }
-    }
-
-    [Test]
-    [Arguments("pyarrow-int-extremes-dict-v1.parquet")]
-    [Arguments("pyarrow-int-extremes-dict-v2.parquet")]
-    public async Task DictionaryEncodedFiles_ReportThatDictionariesAreNotSupportedYet(string fixture)
-    {
-        using var reader = ReadHelper.OpenFixture(fixture);
-        using var column = reader.OpenRowGroup(0).OpenColumn("int32");
-
-        var exception = Assert.Throws<NotSupportedException>(() => column.ReadBatch(new int[5]));
-
-        await Assert.That(exception.Message).Contains("dictionary");
     }
 
     // ---- every codec, as written by pyarrow ----
@@ -161,17 +191,6 @@ public class ReaderFixtureTests
     // ---- what is not supported yet ----
 
     [Test]
-    public async Task DictionaryEncodedColumns_AreReportedClearly()
-    {
-        using var reader = ReadHelper.OpenFixture("pyarrow-v1.parquet"); // pyarrow's default: dictionary encoding
-        using var column = reader.OpenRowGroup(0).OpenColumn("id");
-
-        var exception = Assert.Throws<NotSupportedException>(() => column.ReadBatch(new long[3], new int[3]));
-
-        await Assert.That(exception.Message).Contains("dictionary");
-    }
-
-    [Test]
     public async Task NestedColumns_AreReportedClearly_AndTheFileStillOpens()
     {
         using var reader = ReadHelper.OpenFixture("pyarrow-v1.parquet");
@@ -190,16 +209,18 @@ public class ReaderFixtureTests
     // ---- the golden file written by the library itself ----
 
     [Test]
-    public async Task TheGoldenFile_ReadsBack()
+    [Arguments("golden-flat-uncompressed.parquet")]
+    [Arguments("golden-flat-dictionary.parquet")]
+    public async Task TheGoldenFiles_ReadBack(string fixture)
     {
-        using var reader = ReadHelper.OpenFixture("golden-flat-uncompressed.parquet");
+        using var reader = ReadHelper.OpenFixture(fixture);
 
         await Assert.That(ReadHelper.ReadColumn(reader, 0, 0, 3).Select(v => (long)v!)).IsEquivalentTo(new long[] { 1, 2, 3, 4, 5, 6, 7 });
         await Assert.That(ReadHelper.ReadColumn(reader, 0, 1, 3).Select(v => v is null ? null : System.Text.Encoding.UTF8.GetString((byte[])v)))
-            .IsEquivalentTo(new[] { "alpha", null, "gamma", "δelta", null, "", "zeta" });
-        await Assert.That(ReadHelper.ReadColumn(reader, 0, 2, 3)).IsEquivalentTo(new object?[] { 1.5, null, null, 4.25, 5.0, null, 7.75 });
+            .IsEquivalentTo(new[] { "alpha", null, "δelta", "alpha", null, "", "δelta" });
+        await Assert.That(ReadHelper.ReadColumn(reader, 0, 2, 3)).IsEquivalentTo(new object?[] { 1.5, null, null, 1.5, 5.0, null, 5.0 });
         await Assert.That(ReadHelper.ReadColumn(reader, 0, 3, 3)).IsEquivalentTo(new object?[] { true, false, true, true, false, false, true });
-        await Assert.That(ReadHelper.ReadColumn(reader, 0, 4, 3)).IsEquivalentTo(new object?[] { 18000, null, 18002, 18003, null, 18005, 18006 });
+        await Assert.That(ReadHelper.ReadColumn(reader, 0, 4, 3)).IsEquivalentTo(new object?[] { 18000, null, 18000, 18003, null, 18003, 18006 });
     }
 
     private static string? Differences(object?[] actual, int rows, Func<int, bool> isNull, Func<int, object> value)

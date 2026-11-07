@@ -23,6 +23,9 @@ public class WriterBenchmarks
     [Params(CompressionCodec.Uncompressed, CompressionCodec.Snappy)]
     public CompressionCodec Compression { get; set; }
 
+    [Params(false, true)]
+    public bool Dictionary { get; set; }
+
     [GlobalSetup]
     public void Setup()
     {
@@ -37,7 +40,7 @@ public class WriterBenchmarks
         _scores = Enumerable.Range(0, Rows).Where(i => i % 3 != 0).Select(i => i * 0.25).ToArray();
         _nameLevels = Enumerable.Range(0, Rows).Select(i => i % 10 == 0 ? 0 : 1).ToArray();
         _names = Enumerable.Range(0, Rows).Where(i => i % 10 != 0).Select(i => "customer-" + (i % 5000)).ToArray();
-        _options = new ParquetWriterOptions { Compression = Compression, Codecs = new CodecRegistry().AddSnappy() };
+        _options = new ParquetWriterOptions { Compression = Compression, Codecs = new CodecRegistry().AddSnappy(), DictionaryEnabled = Dictionary };
     }
 
     [Benchmark]

@@ -143,7 +143,7 @@ public sealed class ParquetFileWriter : IDisposable, IAsyncDisposable
         Dispose();
     }
 
-    internal ColumnWriter CreateColumnWriter(PrimitiveNode column) => new(this, column, _codec, _options.DataPageSize);
+    internal ColumnWriter CreateColumnWriter(PrimitiveNode column) => new(this, column, _codec, _options);
 
     internal void OnRowGroupClosed(RowGroup rowGroup)
     {

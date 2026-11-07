@@ -280,7 +280,7 @@ public class FlatReaderTests
             }
         }
 
-        await Assert.That(file.Pages(0, 0).Select(p => p.Header.DataPageHeader!.NumValues))
+        await Assert.That(file.DataPages(0, 0).Select(p => p.Header.DataPageHeader!.NumValues))
             .IsEquivalentTo(new[] { 1 << 20, 1 << 20, 2_500_000 - 2 * (1 << 20) });
         await Assert.That(total).IsEqualTo((long)rows);
     }

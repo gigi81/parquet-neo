@@ -4,7 +4,7 @@
     python tests/fixtures/generate_flat_fixtures.py
 
 The values come from the same formulas as SampleFile.Value, and in the "optional" files row r of column c is
-null when (r + c) % 5 == 0. Dictionary encoding is off, since the reader does not support it yet. Output goes to
+null when (r + c) % 5 == 0. Dictionary encoding is off unless the file name says dict. Output goes to
 tests/ParquetNeo.Tests/Fixtures.
 """
 import datetime as dt
@@ -52,12 +52,12 @@ def table(rows, optional):
     return pa.table(arrays, schema=schema)
 
 
-def write(name, rows, optional, page_version, compression="none", **options):
+def write(name, rows, optional, page_version, compression="none", dictionary=False, **options):
     pq.write_table(
         table(rows, optional),
         OUT / f"{name}.parquet",
         compression=compression,
-        use_dictionary=False,
+        use_dictionary=dictionary,
         data_page_version=page_version,
         write_statistics=False,
         store_schema=False,
@@ -71,3 +71,14 @@ write("pyarrow-flat-optional-v1", 1000, True, "1.0")
 write("pyarrow-flat-optional-v2", 1000, True, "2.0")
 write("pyarrow-flat-required-v2-snappy", 1000, False, "2.0", compression="snappy")
 write("pyarrow-flat-optional-v1-smallpages", 3000, True, "1.0", compression="snappy", data_page_size=1500, write_batch_size=64)
+
+# Dictionary encoded: every column of the sample dataset except the booleans, which pyarrow never dictionary encodes.
+write("pyarrow-flat-required-dict-v1", 1000, False, "1.0", dictionary=True)
+write("pyarrow-flat-optional-dict-v1", 1000, True, "1.0", dictionary=True)
+write("pyarrow-flat-optional-dict-v2", 1000, True, "2.0", dictionary=True)
+write("pyarrow-flat-optional-dict-v1-snappy-smallpages", 3000, True, "1.0", compression="snappy", dictionary=True, data_page_size=1500, write_batch_size=64)
+# A dictionary that outgrows its limit: pyarrow starts with dictionary pages and falls back to PLAIN pages.
+write("pyarrow-flat-required-dict-fallback", 3000, False, "1.0", dictionary=True, dictionary_pagesize_limit=2000, data_page_size=1500, write_batch_size=64)
+# Format version 1.0 writers (and the Parquet 1.x era in general) use the deprecated PLAIN_DICTIONARY for dictionary
+# pages and for the data pages that use them.
+write("pyarrow-flat-optional-dict-legacy", 1000, True, "1.0", dictionary=True, version="1.0")

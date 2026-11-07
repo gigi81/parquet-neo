@@ -44,6 +44,15 @@ public sealed class ColumnReader : IDisposable
     private int[]? _levels;
     private bool[]? _booleans;
 
+    // The chunk's dictionary (decoded once) and, for a dictionary-encoded page, its decoded indexes.
+    private Array? _dictionaryValues; // int[], long[], float[] or double[]
+    private byte[]? _dictionaryBytes; // BYTE_ARRAY and FIXED_LEN_BYTE_ARRAY entries
+    private ByteRange[]? _dictionaryRanges; // BYTE_ARRAY entries within _dictionaryBytes
+    private int _dictionaryCount;
+    private bool _hasDictionary;
+    private int[]? _indices;
+    private bool _pageIsDictionary;
+
     private int _pageRows;
     private int _pageRowIndex;
     private int _pageValueIndex;
@@ -165,18 +174,30 @@ public sealed class ColumnReader : IDisposable
 
             int take = Math.Min(requested - rows, _pageRows - _pageRowIndex);
             int present = TakeLevels(definitionLevels, rows, take);
-            for (int done = 0; done < present;)
+            if (_pageIsDictionary)
             {
-                int count = Math.Min(ranges.Length, present - done);
-                var source = _page.AsSpan(_valuePosition, _valueEnd - _valuePosition);
-                int consumed = PlainDecoder.ReadByteArrays(source, ranges[..count]);
-                for (int i = 0; i < count; i++)
+                // The entries live in the dictionary, which outlives the page.
+                for (int i = 0; i < present; i++)
                 {
-                    values[valuesRead + done + i] = _page.AsMemory(_valuePosition + ranges[i].Offset, ranges[i].Length);
+                    var range = _dictionaryRanges![_indices![_pageValueIndex + i]];
+                    values[valuesRead + i] = _dictionaryBytes.AsMemory(range.Offset, range.Length);
                 }
+            }
+            else
+            {
+                for (int done = 0; done < present;)
+                {
+                    int count = Math.Min(ranges.Length, present - done);
+                    var source = _page.AsSpan(_valuePosition, _valueEnd - _valuePosition);
+                    int consumed = PlainDecoder.ReadByteArrays(source, ranges[..count]);
+                    for (int i = 0; i < count; i++)
+                    {
+                        values[valuesRead + done + i] = _page.AsMemory(_valuePosition + ranges[i].Offset, ranges[i].Length);
+                    }
 
-                _valuePosition += consumed;
-                done += count;
+                    _valuePosition += consumed;
+                    done += count;
+                }
             }
 
             Advance(take, present);
@@ -209,9 +230,20 @@ public sealed class ColumnReader : IDisposable
 
             int take = Math.Min(requested - rows, _pageRows - _pageRowIndex);
             int present = TakeLevels(definitionLevels, rows, take);
-            var source = _page.AsSpan(_valuePosition, _valueEnd - _valuePosition);
-            PlainDecoder.ReadFixedLengthByteArrays(source, present, length).CopyTo(values.Slice(valuesRead * length));
-            _valuePosition += present * length;
+            if (_pageIsDictionary)
+            {
+                for (int i = 0; i < present; i++)
+                {
+                    _dictionaryBytes.AsSpan(_indices![_pageValueIndex + i] * length, length).CopyTo(values.Slice((valuesRead + i) * length));
+                }
+            }
+            else
+            {
+                var source = _page.AsSpan(_valuePosition, _valueEnd - _valuePosition);
+                PlainDecoder.ReadFixedLengthByteArrays(source, present, length).CopyTo(values.Slice(valuesRead * length));
+                _valuePosition += present * length;
+            }
+
             Advance(take, present);
             rows += take;
             valuesRead += present;
@@ -243,6 +275,21 @@ public sealed class ColumnReader : IDisposable
             ArrayPool<bool>.Shared.Return(_booleans);
             _booleans = null;
         }
+
+        Return(ref _dictionaryBytes);
+        if (_dictionaryRanges is not null)
+        {
+            ArrayPool<ByteRange>.Shared.Return(_dictionaryRanges);
+            _dictionaryRanges = null;
+        }
+
+        if (_indices is not null)
+        {
+            ArrayPool<int>.Shared.Return(_indices);
+            _indices = null;
+        }
+
+        _dictionaryValues = null;
     }
 
     private BatchRead ReadFixedWidth<T, TDecoder>(PhysicalType expected, Span<T> values, Span<int> definitionLevels)
@@ -260,8 +307,22 @@ public sealed class ColumnReader : IDisposable
 
             int take = Math.Min(requested - rows, _pageRows - _pageRowIndex);
             int present = TakeLevels(definitionLevels, rows, take);
-            var source = _page.AsSpan(_valuePosition, _valueEnd - _valuePosition);
-            _valuePosition += TDecoder.Read(source, values.Slice(valuesRead, present));
+            if (_pageIsDictionary)
+            {
+                var dictionary = (T[])_dictionaryValues!;
+                var indices = _indices.AsSpan(_pageValueIndex, present);
+                var destination = values.Slice(valuesRead, present);
+                for (int i = 0; i < destination.Length; i++)
+                {
+                    destination[i] = dictionary[indices[i]];
+                }
+            }
+            else
+            {
+                var source = _page.AsSpan(_valuePosition, _valueEnd - _valuePosition);
+                _valuePosition += TDecoder.Read(source, values.Slice(valuesRead, present));
+            }
+
             Advance(take, present);
             rows += take;
             valuesRead += present;
@@ -351,7 +412,8 @@ public sealed class ColumnReader : IDisposable
             switch (header.Type)
             {
                 case PageType.DictionaryPage:
-                    throw new NotSupportedException($"Column '{Column.Name}' is dictionary encoded, which is not supported yet.");
+                    ReadDictionaryPage(header, dataStart, compressedSize, uncompressedSize);
+                    continue;
                 case PageType.DataPage:
                     ReadDataPageV1(header, dataStart, compressedSize, uncompressedSize);
                     break;
@@ -392,6 +454,127 @@ public sealed class ColumnReader : IDisposable
                 // The header may simply be longer than what was read (large statistics); read more and retry.
                 size = (int)Math.Min(Math.Min((long)size * 4, _chunkEnd - _position), MaxHeaderSize);
             }
+        }
+    }
+
+    /// <summary>Loads the chunk's dictionary: decoded once, then shared by every dictionary-encoded page.</summary>
+    private void ReadDictionaryPage(PageHeader header, long dataStart, int compressedSize, int uncompressedSize)
+    {
+        var info = header.DictionaryPageHeader ?? throw Corrupt("a dictionary page has no dictionary page header");
+        if (_hasDictionary)
+        {
+            throw Corrupt("it has more than one dictionary page");
+        }
+
+        if (_rowsLoaded > 0)
+        {
+            throw Corrupt("its dictionary page comes after a data page");
+        }
+
+        if (info.Encoding is not (ParquetEncoding.Plain or ParquetEncoding.PlainDictionary))
+        {
+            throw new NotSupportedException($"Column '{Column.Name}' has a dictionary page encoded as {info.Encoding}; only PLAIN is supported.");
+        }
+
+        int count = CheckRows(info.NumValues);
+        LoadPageV1(dataStart, compressedSize, uncompressedSize);
+        var source = _page.AsSpan(0, uncompressedSize);
+
+        // Each size is checked against the bytes present before anything is allocated for it.
+        switch (Column.Type)
+        {
+            case PhysicalType.Int32:
+                _dictionaryValues = ReadDictionary<int>(source, count, sizeof(int), PlainDecoder.ReadInt32s);
+                break;
+            case PhysicalType.Int64:
+                _dictionaryValues = ReadDictionary<long>(source, count, sizeof(long), PlainDecoder.ReadInt64s);
+                break;
+            case PhysicalType.Float:
+                _dictionaryValues = ReadDictionary<float>(source, count, sizeof(float), PlainDecoder.ReadSingles);
+                break;
+            case PhysicalType.Double:
+                _dictionaryValues = ReadDictionary<double>(source, count, sizeof(double), PlainDecoder.ReadDoubles);
+                break;
+            case PhysicalType.ByteArray:
+                if (count > uncompressedSize / sizeof(int))
+                {
+                    throw Corrupt($"a dictionary of {count} byte arrays does not fit in {uncompressedSize} bytes");
+                }
+
+                _dictionaryRanges = ArrayPool<ByteRange>.Shared.Rent(Math.Max(count, 1));
+                PlainDecoder.ReadByteArrays(source, _dictionaryRanges.AsSpan(0, count));
+                CopyDictionaryBytes(source);
+                break;
+            case PhysicalType.FixedLenByteArray:
+                int length = Column.TypeLength ?? 0;
+                if (length <= 0 || (long)count * length > uncompressedSize)
+                {
+                    throw Corrupt($"a dictionary of {count} entries of {length} bytes does not fit in {uncompressedSize} bytes");
+                }
+
+                CopyDictionaryBytes(source[..(count * length)]);
+                break;
+            default:
+                throw Corrupt($"a {Column.Type} column cannot have a dictionary");
+        }
+
+        _dictionaryCount = count;
+        _hasDictionary = true;
+    }
+
+    private T[] ReadDictionary<T>(ReadOnlySpan<byte> source, int count, int width, Func<ReadOnlySpan<byte>, Span<T>, int> read)
+    {
+        if ((long)count * width > source.Length)
+        {
+            throw Corrupt($"a dictionary of {count} entries does not fit in {source.Length} bytes");
+        }
+
+        var values = new T[count];
+        read(source, values);
+        return values;
+    }
+
+    private void CopyDictionaryBytes(ReadOnlySpan<byte> source)
+    {
+        EnsureCapacity(ref _dictionaryBytes, source.Length);
+        source.CopyTo(_dictionaryBytes);
+    }
+
+    /// <summary>Decodes the dictionary indexes of a page: a bit-width byte followed by RLE/bit-packed data.</summary>
+    private void DecodeIndices(int start, int end, int count)
+    {
+        if (!_hasDictionary)
+        {
+            throw Corrupt("a data page uses a dictionary but the column chunk has no dictionary page");
+        }
+
+        EnsureCapacity(ref _indices, count);
+        if (count == 0)
+        {
+            return;
+        }
+
+        if (end <= start)
+        {
+            throw Corrupt("a dictionary-encoded page has no index data");
+        }
+
+        int bitWidth = _page![start];
+        if (bitWidth > 32)
+        {
+            throw Corrupt($"a dictionary index bit width of {bitWidth} is above 32");
+        }
+
+        var indices = _indices.AsSpan(0, count);
+        var decoder = new RleBitPackedDecoder(_page.AsSpan(start + 1, end - start - 1), bitWidth);
+        if (decoder.ReadValues(indices) != count)
+        {
+            throw Corrupt("a page has fewer dictionary indexes than values");
+        }
+
+        if (_dictionaryCount == 0 || indices.IndexOfAnyExceptInRange(0, _dictionaryCount - 1) >= 0)
+        {
+            throw Corrupt($"a dictionary index is outside the dictionary of {_dictionaryCount} entries");
         }
     }
 
@@ -521,10 +704,18 @@ public sealed class ColumnReader : IDisposable
         _valuePosition = valuesStart;
         _valueEnd = valuesEnd;
 
-        if (Column.Type == PhysicalType.Boolean)
+        _pageIsDictionary = encoding is ParquetEncoding.PlainDictionary or ParquetEncoding.RleDictionary;
+        if (Column.Type == PhysicalType.Boolean || _pageIsDictionary)
         {
             int present = _maxDefinitionLevel == 0 ? rows : _levels.AsSpan(0, rows).Count(_maxDefinitionLevel);
-            DecodeBooleans(valuesStart, valuesEnd, present, encoding);
+            if (_pageIsDictionary)
+            {
+                DecodeIndices(valuesStart, valuesEnd, present);
+            }
+            else
+            {
+                DecodeBooleans(valuesStart, valuesEnd, present, encoding);
+            }
         }
     }
 
@@ -589,7 +780,12 @@ public sealed class ColumnReader : IDisposable
             case ParquetEncoding.Rle when Column.Type == PhysicalType.Boolean:
                 return;
             case ParquetEncoding.PlainDictionary or ParquetEncoding.RleDictionary:
-                throw new NotSupportedException($"Column '{Column.Name}' is dictionary encoded, which is not supported yet.");
+                if (Column.Type == PhysicalType.Boolean)
+                {
+                    throw Corrupt("a boolean column cannot be dictionary encoded");
+                }
+
+                return;
             default:
                 throw new NotSupportedException($"Column '{Column.Name}' uses the {encoding} encoding, which is not supported yet.");
         }

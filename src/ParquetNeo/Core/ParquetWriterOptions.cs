@@ -22,6 +22,20 @@ public sealed record ParquetWriterOptions
     /// </summary>
     public int DataPageSize { get; init; } = 1024 * 1024;
 
+    /// <summary>
+    /// Whether columns are dictionary encoded: each distinct value is stored once and the rows refer to it by number,
+    /// which is far smaller for repetitive data. A column falls back to plain encoding once its dictionary grows past
+    /// <see cref="DictionaryPageSizeLimit"/>. Booleans are never dictionary encoded. Defaults to <c>true</c>.
+    /// </summary>
+    public bool DictionaryEnabled { get; init; } = true;
+
+    /// <summary>
+    /// The size, in bytes, a column chunk's dictionary may reach before the writer stops adding to it and falls back to
+    /// plain encoding for the rest of the chunk. Defaults to 1 MiB. The size is checked after every page worth of
+    /// values (and after every batch written), so a dictionary can overshoot the limit by up to that much.
+    /// </summary>
+    public int DictionaryPageSizeLimit { get; init; } = 1024 * 1024;
+
     /// <summary>Free-form key/value pairs stored in the file footer.</summary>
     public IReadOnlyDictionary<string, string>? KeyValueMetadata { get; init; }
 
