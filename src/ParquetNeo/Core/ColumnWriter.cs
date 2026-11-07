@@ -74,6 +74,11 @@ public sealed class ColumnWriter
     private int _dictionaryEncodedPages;
     private int _plainPages;
     private readonly ParquetEncoding _valueEncoding; // for the pages that are not dictionary encoded
+    private readonly bool _dataPageV2;
+    private int _pageRecords; // rows that start in the page being filled
+    private int _pageNullCount;
+    private int _levelRepetitionBytes; // of the page being flushed (data page v2 states the lengths of its level sections)
+    private int _levelDefinitionBytes;
     private bool _completed;
 
     internal ColumnWriter(ParquetFileWriter file, PrimitiveNode column, ICodec codec, ParquetWriterOptions options)
@@ -91,6 +96,7 @@ public sealed class ColumnWriter
         _dictionary = options.DictionaryEnabled ? CreateDictionary(column.Type, column.TypeLength) : null;
         _statistics = StatisticsFactory.Create(column, options);
         _valueEncoding = ValueEncodingRules.For(column, options.ColumnEncodings);
+        _dataPageV2 = options.DataPageVersion == DataPageVersion.V2;
         _buffers.Reset();
     }
 
@@ -359,12 +365,12 @@ public sealed class ColumnWriter
         if (_dictionaryEncodedPages > 0)
         {
             encodings.Add(ParquetEncoding.RleDictionary);
-            pageStats.Add(new PageEncodingStats { PageType = PageType.DataPage, Encoding = ParquetEncoding.RleDictionary, Count = _dictionaryEncodedPages });
+            pageStats.Add(new PageEncodingStats { PageType = _dataPageV2 ? PageType.DataPageV2 : PageType.DataPage, Encoding = ParquetEncoding.RleDictionary, Count = _dictionaryEncodedPages });
         }
 
         if (_plainPages > 0)
         {
-            pageStats.Add(new PageEncodingStats { PageType = PageType.DataPage, Encoding = _valueEncoding, Count = _plainPages });
+            pageStats.Add(new PageEncodingStats { PageType = _dataPageV2 ? PageType.DataPageV2 : PageType.DataPage, Encoding = _valueEncoding, Count = _plainPages });
         }
 
         return new ColumnChunk
@@ -590,16 +596,16 @@ public sealed class ColumnWriter
     /// <summary>Buffers the levels of entries [<paramref name="entry"/>, +<paramref name="take"/>) and returns how many of them hold a value.</summary>
     private int AppendLevels(ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels, int entry, int take)
     {
-        if (!HasRepetition)
-        {
-            _records += take;
-        }
-        else
+        int rows = take;
+        if (HasRepetition)
         {
             var repetition = repetitionLevels.Slice(entry, take);
             _buffers.RepetitionLevels.Write(repetition);
-            _records += repetition.Count(0);
+            rows = repetition.Count(0);
         }
+
+        _records += rows;
+        _pageRecords += rows;
 
         if (!HasLevels)
         {
@@ -669,11 +675,33 @@ public sealed class ColumnWriter
         }
 
         // Data page v1: [repetition levels][definition levels][values], each level section as a 4-byte length followed
-        // by RLE data; a column without repetition or definition levels has no such section.
+        // by RLE data; data page v2 has the same sections without the lengths (the header states them). A column without
+        // repetition or definition levels has no such section.
         Span<byte> prefixStorage = stackalloc byte[sizeof(int)];
         scoped ReadOnlySpan<byte> levelPrefix = default;
         var levelData = ReadOnlySpan<byte>.Empty;
-        if (HasRepetition)
+        _levelRepetitionBytes = _levelDefinitionBytes = 0;
+        _pageNullCount = HasLevels ? _pageLevelCount - _buffers.Levels.WrittenSpan.Count(_maxDefinitionLevel) : 0;
+        if (_dataPageV2)
+        {
+            var block = _buffers.LevelBlock;
+            if (HasRepetition)
+            {
+                RleBitPackedEncoder.Encode(_buffers.RepetitionLevels.WrittenSpan, _repetitionBitWidth, _buffers.RepetitionBytes);
+                block.Write(_buffers.RepetitionBytes.WrittenSpan);
+                _levelRepetitionBytes = _buffers.RepetitionBytes.WrittenCount;
+            }
+
+            if (HasLevels)
+            {
+                RleBitPackedEncoder.Encode(_buffers.Levels.WrittenSpan, _levelBitWidth, _buffers.LevelBytes);
+                block.Write(_buffers.LevelBytes.WrittenSpan);
+                _levelDefinitionBytes = _buffers.LevelBytes.WrittenCount;
+            }
+
+            levelData = block.WrittenSpan;
+        }
+        else if (HasRepetition)
         {
             RleBitPackedEncoder.Encode(_buffers.RepetitionLevels.WrittenSpan, _repetitionBitWidth, _buffers.RepetitionBytes);
             RleBitPackedEncoder.Encode(_buffers.Levels.WrittenSpan, _levelBitWidth, _buffers.LevelBytes);
@@ -701,6 +729,7 @@ public sealed class ColumnWriter
 
         _pageLevelCount = 0;
         _pageLogicalBytes = 0;
+        _pageRecords = 0;
         _buffers.Reset();
     }
 
@@ -843,6 +872,11 @@ public sealed class ColumnWriter
             throw new InvalidOperationException("A page cannot exceed 2 GiB.");
         }
 
+        if (_dataPageV2 && type == PageType.DataPage)
+        {
+            return BuildPageV2(numValues, encoding, levelData, values);
+        }
+
         int uncompressedSize = (int)total;
         var pool = ArrayPool<byte>.Shared;
         byte[]? compressed = null;
@@ -882,6 +916,37 @@ public sealed class ColumnWriter
         return new EncodedPage(page, headerLength + compressedSize, headerLength, uncompressedSize, compressedSize);
     }
 
+    /// <summary>Builds a data page v2: the levels as they are, followed by the values, which are the only part compressed.</summary>
+    private EncodedPage BuildPageV2(int numValues, ParquetEncoding encoding, ReadOnlySpan<byte> levels, ReadOnlySpan<byte> values)
+    {
+        var pool = ArrayPool<byte>.Shared;
+        byte[]? compressed = null;
+        int storedLength = values.Length;
+        if (_codec.Id != CompressionCodec.Uncompressed)
+        {
+            compressed = pool.Rent(_codec.GetMaxCompressedLength(values.Length));
+            storedLength = _codec.Compress(values, compressed);
+        }
+
+        int uncompressedSize = levels.Length + values.Length;
+        int compressedSize = levels.Length + storedLength;
+        int headerLength = WriteHeader(PageType.DataPage, numValues, encoding, uncompressedSize, compressedSize);
+        byte[] page = pool.Rent(headerLength + compressedSize);
+        _buffers.Header.WrittenSpan.CopyTo(page);
+        levels.CopyTo(page.AsSpan(headerLength));
+        if (compressed is null)
+        {
+            values.CopyTo(page.AsSpan(headerLength + levels.Length));
+        }
+        else
+        {
+            compressed.AsSpan(0, storedLength).CopyTo(page.AsSpan(headerLength + levels.Length));
+            pool.Return(compressed);
+        }
+
+        return new EncodedPage(page, headerLength + compressedSize, headerLength, uncompressedSize, compressedSize);
+    }
+
     private void WriteEncoded(EncodedPage page)
     {
         _file.Write(page.Buffer.AsSpan(0, page.Length));
@@ -902,6 +967,20 @@ public sealed class ColumnWriter
         if (type == PageType.DictionaryPage)
         {
             header.DictionaryPageHeader = new DictionaryPageHeader { NumValues = numValues, Encoding = encoding };
+        }
+        else if (_dataPageV2)
+        {
+            header.Type = PageType.DataPageV2;
+            header.DataPageHeaderV2 = new DataPageHeaderV2
+            {
+                NumValues = numValues,
+                NumNulls = _pageNullCount,
+                NumRows = _pageRecords,
+                Encoding = encoding,
+                DefinitionLevelsByteLength = _levelDefinitionBytes,
+                RepetitionLevelsByteLength = _levelRepetitionBytes,
+                IsCompressed = _codec.Id != CompressionCodec.Uncompressed,
+            };
         }
         else
         {

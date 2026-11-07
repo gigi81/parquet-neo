@@ -520,6 +520,8 @@ public class ReaderRobustnessTests
             ("pyarrow encodings v1", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-encodings-optional-v1.parquet"))),
             ("pyarrow encodings v2", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-encodings-optional-v2-smallpages.parquet"))),
             ("our encodings", File.ReadAllBytes(TestBytes.FixturePath("golden-encodings.parquet"))),
+            ("our nested v2", File.ReadAllBytes(TestBytes.FixturePath("golden-nested-v2.parquet"))),
+            ("our encodings v2", File.ReadAllBytes(TestBytes.FixturePath("golden-encodings-v2.parquet"))),
             ("pyarrow statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-statistics-plain.parquet"))),
             ("pyarrow sample statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-optional-statistics.parquet"))),
         };

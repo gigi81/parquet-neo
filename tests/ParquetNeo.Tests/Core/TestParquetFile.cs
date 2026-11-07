@@ -95,9 +95,27 @@ internal sealed class TestParquetFile
         foreach (var page in Pages(rowGroup, column))
         {
             var header = page.Header;
-            var compressed = Bytes.AsSpan((int)page.Offset + page.HeaderLength, header.CompressedPageSize);
+            var stored = Bytes.AsSpan((int)page.Offset + page.HeaderLength, header.CompressedPageSize);
             var data = new byte[header.UncompressedPageSize];
-            codec.Decompress(compressed, data);
+            var v2 = header.DataPageHeaderV2;
+            if (v2 is null)
+            {
+                codec.Decompress(stored, data);
+            }
+            else
+            {
+                // Data page v2: the levels are stored as they are and only the values are compressed.
+                int levelBytes = v2.RepetitionLevelsByteLength + v2.DefinitionLevelsByteLength;
+                stored[..levelBytes].CopyTo(data);
+                if (v2.IsCompressed)
+                {
+                    codec.Decompress(stored[levelBytes..], data.AsSpan(levelBytes));
+                }
+                else
+                {
+                    stored[levelBytes..].CopyTo(data.AsSpan(levelBytes));
+                }
+            }
 
             if (header.Type == PageType.DictionaryPage)
             {
@@ -105,30 +123,50 @@ internal sealed class TestParquetFile
                 continue;
             }
 
-            int entries = header.DataPageHeader!.NumValues;
+            int entries = PageValueCount(header);
+            var encoding = PageEncoding(header);
             int position = 0;
             var repetitionLevels = new int[entries]; // zeros when the column is not repeated: every entry is a row
             if (node.MaxRepetitionLevel > 0)
             {
-                position = ReadLevels(data, position, repetitionLevels, node.MaxRepetitionLevel);
+                position = v2 is null
+                    ? ReadLevels(data, position, repetitionLevels, node.MaxRepetitionLevel)
+                    : ReadLevelsWithoutLength(data, position, v2.RepetitionLevelsByteLength, repetitionLevels, node.MaxRepetitionLevel);
             }
 
             var levels = Enumerable.Repeat(node.MaxDefinitionLevel, entries).ToArray(); // a required column has no level data: every entry is present
             if (node.MaxDefinitionLevel > 0)
             {
-                position = ReadLevels(data, position, levels, node.MaxDefinitionLevel);
+                position = v2 is null
+                    ? ReadLevels(data, position, levels, node.MaxDefinitionLevel)
+                    : ReadLevelsWithoutLength(data, position, v2.DefinitionLevelsByteLength, levels, node.MaxDefinitionLevel);
             }
 
             int present = levels.Count(l => l == node.MaxDefinitionLevel);
-            var pageValues = header.DataPageHeader.Encoding == ParquetEncoding.RleDictionary
+            var pageValues = encoding == ParquetEncoding.RleDictionary
                 ? DecodeIndexed(dictionary ?? throw new InvalidDataException("A dictionary-encoded page without a dictionary page."), data.AsSpan(position), present)
-                : DecodeValues(node, ToPlain(header.DataPageHeader.Encoding, node, data.AsSpan(position), present), present);
+                : DecodeValues(node, ToPlain(encoding, node, data.AsSpan(position), present), present);
             definition.AddRange(levels);
             repetition.AddRange(repetitionLevels);
             values.AddRange(pageValues);
         }
 
         return new ColumnEntries(definition.ToArray(), repetition.ToArray(), values.ToArray());
+    }
+
+    private static int PageValueCount(PageHeader header) => header.DataPageHeaderV2?.NumValues ?? header.DataPageHeader!.NumValues;
+
+    private static ParquetEncoding PageEncoding(PageHeader header) => header.DataPageHeaderV2?.Encoding ?? header.DataPageHeader!.Encoding;
+
+    private static int ReadLevelsWithoutLength(byte[] data, int position, int length, int[] levels, int maxLevel)
+    {
+        int width = 32 - System.Numerics.BitOperations.LeadingZeroCount((uint)maxLevel);
+        if (new RleBitPackedDecoder(data.AsSpan(position, length), width).ReadValues(levels) != levels.Length)
+        {
+            throw new InvalidDataException("Fewer levels than the page declares.");
+        }
+
+        return position + length;
     }
 
     private static int ReadLevels(byte[] data, int position, int[] levels, int maxLevel)
@@ -231,8 +269,8 @@ internal sealed class TestParquetFile
                     }
                     else
                     {
-                        Require(page.Header.Type == PageType.DataPage, "only data page v1 is written");
-                        var encoding = page.Header.DataPageHeader!.Encoding;
+                        Require(page.Header.Type is PageType.DataPage or PageType.DataPageV2, "only data pages are written");
+                        var encoding = PageEncoding(page.Header);
                         Require(encoding != ParquetEncoding.PlainDictionary && encoding != ParquetEncoding.Rle, $"unexpected value encoding {encoding}");
                         if (encoding != ParquetEncoding.RleDictionary)
                         {
@@ -245,7 +283,7 @@ internal sealed class TestParquetFile
                             dictionaryDataPages++;
                         }
 
-                        values += page.Header.DataPageHeader.NumValues;
+                        values += PageValueCount(page.Header);
                     }
 
                     chunkUncompressed += page.HeaderLength + page.Header.UncompressedPageSize;
@@ -255,9 +293,9 @@ internal sealed class TestParquetFile
                 Require(dictionaryPages == (hasDictionary ? 1 : 0), "at most one dictionary page");
                 Require(chunk.EncodingStats is not null, "encoding_statistics are written");
                 Require(EncodingStatisticsCount(chunk, PageType.DictionaryPage, ParquetEncoding.Plain) == dictionaryPages, "encoding_statistics for the dictionary page");
-                Require(EncodingStatisticsCount(chunk, PageType.DataPage, ParquetEncoding.RleDictionary) == dictionaryDataPages, "encoding_statistics for dictionary-encoded pages");
-                Require(chunk.EncodingStats!.Where(e => e.PageType == PageType.DataPage && e.Encoding != ParquetEncoding.RleDictionary).Sum(e => e.Count) == plainDataPages, "encoding_statistics for pages that are not dictionary encoded");
-                foreach (var usedEncoding in pages.Where(p => p.Header.Type == PageType.DataPage).Select(p => p.Header.DataPageHeader!.Encoding).Distinct())
+                Require(EncodingStatisticsCount(chunk, DataPageType(chunk), ParquetEncoding.RleDictionary) == dictionaryDataPages, "encoding_statistics for dictionary-encoded pages");
+                Require(chunk.EncodingStats!.Where(e => e.PageType != PageType.DictionaryPage && e.Encoding != ParquetEncoding.RleDictionary).Sum(e => e.Count) == plainDataPages, "encoding_statistics for pages that are not dictionary encoded");
+                foreach (var usedEncoding in pages.Where(p => p.Header.Type != PageType.DictionaryPage).Select(p => PageEncoding(p.Header)).Distinct())
                 {
                     Require(chunk.Encodings.Contains(usedEncoding), $"encodings lists {usedEncoding}");
                 }
@@ -269,7 +307,7 @@ internal sealed class TestParquetFile
                 if (Schema.Columns[c].MaxRepetitionLevel > 0)
                 {
                     // Pages must not end in the middle of a row, so each one starts with a repetition level of 0.
-                    foreach (var dataPage in pages.Where(p => p.Header.Type == PageType.DataPage))
+                    foreach (var dataPage in pages.Where(p => p.Header.Type != PageType.DictionaryPage))
                     {
                         Require(PageStartsRow(dataPage, c, chunk), $"a page of chunk {g}/{c} starts in the middle of a row");
                     }
@@ -295,14 +333,26 @@ internal sealed class TestParquetFile
     private bool PageStartsRow(PageInfo page, int column, ColumnMetaData chunk)
     {
         var node = Schema.Columns[column];
-        var data = new byte[page.Header.UncompressedPageSize];
-        Registry.Get(chunk.Codec).Decompress(Bytes.AsSpan((int)page.Offset + page.HeaderLength, page.Header.CompressedPageSize), data);
+        var stored = Bytes.AsSpan((int)page.Offset + page.HeaderLength, page.Header.CompressedPageSize);
         var first = new int[1];
         int width = 32 - System.Numerics.BitOperations.LeadingZeroCount((uint)node.MaxRepetitionLevel);
+        if (page.Header.DataPageHeaderV2 is { } v2)
+        {
+            // The repetition levels come first and are not compressed.
+            new RleBitPackedDecoder(stored[..v2.RepetitionLevelsByteLength], width).ReadValues(first);
+            return first[0] == 0;
+        }
+
+        var data = new byte[page.Header.UncompressedPageSize];
+        Registry.Get(chunk.Codec).Decompress(stored, data);
         int length = BinaryPrimitives.ReadInt32LittleEndian(data);
         new RleBitPackedDecoder(data.AsSpan(sizeof(int), length), width).ReadValues(first);
         return first[0] == 0;
     }
+
+    /// <summary>The type the page statistics of a chunk use for its data pages: DATA_PAGE_V2 when the chunk was written with that layout.</summary>
+    private PageType DataPageType(ColumnMetaData chunk) =>
+        chunk.EncodingStats!.Any(e => e.PageType == PageType.DataPageV2) ? PageType.DataPageV2 : PageType.DataPage;
 
     private static int EncodingStatisticsCount(ColumnMetaData chunk, PageType type, ParquetEncoding encoding) =>
         chunk.EncodingStats!.Where(s => s.PageType == type && s.Encoding == encoding).Sum(s => s.Count);

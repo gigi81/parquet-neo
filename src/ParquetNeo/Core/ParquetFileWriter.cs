@@ -52,6 +52,10 @@ public sealed class ParquetFileWriter : IDisposable, IAsyncDisposable
 
         _options = options ?? new ParquetWriterOptions();
         ArgumentOutOfRangeException.ThrowIfLessThan(_options.DataPageSize, 1, nameof(options));
+        if (!Enum.IsDefined(_options.DataPageVersion))
+        {
+            throw new ArgumentOutOfRangeException(nameof(options), _options.DataPageVersion, "The data page version must be V1 or V2.");
+        }
         ValidateSchema(schema);
         ValueEncodingRules.Validate(schema, _options.ColumnEncodings);
 
