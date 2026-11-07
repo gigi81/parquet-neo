@@ -3,6 +3,7 @@ using System.Buffers.Binary;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using ParquetNeo.Compression;
+using ParquetNeo.Converters;
 using ParquetNeo.Encodings;
 using ParquetNeo.Metadata;
 using ParquetNeo.Nested;
@@ -181,9 +182,13 @@ public sealed partial class ColumnWriter
         }
     }
 
-    /// <summary>Writes BYTE_ARRAY values from strings, encoded as UTF-8 straight into the page buffer.</summary>
+    /// <summary>
+    /// Writes BYTE_ARRAY values from strings, encoded as UTF-8 straight into the page buffer. The column is annotated STRING, ENUM
+    /// or JSON, or not annotated; any other annotation is an <see cref="ArgumentException"/>.
+    /// </summary>
     public void WriteStrings(ReadOnlySpan<string> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default)
     {
+        ConversionRules.RequireText(Column);
         int entries = PrepareBatch(PhysicalType.ByteArray, values.Length, definitionLevels, repetitionLevels);
         int entry = 0;
         int next = 0;

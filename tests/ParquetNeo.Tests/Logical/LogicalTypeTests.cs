@@ -297,4 +297,38 @@ public class LogicalTypeTests
         await Assert.That(definition).IsEquivalentTo(new[] { 3, 2, 3, 1, 0, 3 });
         await Assert.That(repetition).IsEquivalentTo(new[] { 0, 1, 1, 0, 0, 0 });
     }
+
+    [Test]
+    public async Task AnUnknownLogicalType_FallsBackToThePhysicalType()
+    {
+        // A UUID is the union member with id 14, written as the header byte 0xEC followed by an empty struct. Renumber it to the
+        // unused id 9, which is what a logical type this library has never heard of looks like. A UUID has no legacy annotation
+        // to fall back on, so the column is left as a plain FIXED_LEN_BYTE_ARRAY(16).
+        var bytes = File.ReadAllBytes(TestBytes.FixturePath("pyarrow-logical-required-plain.parquet"));
+        int footerLength = BitConverter.ToInt32(bytes, bytes.Length - 8);
+        int footerStart = bytes.Length - 8 - footerLength;
+        int marker = footerStart + bytes.AsSpan(footerStart, footerLength).IndexOf(new byte[] { 0xEC, 0x00, 0x00 });
+        await Assert.That(marker).IsGreaterThan(footerStart);
+        await Assert.That(bytes.AsSpan(marker + 1, footerLength - (marker - footerStart) - 1).IndexOf(new byte[] { 0xEC, 0x00, 0x00 })).IsEqualTo(-1); // the only one
+        bytes[marker] = 0x9C;
+
+        using var reader = ReadHelper.Open(bytes);
+        var column = reader.Schema.Columns.Single(c => c.Name == "uuid");
+        using var uuids = reader.OpenRowGroup(0).OpenColumn("uuid");
+
+        await Assert.That(column.LogicalType).IsNull();
+        await Assert.That(column.Type).IsEqualTo(PhysicalType.FixedLenByteArray);
+        await Assert.That(() => uuids.ReadBatch(new Guid[1])).Throws<ArgumentException>();
+
+        var raw = new byte[16 * 5];
+        var read = uuids.ReadFixedLengthByteArrays(raw);
+        await Assert.That(read.Values).IsEqualTo(5);
+        await Assert.That(Convert.ToHexString(raw.AsSpan(32, 16))).IsEqualTo("00112233445566778899AABBCCDDEEFF");
+
+        // The rest of the file is untouched by the unknown annotation.
+        using var dates = reader.OpenRowGroup(0).OpenColumn("date");
+        var days = new DateOnly[5];
+        dates.ReadBatch(days);
+        await Assert.That(days[1]).IsEqualTo(new DateOnly(1, 1, 1));
+    }
 }

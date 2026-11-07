@@ -1,6 +1,8 @@
 using System.Buffers;
 using System.Runtime.InteropServices;
+using System.Text;
 using ParquetNeo.Converters;
+using ParquetNeo.Encodings;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 
@@ -50,13 +52,22 @@ public sealed partial class ColumnReader
     /// <summary>
     /// Reads a TIMESTAMP column in any unit as <see cref="DateTime"/>: UTC when the column is adjusted to UTC, otherwise
     /// <see cref="DateTimeKind.Unspecified"/>. A moment outside the years 1 to 9999 is a <see cref="ValueConversionException"/>.
+    /// An INT96 column, the deprecated timestamp of Impala, Hive and older Spark, is read too: it has no time zone, so its values
+    /// are <see cref="DateTimeKind.Unspecified"/>. INT96 columns can be read but not written.
     /// </summary>
     public BatchRead ReadBatch(Span<DateTime> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default) =>
-        ReadConverted<long, DateTime, DateTimeConverter>(values, definitionLevels, repetitionLevels);
+        Column.Type == PhysicalType.Int96
+            ? ReadInt96<DateTime>(values, definitionLevels, repetitionLevels)
+            : ReadConverted<long, DateTime, DateTimeConverter>(values, definitionLevels, repetitionLevels);
 
-    /// <summary>Reads a TIMESTAMP column in any unit as <see cref="DateTimeOffset"/> at offset zero.</summary>
+    /// <summary>
+    /// Reads a TIMESTAMP column in any unit as <see cref="DateTimeOffset"/> at offset zero. An INT96 column, the deprecated
+    /// timestamp of Impala, Hive and older Spark, reads the same way, as the clock reading it holds.
+    /// </summary>
     public BatchRead ReadBatch(Span<DateTimeOffset> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default) =>
-        ReadConverted<long, DateTimeOffset, DateTimeOffsetConverter>(values, definitionLevels, repetitionLevels);
+        Column.Type == PhysicalType.Int96
+            ? ReadInt96<DateTimeOffset>(values, definitionLevels, repetitionLevels)
+            : ReadConverted<long, DateTimeOffset, DateTimeOffsetConverter>(values, definitionLevels, repetitionLevels);
 
     /// <summary>Reads a UUID column.</summary>
     public BatchRead ReadBatch(Span<Guid> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default) =>
@@ -65,6 +76,103 @@ public sealed partial class ColumnReader
     /// <summary>Reads a FLOAT16 column.</summary>
     public BatchRead ReadBatch(Span<Half> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default) =>
         ReadConvertedFixed<Half, HalfConverter>(values, definitionLevels, repetitionLevels);
+
+    /// <summary>
+    /// Reads a DECIMAL column of any physical type (INT32, INT64, FIXED_LEN_BYTE_ARRAY or BYTE_ARRAY) as <see cref="decimal"/>.
+    /// A <see cref="decimal"/> holds 96 bits and a scale of up to 28, so a column with a larger scale is an
+    /// <see cref="ArgumentException"/> and a larger stored value is a <see cref="ValueConversionException"/>. A column
+    /// of BYTE_ARRAY values may return fewer values than requested, as <see cref="ReadByteArrays"/> does.
+    /// </summary>
+    public BatchRead ReadBatch(Span<decimal> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default) =>
+        Column.Type switch
+        {
+            PhysicalType.Int32 => ReadConverted<int, decimal, Decimal32Converter>(values, definitionLevels, repetitionLevels),
+            PhysicalType.Int64 => ReadConverted<long, decimal, Decimal64Converter>(values, definitionLevels, repetitionLevels),
+            PhysicalType.FixedLenByteArray => ReadConvertedFixed<decimal, DecimalFixedConverter>(values, definitionLevels, repetitionLevels),
+            PhysicalType.ByteArray => ReadDecimalByteArrays(values, definitionLevels, repetitionLevels),
+            _ => throw ConversionRules.Mismatch(Column, "decimal", "DECIMAL column stored as INT32, INT64, FIXED_LEN_BYTE_ARRAY or BYTE_ARRAY"),
+        };
+
+    /// <summary>
+    /// Reads a BYTE_ARRAY column that is annotated STRING, ENUM or JSON, or not annotated, as UTF-8 text. Bytes that are not
+    /// valid UTF-8 are a <see cref="ValueConversionException"/>. Like <see cref="ReadByteArrays"/>, a batch ends at the end of a
+    /// page and may return fewer values than requested.
+    /// </summary>
+    public BatchRead ReadStrings(Span<string> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default)
+    {
+        ConversionRules.RequireText(Column);
+        var scratch = ArrayPool<ReadOnlyMemory<byte>>.Shared.Rent(Math.Max(values.Length, 1));
+        try
+        {
+            BatchRead read = ReadByteArrays(scratch.AsSpan(0, values.Length), definitionLevels, repetitionLevels);
+            for (int i = 0; i < read.Values; i++)
+            {
+                try
+                {
+                    values[i] = StrictUtf8.GetString(scratch[i].Span);
+                }
+                catch (DecoderFallbackException exception)
+                {
+                    throw new ValueConversionException($"Column '{Column.Name}' holds text that is not valid UTF-8.", exception);
+                }
+            }
+
+            return read;
+        }
+        finally
+        {
+            ArrayPool<ReadOnlyMemory<byte>>.Shared.Return(scratch, clearArray: true);
+        }
+    }
+
+    private static readonly UTF8Encoding StrictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+
+    private BatchRead ReadDecimalByteArrays(Span<decimal> values, Span<int> definitionLevels, Span<int> repetitionLevels)
+    {
+        var converter = DecimalByteArrayConverter.Create(Column);
+        var scratch = ArrayPool<ReadOnlyMemory<byte>>.Shared.Rent(Math.Max(values.Length, 1));
+        try
+        {
+            BatchRead read = ReadByteArrays(scratch.AsSpan(0, values.Length), definitionLevels, repetitionLevels);
+            for (int i = 0; i < read.Values; i++)
+            {
+                values[i] = converter.ToValue(scratch[i].Span);
+            }
+
+            return read;
+        }
+        finally
+        {
+            ArrayPool<ReadOnlyMemory<byte>>.Shared.Return(scratch, clearArray: true);
+        }
+    }
+
+    private BatchRead ReadInt96<TValue>(Span<TValue> values, Span<int> definitionLevels, Span<int> repetitionLevels)
+    {
+        var scratch = ArrayPool<Int96>.Shared.Rent(Math.Max(values.Length, 1));
+        try
+        {
+            BatchRead read = ReadFixedWidth<Int96, Int96Decoder>(PhysicalType.Int96, scratch.AsSpan(0, values.Length), definitionLevels, repetitionLevels);
+            for (int i = 0; i < read.Values; i++)
+            {
+                long ticks = Int96Timestamp.ToTicks(scratch[i]);
+                if (typeof(TValue) == typeof(DateTime))
+                {
+                    values[i] = (TValue)(object)new DateTime(ticks, DateTimeKind.Unspecified);
+                }
+                else
+                {
+                    values[i] = (TValue)(object)new DateTimeOffset(ticks, TimeSpan.Zero);
+                }
+            }
+
+            return read;
+        }
+        finally
+        {
+            ArrayPool<Int96>.Shared.Return(scratch);
+        }
+    }
 
     private BatchRead ReadConverted<TPhysical, TValue, TConverter>(Span<TValue> values, Span<int> definitionLevels, Span<int> repetitionLevels)
         where TPhysical : unmanaged

@@ -69,6 +69,55 @@ public sealed partial class ColumnWriter
     public void WriteBatch(ReadOnlySpan<Half> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default) =>
         WriteConvertedFixed<Half, HalfConverter>(values, definitionLevels, repetitionLevels);
 
+    /// <summary>
+    /// Writes a DECIMAL column of any physical type (INT32, INT64, FIXED_LEN_BYTE_ARRAY or BYTE_ARRAY) from <see cref="decimal"/>
+    /// values. Digits are never lost: a value with more decimals than the column's scale, or more digits than its precision,
+    /// is an <see cref="ArgumentOutOfRangeException"/>. A column with a scale above 28 cannot be written from a <see cref="decimal"/>.
+    /// </summary>
+    public void WriteBatch(ReadOnlySpan<decimal> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default)
+    {
+        switch (Column.Type)
+        {
+            case PhysicalType.Int32:
+                WriteConverted<int, decimal, Decimal32Converter>(values, definitionLevels, repetitionLevels);
+                break;
+            case PhysicalType.Int64:
+                WriteConverted<long, decimal, Decimal64Converter>(values, definitionLevels, repetitionLevels);
+                break;
+            case PhysicalType.FixedLenByteArray:
+                WriteConvertedFixed<decimal, DecimalFixedConverter>(values, definitionLevels, repetitionLevels);
+                break;
+            case PhysicalType.ByteArray:
+                WriteDecimalByteArrays(values, definitionLevels, repetitionLevels);
+                break;
+            default:
+                throw ConversionRules.Mismatch(Column, "decimal", "DECIMAL column stored as INT32, INT64, FIXED_LEN_BYTE_ARRAY or BYTE_ARRAY");
+        }
+    }
+
+    private void WriteDecimalByteArrays(ReadOnlySpan<decimal> values, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels)
+    {
+        var converter = DecimalByteArrayConverter.Create(Column);
+        var bytes = ArrayPool<byte>.Shared.Rent(Math.Max(values.Length * DecimalByteArrayConverter.MaxLength, 1));
+        var arrays = ArrayPool<ReadOnlyMemory<byte>>.Shared.Rent(Math.Max(values.Length, 1));
+        try
+        {
+            for (int i = 0; i < values.Length; i++)
+            {
+                int offset = i * DecimalByteArrayConverter.MaxLength;
+                int length = converter.ToBytes(values[i], bytes.AsSpan(offset, DecimalByteArrayConverter.MaxLength));
+                arrays[i] = new ReadOnlyMemory<byte>(bytes, offset, length);
+            }
+
+            WriteByteArrays(arrays.AsSpan(0, values.Length), definitionLevels, repetitionLevels);
+        }
+        finally
+        {
+            ArrayPool<ReadOnlyMemory<byte>>.Shared.Return(arrays, clearArray: true);
+            ArrayPool<byte>.Shared.Return(bytes);
+        }
+    }
+
     private void WriteConverted<TPhysical, TValue, TConverter>(ReadOnlySpan<TValue> values, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels)
         where TPhysical : unmanaged
         where TConverter : struct, IValueConverter<TPhysical, TValue, TConverter>
