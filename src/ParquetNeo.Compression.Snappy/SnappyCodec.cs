@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using SnappierCodec = Snappier.Snappy;
 
@@ -44,20 +45,20 @@ public sealed class SnappyCodec : ICodec
             int declared = SnappierCodec.GetUncompressedLength(source);
             if (declared != destination.Length)
             {
-                throw new ParquetFormatException(
+                throw new CompressionException(
                     $"Snappy data declares {declared} uncompressed bytes but the page header says {destination.Length}.");
             }
 
             int written = SnappierCodec.Decompress(source, destination);
             if (written != destination.Length)
             {
-                throw new ParquetFormatException(
+                throw new CompressionException(
                     $"Snappy data decodes to {written} bytes but declares {destination.Length}.");
             }
         }
         catch (InvalidDataException exception)
         {
-            throw new ParquetFormatException($"Invalid Snappy data: {exception.Message}");
+            throw new CompressionException($"Invalid Snappy data: {exception.Message}", exception);
         }
     }
 }

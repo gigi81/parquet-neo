@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
@@ -8,7 +9,7 @@ namespace ParquetNeo.Core.Statistics;
 internal static class ColumnStatisticsDecoder
 {
     /// <summary>Returns null when the chunk has no statistics.</summary>
-    /// <exception cref="ParquetFormatException">A recorded minimum or maximum does not have the size its type requires.</exception>
+    /// <exception cref="MetadataException">A recorded minimum or maximum does not have the size its type requires.</exception>
     public static ColumnStatistics? Decode(PrimitiveNode column, ColumnChunk chunk, IReadOnlyList<ColumnOrder>? columnOrders)
     {
         var raw = chunk.MetaData?.Statistics;
@@ -71,7 +72,7 @@ internal static class ColumnStatisticsDecoder
     {
         if (bytes.Length != length)
         {
-            throw new ParquetFormatException($"The {what} in the statistics of column '{string.Join('.', column.Path)}' has {bytes.Length} bytes, but a {column.Type} value has {length}.");
+            throw new MetadataException($"The {what} in the statistics of column '{string.Join('.', column.Path)}' has {bytes.Length} bytes, but a {column.Type} value has {length}.");
         }
     }
 }

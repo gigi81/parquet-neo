@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
@@ -16,6 +17,6 @@ internal readonly struct Int16Converter : IValueConverter<int, short, Int16Conve
 
     public int ToPhysical(short value) => value;
 
-    private static ParquetFormatException OutOfRange(int physical) =>
+    private static ValueConversionException OutOfRange(int physical) =>
         new($"The value {physical} is outside the range of the {typeof(short).Name} its column is stored as.");
 }

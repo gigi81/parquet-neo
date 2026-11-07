@@ -1,7 +1,8 @@
 using System.Buffers;
 using System.Buffers.Binary;
-using ParquetNeo.Core;
 using ParquetNeo.Compression;
+using ParquetNeo.Core;
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
@@ -134,7 +135,7 @@ public class ReaderRobustnessTests
             var bytes = Rewrite(ValidFile(), f => edit.Change(f.RowGroups[0].Columns[0].MetaData!));
             using var reader = ReadHelper.Open(bytes);
 
-            await Assert.That(() => reader.OpenRowGroup(0).OpenColumn(0)).Throws<ParquetFormatException>().Because(edit.Name);
+            await Assert.That(() => reader.OpenRowGroup(0).OpenColumn(0)).Throws<CorruptColumnException>().Because(edit.Name);
         }
     }
 
@@ -146,7 +147,7 @@ public class ReaderRobustnessTests
             var bytes = Rewrite(ValidFile(), f => f.RowGroups[0].Columns[0].MetaData!.NumValues = wrong);
             using var reader = ReadHelper.Open(bytes);
 
-            await Assert.That(() => ReadHelper.ReadColumn(reader, 0, 0, 50)).Throws<ParquetFormatException>().Because($"declared {wrong}");
+            await Assert.That(() => ReadHelper.ReadColumn(reader, 0, 0, 50)).Throws<CorruptColumnException>().Because($"declared {wrong}");
         }
     }
 
@@ -156,7 +157,7 @@ public class ReaderRobustnessTests
         var bytes = Rewrite(ValidFile(), f => f.RowGroups[0].Columns[0].MetaData!.TotalCompressedSize -= 10);
         using var reader = ReadHelper.Open(bytes);
 
-        await Assert.That(() => ReadHelper.ReadColumn(reader, 0, 0, 50)).Throws<ParquetFormatException>();
+        await Assert.That(() => ReadHelper.ReadColumn(reader, 0, 0, 50)).Throws<CorruptColumnException>();
     }
 
     [Test]
@@ -173,7 +174,7 @@ public class ReaderRobustnessTests
         var bytes = Rewrite(ValidFile(), f => f.RowGroups[0].Columns[0].MetaData!.Type = PhysicalType.Int64);
         using var reader = ReadHelper.Open(bytes);
 
-        await Assert.That(() => reader.OpenRowGroup(0).OpenColumn(0)).Throws<ParquetFormatException>();
+        await Assert.That(() => reader.OpenRowGroup(0).OpenColumn(0)).Throws<CorruptColumnException>();
     }
 
     [Test]
@@ -209,7 +210,7 @@ public class ReaderRobustnessTests
 
         using var reader = ReadHelper.Open(bytes);
 
-        await Assert.That(() => ReadHelper.ReadColumn(reader, 0, 0, 50)).Throws<ParquetFormatException>();
+        await Assert.That(() => ReadHelper.ReadColumn(reader, 0, 0, 50)).Throws<MetadataException>();
     }
 
     [Test]
@@ -222,8 +223,8 @@ public class ReaderRobustnessTests
 
         using var first = ReadHelper.Open(bytes, smallPages);
         using var second = ReadHelper.Open(bytes, fewRows);
-        await Assert.That(() => ReadHelper.ReadColumn(first, 0, 1, 100)).Throws<ParquetFormatException>();
-        await Assert.That(() => ReadHelper.ReadColumn(second, 0, 0, 100)).Throws<ParquetFormatException>();
+        await Assert.That(() => ReadHelper.ReadColumn(first, 0, 1, 100)).Throws<CorruptColumnException>();
+        await Assert.That(() => ReadHelper.ReadColumn(second, 0, 0, 100)).Throws<CorruptColumnException>();
     }
 
     [Test]
@@ -244,7 +245,7 @@ public class ReaderRobustnessTests
             using var reader = ReadHelper.Open(bytes);
 
             var exception = Record(() => ReadHelper.ReadColumn(reader, 0, 5, 100));
-            await Assert.That(exception is null or ParquetFormatException).IsTrue().Because($"{codec}: {exception}");
+            await Assert.That(exception is null or ParquetException).IsTrue().Because($"{codec}: {exception}");
         }
     }
 
@@ -296,7 +297,7 @@ public class ReaderRobustnessTests
 
         var exception = ReadAll(bytes);
 
-        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+        await Assert.That(exception).IsTypeOf<CorruptColumnException>();
         await Assert.That(exception!.Message).Contains("dictionary");
     }
 
@@ -305,7 +306,7 @@ public class ReaderRobustnessTests
     {
         var bytes = PatchPageHeader(ThreeValueDictionaryFile(), 0, h => h.DictionaryPageHeader!.NumValues = 9);
 
-        await Assert.That(ReadAll(bytes)).IsTypeOf<ParquetFormatException>();
+        await Assert.That(ReadAll(bytes)).IsTypeOf<CorruptColumnException>();
     }
 
     [Test]
@@ -315,7 +316,7 @@ public class ReaderRobustnessTests
         {
             var bytes = PatchPageHeader(ThreeValueDictionaryFile(), 0, h => h.DictionaryPageHeader!.NumValues = count);
 
-            await Assert.That(ReadAll(bytes)).IsTypeOf<ParquetFormatException>().Because($"count {count}");
+            await Assert.That(ReadAll(bytes)).IsTypeOf<CorruptColumnException>().Because($"count {count}");
         }
     }
 
@@ -333,7 +334,7 @@ public class ReaderRobustnessTests
             long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
 
             // "does not fit" comes from the size check; without it the failure would only surface after allocating the lot.
-            await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+            await Assert.That(exception).IsTypeOf<CorruptColumnException>();
             await Assert.That(exception!.Message).Contains("does not fit");
             await Assert.That(allocated).IsLessThan(2_000_000);
         }
@@ -375,7 +376,7 @@ public class ReaderRobustnessTests
 
         var exception = ReadAll(bytes);
 
-        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+        await Assert.That(exception).IsTypeOf<CorruptColumnException>();
         await Assert.That(exception!.Message).Contains("after a data page");
     }
 
@@ -390,7 +391,7 @@ public class ReaderRobustnessTests
 
         var exception = ReadAll(bytes);
 
-        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+        await Assert.That(exception).IsTypeOf<CorruptColumnException>();
         await Assert.That(exception!.Message).Contains("no dictionary page");
     }
 
@@ -425,7 +426,7 @@ public class ReaderRobustnessTests
 
         var exception = ReadAll(rebuilt);
 
-        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+        await Assert.That(exception).IsTypeOf<CorruptColumnException>();
         await Assert.That(exception!.Message).Contains("no dictionary page");
     }
 
@@ -450,7 +451,7 @@ public class ReaderRobustnessTests
 
         var exception = ReadAll(spliced);
 
-        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+        await Assert.That(exception).IsTypeOf<CorruptColumnException>();
         await Assert.That(exception!.Message).Contains("more than one dictionary page");
     }
 
@@ -463,7 +464,7 @@ public class ReaderRobustnessTests
 
         var exception = ReadAll(bytes);
 
-        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+        await Assert.That(exception).IsTypeOf<CorruptColumnException>();
         await Assert.That(exception!.Message).Contains("bit width");
     }
 
@@ -482,7 +483,7 @@ public class ReaderRobustnessTests
 
         var exception = ReadAll(bytes);
 
-        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+        await Assert.That(exception).IsTypeOf<CorruptColumnException>();
         await Assert.That(exception!.Message).Contains("boolean");
     }
 
@@ -494,7 +495,7 @@ public class ReaderRobustnessTests
 
         var exception = ReadAll(bytes);
 
-        await Assert.That(exception).IsTypeOf<ParquetFormatException>();
+        await Assert.That(exception).IsTypeOf<CorruptColumnException>();
     }
 
     // ---- fuzzing ----
@@ -684,7 +685,7 @@ public class ReaderRobustnessTests
 
             return null;
         }
-        catch (ParquetFormatException)
+        catch (ParquetException)
         {
             return null;
         }

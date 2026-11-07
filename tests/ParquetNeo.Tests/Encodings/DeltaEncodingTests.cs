@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Buffers.Binary;
 using ParquetNeo.Encodings;
+using ParquetNeo.Exceptions;
 
 namespace ParquetNeo.Tests.Encodings;
 
@@ -117,8 +118,8 @@ public class DeltaEncodingTests
     {
         var encoded = Encode([1, 2, 3, 4, 5]);
 
-        await Assert.That(() => DeltaBinaryPackedDecoder.Decode(encoded, new int[4])).Throws<ParquetFormatException>();
-        await Assert.That(() => DeltaBinaryPackedDecoder.Decode(encoded, new int[6])).Throws<ParquetFormatException>();
+        await Assert.That(() => DeltaBinaryPackedDecoder.Decode(encoded, new int[4])).Throws<EncodingException>();
+        await Assert.That(() => DeltaBinaryPackedDecoder.Decode(encoded, new int[6])).Throws<EncodingException>();
     }
 
     [Test]
@@ -128,7 +129,7 @@ public class DeltaEncodingTests
 
         for (int length = 0; length < encoded.Length; length++)
         {
-            await Assert.That(() => DeltaBinaryPackedDecoder.Decode(encoded.AsSpan(0, length), new int[300])).Throws<ParquetFormatException>().Because($"{length} of {encoded.Length} bytes");
+            await Assert.That(() => DeltaBinaryPackedDecoder.Decode(encoded.AsSpan(0, length), new int[300])).Throws<EncodingException>().Because($"{length} of {encoded.Length} bytes");
         }
     }
 
@@ -147,7 +148,7 @@ public class DeltaEncodingTests
         {
             var bytes = Convert.FromHexString(header + "02" + "00000000" + new string('0', 64));
 
-            var exception = Assert.Throws<ParquetFormatException>(() => DeltaBinaryPackedDecoder.Decode(bytes, new int[5]));
+            var exception = Assert.Throws<EncodingException>(() => DeltaBinaryPackedDecoder.Decode(bytes, new int[5]));
             await Assert.That(exception.Message).Contains("invalid layout").Because(header);
         }
     }
@@ -159,7 +160,7 @@ public class DeltaEncodingTests
         var bytes = Encode([7, 5, 3, 1, 2, 3, 4, 5]).Concat(new byte[200]).ToArray();
         bytes[6] = 33; // the first miniblock width (after 5 header bytes and the minimum delta), too wide for INT32
 
-        var exception = Assert.Throws<ParquetFormatException>(() => DeltaBinaryPackedDecoder.Decode(bytes, new int[8]));
+        var exception = Assert.Throws<EncodingException>(() => DeltaBinaryPackedDecoder.Decode(bytes, new int[8]));
         await Assert.That(exception.Message).Contains("bit width");
         await Assert.That(() => DeltaBinaryPackedDecoder.Decode(bytes, new long[8])).ThrowsNothing(); // 33 bits are fine for INT64
     }
@@ -193,11 +194,11 @@ public class DeltaEncodingTests
     public async Task MalformedVariableLengthIntegers_AreRejected()
     {
         int position = 0;
-        await Assert.That(() => VariableLengthInteger.ReadUnsigned([0x80], ref position)).Throws<ParquetFormatException>(); // cut off
+        await Assert.That(() => VariableLengthInteger.ReadUnsigned([0x80], ref position)).Throws<EncodingException>(); // cut off
         position = 0;
-        await Assert.That(() => VariableLengthInteger.ReadUnsigned(Enumerable.Repeat((byte)0xFF, 11).ToArray(), ref position)).Throws<ParquetFormatException>();
+        await Assert.That(() => VariableLengthInteger.ReadUnsigned(Enumerable.Repeat((byte)0xFF, 11).ToArray(), ref position)).Throws<EncodingException>();
         position = 0;
-        await Assert.That(() => VariableLengthInteger.ReadUnsigned([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x02], ref position)).Throws<ParquetFormatException>(); // 65 bits
+        await Assert.That(() => VariableLengthInteger.ReadUnsigned([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x02], ref position)).Throws<EncodingException>(); // 65 bits
     }
 
     [Test]
@@ -290,7 +291,7 @@ public class DeltaEncodingTests
         DeltaByteArrayDecoder.Decode(encoded.WrittenSpan, values.Length, 3, 1 << 20, decoded);
 
         await Assert.That(decoded.WrittenSpan.SequenceEqual(plain)).IsTrue();
-        await Assert.That(() => DeltaByteArrayDecoder.Decode(encoded.WrittenSpan, values.Length, 4, 1 << 20, new ArrayBufferWriter<byte>())).Throws<ParquetFormatException>();
+        await Assert.That(() => DeltaByteArrayDecoder.Decode(encoded.WrittenSpan, values.Length, 4, 1 << 20, new ArrayBufferWriter<byte>())).Throws<EncodingException>();
     }
 
     [Test]
@@ -303,7 +304,7 @@ public class DeltaEncodingTests
         DeltaLengthByteArrayEncoder.Encode(Plain([[97, 98], [99]]), 2, suffixes);
         var data = prefixes.WrittenSpan.ToArray().Concat(suffixes.WrittenSpan.ToArray()).ToArray();
 
-        await Assert.That(() => DeltaByteArrayDecoder.Decode(data, 2, 0, 1 << 20, new ArrayBufferWriter<byte>())).Throws<ParquetFormatException>();
+        await Assert.That(() => DeltaByteArrayDecoder.Decode(data, 2, 0, 1 << 20, new ArrayBufferWriter<byte>())).Throws<EncodingException>();
     }
 
     [Test]
@@ -320,7 +321,7 @@ public class DeltaEncodingTests
         DeltaByteArrayEncoder.Encode(Plain(values), values.Count, 0, encoded);
 
         await Assert.That(encoded.WrittenCount).IsLessThan(10_000);
-        await Assert.That(() => DeltaByteArrayDecoder.Decode(encoded.WrittenSpan, values.Count, 0, 100_000, new ArrayBufferWriter<byte>())).Throws<ParquetFormatException>();
+        await Assert.That(() => DeltaByteArrayDecoder.Decode(encoded.WrittenSpan, values.Count, 0, 100_000, new ArrayBufferWriter<byte>())).Throws<EncodingException>();
         await Assert.That(() => DeltaByteArrayDecoder.Decode(encoded.WrittenSpan, values.Count, 0, 10_000_000, new ArrayBufferWriter<byte>())).ThrowsNothing();
     }
 
@@ -330,7 +331,7 @@ public class DeltaEncodingTests
         var encoded = new ArrayBufferWriter<byte>();
         DeltaLengthByteArrayEncoder.Encode(Plain([[1, 2, 3], [4, 5]]), 2, encoded);
 
-        await Assert.That(() => DeltaLengthByteArrayDecoder.Decode(encoded.WrittenSpan[..^1], 2, new ArrayBufferWriter<byte>())).Throws<ParquetFormatException>();
+        await Assert.That(() => DeltaLengthByteArrayDecoder.Decode(encoded.WrittenSpan[..^1], 2, new ArrayBufferWriter<byte>())).Throws<EncodingException>();
     }
 
     // ---- BYTE_STREAM_SPLIT ----
@@ -369,6 +370,6 @@ public class DeltaEncodingTests
     [Test]
     public async Task ByteStreamSplit_NeedsAllItsBytes()
     {
-        await Assert.That(() => ByteStreamSplitDecoder.Decode(new byte[7], 2, 4, new byte[8])).Throws<ParquetFormatException>();
+        await Assert.That(() => ByteStreamSplitDecoder.Decode(new byte[7], 2, 4, new byte[8])).Throws<EncodingException>();
     }
 }

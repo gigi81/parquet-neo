@@ -1,4 +1,5 @@
 using ParquetNeo.Core;
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 using ParquetNeo.Tests.Core;
@@ -155,16 +156,16 @@ public class LogicalTypeTests
         var farTimestamp = WritePhysical(new PrimitiveNode("x", PhysicalType.Int64, FieldRepetitionType.Required, LogicalType.Timestamp(true, TimeUnit.Millis)), w => w.WriteBatch([long.MaxValue]));
         var beforeYearOne = WritePhysical(new PrimitiveNode("x", PhysicalType.Int64, FieldRepetitionType.Required, LogicalType.Timestamp(true, TimeUnit.Micros)), w => w.WriteBatch([-62_135_596_800_000_001L]));
 
-        await Assert.That(() => Open(tooBigForInt8).ReadBatch(new sbyte[1])).Throws<ParquetFormatException>();
-        await Assert.That(() => Open(tooBigForUInt8).ReadBatch(new byte[1])).Throws<ParquetFormatException>();
-        await Assert.That(() => Open(tooFarDate).ReadBatch(new DateOnly[1])).Throws<ParquetFormatException>();
-        await Assert.That(() => Open(tooEarlyDate).ReadBatch(new DateOnly[1])).Throws<ParquetFormatException>();
-        await Assert.That(() => Open(negativeTime).ReadBatch(new TimeOnly[1])).Throws<ParquetFormatException>();
-        await Assert.That(() => Open(longTime).ReadBatch(new TimeOnly[1])).Throws<ParquetFormatException>();
-        await Assert.That(() => Open(fullDayMillis).ReadBatch(new TimeOnly[1])).Throws<ParquetFormatException>();
-        await Assert.That(() => Open(yearTenThousand).ReadBatch(new DateTime[1])).Throws<ParquetFormatException>();
-        await Assert.That(() => Open(farTimestamp).ReadBatch(new DateTime[1])).Throws<ParquetFormatException>();
-        await Assert.That(() => Open(beforeYearOne).ReadBatch(new DateTimeOffset[1])).Throws<ParquetFormatException>();
+        await Assert.That(() => Open(tooBigForInt8).ReadBatch(new sbyte[1])).Throws<ValueConversionException>();
+        await Assert.That(() => Open(tooBigForUInt8).ReadBatch(new byte[1])).Throws<ValueConversionException>();
+        await Assert.That(() => Open(tooFarDate).ReadBatch(new DateOnly[1])).Throws<ValueConversionException>();
+        await Assert.That(() => Open(tooEarlyDate).ReadBatch(new DateOnly[1])).Throws<ValueConversionException>();
+        await Assert.That(() => Open(negativeTime).ReadBatch(new TimeOnly[1])).Throws<ValueConversionException>();
+        await Assert.That(() => Open(longTime).ReadBatch(new TimeOnly[1])).Throws<ValueConversionException>();
+        await Assert.That(() => Open(fullDayMillis).ReadBatch(new TimeOnly[1])).Throws<ValueConversionException>();
+        await Assert.That(() => Open(yearTenThousand).ReadBatch(new DateTime[1])).Throws<ValueConversionException>();
+        await Assert.That(() => Open(farTimestamp).ReadBatch(new DateTime[1])).Throws<ValueConversionException>();
+        await Assert.That(() => Open(beforeYearOne).ReadBatch(new DateTimeOffset[1])).Throws<ValueConversionException>();
     }
 
     [Test]

@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
@@ -16,6 +17,6 @@ internal readonly struct SByteConverter : IValueConverter<int, sbyte, SByteConve
 
     public int ToPhysical(sbyte value) => value;
 
-    private static ParquetFormatException OutOfRange(int physical) =>
+    private static ValueConversionException OutOfRange(int physical) =>
         new($"The value {physical} is outside the range of the {typeof(sbyte).Name} its column is stored as.");
 }

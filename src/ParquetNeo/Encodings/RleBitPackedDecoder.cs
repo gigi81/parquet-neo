@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using ParquetNeo.Exceptions;
 
 namespace ParquetNeo.Encodings;
 
@@ -40,7 +41,7 @@ internal ref struct RleBitPackedDecoder
     }
 
     /// <summary>Decodes up to <paramref name="destination"/>.Length values; returns fewer only when the data ends.</summary>
-    /// <exception cref="ParquetFormatException">A run header or repeated value is truncated or malformed.</exception>
+    /// <exception cref="EncodingException">A run header or repeated value is truncated or malformed.</exception>
     public int ReadValues(scoped Span<int> destination)
     {
         var output = MemoryMarshal.Cast<int, uint>(destination);
@@ -103,7 +104,7 @@ internal ref struct RleBitPackedDecoder
             int valueBytes = (_bitWidth + 7) / 8;
             if (valueBytes > _data.Length - _position)
             {
-                throw new ParquetFormatException("The RLE run's repeated value is truncated.");
+                throw new EncodingException("The RLE run's repeated value is truncated.");
             }
 
             uint value = 0;
@@ -164,7 +165,7 @@ internal ref struct RleBitPackedDecoder
         {
             if (_position >= _data.Length)
             {
-                throw new ParquetFormatException("The RLE run header is truncated.");
+                throw new EncodingException("The RLE run header is truncated.");
             }
 
             byte b = _data[_position++];
@@ -175,7 +176,7 @@ internal ref struct RleBitPackedDecoder
             }
         }
 
-        throw new ParquetFormatException("The RLE run header is longer than 5 bytes.");
+        throw new EncodingException("The RLE run header is longer than 5 bytes.");
     }
 
     [InlineArray(8)]

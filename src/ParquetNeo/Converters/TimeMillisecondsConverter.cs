@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
@@ -19,7 +20,7 @@ internal readonly struct TimeMillisecondsConverter : IValueConverter<int, TimeOn
     public TimeOnly ToValue(int physical) =>
         physical is >= 0 and < 86_400_000
             ? new TimeOnly(physical * TimeSpan.TicksPerMillisecond)
-            : throw new ParquetFormatException($"The time {physical} ms is not within a day.");
+            : throw new ValueConversionException($"The time {physical} ms is not within a day.");
 
     public int ToPhysical(TimeOnly value) => (int)(value.Ticks / TimeSpan.TicksPerMillisecond);
 }

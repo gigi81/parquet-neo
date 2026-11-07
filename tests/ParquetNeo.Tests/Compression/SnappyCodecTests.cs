@@ -1,5 +1,6 @@
 using ParquetNeo.Compression;
 using ParquetNeo.Compression.Snappy;
+using ParquetNeo.Exceptions;
 
 namespace ParquetNeo.Tests.Compression;
 
@@ -101,7 +102,7 @@ public class SnappyCodecTests
         {
             var data = TestBytes.Hex(hex);
 
-            await Assert.That(() => Snappy.Decompress(data, new byte[length])).Throws<ParquetFormatException>().Because(reason);
+            await Assert.That(() => Snappy.Decompress(data, new byte[length])).Throws<CompressionException>().Because(reason);
         }
     }
 
@@ -146,7 +147,7 @@ public class SnappyCodecTests
                 Snappy.Decompress(input, buffer.AsSpan(16, length));
                 decodedWithoutError++;
             }
-            catch (ParquetFormatException)
+            catch (CompressionException)
             {
             }
 

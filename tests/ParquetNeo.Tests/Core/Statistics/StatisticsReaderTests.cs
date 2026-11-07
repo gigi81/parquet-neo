@@ -1,6 +1,7 @@
 using System.Text;
 using ParquetNeo.Core;
 using ParquetNeo.Core.Statistics;
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Tests.Core.Statistics;
@@ -189,7 +190,7 @@ public class StatisticsReaderTests
             var bytes = StatisticsFile();
             Edit(ref bytes, column, s => s.MinValue = new byte[size]);
 
-            await Assert.That(() => Read(bytes, column)).Throws<ParquetFormatException>().Because($"{column} with {size} bytes");
+            await Assert.That(() => Read(bytes, column)).Throws<MetadataException>().Because($"{column} with {size} bytes");
         }
     }
 

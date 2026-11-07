@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Compression;
@@ -19,7 +20,7 @@ public sealed class UncompressedCodec : ICodec
     {
         if (source.Length != destination.Length)
         {
-            throw new ParquetFormatException(
+            throw new CompressionException(
                 $"An uncompressed page holds {source.Length} bytes but its header says {destination.Length}.");
         }
 

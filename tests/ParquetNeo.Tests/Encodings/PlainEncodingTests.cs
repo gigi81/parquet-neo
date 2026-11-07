@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Text;
 using ParquetNeo.Encodings;
+using ParquetNeo.Exceptions;
 
 namespace ParquetNeo.Tests.Encodings;
 
@@ -205,19 +206,19 @@ public class PlainEncodingTests
     }
 
     [Test]
-    public async Task TooShortData_ThrowsParquetFormatException()
+    public async Task TooShortData_ThrowsEncodingException()
     {
-        await Assert.That(() => PlainDecoder.ReadInt32s(new byte[7], new int[2])).Throws<ParquetFormatException>();
-        await Assert.That(() => PlainDecoder.ReadInt64s(new byte[15], new long[2])).Throws<ParquetFormatException>();
-        await Assert.That(() => PlainDecoder.ReadSingles(new byte[3], new float[1])).Throws<ParquetFormatException>();
-        await Assert.That(() => PlainDecoder.ReadDoubles(new byte[7], new double[1])).Throws<ParquetFormatException>();
-        await Assert.That(() => PlainDecoder.ReadInt96s(new byte[23], new Int96[2])).Throws<ParquetFormatException>();
-        await Assert.That(() => PlainDecoder.ReadBooleans(new byte[1], new bool[9])).Throws<ParquetFormatException>();
-        await Assert.That(() => PlainDecoder.ReadFixedLengthByteArrays(new byte[5], 2, 3)).Throws<ParquetFormatException>();
+        await Assert.That(() => PlainDecoder.ReadInt32s(new byte[7], new int[2])).Throws<EncodingException>();
+        await Assert.That(() => PlainDecoder.ReadInt64s(new byte[15], new long[2])).Throws<EncodingException>();
+        await Assert.That(() => PlainDecoder.ReadSingles(new byte[3], new float[1])).Throws<EncodingException>();
+        await Assert.That(() => PlainDecoder.ReadDoubles(new byte[7], new double[1])).Throws<EncodingException>();
+        await Assert.That(() => PlainDecoder.ReadInt96s(new byte[23], new Int96[2])).Throws<EncodingException>();
+        await Assert.That(() => PlainDecoder.ReadBooleans(new byte[1], new bool[9])).Throws<EncodingException>();
+        await Assert.That(() => PlainDecoder.ReadFixedLengthByteArrays(new byte[5], 2, 3)).Throws<EncodingException>();
     }
 
     [Test]
-    public async Task MalformedByteArrays_ThrowParquetFormatException()
+    public async Task MalformedByteArrays_ThrowEncodingException()
     {
         var truncatedPrefix = TestBytes.Hex("020000");
         var lengthBeyondData = TestBytes.Hex("05000000 6162");
@@ -225,11 +226,11 @@ public class PlainEncodingTests
         var hugeLength = TestBytes.Hex("FFFFFF7F 6162");
         var missingSecondValue = TestBytes.Hex("01000000 61");
 
-        await Assert.That(() => PlainDecoder.ReadByteArrays(truncatedPrefix, new ByteRange[1])).Throws<ParquetFormatException>();
-        await Assert.That(() => PlainDecoder.ReadByteArrays(lengthBeyondData, new ByteRange[1])).Throws<ParquetFormatException>();
-        await Assert.That(() => PlainDecoder.ReadByteArrays(negativeLength, new ByteRange[1])).Throws<ParquetFormatException>();
-        await Assert.That(() => PlainDecoder.ReadByteArrays(hugeLength, new ByteRange[1])).Throws<ParquetFormatException>();
-        await Assert.That(() => PlainDecoder.ReadByteArrays(missingSecondValue, new ByteRange[2])).Throws<ParquetFormatException>();
+        await Assert.That(() => PlainDecoder.ReadByteArrays(truncatedPrefix, new ByteRange[1])).Throws<EncodingException>();
+        await Assert.That(() => PlainDecoder.ReadByteArrays(lengthBeyondData, new ByteRange[1])).Throws<EncodingException>();
+        await Assert.That(() => PlainDecoder.ReadByteArrays(negativeLength, new ByteRange[1])).Throws<EncodingException>();
+        await Assert.That(() => PlainDecoder.ReadByteArrays(hugeLength, new ByteRange[1])).Throws<EncodingException>();
+        await Assert.That(() => PlainDecoder.ReadByteArrays(missingSecondValue, new ByteRange[2])).Throws<EncodingException>();
     }
 
     private static byte[] Write(Action<IBufferWriter<byte>> action)

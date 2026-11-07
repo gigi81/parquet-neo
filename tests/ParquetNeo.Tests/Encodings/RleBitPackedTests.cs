@@ -1,5 +1,6 @@
 using System.Buffers;
 using ParquetNeo.Encodings;
+using ParquetNeo.Exceptions;
 
 namespace ParquetNeo.Tests.Encodings;
 
@@ -91,9 +92,9 @@ public class RleBitPackedTests
     [Test]
     public async Task Decode_ThrowsOnTruncatedOrOverlongHeaders()
     {
-        await Assert.That(() => ReadAll(TestBytes.Hex("0A"), 3, new int[5])).Throws<ParquetFormatException>(); // value missing
-        await Assert.That(() => ReadAll(TestBytes.Hex("80"), 3, new int[5])).Throws<ParquetFormatException>(); // header cut off
-        await Assert.That(() => ReadAll(TestBytes.Hex("80 80 80 80 80 01"), 3, new int[5])).Throws<ParquetFormatException>();
+        await Assert.That(() => ReadAll(TestBytes.Hex("0A"), 3, new int[5])).Throws<EncodingException>(); // value missing
+        await Assert.That(() => ReadAll(TestBytes.Hex("80"), 3, new int[5])).Throws<EncodingException>(); // header cut off
+        await Assert.That(() => ReadAll(TestBytes.Hex("80 80 80 80 80 01"), 3, new int[5])).Throws<EncodingException>();
     }
 
     [Test]

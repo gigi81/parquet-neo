@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Buffers.Binary;
+using ParquetNeo.Exceptions;
 
 namespace ParquetNeo.Encodings;
 
@@ -7,7 +8,7 @@ namespace ParquetNeo.Encodings;
 internal static class DeltaLengthByteArrayDecoder
 {
     /// <summary>Appends the <paramref name="count"/> values of <paramref name="source"/> to <paramref name="plain"/> and returns the bytes of the source they used.</summary>
-    /// <exception cref="ParquetFormatException">The data is malformed.</exception>
+    /// <exception cref="EncodingException">The data is malformed.</exception>
     public static int Decode(ReadOnlySpan<byte> source, int count, IBufferWriter<byte> plain)
     {
         var lengths = new int[count];
@@ -17,7 +18,7 @@ internal static class DeltaLengthByteArrayDecoder
         {
             if (length < 0)
             {
-                throw new ParquetFormatException("A delta length byte array has a negative length.");
+                throw new EncodingException("A delta length byte array has a negative length.");
             }
 
             total += length;
@@ -25,7 +26,7 @@ internal static class DeltaLengthByteArrayDecoder
 
         if (total > source.Length - position)
         {
-            throw new ParquetFormatException($"The delta length byte arrays need {total} bytes but only {source.Length - position} follow their lengths.");
+            throw new EncodingException($"The delta length byte arrays need {total} bytes but only {source.Length - position} follow their lengths.");
         }
 
         foreach (int length in lengths)

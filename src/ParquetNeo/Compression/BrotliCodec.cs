@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Compression;
@@ -42,7 +43,7 @@ public sealed class BrotliCodec : ICodec
         // False means invalid data, or output larger than the destination.
         if (!BrotliDecoder.TryDecompress(source, destination, out int written) || written != destination.Length)
         {
-            throw new ParquetFormatException(
+            throw new CompressionException(
                 $"Brotli data is invalid or does not decompress to the {destination.Length} bytes its page header declares.");
         }
     }

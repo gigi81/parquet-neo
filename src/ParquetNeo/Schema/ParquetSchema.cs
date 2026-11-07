@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Schema;
@@ -86,7 +87,7 @@ public sealed class ParquetSchema
     }
 
     /// <summary>Builds the tree from the footer's flattened schema.</summary>
-    /// <exception cref="ParquetFormatException">The element list is not a well-formed depth-first tree.</exception>
+    /// <exception cref="InvalidSchemaException">The element list is not a well-formed depth-first tree.</exception>
     /// <remarks>
     /// A logical type that does not suit its column (or that this library does not know) is ignored,
     /// as the spec requires, leaving the physical type to describe the data.
@@ -96,13 +97,13 @@ public sealed class ParquetSchema
         ArgumentNullException.ThrowIfNull(elements);
         if (elements.Count == 0)
         {
-            throw new ParquetFormatException("The schema has no elements; the root is missing.");
+            throw new InvalidSchemaException("The schema has no elements; the root is missing.");
         }
 
         var root = elements[0];
         if (root.Type is not null)
         {
-            throw new ParquetFormatException("The schema root must be a group, but it has a physical type.");
+            throw new InvalidSchemaException("The schema root must be a group, but it has a physical type.");
         }
 
         var open = new Stack<OpenGroup>();
@@ -131,7 +132,7 @@ public sealed class ParquetSchema
 
             if (++index >= elements.Count)
             {
-                throw new ParquetFormatException("The schema ends before all declared children were found.");
+                throw new InvalidSchemaException("The schema ends before all declared children were found.");
             }
 
             var element = elements[index];
@@ -147,7 +148,7 @@ public sealed class ParquetSchema
 
         if (index != elements.Count - 1)
         {
-            throw new ParquetFormatException(
+            throw new InvalidSchemaException(
                 $"The schema has {elements.Count - 1 - index} element(s) that are not part of the tree.");
         }
 
@@ -159,7 +160,7 @@ public sealed class ParquetSchema
         int count = element.NumChildren ?? 0;
         if (count < 0)
         {
-            throw new ParquetFormatException($"Schema element {index} ('{element.Name}') has a negative child count.");
+            throw new InvalidSchemaException($"Schema element {index} ('{element.Name}') has a negative child count.");
         }
 
         return count;
@@ -174,7 +175,7 @@ public sealed class ParquetSchema
 
         if (element.RepetitionType is not { } repetition || !Enum.IsDefined(repetition))
         {
-            throw new ParquetFormatException(
+            throw new InvalidSchemaException(
                 $"Schema element {index} ('{element.Name}') has a missing or unknown repetition type.");
         }
 
@@ -186,17 +187,17 @@ public sealed class ParquetSchema
         var type = element.Type!.Value;
         if (!Enum.IsDefined(type))
         {
-            throw new ParquetFormatException($"Schema element {index} ('{element.Name}') has an unknown physical type {(int)type}.");
+            throw new InvalidSchemaException($"Schema element {index} ('{element.Name}') has an unknown physical type {(int)type}.");
         }
 
         if (element.NumChildren is > 0)
         {
-            throw new ParquetFormatException($"Schema element {index} ('{element.Name}') has a physical type and children.");
+            throw new InvalidSchemaException($"Schema element {index} ('{element.Name}') has a physical type and children.");
         }
 
         if (type == PhysicalType.FixedLenByteArray && element.TypeLength is not > 0)
         {
-            throw new ParquetFormatException(
+            throw new InvalidSchemaException(
                 $"Schema element {index} ('{element.Name}') is FIXED_LEN_BYTE_ARRAY without a valid type length.");
         }
 

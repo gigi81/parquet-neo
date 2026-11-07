@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Thrift;
 
 namespace ParquetNeo.Tests.Thrift;
@@ -230,7 +231,7 @@ public class ThriftCompactProtocolTests
         var data = TestBytes.Hex("15 02");
 
         await Assert.That(() => TestBytes.Read(data, (ref ThriftCompactReader r) => r.ReadListHeader(CompactType.I64)))
-            .Throws<ParquetFormatException>();
+            .Throws<MetadataException>();
     }
 
     // One field of every wire type (map and set included), then a sentinel i32 field with value 42.
@@ -311,11 +312,11 @@ public class ThriftCompactProtocolTests
     [Arguments("1D 00", "invalid field type 13")]
     [Arguments("10 00", "field type 0 with non-zero delta")]
     [Arguments("19 0D", "invalid list element type")]
-    public async Task MalformedInput_ThrowsParquetFormatException(string hex, string reason)
+    public async Task MalformedInput_ThrowsMetadataException(string hex, string reason)
     {
         var data = TestBytes.Hex(hex);
 
-        await Assert.That(() => SkipWholeStruct(data)).Throws<ParquetFormatException>();
+        await Assert.That(() => SkipWholeStruct(data)).Throws<MetadataException>();
         _ = reason; // documents each vector in the test report
     }
 
@@ -324,7 +325,7 @@ public class ThriftCompactProtocolTests
     {
         var data = TestBytes.Hex(string.Concat(Enumerable.Repeat("1C ", 100)));
 
-        await Assert.That(() => SkipWholeStruct(data)).Throws<ParquetFormatException>();
+        await Assert.That(() => SkipWholeStruct(data)).Throws<MetadataException>();
     }
 
     [Test]
@@ -332,7 +333,7 @@ public class ThriftCompactProtocolTests
     {
         var data = TestBytes.Hex(string.Concat(Enumerable.Repeat("19 19 ", 100)));
 
-        await Assert.That(() => SkipWholeStruct(data)).Throws<ParquetFormatException>();
+        await Assert.That(() => SkipWholeStruct(data)).Throws<MetadataException>();
     }
 
     private static int SkipWholeStruct(byte[] data) =>

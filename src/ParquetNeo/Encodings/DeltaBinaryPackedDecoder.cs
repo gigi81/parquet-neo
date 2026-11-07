@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 namespace ParquetNeo.Encodings;
 
 /// <summary>Decodes DELTA_BINARY_PACKED data; see <see cref="DeltaBinaryPackedEncoder"/>.</summary>
@@ -7,7 +8,7 @@ internal static class DeltaBinaryPackedDecoder
     private const int MaxBlockSize = 1 << 16;
 
     /// <summary>Decodes exactly <paramref name="destination"/>.Length INT32 values and returns the number of bytes used.</summary>
-    /// <exception cref="ParquetFormatException">The data is malformed, or holds a different number of values.</exception>
+    /// <exception cref="EncodingException">The data is malformed, or holds a different number of values.</exception>
     public static int Decode(ReadOnlySpan<byte> source, Span<int> destination)
     {
         var wide = destination.Length <= 1024 ? stackalloc long[destination.Length] : new long[destination.Length];
@@ -32,12 +33,12 @@ internal static class DeltaBinaryPackedDecoder
         long first = VariableLengthInteger.ReadZigZag(source, ref position);
         if (blockSize == 0 || blockSize > MaxBlockSize || blockSize % 128 != 0 || miniblocks == 0 || blockSize % miniblocks != 0 || (blockSize / miniblocks) % 32 != 0)
         {
-            throw new ParquetFormatException($"A delta header has an invalid layout: block size {blockSize}, {miniblocks} miniblocks.");
+            throw new EncodingException($"A delta header has an invalid layout: block size {blockSize}, {miniblocks} miniblocks.");
         }
 
         if (count != (ulong)destination.Length)
         {
-            throw new ParquetFormatException($"A delta header declares {count} values but the page holds {destination.Length}.");
+            throw new EncodingException($"A delta header declares {count} values but the page holds {destination.Length}.");
         }
 
         if (destination.IsEmpty)
@@ -51,7 +52,7 @@ internal static class DeltaBinaryPackedDecoder
         Span<byte> widths = stackalloc byte[(int)Math.Min(miniblocks, 256)];
         if ((int)miniblocks > widths.Length)
         {
-            throw new ParquetFormatException("A delta header declares too many miniblocks.");
+            throw new EncodingException("A delta header declares too many miniblocks.");
         }
 
         widths = widths[..(int)miniblocks];
@@ -62,7 +63,7 @@ internal static class DeltaBinaryPackedDecoder
             long minimum = VariableLengthInteger.ReadZigZag(source, ref position);
             if (source.Length - position < widths.Length)
             {
-                throw new ParquetFormatException("A delta block is cut off before its miniblock widths.");
+                throw new EncodingException("A delta block is cut off before its miniblock widths.");
             }
 
             source.Slice(position, widths.Length).CopyTo(widths);
@@ -72,13 +73,13 @@ internal static class DeltaBinaryPackedDecoder
                 int bitWidth = widths[m];
                 if (bitWidth > width)
                 {
-                    throw new ParquetFormatException($"A delta miniblock has a bit width of {bitWidth}, more than the {width} bits of its type.");
+                    throw new EncodingException($"A delta miniblock has a bit width of {bitWidth}, more than the {width} bits of its type.");
                 }
 
                 int bytes = checked(miniblockSize * bitWidth / 8);
                 if (source.Length - position < bytes)
                 {
-                    throw new ParquetFormatException("A delta miniblock is cut off by the end of the data.");
+                    throw new EncodingException("A delta miniblock is cut off by the end of the data.");
                 }
 
                 WideBitPacking.Unpack(source.Slice(position, bytes), bitWidth, remainders);

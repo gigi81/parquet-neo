@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Schema;
 
 namespace ParquetNeo.Converters;
@@ -14,7 +15,7 @@ internal interface IValueConverter<TPhysical, TValue, TSelf>
     /// <exception cref="ArgumentException">The column is not of the logical and physical type this conversion needs.</exception>
     static abstract TSelf Create(PrimitiveNode column);
 
-    /// <exception cref="ParquetFormatException">The stored value cannot be represented.</exception>
+    /// <exception cref="ValueConversionException">The stored value cannot be represented.</exception>
     TValue ToValue(TPhysical physical);
 
     /// <exception cref="ArgumentOutOfRangeException">The value cannot be stored in the column.</exception>
