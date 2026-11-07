@@ -91,7 +91,8 @@ plus tests).
 
 | # | Step | Deliverable |
 |---|---|---|
-| 11 | **High-level write** | Attributes + convention-based schema inference from a DTO; `SerializeAsync<T>` batching rows into row groups; nullable and nested properties. |
+| 11 | **High-level write (flat rows)** | `ParquetSerializer.Serialize` / `SerializeAsync` (sync, `IEnumerable<T>` and `IAsyncEnumerable<T>`) writing rows as a Parquet file: a schema inferred from the public properties (primitives, `decimal`, strings, binary, `Guid`, date and time types, `Nullable<T>` and nullable reference types), attributes to rename, order, ignore, and set decimal precision, time units and encodings, and rows batched into row groups that are encoded and written as they fill. |
+| 11b | **High-level write (nested)** | Nested objects, collections (`List<T>`, arrays), dictionaries and enums as properties, written as structs, lists and maps through the nested layer. |
 | 12 | **High-level read** | `DeserializeAsync<T>` and streaming `IAsyncEnumerable<T>` per row group; column projection driven by the DTO; clear errors for missing/mismatched columns. |
 
 ### Milestone 5 – Performance, extras, release

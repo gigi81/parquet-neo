@@ -524,6 +524,7 @@ public class ReaderRobustnessTests
             ("our nested v2", File.ReadAllBytes(TestBytes.FixturePath("golden-nested-v2.parquet"))),
             ("our encodings v2", File.ReadAllBytes(TestBytes.FixturePath("golden-encodings-v2.parquet"))),
             ("our logical types", File.ReadAllBytes(TestBytes.FixturePath("golden-logical.parquet"))),
+            ("our serialized rows", File.ReadAllBytes(TestBytes.FixturePath("golden-serializer.parquet"))),
             ("our decimals and text", File.ReadAllBytes(TestBytes.FixturePath("golden-decimal.parquet"))),
             ("pyarrow decimals dictionary", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-decimal-optional-dictionary.parquet"))),
             ("pyarrow int96 dictionary", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-int96-optional-dictionary.parquet"))),
