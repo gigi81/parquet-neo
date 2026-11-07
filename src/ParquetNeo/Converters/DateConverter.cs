@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
@@ -19,7 +20,7 @@ internal readonly struct DateConverter : IValueConverter<int, DateOnly, DateConv
         long dayNumber = (long)physical + EpochDayNumber;
         return dayNumber is >= 0 and <= 3_652_058
             ? DateOnly.FromDayNumber((int)dayNumber)
-            : throw new ParquetFormatException($"The date {physical} days from 1970-01-01 is outside the years 1 to 9999 that DateOnly holds.");
+            : throw new ValueConversionException($"The date {physical} days from 1970-01-01 is outside the years 1 to 9999 that DateOnly holds.");
     }
 
     public int ToPhysical(DateOnly value) => value.DayNumber - EpochDayNumber;

@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using ParquetNeo.Compression;
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Tests.Compression;
@@ -153,7 +154,7 @@ public class CodecRoundTripTests
     {
         var codec = new UncompressedCodec();
 
-        await Assert.That(() => codec.Decompress(new byte[4], new byte[5])).Throws<ParquetFormatException>();
+        await Assert.That(() => codec.Decompress(new byte[4], new byte[5])).Throws<CompressionException>();
         await Assert.That(codec.Id).IsEqualTo(CompressionCodec.Uncompressed);
     }
 

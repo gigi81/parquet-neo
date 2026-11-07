@@ -1,12 +1,13 @@
 using System.Buffers.Binary;
 using System.Text;
+using ParquetNeo.Exceptions;
 
 namespace ParquetNeo.Thrift;
 
 /// <summary>
 /// Forward-only reader for the Thrift compact protocol over a contiguous buffer.
 /// Every length and count read from the data is validated against the remaining bytes, and nesting
-/// is bounded, so malformed input throws <see cref="ParquetFormatException"/> instead of
+/// is bounded, so malformed input throws <see cref="MetadataException"/> instead of
 /// over-allocating or overflowing the stack.
 /// </summary>
 internal ref struct ThriftCompactReader
@@ -314,6 +315,6 @@ internal ref struct ThriftCompactReader
         throw Error("varint too long");
     }
 
-    private readonly ParquetFormatException Error(string message) =>
+    private readonly MetadataException Error(string message) =>
         new($"Invalid Thrift data at offset {_position}: {message}.");
 }

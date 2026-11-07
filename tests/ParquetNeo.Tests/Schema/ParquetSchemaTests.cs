@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
@@ -268,7 +269,7 @@ public class ParquetSchemaTests
         foreach (var (reason, elements) in cases)
         {
             await Assert.That(() => ParquetSchema.FromElements(elements))
-                .Throws<ParquetFormatException>()
+                .Throws<InvalidSchemaException>()
                 .Because(reason);
         }
     }

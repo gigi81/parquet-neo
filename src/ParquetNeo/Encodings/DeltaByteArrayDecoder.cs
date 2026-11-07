@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Buffers.Binary;
+using ParquetNeo.Exceptions;
 
 namespace ParquetNeo.Encodings;
 
@@ -11,7 +12,7 @@ internal static class DeltaByteArrayDecoder
     /// back for FIXED_LEN_BYTE_ARRAY (<paramref name="fixedLength"/> above 0, which every value must have).
     /// </summary>
     /// <param name="maxOutputBytes">The most bytes the values may add up to: shared prefixes let a few bytes of input describe a lot of output.</param>
-    /// <exception cref="ParquetFormatException">The data is malformed, or the values would be longer than the limit.</exception>
+    /// <exception cref="EncodingException">The data is malformed, or the values would be longer than the limit.</exception>
     public static void Decode(ReadOnlySpan<byte> source, int count, int fixedLength, long maxOutputBytes, IBufferWriter<byte> plain)
     {
         var prefixes = new int[count];
@@ -31,19 +32,19 @@ internal static class DeltaByteArrayDecoder
             int prefix = prefixes[i];
             if (prefix < 0 || prefix > previous.Length)
             {
-                throw new ParquetFormatException($"A delta byte array shares {prefix} bytes with the previous value, which has {previous.Length}.");
+                throw new EncodingException($"A delta byte array shares {prefix} bytes with the previous value, which has {previous.Length}.");
             }
 
             long length = (long)prefix + suffixLength;
             written += length + (fixedLength > 0 ? 0 : sizeof(int));
             if (written > maxOutputBytes)
             {
-                throw new ParquetFormatException($"The delta byte arrays add up to more than the limit of {maxOutputBytes} bytes.");
+                throw new EncodingException($"The delta byte arrays add up to more than the limit of {maxOutputBytes} bytes.");
             }
 
             if (fixedLength > 0 && length != fixedLength)
             {
-                throw new ParquetFormatException($"A fixed-length delta byte array has {length} bytes, not {fixedLength}.");
+                throw new EncodingException($"A fixed-length delta byte array has {length} bytes, not {fixedLength}.");
             }
 
             var value = new byte[length];

@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Compression;
@@ -82,7 +83,7 @@ public sealed unsafe class GzipCodec : ICodec
                 return; // tolerated: some writers emit nothing for an empty page
             }
 
-            throw new ParquetFormatException("A GZIP page is empty but its header expects data.");
+            throw new CompressionException("A GZIP page is empty but its header expects data.");
         }
 
         try
@@ -106,14 +107,14 @@ public sealed unsafe class GzipCodec : ICodec
 
                 if (total != destination.Length || gzip.ReadByte() != -1)
                 {
-                    throw new ParquetFormatException(
+                    throw new CompressionException(
                         $"GZIP data does not decompress to the {destination.Length} bytes its page header declares.");
                 }
             }
         }
         catch (InvalidDataException exception)
         {
-            throw new ParquetFormatException($"Invalid GZIP data: {exception.Message}");
+            throw new CompressionException($"Invalid GZIP data: {exception.Message}", exception);
         }
     }
 }

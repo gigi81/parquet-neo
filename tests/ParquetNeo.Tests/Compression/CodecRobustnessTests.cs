@@ -1,8 +1,9 @@
 using ParquetNeo.Compression;
+using ParquetNeo.Exceptions;
 
 namespace ParquetNeo.Tests.Compression;
 
-/// <summary>Whatever the input, decompression either succeeds or throws <see cref="ParquetFormatException"/>.</summary>
+/// <summary>Whatever the input, decompression either succeeds or throws <see cref="CompressionException"/>.</summary>
 public class CodecRobustnessTests
 {
     private static readonly string[] Real = ["snappy", "gzip", "brotli", "zstd", "lz4raw"];
@@ -26,7 +27,7 @@ public class CodecRobustnessTests
                 var truncated = compressed[..keep];
 
                 await Assert.That(() => codec.Decompress(truncated, new byte[original.Length]))
-                    .Throws<ParquetFormatException>().Because($"{name} truncated to {keep} of {compressed.Length}");
+                    .Throws<CompressionException>().Because($"{name} truncated to {keep} of {compressed.Length}");
             }
         }
     }
@@ -40,11 +41,11 @@ public class CodecRobustnessTests
             var compressed = CodecTestData.Compress(codec, original);
 
             await Assert.That(() => codec.Decompress(compressed, new byte[original.Length - 1]))
-                .Throws<ParquetFormatException>().Because($"{name} destination one byte short");
+                .Throws<CompressionException>().Because($"{name} destination one byte short");
             await Assert.That(() => codec.Decompress(compressed, new byte[original.Length + 1]))
-                .Throws<ParquetFormatException>().Because($"{name} destination one byte long");
+                .Throws<CompressionException>().Because($"{name} destination one byte long");
             await Assert.That(() => codec.Decompress(compressed, new byte[original.Length * 4]))
-                .Throws<ParquetFormatException>().Because($"{name} destination far too long");
+                .Throws<CompressionException>().Because($"{name} destination far too long");
         }
     }
 
@@ -60,12 +61,12 @@ public class CodecRobustnessTests
             await Assert.That(CodecTestData.Decompress(codec, compressed, 0).Length).IsEqualTo(0).Because(name);
             // No bytes at all for no data is tolerated; no bytes for real data never is.
             codec.Decompress([], []);
-            await Assert.That(() => codec.Decompress([], new byte[10])).Throws<ParquetFormatException>().Because(name);
+            await Assert.That(() => codec.Decompress([], new byte[10])).Throws<CompressionException>().Because(name);
         }
     }
 
     [Test]
-    public async Task GarbageInput_OnlyEverFailsWithParquetFormatException()
+    public async Task GarbageInput_OnlyEverFailsWithCompressionException()
     {
         foreach (var (name, codec) in CodecTestData.Codecs.Where(c => Real.Contains(c.Name)))
         {
@@ -81,7 +82,7 @@ public class CodecRobustnessTests
     }
 
     [Test]
-    public async Task SnappyStreamsWithACorrectPreamble_AndGarbageBodies_OnlyFailWithParquetFormatException()
+    public async Task SnappyStreamsWithACorrectPreamble_AndGarbageBodies_OnlyFailWithCompressionException()
     {
         // Random garbage almost never declares the destination's length, so it is rejected before decoding.
         // Declare it correctly so the element decoder itself sees hostile bytes.
@@ -100,7 +101,7 @@ public class CodecRobustnessTests
     }
 
     [Test]
-    public async Task CorruptedValidData_OnlyEverFailsWithParquetFormatException()
+    public async Task CorruptedValidData_OnlyEverFailsWithCompressionException()
     {
         var original = CodecTestData.Cases["mixed"][..20_000];
         foreach (var (name, codec) in CodecTestData.Codecs.Where(c => Real.Contains(c.Name)))
@@ -129,7 +130,7 @@ public class CodecRobustnessTests
             action();
             return null;
         }
-        catch (ParquetFormatException)
+        catch (CompressionException)
         {
             return null;
         }

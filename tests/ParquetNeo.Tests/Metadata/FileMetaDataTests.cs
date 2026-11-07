@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Thrift;
 
@@ -219,11 +220,11 @@ public class FileMetaDataTests
     }
 
     [Test]
-    public async Task TruncatedFooter_ThrowsParquetFormatException()
+    public async Task TruncatedFooter_ThrowsMetadataException()
     {
         var bytes = SampleMetadata.FileMetaData().ToBytes();
 
         await Assert.That(() => FileMetaData.Deserialize(bytes.AsSpan(0, bytes.Length / 2).ToArray()))
-            .Throws<ParquetFormatException>();
+            .Throws<MetadataException>();
     }
 }

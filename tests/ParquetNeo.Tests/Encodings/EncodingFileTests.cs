@@ -1,5 +1,6 @@
 using ParquetNeo.Compression;
 using ParquetNeo.Core;
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Tests.Core;
 
@@ -175,7 +176,7 @@ public class EncodingFileTests
         var bytes = FooterEditor.PatchPageHeader(stream.ToArray(), 0, h => h.DataPageHeader!.Encoding = ParquetEncoding.DeltaBinaryPacked);
         using var reader = ReadHelper.Open(bytes);
 
-        var exception = Assert.Throws<ParquetFormatException>(() => ReadHelper.ReadColumn(reader, 0, 0, 10));
+        var exception = Assert.Throws<CorruptColumnException>(() => ReadHelper.ReadColumn(reader, 0, 0, 10));
 
         await Assert.That(exception.Message).Contains("cannot use");
     }

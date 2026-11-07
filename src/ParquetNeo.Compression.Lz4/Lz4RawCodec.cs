@@ -1,4 +1,5 @@
 using K4os.Compression.LZ4;
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Compression.Lz4;
@@ -49,13 +50,13 @@ public sealed class Lz4RawCodec : ICodec
                 return;
             }
 
-            throw new ParquetFormatException("LZ4 data is invalid or does not decompress to the 0 bytes its page header declares.");
+            throw new CompressionException("LZ4 data is invalid or does not decompress to the 0 bytes its page header declares.");
         }
 
         int written = LZ4Codec.Decode(source, destination);
         if (written != destination.Length)
         {
-            throw new ParquetFormatException(
+            throw new CompressionException(
                 $"LZ4 data is invalid or does not decompress to the {destination.Length} bytes its page header declares.");
         }
     }

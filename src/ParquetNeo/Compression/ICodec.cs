@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Compression;
@@ -25,7 +26,7 @@ public interface ICodec
     /// Decompresses <paramref name="source"/> into <paramref name="destination"/>, whose length must be exactly
     /// the uncompressed size recorded in the page header.
     /// </summary>
-    /// <exception cref="ParquetFormatException">
+    /// <exception cref="CompressionException">
     /// The data is corrupt, or does not decompress to exactly <c>destination.Length</c> bytes.
     /// </exception>
     void Decompress(ReadOnlySpan<byte> source, Span<byte> destination);

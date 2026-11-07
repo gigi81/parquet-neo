@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ZstdSharp;
 
@@ -52,12 +53,12 @@ public sealed class ZstdCodec : ICodec, IDisposable
         }
         catch (ZstdException exception)
         {
-            throw new ParquetFormatException($"Invalid ZSTD data: {exception.Message}");
+            throw new CompressionException($"Invalid ZSTD data: {exception.Message}", exception);
         }
 
         if (written != destination.Length)
         {
-            throw new ParquetFormatException(
+            throw new CompressionException(
                 $"ZSTD data decompresses to {written} bytes but the page header declares {destination.Length}.");
         }
     }

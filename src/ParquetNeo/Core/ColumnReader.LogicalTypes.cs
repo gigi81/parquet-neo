@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Runtime.InteropServices;
 using ParquetNeo.Converters;
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Core;
@@ -48,7 +49,7 @@ public sealed partial class ColumnReader
 
     /// <summary>
     /// Reads a TIMESTAMP column in any unit as <see cref="DateTime"/>: UTC when the column is adjusted to UTC, otherwise
-    /// <see cref="DateTimeKind.Unspecified"/>. A moment outside the years 1 to 9999 is a <see cref="ParquetFormatException"/>.
+    /// <see cref="DateTimeKind.Unspecified"/>. A moment outside the years 1 to 9999 is a <see cref="ValueConversionException"/>.
     /// </summary>
     public BatchRead ReadBatch(Span<DateTime> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default) =>
         ReadConverted<long, DateTime, DateTimeConverter>(values, definitionLevels, repetitionLevels);

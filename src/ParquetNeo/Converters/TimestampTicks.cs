@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
@@ -19,7 +20,7 @@ internal static class TimestampTicks
     }
 
     /// <summary>The ticks (of the .NET calendar, from 0001-01-01) of a stored count, rounding toward the past below one tick.</summary>
-    /// <exception cref="ParquetFormatException">The moment is outside the years 1 to 9999.</exception>
+    /// <exception cref="ValueConversionException">The moment is outside the years 1 to 9999.</exception>
     public static long ToTicks(long physical, TimeUnit unit)
     {
         try
@@ -41,7 +42,7 @@ internal static class TimestampTicks
             // handled below
         }
 
-        throw new ParquetFormatException($"The timestamp {physical} is outside the years 1 to 9999 that DateTime holds.");
+        throw new ValueConversionException($"The timestamp {physical} is outside the years 1 to 9999 that DateTime holds.");
     }
 
     /// <exception cref="ArgumentOutOfRangeException">The moment does not fit the stored count.</exception>

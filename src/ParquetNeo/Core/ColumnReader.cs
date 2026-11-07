@@ -3,6 +3,7 @@ using System.Buffers.Binary;
 using System.Numerics;
 using ParquetNeo.Compression;
 using ParquetNeo.Encodings;
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
@@ -86,7 +87,7 @@ public sealed partial class ColumnReader : IDisposable
 
         if (_meta.Type != column.Type)
         {
-            throw new ParquetFormatException($"Column '{name}' is {column.Type} in the schema but {_meta.Type} in its chunk.");
+            throw new CorruptColumnException(name, $"it is {column.Type} in the schema but {_meta.Type} in its chunk");
         }
 
         _codec = file.Options.Codecs.Get(_meta.Codec);
@@ -101,7 +102,7 @@ public sealed partial class ColumnReader : IDisposable
         if (start < 4 || _meta.TotalCompressedSize < 0 || _meta.NumValues < 0
             || start > file.FileLength || _meta.TotalCompressedSize > file.FileLength - start)
         {
-            throw new ParquetFormatException($"Column '{name}' claims bytes {start}..{start + _meta.TotalCompressedSize} in a file of {file.FileLength} bytes.");
+            throw new CorruptColumnException(name, $"it claims bytes {start}..{start + _meta.TotalCompressedSize} in a file of {file.FileLength} bytes");
         }
 
         _position = start;
@@ -489,7 +490,7 @@ public sealed partial class ColumnReader : IDisposable
             {
                 return PageHeader.Deserialize(_headerBuffer.AsSpan(0, size), out headerLength);
             }
-            catch (ParquetFormatException) when (size < _chunkEnd - _position && size < MaxHeaderSize)
+            catch (MetadataException) when (size < _chunkEnd - _position && size < MaxHeaderSize)
             {
                 // The header may simply be longer than what was read (large statistics); read more and retry.
                 size = (int)Math.Min(Math.Min((long)size * 4, _chunkEnd - _position), MaxHeaderSize);
@@ -952,7 +953,7 @@ public sealed partial class ColumnReader : IDisposable
         _valueEnd = _converted.WrittenCount;
     }
 
-    private ParquetFormatException Corrupt(string detail) => new($"Column '{Column.Name}' is corrupt: {detail}.");
+    private CorruptColumnException Corrupt(string detail) => new(Column.Name, detail);
 
     private static void EnsureCapacity(ref byte[]? buffer, int size)
     {

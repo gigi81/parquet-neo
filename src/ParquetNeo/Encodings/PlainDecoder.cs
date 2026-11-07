@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using ParquetNeo.Exceptions;
 
 namespace ParquetNeo.Encodings;
 
@@ -8,7 +9,7 @@ namespace ParquetNeo.Encodings;
 /// Decoders for the PLAIN encoding. Each method fills the destination with exactly
 /// <c>destination.Length</c> values and returns the number of bytes consumed.
 /// </summary>
-/// <exception cref="ParquetFormatException">All methods: the data is too short or malformed.</exception>
+/// <exception cref="EncodingException">All methods: the data is too short or malformed.</exception>
 internal static class PlainDecoder
 {
     /// <summary>For each byte value, its 8 bits as 8 bytes of 0 or 1 (bit 0 first), in memory order.</summary>
@@ -139,14 +140,14 @@ internal static class PlainDecoder
         {
             if (source.Length - position < sizeof(int))
             {
-                throw new ParquetFormatException($"PLAIN byte array {i} has no length prefix: the data ends.");
+                throw new EncodingException($"PLAIN byte array {i} has no length prefix: the data ends.");
             }
 
             int length = BinaryPrimitives.ReadInt32LittleEndian(source.Slice(position));
             position += sizeof(int);
             if ((uint)length > (uint)(source.Length - position))
             {
-                throw new ParquetFormatException(
+                throw new EncodingException(
                     $"PLAIN byte array {i} declares {length} bytes but only {source.Length - position} remain.");
             }
 
@@ -194,6 +195,6 @@ internal static class PlainDecoder
         return (int)bytes;
     }
 
-    private static ParquetFormatException TooShort(long needed, int available) =>
+    private static EncodingException TooShort(long needed, int available) =>
         new($"PLAIN data is too short: {needed} bytes are needed but only {available} are available.");
 }

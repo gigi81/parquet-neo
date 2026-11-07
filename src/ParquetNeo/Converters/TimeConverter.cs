@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
@@ -33,7 +34,7 @@ internal readonly struct TimeConverter : IValueConverter<long, TimeOnly, TimeCon
         long ticks = physical / _unitsPerTick * _ticksPerUnitNumerator;
         return physical >= 0 && ticks < TimeSpan.TicksPerDay
             ? new TimeOnly(ticks)
-            : throw new ParquetFormatException($"The time {physical} is not within a day.");
+            : throw new ValueConversionException($"The time {physical} is not within a day.");
     }
 
     public long ToPhysical(TimeOnly value) => value.Ticks / _ticksPerUnitNumerator * _unitsPerTick;

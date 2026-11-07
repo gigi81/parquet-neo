@@ -1,5 +1,6 @@
-using ParquetNeo.Metadata;
 using ParquetNeo.Core.Statistics;
+using ParquetNeo.Exceptions;
+using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Core;
 
@@ -37,7 +38,7 @@ public sealed class RowGroupReader
     /// Returns the statistics recorded for a column in this row group, or <c>null</c> when the writer recorded none.
     /// Works for every column.
     /// </summary>
-    /// <exception cref="ParquetFormatException">The recorded minimum or maximum has the wrong size for the column's type.</exception>
+    /// <exception cref="MetadataException">The recorded minimum or maximum has the wrong size for the column's type.</exception>
     public ColumnStatistics? GetStatistics(int index)
     {
         _file.EnsureOpen();

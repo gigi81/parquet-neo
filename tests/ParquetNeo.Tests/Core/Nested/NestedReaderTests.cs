@@ -1,4 +1,5 @@
 using ParquetNeo.Core;
+using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Tests.Core.Nested;
@@ -87,7 +88,7 @@ public class NestedReaderTests
             var damaged = FooterEditor.Rewrite(bytes, f => f.RowGroups[0].NumRows = wrong);
             using var reader = ReadHelper.Open(damaged);
 
-            await Assert.That(() => ReadHelper.ReadEntries(reader, 0, 1, 50)).Throws<ParquetFormatException>().Because($"{wrong} rows");
+            await Assert.That(() => ReadHelper.ReadEntries(reader, 0, 1, 50)).Throws<CorruptColumnException>().Because($"{wrong} rows");
         }
     }
 
@@ -105,7 +106,7 @@ public class NestedReaderTests
         bytes[body + 5] = 1;
         using var reader = ReadHelper.Open(bytes);
 
-        var exception = Assert.Throws<ParquetFormatException>(() => ReadHelper.ReadEntries(reader, 0, 0, 10));
+        var exception = Assert.Throws<CorruptColumnException>(() => ReadHelper.ReadEntries(reader, 0, 0, 10));
 
         await Assert.That(exception.Message).Contains("new row");
     }
@@ -125,7 +126,7 @@ public class NestedReaderTests
         bytes[start + 5] = 0x0C; // the second level becomes 3
         using var reader = ReadHelper.Open(bytes);
 
-        var exception = Assert.Throws<ParquetFormatException>(() => ReadHelper.ReadEntries(reader, 0, 0, 10));
+        var exception = Assert.Throws<CorruptColumnException>(() => ReadHelper.ReadEntries(reader, 0, 0, 10));
 
         await Assert.That(exception.Message).Contains("repetition level");
     }
