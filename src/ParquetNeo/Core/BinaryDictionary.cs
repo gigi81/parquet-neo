@@ -1,66 +1,9 @@
 using System.Buffers;
 using System.Buffers.Binary;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using ParquetNeo.Encodings;
 
 namespace ParquetNeo.Core;
-
-/// <summary>Collects the distinct values of a column chunk, in order of first appearance, for dictionary encoding.</summary>
-internal abstract class DictionaryBuilder
-{
-    /// <summary>The number of distinct values so far.</summary>
-    public abstract int Count { get; }
-
-    /// <summary>The size in bytes the dictionary page body would have (the entries encoded PLAIN).</summary>
-    public abstract long EncodedSize { get; }
-
-    /// <summary>Writes the entries, PLAIN encoded and in index order, which is the body of the dictionary page.</summary>
-    public abstract void WritePlain(IBufferWriter<byte> output);
-}
-
-internal delegate void PlainWriter<T>(ReadOnlySpan<T> values, IBufferWriter<byte> output);
-
-/// <summary>
-/// Dictionary for 4- and 8-byte values. Floating-point values are added as their bit patterns, so that -0.0 and
-/// +0.0 stay distinct and every NaN payload survives; the PLAIN bytes are the same either way.
-/// </summary>
-internal sealed class FixedDictionary<T> : DictionaryBuilder where T : unmanaged, IEquatable<T>
-{
-    private readonly Dictionary<T, int> _indexes = new();
-    private readonly List<T> _entries = new();
-    private readonly PlainWriter<T> _writePlain;
-
-    public FixedDictionary(PlainWriter<T> writePlain)
-    {
-        _writePlain = writePlain;
-    }
-
-    public override int Count => _entries.Count;
-
-    public override long EncodedSize => (long)_entries.Count * System.Runtime.CompilerServices.Unsafe.SizeOf<T>();
-
-    /// <summary>Adds the values, appending the dictionary index of each one to <paramref name="indexes"/>.</summary>
-    public void Add(ReadOnlySpan<T> values, ArrayBufferWriter<int> indexes)
-    {
-        var output = indexes.GetSpan(values.Length);
-        for (int i = 0; i < values.Length; i++)
-        {
-            ref int slot = ref CollectionsMarshal.GetValueRefOrAddDefault(_indexes, values[i], out bool exists);
-            if (!exists)
-            {
-                slot = _entries.Count;
-                _entries.Add(values[i]);
-            }
-
-            output[i] = slot;
-        }
-
-        indexes.Advance(values.Length);
-    }
-
-    public override void WritePlain(IBufferWriter<byte> output) => _writePlain(CollectionsMarshal.AsSpan(_entries), output);
-}
 
 /// <summary>Dictionary for BYTE_ARRAY and FIXED_LEN_BYTE_ARRAY values, looked up by span so a hit allocates nothing.</summary>
 internal sealed class BinaryDictionary : DictionaryBuilder
