@@ -22,6 +22,12 @@ namespace ParquetNeo.Core;
 /// </remarks>
 public sealed class ColumnWriter
 {
+    /// <summary>
+    /// A page also closes after this many rows. A page of nulls takes almost no bytes, so without a row limit an
+    /// all-null column would become one enormous page that readers must hold the levels of in memory.
+    /// </summary>
+    internal const int MaxRowsPerPage = 1 << 20;
+
     private readonly ParquetFileWriter _file;
     private readonly WriterBuffers _buffers;
     private readonly ICodec _codec;
@@ -57,6 +63,8 @@ public sealed class ColumnWriter
 
     private bool HasLevels => _maxDefinitionLevel > 0;
 
+    private int RowsFree => MaxRowsPerPage - _pageLevelCount;
+
     private int BufferedBytes => Column.Type == PhysicalType.Boolean ? (_buffers.Booleans.WrittenCount + 7) / 8 : _buffers.Values.WrittenCount;
 
     public void WriteBatch(ReadOnlySpan<int> values, ReadOnlySpan<int> definitionLevels = default) =>
@@ -80,7 +88,7 @@ public sealed class ColumnWriter
         {
             // Booleans are bit-packed per page, so they are collected here and packed when the page closes.
             long remainingBits = Math.Max(1L, (long)(_pageSize - BufferedBytes) * 8);
-            int take = (int)Math.Min(rows - row, remainingBits);
+            int take = (int)Math.Min(Math.Min(rows - row, remainingBits), RowsFree);
             int valueCount = AppendLevels(definitionLevels, row, take);
             _buffers.Booleans.Write(values.Slice(next, valueCount));
             CompleteChunk(take, valueCount);
@@ -107,7 +115,7 @@ public sealed class ColumnWriter
                 }
 
                 row++;
-                if (_buffers.Values.WrittenCount >= _pageSize)
+                if (_buffers.Values.WrittenCount >= _pageSize || _pageLevelCount + (row - start) >= MaxRowsPerPage)
                 {
                     break;
                 }
@@ -140,7 +148,7 @@ public sealed class ColumnWriter
                 }
 
                 row++;
-                if (_buffers.Values.WrittenCount >= _pageSize)
+                if (_buffers.Values.WrittenCount >= _pageSize || _pageLevelCount + (row - start) >= MaxRowsPerPage)
                 {
                     break;
                 }
@@ -169,7 +177,7 @@ public sealed class ColumnWriter
         int next = 0;
         while (row < rows)
         {
-            int take = (int)Math.Min(rows - row, Math.Max(1, (_pageSize - BufferedBytes) / length));
+            int take = (int)Math.Min(Math.Min(rows - row, Math.Max(1, (_pageSize - BufferedBytes) / length)), RowsFree);
             int valueCount = AppendLevels(definitionLevels, row, take);
             _buffers.Values.Write(values.Slice(next * length, valueCount * length));
             CompleteChunk(take, valueCount);
@@ -226,7 +234,7 @@ public sealed class ColumnWriter
         while (row < rows)
         {
             // As many rows as fit in the rest of the page (at least one), so pages close close to the target size.
-            int take = (int)Math.Min(rows - row, Math.Max(1, (_pageSize - BufferedBytes) / valueBytes));
+            int take = (int)Math.Min(Math.Min(rows - row, Math.Max(1, (_pageSize - BufferedBytes) / valueBytes)), RowsFree);
             int valueCount = AppendLevels(levels, row, take);
             TEncoder.Write(values.Slice(next, valueCount), _buffers.Values);
             CompleteChunk(take, valueCount);
@@ -296,7 +304,7 @@ public sealed class ColumnWriter
         _pageLevelCount += levelCount;
         _pageValueCount += valueCount;
         _rows += levelCount;
-        if (BufferedBytes >= _pageSize)
+        if (BufferedBytes >= _pageSize || _pageLevelCount >= MaxRowsPerPage)
         {
             FlushPage();
         }

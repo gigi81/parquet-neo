@@ -118,6 +118,18 @@ internal sealed class TestParquetFile
 
     public byte[]?[] ReadBinary(int rowGroup, int column) => ReadColumn(rowGroup, column).Select(v => (byte[]?)v).ToArray();
 
+    /// <summary>For files from other writers: only checks that each column's pages tile its chunk.</summary>
+    public void AssertStructureLoosely()
+    {
+        for (int g = 0; g < Metadata.RowGroups.Count; g++)
+        {
+            for (int c = 0; c < Schema.Columns.Count; c++)
+            {
+                Pages(g, c); // throws if the pages do not add up to the declared chunk size
+            }
+        }
+    }
+
     /// <summary>Asserts everything the layout promises: contiguous chunks, pages that tile their chunk, consistent totals.</summary>
     public void AssertStructure()
     {

@@ -100,9 +100,11 @@ internal static class SampleFile
     }
 
     /// <summary>Describes the first difference between a decoded column and the sample data, or null when they match.</summary>
-    public static string? FirstDifference(TestParquetFile file, bool optional, int rowGroup, int from, int count, int column)
+    public static string? FirstDifference(TestParquetFile file, bool optional, int rowGroup, int from, int count, int column) =>
+        FirstDifference(file.ReadColumn(rowGroup, column), optional, from, count, column);
+
+    public static string? FirstDifference(object?[] actual, bool optional, int from, int count, int column)
     {
-        var actual = file.ReadColumn(rowGroup, column);
         if (actual.Length != count)
         {
             return $"column {ColumnNames[column]} has {actual.Length} rows, expected {count}";
