@@ -122,7 +122,7 @@ internal sealed class TestParquetFile
             int present = levels.Count(l => l == node.MaxDefinitionLevel);
             var pageValues = header.DataPageHeader.Encoding == ParquetEncoding.RleDictionary
                 ? DecodeIndexed(dictionary ?? throw new InvalidDataException("A dictionary-encoded page without a dictionary page."), data.AsSpan(position), present)
-                : DecodeValues(node, data.AsSpan(position), present);
+                : DecodeValues(node, ToPlain(header.DataPageHeader.Encoding, node, data.AsSpan(position), present), present);
             definition.AddRange(levels);
             repetition.AddRange(repetitionLevels);
             values.AddRange(pageValues);
@@ -233,8 +233,8 @@ internal sealed class TestParquetFile
                     {
                         Require(page.Header.Type == PageType.DataPage, "only data page v1 is written");
                         var encoding = page.Header.DataPageHeader!.Encoding;
-                        Require(encoding is ParquetEncoding.Plain or ParquetEncoding.RleDictionary, $"unexpected value encoding {encoding}");
-                        if (encoding == ParquetEncoding.Plain)
+                        Require(encoding != ParquetEncoding.PlainDictionary && encoding != ParquetEncoding.Rle, $"unexpected value encoding {encoding}");
+                        if (encoding != ParquetEncoding.RleDictionary)
                         {
                             plainDataPages++;
                             seenPlain = true;
@@ -256,9 +256,13 @@ internal sealed class TestParquetFile
                 Require(chunk.EncodingStats is not null, "encoding_statistics are written");
                 Require(EncodingStatisticsCount(chunk, PageType.DictionaryPage, ParquetEncoding.Plain) == dictionaryPages, "encoding_statistics for the dictionary page");
                 Require(EncodingStatisticsCount(chunk, PageType.DataPage, ParquetEncoding.RleDictionary) == dictionaryDataPages, "encoding_statistics for dictionary-encoded pages");
-                Require(EncodingStatisticsCount(chunk, PageType.DataPage, ParquetEncoding.Plain) == plainDataPages, "encoding_statistics for plain pages");
+                Require(chunk.EncodingStats!.Where(e => e.PageType == PageType.DataPage && e.Encoding != ParquetEncoding.RleDictionary).Sum(e => e.Count) == plainDataPages, "encoding_statistics for pages that are not dictionary encoded");
+                foreach (var usedEncoding in pages.Where(p => p.Header.Type == PageType.DataPage).Select(p => p.Header.DataPageHeader!.Encoding).Distinct())
+                {
+                    Require(chunk.Encodings.Contains(usedEncoding), $"encodings lists {usedEncoding}");
+                }
                 Require(chunk.Encodings.Contains(ParquetEncoding.RleDictionary) == dictionaryDataPages > 0, "encodings lists RLE_DICTIONARY exactly when it is used");
-                Require(chunk.Encodings.Contains(ParquetEncoding.Plain), "PLAIN is always listed (the dictionary page or plain pages use it)");
+                Require(!hasDictionary || chunk.Encodings.Contains(ParquetEncoding.Plain), "PLAIN is listed when there is a dictionary page");
 
                 Require(values == chunk.NumValues, $"chunk {g}/{c} holds {values} entries but declares {chunk.NumValues}");
                 Require(ReadEntries(g, c).RowCount == group.NumRows, $"chunk {g}/{c} holds {ReadEntries(g, c).RowCount} rows, expected {group.NumRows}");
@@ -313,6 +317,43 @@ internal sealed class TestParquetFile
         }
 
         return indexes.Select(i => dictionary[i]).ToArray();
+    }
+
+    /// <summary>Turns the values of a page in a delta or byte-stream-split encoding into PLAIN layout; PLAIN stays as it is.</summary>
+    private static byte[] ToPlain(ParquetEncoding encoding, PrimitiveNode node, ReadOnlySpan<byte> source, int count)
+    {
+        var plain = new System.Buffers.ArrayBufferWriter<byte>();
+        int fixedLength = node.TypeLength ?? 0;
+        switch (encoding)
+        {
+            case ParquetEncoding.Plain:
+                return source.ToArray();
+            case ParquetEncoding.DeltaBinaryPacked when node.Type == PhysicalType.Int32:
+                var ints = new int[count];
+                DeltaBinaryPackedDecoder.Decode(source, ints);
+                PlainEncoder.WriteInt32s(ints, plain);
+                break;
+            case ParquetEncoding.DeltaBinaryPacked:
+                var longs = new long[count];
+                DeltaBinaryPackedDecoder.Decode(source, longs);
+                PlainEncoder.WriteInt64s(longs, plain);
+                break;
+            case ParquetEncoding.DeltaLengthByteArray:
+                DeltaLengthByteArrayDecoder.Decode(source, count, plain);
+                break;
+            case ParquetEncoding.DeltaByteArray:
+                DeltaByteArrayDecoder.Decode(source, count, node.Type == PhysicalType.FixedLenByteArray ? fixedLength : 0, 1 << 28, plain);
+                break;
+            case ParquetEncoding.ByteStreamSplit:
+                int width = node.Type switch { PhysicalType.Int32 or PhysicalType.Float => 4, PhysicalType.Int64 or PhysicalType.Double => 8, _ => fixedLength };
+                var bytes = new byte[count * width];
+                ByteStreamSplitDecoder.Decode(source, count, width, bytes);
+                return bytes;
+            default:
+                throw new NotSupportedException(encoding.ToString());
+        }
+
+        return plain.WrittenSpan.ToArray();
     }
 
     private static object[] DecodeValues(PrimitiveNode node, ReadOnlySpan<byte> data, int count)

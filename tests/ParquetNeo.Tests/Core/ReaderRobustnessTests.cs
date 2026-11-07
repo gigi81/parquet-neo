@@ -264,39 +264,8 @@ public class ReaderRobustnessTests
         return stream.ToArray();
     }
 
-    /// <summary>
-    /// Replaces the header of page <paramref name="pageIndex"/> of the only column chunk, which may change its length;
-    /// the chunk's sizes and the footer are updated to match.
-    /// </summary>
-    private static byte[] PatchPageHeader(byte[] original, int pageIndex, Action<PageHeader> change)
-    {
-        var file = TestParquetFile.Parse(original);
-        var page = file.Pages(0, 0)[pageIndex];
-        var header = PageHeader.Deserialize(original.AsSpan((int)page.Offset), out _);
-        change(header);
-        var buffer = new ArrayBufferWriter<byte>();
-        header.Serialize(buffer);
-        int delta = buffer.WrittenCount - page.HeaderLength;
-
-        var body = new List<byte>(original.AsSpan(0, (int)page.Offset).ToArray());
-        body.AddRange(buffer.WrittenSpan.ToArray());
-        body.AddRange(original.AsSpan((int)page.Offset + page.HeaderLength, (int)file.FooterStart - (int)page.Offset - page.HeaderLength).ToArray());
-        bool dictionaryFirst = file.Chunk(0, 0).DictionaryPageOffset is not null;
-
-        return Rewrite(body.Concat(original[(int)file.FooterStart..]).ToArray(), f =>
-        {
-            var group = f.RowGroups[0];
-            var chunk = group.Columns[0].MetaData!;
-            chunk.TotalCompressedSize += delta;
-            chunk.TotalUncompressedSize += delta;
-            group.TotalByteSize += delta;
-            group.TotalCompressedSize += delta;
-            if (dictionaryFirst && pageIndex == 0)
-            {
-                chunk.DataPageOffset += delta;
-            }
-        }, body.Count);
-    }
+    private static byte[] PatchPageHeader(byte[] original, int pageIndex, Action<PageHeader> change) =>
+        FooterEditor.PatchPageHeader(original, pageIndex, change);
 
     private static Exception? ReadAll(byte[] bytes)
     {
@@ -548,6 +517,9 @@ public class ReaderRobustnessTests
             ("pyarrow nested v2 snappy", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-nested-v2-snappy.parquet"))),
             ("pyarrow nested dictionary", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-nested-dictionary-v1.parquet"))),
             ("our nested file", File.ReadAllBytes(TestBytes.FixturePath("golden-nested-dictionary.parquet"))),
+            ("pyarrow encodings v1", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-encodings-optional-v1.parquet"))),
+            ("pyarrow encodings v2", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-encodings-optional-v2-smallpages.parquet"))),
+            ("our encodings", File.ReadAllBytes(TestBytes.FixturePath("golden-encodings.parquet"))),
             ("pyarrow statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-statistics-plain.parquet"))),
             ("pyarrow sample statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-optional-statistics.parquet"))),
         };
