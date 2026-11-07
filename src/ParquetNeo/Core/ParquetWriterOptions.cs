@@ -58,6 +58,12 @@ public sealed record ParquetWriterOptions
     /// <exception cref="ArgumentException">Reported when the writer is created: a column that does not exist, or an encoding its type cannot use.</exception>
     public IReadOnlyDictionary<string, ParquetEncoding>? ColumnEncodings { get; init; }
 
+    /// <summary>
+    /// The layout of the data pages. Defaults to <see cref="DataPageVersion.V1"/>, which every reader understands;
+    /// <see cref="DataPageVersion.V2"/> stores the levels uncompressed and compresses only the values.
+    /// </summary>
+    public DataPageVersion DataPageVersion { get; init; } = DataPageVersion.V1;
+
     /// <summary>Free-form key/value pairs stored in the file footer.</summary>
     public IReadOnlyDictionary<string, string>? KeyValueMetadata { get; init; }
 
