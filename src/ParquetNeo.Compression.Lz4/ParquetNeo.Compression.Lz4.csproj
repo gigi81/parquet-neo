@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Description>LZ4_RAW page compression for ParquetNeo.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="K4os.Compression.LZ4" />
+    <ProjectReference Include="..\ParquetNeo\ParquetNeo.csproj" />
+  </ItemGroup>
+
+</Project>
