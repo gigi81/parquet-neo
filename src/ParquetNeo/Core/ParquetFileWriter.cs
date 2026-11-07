@@ -7,7 +7,8 @@ using System.Buffers.Binary;
 namespace ParquetNeo.Core;
 
 /// <summary>
-/// Writes a Parquet file with flat (non-nested) columns, one row group at a time. The stream only needs to be
+/// Writes a Parquet file, one row group at a time. Columns are written one leaf column at a time, with the definition and
+/// repetition levels for nested ones. The stream only needs to be
 /// writable: offsets are counted rather than read from the stream, so it need not be seekable.
 /// </summary>
 /// <example>
@@ -36,10 +37,10 @@ public sealed class ParquetFileWriter : IDisposable, IAsyncDisposable
     private bool _abandoned;
 
     /// <param name="output">A writable stream, positioned where the file should start.</param>
-    /// <param name="schema">The schema; every column must be a direct, non-repeated child of the root (nested data comes later).</param>
+    /// <param name="schema">The schema. Its leaf columns are written in depth-first order.</param>
     /// <param name="options">Compression, page size and footer settings; <c>null</c> for the defaults.</param>
     /// <param name="leaveOpen">Whether to keep <paramref name="output"/> open when the writer is closed.</param>
-    /// <exception cref="NotSupportedException">The schema is nested, has an INT96 column, or the compression codec is not registered.</exception>
+    /// <exception cref="NotSupportedException">The schema has an INT96 column, or the compression codec is not registered.</exception>
     public ParquetFileWriter(Stream output, ParquetSchema schema, ParquetWriterOptions? options = null, bool leaveOpen = false)
     {
         ArgumentNullException.ThrowIfNull(output);
@@ -216,15 +217,9 @@ public sealed class ParquetFileWriter : IDisposable, IAsyncDisposable
 
         foreach (var column in schema.Columns)
         {
-            if (!ReferenceEquals(column.Parent, schema.Root) || column.Repetition == FieldRepetitionType.Repeated)
-            {
-                throw new NotSupportedException(
-                    $"Column '{string.Join('.', column.Path)}' is nested or repeated; this writer supports only flat columns so far.");
-            }
-
             if (column.Type == PhysicalType.Int96)
             {
-                throw new NotSupportedException($"Column '{column.Name}' is INT96, a deprecated type that can be read but not written.");
+                throw new NotSupportedException($"Column '{string.Join('.', column.Path)}' is INT96, a deprecated type that can be read but not written.");
             }
         }
     }

@@ -188,24 +188,6 @@ public class ReaderFixtureTests
         await Assert.That(exception.Message).Contains("ParquetNeo.Compression.Snappy");
     }
 
-    // ---- what is not supported yet ----
-
-    [Test]
-    public async Task NestedColumns_AreReportedClearly_AndTheFileStillOpens()
-    {
-        using var reader = ReadHelper.OpenFixture("pyarrow-v1.parquet");
-        var group = reader.OpenRowGroup(0);
-
-        await Assert.That(reader.Schema.Columns.Count).IsEqualTo(21);
-        foreach (string[] path in new[] { new[] { "tags", "list", "element" }, new[] { "point", "x" }, new[] { "attrs", "key_value", "key" } })
-        {
-            int index = reader.Schema.FindColumn(path)!.ColumnIndex;
-            var exception = Assert.Throws<NotSupportedException>(() => group.OpenColumn(index));
-
-            await Assert.That(exception.Message).Contains("nested");
-        }
-    }
-
     // ---- the golden file written by the library itself ----
 
     [Test]

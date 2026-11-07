@@ -544,6 +544,10 @@ public class ReaderRobustnessTests
             ("pyarrow dictionary legacy", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-optional-dict-legacy.parquet"))),
             ("pyarrow dictionary fallback", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-required-dict-fallback.parquet"))),
             ("our dictionary file", ThreeValueDictionaryFile()),
+            ("pyarrow nested v1", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-nested-v1-smallpages.parquet"))),
+            ("pyarrow nested v2 snappy", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-nested-v2-snappy.parquet"))),
+            ("pyarrow nested dictionary", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-nested-dictionary-v1.parquet"))),
+            ("our nested file", File.ReadAllBytes(TestBytes.FixturePath("golden-nested-dictionary.parquet"))),
             ("pyarrow statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-statistics-plain.parquet"))),
             ("pyarrow sample statistics", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-flat-optional-statistics.parquet"))),
         };
@@ -666,9 +670,9 @@ public class ReaderRobustnessTests
         {
             var readA = a.ReadBatch(valuesA, levelsA);
             var readB = b.ReadBatch(valuesB, levelsB);
-            rowsA += readA.Rows;
-            rowsB += readB.Rows;
-            if (readA.Rows == 0 && readB.Rows == 0)
+            rowsA += readA.Entries;
+            rowsB += readB.Entries;
+            if (readA.Entries == 0 && readB.Entries == 0)
             {
                 break;
             }
@@ -694,7 +698,7 @@ public class ReaderRobustnessTests
                     try
                     {
                         reader.OpenRowGroup(g).GetStatistics(c);
-                        ReadHelper.ReadColumn(reader, g, c, 100);
+                        ReadHelper.ReadEntries(reader, g, c, 100);
                     }
                     catch (NotSupportedException)
                     {

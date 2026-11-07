@@ -250,15 +250,11 @@ public class WriterValidationTests
     [Test]
     public async Task UnsupportedSchemas_AreRejectedWhenTheWriterIsCreated()
     {
-        var nested = new ParquetSchema([
-            new GroupNode("g", Optional, [new PrimitiveNode("x", PhysicalType.Int32, Required)]),
-        ]);
-        var repeated = new ParquetSchema([new PrimitiveNode("r", PhysicalType.Int32, FieldRepetitionType.Repeated)]);
         var int96 = new ParquetSchema([new PrimitiveNode("t", PhysicalType.Int96, Optional)]);
+        var nestedInt96 = new ParquetSchema([new GroupNode("g", Optional, [new PrimitiveNode("t", PhysicalType.Int96, Optional)])]);
 
-        await Assert.That(() => new ParquetFileWriter(new MemoryStream(), nested)).Throws<NotSupportedException>();
-        await Assert.That(() => new ParquetFileWriter(new MemoryStream(), repeated)).Throws<NotSupportedException>();
         await Assert.That(() => new ParquetFileWriter(new MemoryStream(), int96)).Throws<NotSupportedException>();
+        await Assert.That(() => new ParquetFileWriter(new MemoryStream(), nestedInt96)).Throws<NotSupportedException>();
         await Assert.That(() => new ParquetFileWriter(new MemoryStream(), new ParquetSchema([]))).Throws<ArgumentException>();
     }
 

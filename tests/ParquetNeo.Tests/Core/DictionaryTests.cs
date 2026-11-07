@@ -403,7 +403,7 @@ public class DictionaryTests
         var batch = new ReadOnlyMemory<byte>[1000];
         var seen = new List<string>();
         BatchRead read;
-        while ((read = column.ReadByteArrays(batch)).Rows > 0)
+        while ((read = column.ReadByteArrays(batch)).Entries > 0)
         {
             seen.AddRange(batch.Take(read.Values).Select(b => System.Text.Encoding.UTF8.GetString(b.Span)));
         }

@@ -20,6 +20,16 @@ namespace ParquetNeo.Core;
 /// For a required column pass only the values. For an optional column also pass one definition level per row:
 /// <c>0</c> for a null and <c>1</c> for a value, with <c>values</c> holding just the non-null values in order.
 /// </para>
+/// <para>
+/// A nested column (a leaf below optional or repeated groups) has a definition level per entry that counts how many
+/// of its optional and repeated ancestors, and itself, are present, up to <see cref="PrimitiveNode.MaxDefinitionLevel"/>:
+/// only entries at that level carry a value. A column inside a repeated group also takes a repetition level per entry,
+/// which says at which repeated ancestor the entry repeats: <c>0</c> starts a new row, and a higher level continues the
+/// row at that depth. Entries are the unit of a batch; a row can span several entries and even several batches (it ends
+/// where the next entry with repetition level <c>0</c> begins), and the first entry of a column must start a row.
+/// Pages never end in the middle of a row. The levels are checked against their ranges but not against the schema's
+/// structure: levels that no row could produce give a file readers will reject.
+/// </para>
 /// <para>Values are buffered into pages of about <see cref="ParquetWriterOptions.DataPageSize"/> bytes, which are
 /// compressed and written to the stream as they fill. Instances are not thread safe.</para>
 /// </remarks>
@@ -38,6 +48,8 @@ public sealed class ColumnWriter
     private readonly long _dictionaryLimit;
     private readonly int _maxDefinitionLevel;
     private readonly int _levelBitWidth;
+    private readonly int _maxRepetitionLevel;
+    private readonly int _repetitionBitWidth;
 
     // Non-null while the chunk is dictionary encoded. Its data pages are encoded as they fill but held back,
     // because the dictionary page, which is only complete at the end, has to come first in the file.
@@ -49,7 +61,9 @@ public sealed class ColumnWriter
 
     private int _pageLevelCount;
     private int _pageLogicalBytes; // what the page's values would take PLAIN encoded, used to decide when a page is full
-    private long _rows;
+    private long _entries; // level entries written: one per value, null, empty list and so on
+    private long _records; // rows: entries that start a new record (all of them in a column without repetition)
+    private bool _pageActionsDeferred; // a page flush or dictionary fallback is due but must wait for the end of a record
     private long _firstPageOffset = -1;
     private long _dataPageOffset = -1;
     private long _dictionaryPageOffset = -1;
@@ -70,6 +84,8 @@ public sealed class ColumnWriter
         _dictionaryLimit = options.DictionaryPageSizeLimit;
         _maxDefinitionLevel = column.MaxDefinitionLevel;
         _levelBitWidth = 32 - BitOperations.LeadingZeroCount((uint)_maxDefinitionLevel);
+        _maxRepetitionLevel = column.MaxRepetitionLevel;
+        _repetitionBitWidth = 32 - BitOperations.LeadingZeroCount((uint)_maxRepetitionLevel);
         _dictionary = options.DictionaryEnabled ? CreateDictionary(column.Type, column.TypeLength) : null;
         _statistics = StatisticsFactory.Create(column, options);
         _buffers.Reset();
@@ -78,10 +94,15 @@ public sealed class ColumnWriter
     /// <summary>The column this writer fills.</summary>
     public PrimitiveNode Column { get; }
 
-    /// <summary>The number of rows written so far.</summary>
-    public long RowCount => _rows;
+    /// <summary>The number of rows (records) written so far. In a repeated column a row can span several entries.</summary>
+    public long RowCount => _records;
+
+    /// <summary>The number of level entries written so far: one per value, null, empty list and so on. Equals <see cref="RowCount"/> unless the column is repeated.</summary>
+    public long EntryCount => _entries;
 
     private bool HasLevels => _maxDefinitionLevel > 0;
+
+    private bool HasRepetition => _maxRepetitionLevel > 0;
 
     private int RowsFree => MaxRowsPerPage - _pageLevelCount;
 
@@ -90,94 +111,96 @@ public sealed class ColumnWriter
     /// <summary>How full the current page is, in the bytes its values take PLAIN encoded (even when they are dictionary encoded).</summary>
     private int PageBytes => _dictionary is not null ? _pageLogicalBytes : BufferedBytes;
 
-    public void WriteBatch(ReadOnlySpan<int> values, ReadOnlySpan<int> definitionLevels = default) =>
-        WriteFixedWidth<int, Int32Encoder>(PhysicalType.Int32, values, definitionLevels, sizeof(int));
+    /// <summary>Writes INT32 values; see the class remarks for the levels.</summary>
+    public void WriteBatch(ReadOnlySpan<int> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default) =>
+        WriteFixedWidth<int, Int32Encoder>(PhysicalType.Int32, values, definitionLevels, repetitionLevels, sizeof(int));
 
-    public void WriteBatch(ReadOnlySpan<long> values, ReadOnlySpan<int> definitionLevels = default) =>
-        WriteFixedWidth<long, Int64Encoder>(PhysicalType.Int64, values, definitionLevels, sizeof(long));
+    public void WriteBatch(ReadOnlySpan<long> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default) =>
+        WriteFixedWidth<long, Int64Encoder>(PhysicalType.Int64, values, definitionLevels, repetitionLevels, sizeof(long));
 
-    public void WriteBatch(ReadOnlySpan<float> values, ReadOnlySpan<int> definitionLevels = default) =>
-        WriteFixedWidth<float, SingleEncoder>(PhysicalType.Float, values, definitionLevels, sizeof(float));
+    public void WriteBatch(ReadOnlySpan<float> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default) =>
+        WriteFixedWidth<float, SingleEncoder>(PhysicalType.Float, values, definitionLevels, repetitionLevels, sizeof(float));
 
-    public void WriteBatch(ReadOnlySpan<double> values, ReadOnlySpan<int> definitionLevels = default) =>
-        WriteFixedWidth<double, DoubleEncoder>(PhysicalType.Double, values, definitionLevels, sizeof(double));
+    public void WriteBatch(ReadOnlySpan<double> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default) =>
+        WriteFixedWidth<double, DoubleEncoder>(PhysicalType.Double, values, definitionLevels, repetitionLevels, sizeof(double));
 
-    public void WriteBatch(ReadOnlySpan<bool> values, ReadOnlySpan<int> definitionLevels = default)
+    public void WriteBatch(ReadOnlySpan<bool> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default)
     {
-        int rows = PrepareBatch(PhysicalType.Boolean, values.Length, definitionLevels);
-        int row = 0;
+        int entries = PrepareBatch(PhysicalType.Boolean, values.Length, definitionLevels, repetitionLevels);
+        int entry = 0;
         int next = 0;
-        while (row < rows)
+        while (entry < entries)
         {
             // Booleans are bit-packed per page, so they are collected here and packed when the page closes.
             long remainingBits = Math.Max(1L, (long)(_pageSize - PageBytes) * 8);
-            int take = (int)Math.Min(Math.Min(rows - row, remainingBits), RowsFree);
-            int valueCount = AppendLevels(definitionLevels, row, take);
+            int take = (int)Math.Min(Math.Min(entries - entry, remainingBits), RowsFree);
+            take = ExtendToRecordEnd(repetitionLevels, entry, take, entries);
+            int valueCount = AppendLevels(definitionLevels, repetitionLevels, entry, take);
             _buffers.Booleans.Write(values.Slice(next, valueCount));
             _statistics?.Add(values.Slice(next, valueCount));
             _valueCount += valueCount;
-            CompleteChunk(take);
-            row += take;
+            CompleteChunk(take, atBatchEnd: entry + take == entries);
+            entry += take;
             next += valueCount;
         }
     }
 
     /// <summary>Writes BYTE_ARRAY values; the memory of each value is read immediately and not retained.</summary>
-    public void WriteByteArrays(ReadOnlySpan<ReadOnlyMemory<byte>> values, ReadOnlySpan<int> definitionLevels = default)
+    public void WriteByteArrays(ReadOnlySpan<ReadOnlyMemory<byte>> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default)
     {
-        int rows = PrepareBatch(PhysicalType.ByteArray, values.Length, definitionLevels);
-        int row = 0;
+        int entries = PrepareBatch(PhysicalType.ByteArray, values.Length, definitionLevels, repetitionLevels);
+        int entry = 0;
         int next = 0;
-        while (row < rows)
+        while (entry < entries)
         {
-            int start = row;
-            while (row < rows)
+            int start = entry;
+            while (entry < entries)
             {
-                if (!HasLevels || definitionLevels[row] == _maxDefinitionLevel)
+                if (!HasLevels || definitionLevels[entry] == _maxDefinitionLevel)
                 {
                     AppendByteArray(values[next++].Span);
                 }
 
-                row++;
-                if (PageBytes >= _pageSize || _pageLevelCount + (row - start) >= MaxRowsPerPage)
+                entry++;
+                if (PageIsFull(start, entry) && AtRecordStart(repetitionLevels, entry, entries))
                 {
                     break;
                 }
             }
 
-            AppendLevelsAndComplete(definitionLevels, start, row - start);
+            AppendLevelsAndComplete(definitionLevels, repetitionLevels, start, entry - start, atBatchEnd: entry == entries);
         }
     }
 
     /// <summary>Writes BYTE_ARRAY values from strings, encoded as UTF-8 straight into the page buffer.</summary>
-    public void WriteStrings(ReadOnlySpan<string> values, ReadOnlySpan<int> definitionLevels = default)
+    public void WriteStrings(ReadOnlySpan<string> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default)
     {
-        int rows = PrepareBatch(PhysicalType.ByteArray, values.Length, definitionLevels);
-        int row = 0;
+        int entries = PrepareBatch(PhysicalType.ByteArray, values.Length, definitionLevels, repetitionLevels);
+        int entry = 0;
         int next = 0;
-        while (row < rows)
+        while (entry < entries)
         {
-            int start = row;
-            while (row < rows)
+            int start = entry;
+            while (entry < entries)
             {
-                if (!HasLevels || definitionLevels[row] == _maxDefinitionLevel)
+                if (!HasLevels || definitionLevels[entry] == _maxDefinitionLevel)
                 {
                     AppendString(values[next++]);
                 }
 
-                row++;
-                if (PageBytes >= _pageSize || _pageLevelCount + (row - start) >= MaxRowsPerPage)
+                entry++;
+                if (PageIsFull(start, entry) && AtRecordStart(repetitionLevels, entry, entries))
                 {
                     break;
                 }
             }
 
-            AppendLevelsAndComplete(definitionLevels, start, row - start);
+            AppendLevelsAndComplete(definitionLevels, repetitionLevels, start, entry - start, atBatchEnd: entry == entries);
         }
     }
 
     /// <summary>Writes FIXED_LEN_BYTE_ARRAY values given back to back; the length must be a multiple of the column's type length.</summary>
-    public void WriteFixedLengthByteArrays(ReadOnlySpan<byte> values, ReadOnlySpan<int> definitionLevels = default)
+    public void WriteFixedLengthByteArrays(ReadOnlySpan<byte> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default)
     {
         int length = Column.TypeLength ?? 0;
         if (length == 0 || values.Length % length != 0)
@@ -185,13 +208,14 @@ public sealed class ColumnWriter
             throw new ArgumentException($"The values must be a whole number of {length}-byte entries.", nameof(values));
         }
 
-        int rows = PrepareBatch(PhysicalType.FixedLenByteArray, values.Length / length, definitionLevels);
-        int row = 0;
+        int entries = PrepareBatch(PhysicalType.FixedLenByteArray, values.Length / length, definitionLevels, repetitionLevels);
+        int entry = 0;
         int next = 0;
-        while (row < rows)
+        while (entry < entries)
         {
-            int take = (int)Math.Min(Math.Min(rows - row, Math.Max(1, (_pageSize - PageBytes) / length)), RowsFree);
-            int valueCount = AppendLevels(definitionLevels, row, take);
+            int take = (int)Math.Min(Math.Min(entries - entry, Math.Max(1, (_pageSize - PageBytes) / length)), RowsFree);
+            take = ExtendToRecordEnd(repetitionLevels, entry, take, entries);
+            int valueCount = AppendLevels(definitionLevels, repetitionLevels, entry, take);
             var chunk = values.Slice(next * length, valueCount * length);
             if (_statistics is not null)
             {
@@ -216,8 +240,8 @@ public sealed class ColumnWriter
                 _buffers.Values.Write(chunk);
             }
 
-            CompleteChunk(take);
-            row += take;
+            CompleteChunk(take, atBatchEnd: entry + take == entries);
+            entry += take;
             next += valueCount;
         }
     }
@@ -229,7 +253,7 @@ public sealed class ColumnWriter
         if (_dictionary is not null)
         {
             // The chunk stayed dictionary encoded to the end: the dictionary page and the held-back pages go out now.
-            if (_rows > 0)
+            if (_entries > 0)
             {
                 WriteDictionaryChunk();
             }
@@ -238,7 +262,7 @@ public sealed class ColumnWriter
         }
 
         _completed = true;
-        if (_rows == 0)
+        if (_entries == 0)
         {
             throw new InvalidOperationException($"No values were written to column '{Column.Name}'.");
         }
@@ -275,13 +299,13 @@ public sealed class ColumnWriter
                 Encodings = encodings,
                 PathInSchema = Column.Path.ToList(),
                 Codec = _codec.Id,
-                NumValues = _rows,
+                NumValues = _entries,
                 TotalUncompressedSize = _totalUncompressed,
                 TotalCompressedSize = _totalCompressed,
                 DataPageOffset = _dataPageOffset,
                 DictionaryPageOffset = _dictionaryPageOffset >= 0 ? _dictionaryPageOffset : null,
                 EncodingStats = pageStats,
-                Statistics = _statistics?.Build(_rows - _valueCount),
+                Statistics = _statistics?.Build(_entries - _valueCount),
             },
         };
     }
@@ -293,18 +317,19 @@ public sealed class ColumnWriter
     /// <summary>Where the chunk starts: its dictionary page if it has one, otherwise its first data page.</summary>
     internal long FirstPageOffset => _firstPageOffset;
 
-    private void WriteFixedWidth<T, TEncoder>(PhysicalType expected, ReadOnlySpan<T> values, ReadOnlySpan<int> levels, int valueBytes)
+    private void WriteFixedWidth<T, TEncoder>(PhysicalType expected, ReadOnlySpan<T> values, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels, int valueBytes)
         where T : unmanaged
         where TEncoder : IPlainValueEncoder<T>
     {
-        int rows = PrepareBatch(expected, values.Length, levels);
-        int row = 0;
+        int entries = PrepareBatch(expected, values.Length, definitionLevels, repetitionLevels);
+        int entry = 0;
         int next = 0;
-        while (row < rows)
+        while (entry < entries)
         {
-            // As many rows as fit in the rest of the page (at least one), so pages close close to the target size.
-            int take = (int)Math.Min(Math.Min(rows - row, Math.Max(1, (_pageSize - PageBytes) / valueBytes)), RowsFree);
-            int valueCount = AppendLevels(levels, row, take);
+            // As many entries as fit in the rest of the page (at least one), so pages close close to the target size.
+            int take = (int)Math.Min(Math.Min(entries - entry, Math.Max(1, (_pageSize - PageBytes) / valueBytes)), RowsFree);
+            take = ExtendToRecordEnd(repetitionLevels, entry, take, entries);
+            int valueCount = AppendLevels(definitionLevels, repetitionLevels, entry, take);
             var chunk = values.Slice(next, valueCount);
             _statistics?.Add(chunk);
             _valueCount += valueCount;
@@ -318,8 +343,8 @@ public sealed class ColumnWriter
                 TEncoder.Write(chunk, _buffers.Values);
             }
 
-            CompleteChunk(take);
-            row += take;
+            CompleteChunk(take, atBatchEnd: entry + take == entries);
+            entry += take;
             next += valueCount;
         }
     }
@@ -375,8 +400,8 @@ public sealed class ColumnWriter
         _buffers.Indices.Advance(1);
     }
 
-    /// <summary>Checks a batch and returns its number of rows.</summary>
-    private int PrepareBatch(PhysicalType expected, int valueCount, ReadOnlySpan<int> definitionLevels)
+    /// <summary>Checks a batch and returns its number of level entries.</summary>
+    private int PrepareBatch(PhysicalType expected, int valueCount, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels)
     {
         EnsureOpen();
         if (Column.Type != expected)
@@ -384,6 +409,7 @@ public sealed class ColumnWriter
             throw new ArgumentException($"Column '{Column.Name}' is {Column.Type}, so it cannot take {expected} values.");
         }
 
+        int entries;
         if (!HasLevels)
         {
             if (!definitionLevels.IsEmpty)
@@ -391,69 +417,162 @@ public sealed class ColumnWriter
                 throw new ArgumentException($"Column '{Column.Name}' is required, so it takes no definition levels.", nameof(definitionLevels));
             }
 
-            return valueCount;
+            entries = valueCount;
         }
-
-        if (definitionLevels.IsEmpty)
+        else if (definitionLevels.IsEmpty)
         {
             if (valueCount != 0)
             {
-                throw new ArgumentException($"Column '{Column.Name}' is optional, so it needs one definition level per row.", nameof(definitionLevels));
+                throw new ArgumentException($"Column '{Column.Name}' is optional, so it needs one definition level per entry.", nameof(definitionLevels));
             }
 
-            return 0;
+            entries = 0;
         }
-
-        if (definitionLevels.IndexOfAnyExceptInRange(0, _maxDefinitionLevel) >= 0)
+        else
         {
-            throw new ArgumentOutOfRangeException(nameof(definitionLevels), $"Definition levels of column '{Column.Name}' must be between 0 and {_maxDefinitionLevel}.");
+            if (definitionLevels.IndexOfAnyExceptInRange(0, _maxDefinitionLevel) >= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(definitionLevels), $"Definition levels of column '{Column.Name}' must be between 0 and {_maxDefinitionLevel}.");
+            }
+
+            int present = definitionLevels.Count(_maxDefinitionLevel);
+            if (present != valueCount)
+            {
+                throw new ArgumentException($"{present} entries are marked non-null but {valueCount} values were given.", nameof(definitionLevels));
+            }
+
+            entries = definitionLevels.Length;
         }
 
-        int present = definitionLevels.Count(_maxDefinitionLevel);
-        if (present != valueCount)
+        if (!HasRepetition)
         {
-            throw new ArgumentException($"{present} rows are marked non-null but {valueCount} values were given.", nameof(definitionLevels));
+            if (!repetitionLevels.IsEmpty)
+            {
+                throw new ArgumentException($"Column '{Column.Name}' is not repeated, so it takes no repetition levels.", nameof(repetitionLevels));
+            }
+
+            return entries;
         }
 
-        return definitionLevels.Length;
+        if (repetitionLevels.Length != entries)
+        {
+            throw new ArgumentException($"Column '{Column.Name}' is repeated, so it needs one repetition level per definition level ({repetitionLevels.Length} given for {entries} entries).", nameof(repetitionLevels));
+        }
+
+        if (entries > 0)
+        {
+            if (repetitionLevels.IndexOfAnyExceptInRange(0, _maxRepetitionLevel) >= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(repetitionLevels), $"Repetition levels of column '{Column.Name}' must be between 0 and {_maxRepetitionLevel}.");
+            }
+
+            if (_entries == 0 && repetitionLevels[0] != 0)
+            {
+                throw new ArgumentException("The first entry of a column must start a row, so its repetition level must be 0.", nameof(repetitionLevels));
+            }
+
+            // A page flush that had to wait for the end of a record can happen now if this batch starts a new one.
+            if (_pageActionsDeferred && repetitionLevels[0] == 0)
+            {
+                ApplyPageActions();
+            }
+        }
+
+        return entries;
     }
 
-    /// <summary>Buffers the levels of rows [<paramref name="row"/>, +<paramref name="take"/>) and returns how many of them hold a value.</summary>
-    private int AppendLevels(ReadOnlySpan<int> definitionLevels, int row, int take)
+    /// <summary>Whether the page being filled has reached its target size (counting rows as well as bytes).</summary>
+    private bool PageIsFull(int batchStart, int batchEnd) =>
+        PageBytes >= _pageSize || _pageLevelCount + (batchEnd - batchStart) >= MaxRowsPerPage;
+
+    /// <summary>Whether a page may end before entry <paramref name="entry"/>: the batch ends there, or a new record starts.</summary>
+    private bool AtRecordStart(ReadOnlySpan<int> repetitionLevels, int entry, int entries) =>
+        !HasRepetition || entry == entries || repetitionLevels[entry] == 0;
+
+    /// <summary>
+    /// Pages must not end in the middle of a record, so a chunk of <paramref name="take"/> entries starting at
+    /// <paramref name="entry"/> is extended to the next entry that starts a record (or the end of the batch).
+    /// </summary>
+    private int ExtendToRecordEnd(ReadOnlySpan<int> repetitionLevels, int entry, int take, int entries)
     {
+        if (!HasRepetition)
+        {
+            return take;
+        }
+
+        int end = entry + take;
+        if (end >= entries)
+        {
+            return entries - entry;
+        }
+
+        int boundary = repetitionLevels.Slice(end).IndexOf(0);
+        return boundary < 0 ? entries - entry : end + boundary - entry;
+    }
+
+    /// <summary>Buffers the levels of entries [<paramref name="entry"/>, +<paramref name="take"/>) and returns how many of them hold a value.</summary>
+    private int AppendLevels(ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels, int entry, int take)
+    {
+        if (!HasRepetition)
+        {
+            _records += take;
+        }
+        else
+        {
+            var repetition = repetitionLevels.Slice(entry, take);
+            _buffers.RepetitionLevels.Write(repetition);
+            _records += repetition.Count(0);
+        }
+
         if (!HasLevels)
         {
             return take;
         }
 
-        var slice = definitionLevels.Slice(row, take);
+        var slice = definitionLevels.Slice(entry, take);
         _buffers.Levels.Write(slice);
         return slice.Count(_maxDefinitionLevel);
     }
 
-    private void AppendLevelsAndComplete(ReadOnlySpan<int> definitionLevels, int start, int count)
+    private void AppendLevelsAndComplete(ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels, int start, int count, bool atBatchEnd)
     {
-        if (HasLevels)
-        {
-            _buffers.Levels.Write(definitionLevels.Slice(start, count));
-        }
-
-        CompleteChunk(count);
+        AppendLevels(definitionLevels, repetitionLevels, start, count);
+        CompleteChunk(count, atBatchEnd);
     }
 
-    private void CompleteChunk(int levelCount)
+    /// <param name="atBatchEnd">
+    /// Whether the chunk ends the batch. Then it is not known whether the record continues in the next batch, so in a
+    /// repeated column anything that would close the page waits until the next batch shows where the record ends.
+    /// </param>
+    private void CompleteChunk(int levelCount, bool atBatchEnd)
     {
         _pageLevelCount += levelCount;
-        _rows += levelCount;
-        if (PageBytes >= _pageSize || _pageLevelCount >= MaxRowsPerPage)
+        _entries += levelCount;
+        if (HasRepetition && atBatchEnd)
+        {
+            _pageActionsDeferred |= PageBytes >= _pageSize || _pageLevelCount >= MaxRowsPerPage || DictionaryIsTooBig;
+            return;
+        }
+
+        ApplyPageActions();
+    }
+
+    private bool DictionaryIsTooBig => _dictionary is not null && _dictionary.EncodedSize > _dictionaryLimit;
+
+    /// <summary>Closes the page if it is full and gives up on the dictionary if it is too big; only at the end of a record.</summary>
+    private void ApplyPageActions()
+    {
+        if (_pageActionsDeferred || PageBytes >= _pageSize || _pageLevelCount >= MaxRowsPerPage)
         {
             FlushPage();
         }
 
-        if (_dictionary is not null && _dictionary.EncodedSize > _dictionaryLimit)
+        if (DictionaryIsTooBig)
         {
             FallBackToPlain();
         }
+
+        _pageActionsDeferred = false;
     }
 
     /// <summary>The dictionary has grown too big: write it out with the pages that use it, and continue with plain pages.</summary>
@@ -466,16 +585,27 @@ public sealed class ColumnWriter
 
     private void FlushPage()
     {
+        _pageActionsDeferred = false;
         if (_pageLevelCount == 0)
         {
             return;
         }
 
-        // Data page v1: [4-byte length][RLE definition levels][values]; a required column has only values.
+        // Data page v1: [repetition levels][definition levels][values], each level section as a 4-byte length followed
+        // by RLE data; a column without repetition or definition levels has no such section.
         Span<byte> prefixStorage = stackalloc byte[sizeof(int)];
         scoped ReadOnlySpan<byte> levelPrefix = default;
         var levelData = ReadOnlySpan<byte>.Empty;
-        if (HasLevels)
+        if (HasRepetition)
+        {
+            RleBitPackedEncoder.Encode(_buffers.RepetitionLevels.WrittenSpan, _repetitionBitWidth, _buffers.RepetitionBytes);
+            RleBitPackedEncoder.Encode(_buffers.Levels.WrittenSpan, _levelBitWidth, _buffers.LevelBytes);
+            var block = _buffers.LevelBlock;
+            AppendSection(block, _buffers.RepetitionBytes.WrittenSpan);
+            AppendSection(block, _buffers.LevelBytes.WrittenSpan);
+            levelData = block.WrittenSpan;
+        }
+        else if (HasLevels)
         {
             RleBitPackedEncoder.Encode(_buffers.Levels.WrittenSpan, _levelBitWidth, _buffers.LevelBytes);
             levelData = _buffers.LevelBytes.WrittenSpan;
@@ -495,6 +625,13 @@ public sealed class ColumnWriter
         _pageLevelCount = 0;
         _pageLogicalBytes = 0;
         _buffers.Reset();
+    }
+
+    private static void AppendSection(ArrayBufferWriter<byte> block, ReadOnlySpan<byte> encodedLevels)
+    {
+        BinaryPrimitives.WriteInt32LittleEndian(block.GetSpan(sizeof(int)), encodedLevels.Length);
+        block.Advance(sizeof(int));
+        block.Write(encodedLevels);
     }
 
     /// <summary>Encodes a page whose values are dictionary indexes and keeps it until the dictionary page can be written.</summary>

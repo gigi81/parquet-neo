@@ -75,12 +75,21 @@ internal sealed class TestParquetFile
     public List<PageInfo> DataPages(int rowGroup, int column) =>
         Pages(rowGroup, column).Where(p => p.Header.Type != PageType.DictionaryPage).ToList();
 
-    /// <summary>Decodes a whole column chunk; null entries are nulls. Values are int, long, float, double, bool or byte[].</summary>
-    public object?[] ReadColumn(int rowGroup, int column)
+    /// <summary>The level entries of a column chunk: one definition and repetition level each, and the values of the non-null ones.</summary>
+    public sealed record ColumnEntries(int[] Definition, int[] Repetition, object[] Values)
+    {
+        /// <summary>The number of rows, which is the number of entries that start a new one.</summary>
+        public int RowCount => Repetition.Count(level => level == 0);
+    }
+
+    /// <summary>Decodes a whole column chunk by its pages, independently of the library's reader.</summary>
+    public ColumnEntries ReadEntries(int rowGroup, int column)
     {
         var node = Schema.Columns[column];
         var codec = Registry.Get(Chunk(rowGroup, column).Codec);
-        var result = new List<object?>();
+        var definition = new List<int>();
+        var repetition = new List<int>();
+        var values = new List<object>();
         object[]? dictionary = null;
 
         foreach (var page in Pages(rowGroup, column))
@@ -96,34 +105,63 @@ internal sealed class TestParquetFile
                 continue;
             }
 
-            int rows = header.DataPageHeader!.NumValues;
+            int entries = header.DataPageHeader!.NumValues;
             int position = 0;
-            var levels = Enumerable.Repeat(node.MaxDefinitionLevel, rows).ToArray(); // a required column has no level data: every row is present
+            var repetitionLevels = new int[entries]; // zeros when the column is not repeated: every entry is a row
+            if (node.MaxRepetitionLevel > 0)
+            {
+                position = ReadLevels(data, position, repetitionLevels, node.MaxRepetitionLevel);
+            }
+
+            var levels = Enumerable.Repeat(node.MaxDefinitionLevel, entries).ToArray(); // a required column has no level data: every entry is present
             if (node.MaxDefinitionLevel > 0)
             {
-                int levelBytes = BinaryPrimitives.ReadInt32LittleEndian(data);
-                int width = 32 - System.Numerics.BitOperations.LeadingZeroCount((uint)node.MaxDefinitionLevel);
-                var decoded = new RleBitPackedDecoder(data.AsSpan(4, levelBytes), width);
-                if (decoded.ReadValues(levels) != rows)
-                {
-                    throw new InvalidDataException("Fewer definition levels than the page declares.");
-                }
-
-                position = 4 + levelBytes;
+                position = ReadLevels(data, position, levels, node.MaxDefinitionLevel);
             }
 
             int present = levels.Count(l => l == node.MaxDefinitionLevel);
-            var values = header.DataPageHeader.Encoding == ParquetEncoding.RleDictionary
+            var pageValues = header.DataPageHeader.Encoding == ParquetEncoding.RleDictionary
                 ? DecodeIndexed(dictionary ?? throw new InvalidDataException("A dictionary-encoded page without a dictionary page."), data.AsSpan(position), present)
                 : DecodeValues(node, data.AsSpan(position), present);
-            int next = 0;
-            foreach (int level in levels)
-            {
-                result.Add(level == node.MaxDefinitionLevel ? values[next++] : null);
-            }
+            definition.AddRange(levels);
+            repetition.AddRange(repetitionLevels);
+            values.AddRange(pageValues);
         }
 
-        return result.ToArray();
+        return new ColumnEntries(definition.ToArray(), repetition.ToArray(), values.ToArray());
+    }
+
+    private static int ReadLevels(byte[] data, int position, int[] levels, int maxLevel)
+    {
+        int length = BinaryPrimitives.ReadInt32LittleEndian(data.AsSpan(position));
+        int width = 32 - System.Numerics.BitOperations.LeadingZeroCount((uint)maxLevel);
+        var decoder = new RleBitPackedDecoder(data.AsSpan(position + sizeof(int), length), width);
+        if (decoder.ReadValues(levels) != levels.Length)
+        {
+            throw new InvalidDataException("Fewer levels than the page declares.");
+        }
+
+        return position + sizeof(int) + length;
+    }
+
+    /// <summary>Decodes a whole flat column chunk; null entries are nulls. Values are int, long, float, double, bool or byte[].</summary>
+    public object?[] ReadColumn(int rowGroup, int column)
+    {
+        var node = Schema.Columns[column];
+        if (node.MaxRepetitionLevel > 0)
+        {
+            throw new InvalidOperationException($"Column '{node.Name}' is repeated; use ReadEntries.");
+        }
+
+        var entries = ReadEntries(rowGroup, column);
+        var result = new object?[entries.Definition.Length];
+        int next = 0;
+        for (int i = 0; i < result.Length; i++)
+        {
+            result[i] = entries.Definition[i] == node.MaxDefinitionLevel ? entries.Values[next++] : null;
+        }
+
+        return result;
     }
 
     public T?[] ReadColumn<T>(int rowGroup, int column) where T : struct =>
@@ -222,7 +260,17 @@ internal sealed class TestParquetFile
                 Require(chunk.Encodings.Contains(ParquetEncoding.RleDictionary) == dictionaryDataPages > 0, "encodings lists RLE_DICTIONARY exactly when it is used");
                 Require(chunk.Encodings.Contains(ParquetEncoding.Plain), "PLAIN is always listed (the dictionary page or plain pages use it)");
 
-                Require(values == chunk.NumValues && values == group.NumRows, $"chunk {g}/{c} holds {values} values, expected {group.NumRows}");
+                Require(values == chunk.NumValues, $"chunk {g}/{c} holds {values} entries but declares {chunk.NumValues}");
+                Require(ReadEntries(g, c).RowCount == group.NumRows, $"chunk {g}/{c} holds {ReadEntries(g, c).RowCount} rows, expected {group.NumRows}");
+                if (Schema.Columns[c].MaxRepetitionLevel > 0)
+                {
+                    // Pages must not end in the middle of a row, so each one starts with a repetition level of 0.
+                    foreach (var dataPage in pages.Where(p => p.Header.Type == PageType.DataPage))
+                    {
+                        Require(PageStartsRow(dataPage, c, chunk), $"a page of chunk {g}/{c} starts in the middle of a row");
+                    }
+                }
+
                 Require(chunkUncompressed == chunk.TotalUncompressedSize, $"chunk {g}/{c} uncompressed size");
                 Require(chunkCompressed == chunk.TotalCompressedSize, $"chunk {g}/{c} compressed size");
                 uncompressed += chunkUncompressed;
@@ -238,6 +286,18 @@ internal sealed class TestParquetFile
         Require(position == FooterStart, $"column data ends at {position} but the footer starts at {FooterStart}");
         Require(Metadata.NumRows == rows, "file num_rows");
         Require(Metadata.ColumnOrders!.Count == Schema.Columns.Count, "one column order per column");
+    }
+
+    private bool PageStartsRow(PageInfo page, int column, ColumnMetaData chunk)
+    {
+        var node = Schema.Columns[column];
+        var data = new byte[page.Header.UncompressedPageSize];
+        Registry.Get(chunk.Codec).Decompress(Bytes.AsSpan((int)page.Offset + page.HeaderLength, page.Header.CompressedPageSize), data);
+        var first = new int[1];
+        int width = 32 - System.Numerics.BitOperations.LeadingZeroCount((uint)node.MaxRepetitionLevel);
+        int length = BinaryPrimitives.ReadInt32LittleEndian(data);
+        new RleBitPackedDecoder(data.AsSpan(sizeof(int), length), width).ReadValues(first);
+        return first[0] == 0;
     }
 
     private static int EncodingStatisticsCount(ColumnMetaData chunk, PageType type, ParquetEncoding encoding) =>

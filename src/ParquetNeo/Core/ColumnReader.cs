@@ -15,7 +15,7 @@ namespace ParquetNeo.Core;
 /// <remarks>
 /// <para>
 /// A required column fills <c>values</c> and reads <c>values.Length</c> rows. An optional column also takes a
-/// <c>definitionLevels</c> span, whose length is the number of rows requested: it receives <c>0</c> for a null and
+/// <c>definitionLevels</c> span, whose length is the number of entries requested: it receives <c>0</c> for a null and
 /// <c>1</c> for a value, and <c>values</c> receives only the non-null values, packed at the start. Because any
 /// row may hold a value, <c>values</c> needs room for as many entries as there are rows requested. The result says
 /// how many rows and values were read; 0 rows means the chunk is exhausted.
@@ -32,16 +32,21 @@ public sealed class ColumnReader : IDisposable
     private readonly ICodec _codec;
     private readonly int _maxDefinitionLevel;
     private readonly int _levelBitWidth;
+    private readonly int _maxRepetitionLevel;
+    private readonly int _repetitionBitWidth;
+    private readonly long _rowCount;
     private readonly long _chunkEnd;
 
     private long _position; // where the next page header starts
-    private long _rowsLoaded; // rows in the pages loaded so far
-    private long _rowsRead;
+    private long _entriesLoaded; // level entries in the pages loaded so far
+    private long _recordsLoaded; // of those, the ones that start a row
+    private long _entriesRead;
 
     private byte[]? _headerBuffer;
     private byte[]? _compressed;
     private byte[]? _page;
     private int[]? _levels;
+    private int[]? _repetitionLevels;
     private bool[]? _booleans;
 
     // The chunk's dictionary (decoded once) and, for a dictionary-encoded page, its decoded indexes.
@@ -53,23 +58,18 @@ public sealed class ColumnReader : IDisposable
     private int[]? _indices;
     private bool _pageIsDictionary;
 
-    private int _pageRows;
-    private int _pageRowIndex;
+    private int _pageEntries;
+    private int _pageEntryIndex;
     private int _pageValueIndex;
     private int _valuePosition;
     private int _valueEnd;
     private bool _disposed;
 
-    internal ColumnReader(ParquetFileReader file, PrimitiveNode column, ColumnChunk chunk)
+    internal ColumnReader(ParquetFileReader file, PrimitiveNode column, ColumnChunk chunk, long rowCount)
     {
         _file = file;
         Column = column;
         string name = string.Join('.', column.Path);
-
-        if (!ReferenceEquals(column.Parent, file.Schema.Root) || column.Repetition == FieldRepetitionType.Repeated)
-        {
-            throw new NotSupportedException($"Column '{name}' is nested or repeated; only flat columns can be read so far.");
-        }
 
         if (column.Type == PhysicalType.Int96)
         {
@@ -90,6 +90,9 @@ public sealed class ColumnReader : IDisposable
         _codec = file.Options.Codecs.Get(_meta.Codec);
         _maxDefinitionLevel = column.MaxDefinitionLevel;
         _levelBitWidth = 32 - BitOperations.LeadingZeroCount((uint)_maxDefinitionLevel);
+        _maxRepetitionLevel = column.MaxRepetitionLevel;
+        _repetitionBitWidth = 32 - BitOperations.LeadingZeroCount((uint)_maxRepetitionLevel);
+        _rowCount = rowCount;
 
         // Dictionary pages come first in a chunk when the column uses them.
         long start = _meta.DictionaryPageOffset is > 0 ? _meta.DictionaryPageOffset.Value : _meta.DataPageOffset;
@@ -105,46 +108,49 @@ public sealed class ColumnReader : IDisposable
 
     public PrimitiveNode Column { get; }
 
-    /// <summary>The number of rows in this column chunk, as recorded in its metadata.</summary>
-    public long RowCount => _meta.NumValues;
+    /// <summary>
+    /// The number of level entries in this column chunk, as recorded in its metadata: one per value, null, empty list and
+    /// so on. For a column that is not repeated this is the number of rows.
+    /// </summary>
+    public long EntryCount => _meta.NumValues;
 
-    /// <summary>The number of rows read so far.</summary>
-    public long RowsRead => _rowsRead;
+    /// <summary>The number of level entries read so far.</summary>
+    public long EntriesRead => _entriesRead;
 
-    public BatchRead ReadBatch(Span<int> values, Span<int> definitionLevels = default) =>
-        ReadFixedWidth<int, Int32Decoder>(PhysicalType.Int32, values, definitionLevels);
+    public BatchRead ReadBatch(Span<int> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default) =>
+        ReadFixedWidth<int, Int32Decoder>(PhysicalType.Int32, values, definitionLevels, repetitionLevels);
 
-    public BatchRead ReadBatch(Span<long> values, Span<int> definitionLevels = default) =>
-        ReadFixedWidth<long, Int64Decoder>(PhysicalType.Int64, values, definitionLevels);
+    public BatchRead ReadBatch(Span<long> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default) =>
+        ReadFixedWidth<long, Int64Decoder>(PhysicalType.Int64, values, definitionLevels, repetitionLevels);
 
-    public BatchRead ReadBatch(Span<float> values, Span<int> definitionLevels = default) =>
-        ReadFixedWidth<float, SingleDecoder>(PhysicalType.Float, values, definitionLevels);
+    public BatchRead ReadBatch(Span<float> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default) =>
+        ReadFixedWidth<float, SingleDecoder>(PhysicalType.Float, values, definitionLevels, repetitionLevels);
 
-    public BatchRead ReadBatch(Span<double> values, Span<int> definitionLevels = default) =>
-        ReadFixedWidth<double, DoubleDecoder>(PhysicalType.Double, values, definitionLevels);
+    public BatchRead ReadBatch(Span<double> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default) =>
+        ReadFixedWidth<double, DoubleDecoder>(PhysicalType.Double, values, definitionLevels, repetitionLevels);
 
-    public BatchRead ReadBatch(Span<bool> values, Span<int> definitionLevels = default)
+    public BatchRead ReadBatch(Span<bool> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default)
     {
-        int requested = PrepareBatch(PhysicalType.Boolean, values.Length, definitionLevels);
-        int rows = 0;
+        int requested = PrepareBatch(PhysicalType.Boolean, values.Length, definitionLevels, repetitionLevels);
+        int entries = 0;
         int valuesRead = 0;
-        while (rows < requested)
+        while (entries < requested)
         {
-            if (_pageRowIndex == _pageRows && !LoadNextPage())
+            if (_pageEntryIndex == _pageEntries && !LoadNextPage())
             {
                 break;
             }
 
-            int take = Math.Min(requested - rows, _pageRows - _pageRowIndex);
-            int present = TakeLevels(definitionLevels, rows, take);
+            int take = Math.Min(requested - entries, _pageEntries - _pageEntryIndex);
+            int present = TakeLevels(definitionLevels, repetitionLevels, entries, take);
             _booleans.AsSpan(_pageValueIndex, present).CopyTo(values.Slice(valuesRead, present));
             Advance(take, present);
-            rows += take;
+            entries += take;
             valuesRead += present;
         }
 
-        _rowsRead += rows;
-        return new BatchRead(rows, valuesRead);
+        _entriesRead += entries;
+        return new BatchRead(entries, valuesRead);
     }
 
     /// <summary>
@@ -155,25 +161,25 @@ public sealed class ColumnReader : IDisposable
     /// Because the views point into the page, a batch never spans two pages: it ends at the end of the current
     /// page and may return fewer rows than requested even though more remain. Call again until it returns 0 rows.
     /// </remarks>
-    public BatchRead ReadByteArrays(Span<ReadOnlyMemory<byte>> values, Span<int> definitionLevels = default)
+    public BatchRead ReadByteArrays(Span<ReadOnlyMemory<byte>> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default)
     {
-        int requested = PrepareBatch(PhysicalType.ByteArray, values.Length, definitionLevels);
-        int rows = 0;
+        int requested = PrepareBatch(PhysicalType.ByteArray, values.Length, definitionLevels, repetitionLevels);
+        int entries = 0;
         int valuesRead = 0;
         Span<ByteRange> ranges = stackalloc ByteRange[256];
-        while (rows < requested)
+        while (entries < requested)
         {
-            if (_pageRowIndex == _pageRows)
+            if (_pageEntryIndex == _pageEntries)
             {
                 // Loading the next page would reuse the buffer the values returned so far point into.
-                if (rows > 0 || !LoadNextPage())
+                if (entries > 0 || !LoadNextPage())
                 {
                     break;
                 }
             }
 
-            int take = Math.Min(requested - rows, _pageRows - _pageRowIndex);
-            int present = TakeLevels(definitionLevels, rows, take);
+            int take = Math.Min(requested - entries, _pageEntries - _pageEntryIndex);
+            int present = TakeLevels(definitionLevels, repetitionLevels, entries, take);
             if (_pageIsDictionary)
             {
                 // The entries live in the dictionary, which outlives the page.
@@ -201,16 +207,16 @@ public sealed class ColumnReader : IDisposable
             }
 
             Advance(take, present);
-            rows += take;
+            entries += take;
             valuesRead += present;
         }
 
-        _rowsRead += rows;
-        return new BatchRead(rows, valuesRead);
+        _entriesRead += entries;
+        return new BatchRead(entries, valuesRead);
     }
 
     /// <summary>Reads FIXED_LEN_BYTE_ARRAY values, copied back to back; <paramref name="values"/> holds whole entries of the column's type length.</summary>
-    public BatchRead ReadFixedLengthByteArrays(Span<byte> values, Span<int> definitionLevels = default)
+    public BatchRead ReadFixedLengthByteArrays(Span<byte> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default)
     {
         int length = Column.TypeLength ?? 0;
         if (length == 0 || values.Length % length != 0)
@@ -218,18 +224,18 @@ public sealed class ColumnReader : IDisposable
             throw new ArgumentException($"The destination must be a whole number of {length}-byte entries.", nameof(values));
         }
 
-        int requested = PrepareBatch(PhysicalType.FixedLenByteArray, values.Length / length, definitionLevels);
-        int rows = 0;
+        int requested = PrepareBatch(PhysicalType.FixedLenByteArray, values.Length / length, definitionLevels, repetitionLevels);
+        int entries = 0;
         int valuesRead = 0;
-        while (rows < requested)
+        while (entries < requested)
         {
-            if (_pageRowIndex == _pageRows && !LoadNextPage())
+            if (_pageEntryIndex == _pageEntries && !LoadNextPage())
             {
                 break;
             }
 
-            int take = Math.Min(requested - rows, _pageRows - _pageRowIndex);
-            int present = TakeLevels(definitionLevels, rows, take);
+            int take = Math.Min(requested - entries, _pageEntries - _pageEntryIndex);
+            int present = TakeLevels(definitionLevels, repetitionLevels, entries, take);
             if (_pageIsDictionary)
             {
                 for (int i = 0; i < present; i++)
@@ -245,12 +251,12 @@ public sealed class ColumnReader : IDisposable
             }
 
             Advance(take, present);
-            rows += take;
+            entries += take;
             valuesRead += present;
         }
 
-        _rowsRead += rows;
-        return new BatchRead(rows, valuesRead);
+        _entriesRead += entries;
+        return new BatchRead(entries, valuesRead);
     }
 
     public void Dispose()
@@ -268,6 +274,12 @@ public sealed class ColumnReader : IDisposable
         {
             ArrayPool<int>.Shared.Return(_levels);
             _levels = null;
+        }
+
+        if (_repetitionLevels is not null)
+        {
+            ArrayPool<int>.Shared.Return(_repetitionLevels);
+            _repetitionLevels = null;
         }
 
         if (_booleans is not null)
@@ -292,21 +304,21 @@ public sealed class ColumnReader : IDisposable
         _dictionaryValues = null;
     }
 
-    private BatchRead ReadFixedWidth<T, TDecoder>(PhysicalType expected, Span<T> values, Span<int> definitionLevels)
+    private BatchRead ReadFixedWidth<T, TDecoder>(PhysicalType expected, Span<T> values, Span<int> definitionLevels, Span<int> repetitionLevels)
         where TDecoder : IPlainValueDecoder<T>
     {
-        int requested = PrepareBatch(expected, values.Length, definitionLevels);
-        int rows = 0;
+        int requested = PrepareBatch(expected, values.Length, definitionLevels, repetitionLevels);
+        int entries = 0;
         int valuesRead = 0;
-        while (rows < requested)
+        while (entries < requested)
         {
-            if (_pageRowIndex == _pageRows && !LoadNextPage())
+            if (_pageEntryIndex == _pageEntries && !LoadNextPage())
             {
                 break;
             }
 
-            int take = Math.Min(requested - rows, _pageRows - _pageRowIndex);
-            int present = TakeLevels(definitionLevels, rows, take);
+            int take = Math.Min(requested - entries, _pageEntries - _pageEntryIndex);
+            int present = TakeLevels(definitionLevels, repetitionLevels, entries, take);
             if (_pageIsDictionary)
             {
                 var dictionary = (T[])_dictionaryValues!;
@@ -324,16 +336,16 @@ public sealed class ColumnReader : IDisposable
             }
 
             Advance(take, present);
-            rows += take;
+            entries += take;
             valuesRead += present;
         }
 
-        _rowsRead += rows;
-        return new BatchRead(rows, valuesRead);
+        _entriesRead += entries;
+        return new BatchRead(entries, valuesRead);
     }
 
-    /// <summary>Checks a batch request and returns the number of rows it asks for.</summary>
-    private int PrepareBatch(PhysicalType expected, int valueCapacity, Span<int> definitionLevels)
+    /// <summary>Checks a batch request and returns the number of level entries it asks for.</summary>
+    private int PrepareBatch(PhysicalType expected, int valueCapacity, Span<int> definitionLevels, Span<int> repetitionLevels)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         _file.EnsureOpen();
@@ -342,6 +354,7 @@ public sealed class ColumnReader : IDisposable
             throw new ArgumentException($"Column '{Column.Name}' is {Column.Type}, so it cannot be read as {expected}.");
         }
 
+        int entries;
         if (_maxDefinitionLevel == 0)
         {
             if (!definitionLevels.IsEmpty)
@@ -349,49 +362,69 @@ public sealed class ColumnReader : IDisposable
                 throw new ArgumentException($"Column '{Column.Name}' is required, so it has no definition levels.", nameof(definitionLevels));
             }
 
-            return valueCapacity;
+            entries = valueCapacity;
         }
-
-        if (definitionLevels.IsEmpty)
+        else if (definitionLevels.IsEmpty)
         {
             if (valueCapacity != 0)
             {
                 throw new ArgumentException($"Column '{Column.Name}' is optional, so a span for its definition levels is needed.", nameof(definitionLevels));
             }
 
-            return 0;
+            entries = 0;
         }
-
-        if (valueCapacity < definitionLevels.Length)
+        else
         {
-            throw new ArgumentException("The values span needs room for one value per requested row, since any row may hold a value.");
+            if (valueCapacity < definitionLevels.Length)
+            {
+                throw new ArgumentException("The values span needs room for one value per requested entry, since any entry may hold a value.");
+            }
+
+            entries = definitionLevels.Length;
         }
 
-        return definitionLevels.Length;
+        if (_maxRepetitionLevel == 0)
+        {
+            if (!repetitionLevels.IsEmpty)
+            {
+                throw new ArgumentException($"Column '{Column.Name}' is not repeated, so it has no repetition levels.", nameof(repetitionLevels));
+            }
+        }
+        else if (repetitionLevels.Length != entries)
+        {
+            throw new ArgumentException($"Column '{Column.Name}' is repeated, so a span for its repetition levels, as long as the one for the definition levels, is needed.", nameof(repetitionLevels));
+        }
+
+        return entries;
     }
 
-    /// <summary>Copies the levels of the next <paramref name="take"/> rows of the page and returns how many hold a value.</summary>
-    private int TakeLevels(Span<int> definitionLevels, int row, int take)
+    /// <summary>Copies the levels of the next <paramref name="take"/> entries of the page and returns how many hold a value.</summary>
+    private int TakeLevels(Span<int> definitionLevels, Span<int> repetitionLevels, int entry, int take)
     {
+        if (_maxRepetitionLevel > 0)
+        {
+            _repetitionLevels.AsSpan(_pageEntryIndex, take).CopyTo(repetitionLevels.Slice(entry, take));
+        }
+
         if (_maxDefinitionLevel == 0)
         {
             return take;
         }
 
-        var slice = _levels.AsSpan(_pageRowIndex, take);
-        slice.CopyTo(definitionLevels.Slice(row, take));
+        var slice = _levels.AsSpan(_pageEntryIndex, take);
+        slice.CopyTo(definitionLevels.Slice(entry, take));
         return slice.Count(_maxDefinitionLevel);
     }
 
-    private void Advance(int rows, int values)
+    private void Advance(int entries, int values)
     {
-        _pageRowIndex += rows;
+        _pageEntryIndex += entries;
         _pageValueIndex += values;
     }
 
     private bool LoadNextPage()
     {
-        _pageRows = _pageRowIndex = _pageValueIndex = 0;
+        _pageEntries = _pageEntryIndex = _pageValueIndex = 0;
         while (_position < _chunkEnd)
         {
             var header = ReadPageHeader(out int headerLength);
@@ -424,15 +457,20 @@ public sealed class ColumnReader : IDisposable
                     continue; // index pages and page types from the future are skipped
             }
 
-            if (_pageRows > 0)
+            if (_pageEntries > 0)
             {
                 return true;
             }
         }
 
-        if (_rowsLoaded != _meta.NumValues)
+        if (_entriesLoaded != _meta.NumValues)
         {
-            throw Corrupt($"its pages hold {_rowsLoaded} values but the column chunk declares {_meta.NumValues}");
+            throw Corrupt($"its pages hold {_entriesLoaded} values but the column chunk declares {_meta.NumValues}");
+        }
+
+        if (_recordsLoaded != _rowCount)
+        {
+            throw Corrupt($"its pages hold {_recordsLoaded} rows but the row group declares {_rowCount}");
         }
 
         return false;
@@ -466,7 +504,7 @@ public sealed class ColumnReader : IDisposable
             throw Corrupt("it has more than one dictionary page");
         }
 
-        if (_rowsLoaded > 0)
+        if (_entriesLoaded > 0)
         {
             throw Corrupt("its dictionary page comes after a data page");
         }
@@ -476,7 +514,7 @@ public sealed class ColumnReader : IDisposable
             throw new NotSupportedException($"Column '{Column.Name}' has a dictionary page encoded as {info.Encoding}; only PLAIN is supported.");
         }
 
-        int count = CheckRows(info.NumValues);
+        int count = CheckEntryCount(info.NumValues);
         LoadPageV1(dataStart, compressedSize, uncompressedSize);
         var source = _page.AsSpan(0, uncompressedSize);
 
@@ -581,11 +619,22 @@ public sealed class ColumnReader : IDisposable
     private void ReadDataPageV1(PageHeader header, long dataStart, int compressedSize, int uncompressedSize)
     {
         var info = header.DataPageHeader ?? throw Corrupt("a data page has no data page header");
-        int rows = CheckRows(info.NumValues);
+        int entries = CheckEntryCount(info.NumValues);
         CheckEncoding(info.Encoding);
         LoadPageV1(dataStart, compressedSize, uncompressedSize);
 
+        // [repetition levels][definition levels][values]: each level section is a 4-byte length and RLE data.
         int position = 0;
+        if (_maxRepetitionLevel > 0)
+        {
+            if (info.RepetitionLevelEncoding != ParquetEncoding.Rle)
+            {
+                throw new NotSupportedException($"Repetition levels encoded as {info.RepetitionLevelEncoding} are not supported (only RLE).");
+            }
+
+            DecodeRepetitionLevels(ReadLevelSection(ref position, uncompressedSize, "repetition"), entries);
+        }
+
         if (_maxDefinitionLevel > 0)
         {
             if (info.DefinitionLevelEncoding != ParquetEncoding.Rle)
@@ -593,48 +642,54 @@ public sealed class ColumnReader : IDisposable
                 throw new NotSupportedException($"Definition levels encoded as {info.DefinitionLevelEncoding} are not supported (only RLE).");
             }
 
-            if (uncompressedSize < sizeof(int))
-            {
-                throw Corrupt("a data page is too short for its definition levels");
-            }
-
-            int levelBytes = BinaryPrimitives.ReadInt32LittleEndian(_page);
-            if (levelBytes < 0 || levelBytes > uncompressedSize - sizeof(int))
-            {
-                throw Corrupt("the definition levels of a page are longer than the page");
-            }
-
-            DecodeLevels(_page.AsSpan(sizeof(int), levelBytes), rows);
-            position = sizeof(int) + levelBytes;
+            DecodeLevels(ReadLevelSection(ref position, uncompressedSize, "definition"), entries);
         }
 
-        StartPage(position, uncompressedSize, rows, info.Encoding);
+        StartPage(position, uncompressedSize, entries, info.Encoding);
+    }
+
+    /// <summary>Returns the RLE data of the level section that starts at <paramref name="position"/> and moves past it.</summary>
+    private ReadOnlySpan<byte> ReadLevelSection(ref int position, int pageSize, string what)
+    {
+        if (pageSize - position < sizeof(int))
+        {
+            throw Corrupt($"a data page is too short for its {what} levels");
+        }
+
+        int length = BinaryPrimitives.ReadInt32LittleEndian(_page.AsSpan(position));
+        if (length < 0 || length > pageSize - position - sizeof(int))
+        {
+            throw Corrupt($"the {what} levels of a page are longer than the page");
+        }
+
+        var section = _page.AsSpan(position + sizeof(int), length);
+        position += sizeof(int) + length;
+        return section;
     }
 
     private void ReadDataPageV2(PageHeader header, long dataStart, int compressedSize, int uncompressedSize)
     {
         var info = header.DataPageHeaderV2 ?? throw Corrupt("a data page v2 has no data page header");
-        int rows = CheckRows(info.NumValues);
+        int entries = CheckEntryCount(info.NumValues);
         CheckEncoding(info.Encoding);
+        int repetitionBytes = info.RepetitionLevelsByteLength;
         int definitionBytes = info.DefinitionLevelsByteLength;
-        if (info.RepetitionLevelsByteLength != 0)
+        long levelBytes = (long)repetitionBytes + definitionBytes;
+        if (repetitionBytes < 0 || definitionBytes < 0 || levelBytes > Math.Min(compressedSize, uncompressedSize)
+            || (_maxDefinitionLevel == 0 && definitionBytes != 0) || (_maxRepetitionLevel == 0 && repetitionBytes != 0))
         {
-            throw Corrupt("a flat column has repetition levels");
-        }
-
-        if (definitionBytes < 0 || definitionBytes > Math.Min(compressedSize, uncompressedSize) || (_maxDefinitionLevel == 0 && definitionBytes != 0))
-        {
-            throw Corrupt("the definition level length of a page does not fit");
+            throw Corrupt("the level lengths of a page do not fit");
         }
 
         // v2 stores the levels uncompressed, followed by the values, which are compressed on their own.
+        int levelsLength = (int)levelBytes;
         EnsureCapacity(ref _compressed, compressedSize);
         _file.ReadAt(dataStart, _compressed.AsSpan(0, compressedSize));
         EnsureCapacity(ref _page, uncompressedSize);
-        _compressed.AsSpan(0, definitionBytes).CopyTo(_page);
+        _compressed.AsSpan(0, levelsLength).CopyTo(_page);
 
-        var storedValues = _compressed.AsSpan(definitionBytes, compressedSize - definitionBytes);
-        var values = _page.AsSpan(definitionBytes, uncompressedSize - definitionBytes);
+        var storedValues = _compressed.AsSpan(levelsLength, compressedSize - levelsLength);
+        var values = _page.AsSpan(levelsLength, uncompressedSize - levelsLength);
         if (info.IsCompressed && _codec.Id != CompressionCodec.Uncompressed)
         {
             _codec.Decompress(storedValues, values);
@@ -648,12 +703,17 @@ public sealed class ColumnReader : IDisposable
             throw Corrupt("an uncompressed page body does not have the size its header declares");
         }
 
-        if (_maxDefinitionLevel > 0)
+        if (_maxRepetitionLevel > 0)
         {
-            DecodeLevels(_page.AsSpan(0, definitionBytes), rows);
+            DecodeRepetitionLevels(_page.AsSpan(0, repetitionBytes), entries);
         }
 
-        StartPage(definitionBytes, uncompressedSize, rows, info.Encoding);
+        if (_maxDefinitionLevel > 0)
+        {
+            DecodeLevels(_page.AsSpan(repetitionBytes, definitionBytes), entries);
+        }
+
+        StartPage(levelsLength, uncompressedSize, entries, info.Encoding);
     }
 
     /// <summary>Reads a v1 page body and leaves its uncompressed bytes in <see cref="_page"/>.</summary>
@@ -676,38 +736,59 @@ public sealed class ColumnReader : IDisposable
         _codec.Decompress(_compressed.AsSpan(0, compressedSize), _page.AsSpan(0, uncompressedSize));
     }
 
-    private void DecodeLevels(ReadOnlySpan<byte> encoded, int rows)
+    private void DecodeLevels(ReadOnlySpan<byte> encoded, int entries)
     {
-        EnsureCapacity(ref _levels, rows);
-        var levels = _levels.AsSpan(0, rows);
+        EnsureCapacity(ref _levels, entries);
+        var levels = _levels.AsSpan(0, entries);
         var decoder = new RleBitPackedDecoder(encoded, _levelBitWidth);
-        if (decoder.ReadValues(levels) != rows)
+        if (decoder.ReadValues(levels) != entries)
         {
             throw Corrupt("a page has fewer definition levels than values");
         }
 
-        // Cannot trigger while only flat columns are read (the maximum is 1 and levels are 1 bit wide), but a
-        // nested column's levels are wider than its maximum needs, so this will guard them.
+        // The bit width has room for values above the maximum (a maximum of 2 takes 2 bits, which hold a 3).
         if (levels.IndexOfAnyExceptInRange(0, _maxDefinitionLevel) >= 0)
         {
             throw Corrupt("a definition level is above the column's maximum");
         }
     }
 
-    /// <summary>Records the shape of the page that was just loaded and prepares its values for reading.</summary>
-    private void StartPage(int valuesStart, int valuesEnd, int rows, ParquetEncoding encoding)
+    private void DecodeRepetitionLevels(ReadOnlySpan<byte> encoded, int entries)
     {
-        _pageRows = rows;
-        _pageRowIndex = 0;
+        EnsureCapacity(ref _repetitionLevels, entries);
+        var levels = _repetitionLevels.AsSpan(0, entries);
+        var decoder = new RleBitPackedDecoder(encoded, _repetitionBitWidth);
+        if (decoder.ReadValues(levels) != entries)
+        {
+            throw Corrupt("a page has fewer repetition levels than values");
+        }
+
+        if (levels.IndexOfAnyExceptInRange(0, _maxRepetitionLevel) >= 0)
+        {
+            throw Corrupt("a repetition level is above the column's maximum");
+        }
+
+        if (entries > 0 && _entriesLoaded == 0 && levels[0] != 0)
+        {
+            throw Corrupt("the column chunk does not start with a new row");
+        }
+    }
+
+    /// <summary>Records the shape of the page that was just loaded and prepares its values for reading.</summary>
+    private void StartPage(int valuesStart, int valuesEnd, int entries, ParquetEncoding encoding)
+    {
+        _pageEntries = entries;
+        _pageEntryIndex = 0;
         _pageValueIndex = 0;
-        _rowsLoaded += rows;
+        _entriesLoaded += entries;
+        _recordsLoaded += _maxRepetitionLevel == 0 ? entries : _repetitionLevels.AsSpan(0, entries).Count(0);
         _valuePosition = valuesStart;
         _valueEnd = valuesEnd;
 
         _pageIsDictionary = encoding is ParquetEncoding.PlainDictionary or ParquetEncoding.RleDictionary;
         if (Column.Type == PhysicalType.Boolean || _pageIsDictionary)
         {
-            int present = _maxDefinitionLevel == 0 ? rows : _levels.AsSpan(0, rows).Count(_maxDefinitionLevel);
+            int present = _maxDefinitionLevel == 0 ? entries : _levels.AsSpan(0, entries).Count(_maxDefinitionLevel);
             if (_pageIsDictionary)
             {
                 DecodeIndices(valuesStart, valuesEnd, present);
@@ -761,14 +842,14 @@ public sealed class ColumnReader : IDisposable
         }
     }
 
-    private int CheckRows(int rows)
+    private int CheckEntryCount(int entries)
     {
-        if (rows < 0 || rows > _file.Options.MaxRowsPerPage)
+        if (entries < 0 || entries > _file.Options.MaxRowsPerPage)
         {
-            throw Corrupt($"a page declares {rows} values, outside the limit of {_file.Options.MaxRowsPerPage}");
+            throw Corrupt($"a page declares {entries} values, outside the limit of {_file.Options.MaxRowsPerPage}");
         }
 
-        return rows;
+        return entries;
     }
 
     private void CheckEncoding(ParquetEncoding encoding)

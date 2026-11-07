@@ -65,16 +65,16 @@ public class ReaderBenchmarks
         using (var ids = group.OpenColumn(0))
         {
             BatchRead read;
-            while ((read = ids.ReadBatch(_ids)).Rows > 0)
+            while ((read = ids.ReadBatch(_ids)).Entries > 0)
             {
-                total += _ids[read.Rows - 1];
+                total += _ids[read.Entries - 1];
             }
         }
 
         using (var scores = group.OpenColumn(1))
         {
             BatchRead read;
-            while ((read = scores.ReadBatch(_scores, _levels)).Rows > 0)
+            while ((read = scores.ReadBatch(_scores, _levels)).Entries > 0)
             {
                 total += read.Values;
             }
@@ -83,7 +83,7 @@ public class ReaderBenchmarks
         using (var names = group.OpenColumn(2))
         {
             BatchRead read;
-            while ((read = names.ReadByteArrays(_names, _levels)).Rows > 0)
+            while ((read = names.ReadByteArrays(_names, _levels)).Entries > 0)
             {
                 total += read.Values;
             }
