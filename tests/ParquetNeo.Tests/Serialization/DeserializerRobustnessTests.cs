@@ -45,6 +45,68 @@ public class DeserializerRobustnessTests
     }
 
     [Test]
+    public async Task RandomlyDamagedFiles_OnlyEverFailWithParquetExceptions_WhenReadIntoNestedRows()
+    {
+        var files = new (string Name, byte[] Bytes)[]
+        {
+            ("our nested rows", File.ReadAllBytes(TestBytes.FixturePath("golden-serializer-nested.parquet"))),
+            ("pyarrow nested", File.ReadAllBytes(TestBytes.FixturePath("pyarrow-nested-v2-snappy.parquet"))),
+            ("legacy lists", File.ReadAllBytes(TestBytes.FixturePath("golden-legacy-lists.parquet"))),
+        };
+
+        foreach (var (name, original) in files)
+        {
+            var random = new Random(name.GetHashCode());
+            for (int attempt = 0; attempt < 300; attempt++)
+            {
+                var damaged = (byte[])original.Clone();
+                for (int k = random.Next(1, 4); k > 0; k--)
+                {
+                    damaged[random.Next(damaged.Length)] ^= (byte)(1 << random.Next(8));
+                }
+
+                var sync = Record(() => ParquetSerializer.Deserialize<Document>(new MemoryStream(damaged), Limited));
+                var asynchronous = await RecordAsync(async () => await ParquetSerializer.DeserializeAsync<Document>(new MemoryStream(damaged), Limited));
+                var legacy = Record(() => ParquetSerializer.Deserialize<LegacyShape>(new MemoryStream(damaged), Limited));
+
+                await Assert.That(sync is null || IsExpected(sync)).IsTrue().Because($"{name}, attempt {attempt}, sync: {sync}");
+                await Assert.That(asynchronous is null || IsExpected(asynchronous)).IsTrue().Because($"{name}, attempt {attempt}, async: {asynchronous}");
+                await Assert.That(legacy is null || IsExpected(legacy)).IsTrue().Because($"{name}, attempt {attempt}, legacy: {legacy}");
+            }
+        }
+    }
+
+    private sealed class LegacyShape
+    {
+        [ParquetColumn("two_level")]
+        public List<int>? TwoLevel { get; set; }
+
+        [ParquetColumn("struct_element")]
+        public List<LegacyItem>? StructElement { get; set; }
+
+        [ParquetColumn("tuple")]
+        public List<LegacyText>? Tuple { get; set; }
+
+        [ParquetColumn("implicit")]
+        public int[]? Implicit { get; set; }
+    }
+
+    private sealed class LegacyItem
+    {
+        [ParquetColumn("str")]
+        public string? Text { get; set; }
+
+        [ParquetColumn("num")]
+        public int? Number { get; set; }
+    }
+
+    private sealed class LegacyText
+    {
+        [ParquetColumn("str")]
+        public string? Text { get; set; }
+    }
+
+    [Test]
     public async Task TruncatedFiles_OnlyEverFailWithParquetExceptions_WhenReadIntoRows()
     {
         var bytes = File.ReadAllBytes(TestBytes.FixturePath("golden-serializer.parquet"));

@@ -252,7 +252,7 @@ internal sealed class ShredderBuilder
     }
 
     /// <summary>Whether the type is a dictionary: <see cref="IDictionary{TKey, TValue}"/> or <see cref="IReadOnlyDictionary{TKey, TValue}"/>.</summary>
-    private static bool TryGetDictionary(Type type, out Type? key, out Type? value)
+    internal static bool TryGetDictionary(Type type, out Type? key, out Type? value)
     {
         var found = Implemented(type, typeof(IDictionary<,>)).Concat(Implemented(type, typeof(IReadOnlyDictionary<,>)))
             .Select(i => (i.GenericTypeArguments[0], i.GenericTypeArguments[1])).Distinct().ToList();
@@ -261,7 +261,7 @@ internal sealed class ShredderBuilder
     }
 
     /// <summary>Whether the type is a collection of one kind of element: an array, or something that is <see cref="IEnumerable{T}"/>.</summary>
-    private static bool TryGetItem(Type type, out Type? item)
+    internal static bool TryGetItem(Type type, out Type? item)
     {
         if (type.IsArray)
         {

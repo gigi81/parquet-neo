@@ -160,11 +160,11 @@ public class DeserializerModelTests
         public int B { get; set; }
     }
 
-    private sealed class Nested
+    private sealed class Unsupported
     {
-        public int Id { get; set; }
+        public int Int { get; set; }
 
-        public List<int> Numbers { get; set; } = [];
+        public TimeSpan Duration { get; set; }
     }
 
     [Test]
@@ -175,8 +175,8 @@ public class DeserializerModelTests
         await Assert.That(() => ParquetSerializer.Deserialize<Unbuildable>(new MemoryStream(bytes))).Throws<InvalidOperationException>();
         await Assert.That(() => ParquetSerializer.Deserialize<NothingToSet>(new MemoryStream(bytes))).Throws<InvalidOperationException>();
         await Assert.That(() => ParquetSerializer.Deserialize<Clashing>(new MemoryStream(bytes))).Throws<InvalidOperationException>();
-        var nested = Assert.Throws<NotSupportedException>(() => ParquetSerializer.Deserialize<Nested>(new MemoryStream(bytes)));
-        await Assert.That(nested.Message).Contains("Nested.Numbers");
+        var unsupported = Assert.Throws<NotSupportedException>(() => ParquetSerializer.Deserialize<Unsupported>(new MemoryStream(bytes)));
+        await Assert.That(unsupported.Message).Contains("Unsupported.Duration");
     }
 
     // ---- enums ----

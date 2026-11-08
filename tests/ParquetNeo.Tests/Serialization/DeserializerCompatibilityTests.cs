@@ -255,7 +255,7 @@ public class DeserializerCompatibilityTests
         using var reader = ReadHelper.Open(bytes);
         using var columnReader = reader.OpenRowGroup(0).OpenColumn("Int");
         var column = new LeafColumn<int>(ColumnReaders.For<int>());
-        column.Fill(columnReader, 3);
+        column.Fill(columnReader);
 
         for (int i = 0; i < 3; i++)
         {
@@ -265,11 +265,18 @@ public class DeserializerCompatibilityTests
 
         await Assert.That(() => column.TryTake(out _)).Throws<CorruptColumnException>();
 
+        // A column the file does not have is all nulls, however many entries are taken.
         var missing = new LeafColumn<int>(ColumnReaders.For<int>());
-        missing.Fill(null, 2);
-        await Assert.That(missing.TryTake(out _)).IsFalse();
-        await Assert.That(missing.TryTake(out _)).IsFalse();
-        await Assert.That(() => missing.TryTake(out _)).Throws<CorruptColumnException>();
+        missing.Fill(null);
+        for (int i = 0; i < 5; i++)
+        {
+            await Assert.That(missing.TryTake(out _)).IsFalse();
+        }
+
+        await Assert.That(missing.Definition).IsEqualTo(0);
+        await Assert.That(missing.Repetition).IsEqualTo(0);
+        await Assert.That(missing.AtEnd).IsTrue();
+        missing.Skip();
     }
 
     // ---- enum names ----

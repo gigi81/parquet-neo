@@ -44,8 +44,12 @@ namespace ParquetNeo.Serialization;
 /// of a wider file. A column the file lacks leaves a property that can hold null at null; for any other property it is a
 /// <see cref="Exceptions.SchemaMismatchException"/>, as is a column stored as a type the property cannot hold. A type with a
 /// constructor that takes nothing is created and its properties with a public setter (including init-only) are set; otherwise
-/// a public constructor whose parameters are properties is used, as for a record. Only the simple types (numbers, text, dates
-/// and times, enums) can be read so far; nested objects, collections and dictionaries are written but not yet read.
+/// a public constructor whose parameters are properties is used, as for a record. The same goes for nested objects, and
+/// collections are created as the property asks (an array, a <see cref="List{T}"/>, a <see cref="HashSet{T}"/>, or any
+/// type that has a public constructor without parameters and is an <see cref="ICollection{T}"/>; an interface they implement
+/// gets a list or a set) and so are dictionaries (a <see cref="Dictionary{TKey, TValue}"/> or any type that is an
+/// <see cref="IDictionary{TKey, TValue}"/> with such a constructor). The standard LIST and MAP layouts and the older layouts
+/// of lists are read.
 /// </para>
 /// <para>
 /// The rows go into row groups of <see cref="ParquetSerializerOptions.RowGroupSize"/> rows, each encoded and written to the
