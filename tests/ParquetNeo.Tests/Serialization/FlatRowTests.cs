@@ -1,3 +1,4 @@
+using ParquetNeo.Exceptions;
 using ParquetNeo.Serialization;
 
 namespace ParquetNeo.Tests.Serialization;
@@ -80,5 +81,51 @@ public class FlatRowTests
         await Assert.That(exception.Message).Contains("Flat.Name");
         await Assert.That(exception.Message).Contains("column is required");
         await Assert.That(exception.Message).Contains("row 2");
+    }
+
+    private sealed class Narrow
+    {
+        public long Id { get; set; }
+
+        public string? Note { get; set; } = "unset";
+
+        public double? Amount { get; set; } = -1;
+    }
+
+    [Test]
+    public async Task AnOptionalPropertyTheFileLacks_IsNull_AndTheOthersAreRead()
+    {
+        var read = Deserialize<Narrow>(Serialize(Rows()));
+        var withoutNote = Deserialize<OnlyId>(Serialize(Rows()));
+
+        await Assert.That(read.Select(r => r.Id)).IsEquivalentTo([1L, 2L, 3L]);
+        await Assert.That(read.Select(r => r.Note)).IsEquivalentTo(new string?[] { "x", null, "" });
+        await Assert.That(withoutNote.Select(r => r.Id)).IsEquivalentTo([1L, 2L, 3L]);
+        await Assert.That(withoutNote.All(r => r.Missing is null && r.MissingNumber is null)).IsTrue();
+    }
+
+    private sealed class OnlyId
+    {
+        public long Id { get; set; }
+
+        public string? Missing { get; set; } = "unset";
+
+        public int? MissingNumber { get; set; } = 7;
+    }
+
+    private sealed class RequiredNote
+    {
+        public long Id { get; set; }
+
+        public string Note { get; set; } = "";
+    }
+
+    [Test]
+    public async Task ANullInARequiredPropertyOfTheRowType_NamesTheRowOfTheFile()
+    {
+        var exception = Assert.Throws<ValueConversionException>(() => Deserialize<RequiredNote>(Serialize(Rows())));
+
+        await Assert.That(exception.Message).Contains("RequiredNote.Note");
+        await Assert.That(exception.Message).Contains("row 1");
     }
 }

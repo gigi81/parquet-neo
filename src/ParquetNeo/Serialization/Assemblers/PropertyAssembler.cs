@@ -1,3 +1,6 @@
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Schema;
 using ParquetNeo.Serialization.Columns;
@@ -8,6 +11,7 @@ namespace ParquetNeo.Serialization.Assemblers;
 /// <param name="slot">The index of the property among the values waiting for a constructor.</param>
 /// <param name="set">Sets the property on the instance, or null when the values wait for a constructor.</param>
 /// <param name="setNull">Sets the property to null, or null when the values wait for a constructor.</param>
+/// <param name="property">The property, for the compiled form of the reading.</param>
 internal sealed class PropertyAssembler<TParent, TValue>(
     string name,
     string description,
@@ -15,7 +19,8 @@ internal sealed class PropertyAssembler<TParent, TValue>(
     int slot,
     Assembler<TValue> value,
     Setter<TParent, TValue>? set,
-    DefaultSetter<TParent>? setNull) : IPropertyAssembler<TParent>
+    DefaultSetter<TParent>? setNull,
+    PropertyInfo property) : IPropertyAssembler<TParent>
 {
     public void Bind(GroupNode? group, string where, ReadBinder binder)
     {
@@ -52,5 +57,29 @@ internal sealed class PropertyAssembler<TParent, TValue>(
         {
             setNull?.Invoke(ref parent.Instance);
         }
+    }
+
+    public Expression? EmitFlat(ParameterExpression row, ParameterExpression context)
+    {
+        if (set is null || value is not LeafAssembler<TValue> leaf)
+        {
+            return null;
+        }
+
+        var columnType = typeof(LeafColumn<TValue>);
+        var column = Expression.Call(
+            typeof(Unsafe), nameof(Unsafe.As), [columnType],
+            Expression.Convert(Expression.ArrayIndex(Expression.Property(context, nameof(ReadContext.Columns)), Expression.Constant(leaf.FirstColumn)), typeof(object)));
+        var read = Expression.Variable(typeof(TValue), "read");
+        var target = Expression.Property(row, property);
+        Expression whenNull = optional
+            ? Expression.Assign(target, Expression.Default(property.PropertyType))
+            : Expression.Invoke(Expression.Constant((Action<long>)(number => throw new ValueConversionException($"{description} cannot be null, but row {number} of the file has a null for it."))), Expression.Property(context, nameof(ReadContext.Row)));
+        return Expression.Block(
+            [read],
+            Expression.IfThenElse(
+                Expression.Call(column, columnType.GetMethod(nameof(LeafColumn<TValue>.TryTake))!, read),
+                Expression.Assign(target, Expression.Convert(read, property.PropertyType)),
+                whenNull));
     }
 }

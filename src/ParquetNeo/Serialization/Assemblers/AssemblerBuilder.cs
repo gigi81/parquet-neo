@@ -155,7 +155,7 @@ internal sealed class AssemblerBuilder
     {
         if (usesSlots || property.SetMethod is not { IsPublic: true })
         {
-            return new PropertyAssembler<TParent, TValue>(ColumnName(property), description, optional, slot, value, null, null);
+            return new PropertyAssembler<TParent, TValue>(ColumnName(property), description, optional, slot, value, null, null, property);
         }
 
         var row = Expression.Parameter(typeof(TParent).MakeByRefType(), "row");
@@ -163,7 +163,7 @@ internal sealed class AssemblerBuilder
         var target = Expression.Property(row, property);
         var set = Expression.Lambda<Setter<TParent, TValue>>(Expression.Assign(target, Expression.Convert(input, property.PropertyType)), row, input).Compile();
         var setNull = Expression.Lambda<DefaultSetter<TParent>>(Expression.Assign(target, Expression.Default(property.PropertyType)), row).Compile();
-        return new PropertyAssembler<TParent, TValue>(ColumnName(property), description, optional, slot, value, set, setNull);
+        return new PropertyAssembler<TParent, TValue>(ColumnName(property), description, optional, slot, value, set, setNull, property);
     }
 
     /// <summary>The assembler for values of a type, whatever kind of column or columns it is read from.</summary>

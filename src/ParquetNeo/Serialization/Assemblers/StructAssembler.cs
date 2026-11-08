@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 using ParquetNeo.Serialization.Columns;
@@ -17,6 +18,13 @@ internal sealed class StructAssembler<TValue>(
     IPropertyAssembler<TValue>[] properties,
     IRowFactory<TValue> factory) : Assembler<TValue>(firstColumn, columnCount, description)
 {
+    /// <summary>
+    /// When the object is created with its parameterless constructor and every property is read from a column of its own: one
+    /// compiled function that creates it and sets them all, instead of a loop over the properties that each call into their
+    /// column. It does what <see cref="ReadPresent"/> does otherwise.
+    /// </summary>
+    private readonly Func<ReadContext, TValue>? _flat = CompileFlat(properties, factory);
+
     public override bool Read(ReadContext context, out TValue value)
     {
         var binding = context.Nodes[node];
@@ -99,6 +107,11 @@ internal sealed class StructAssembler<TValue>(
 
     private TValue ReadPresent(ReadContext context)
     {
+        if (_flat is not null)
+        {
+            return _flat(context);
+        }
+
         var current = (RowContext<TValue>)context.Objects[objectIndex];
         factory.Begin(current);
         foreach (var property in properties)
@@ -107,5 +120,29 @@ internal sealed class StructAssembler<TValue>(
         }
 
         return factory.End(current);
+    }
+
+    private static Func<ReadContext, TValue>? CompileFlat(IPropertyAssembler<TValue>[] properties, IRowFactory<TValue> factory)
+    {
+        if (factory is not InstanceRowFactory<TValue> instances)
+        {
+            return null;
+        }
+
+        var context = Expression.Parameter(typeof(ReadContext), "context");
+        var row = Expression.Variable(typeof(TValue), "row");
+        var steps = new List<Expression> { Expression.Assign(row, instances.Create) };
+        foreach (var property in properties)
+        {
+            if (property.EmitFlat(row, context) is not { } step)
+            {
+                return null;
+            }
+
+            steps.Add(step);
+        }
+
+        steps.Add(row);
+        return Expression.Lambda<Func<ReadContext, TValue>>(Expression.Block([row], steps), context).Compile();
     }
 }

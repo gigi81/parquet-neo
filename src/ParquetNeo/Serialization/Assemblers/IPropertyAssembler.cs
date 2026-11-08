@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using ParquetNeo.Schema;
 using ParquetNeo.Serialization.Columns;
 
@@ -14,4 +15,10 @@ internal interface IPropertyAssembler<TParent>
     void AddState(List<ILeafColumn> columns, List<object> objects);
 
     void Read(ReadContext context, RowContext<TParent> parent);
+
+    /// <summary>
+    /// The code that does what <see cref="Read"/> does for a property read straight into <paramref name="row"/>, an instance of the
+    /// parent, from a column of its own; or null when the property is anything else. See <see cref="StructAssembler{TValue}"/>.
+    /// </summary>
+    Expression? EmitFlat(ParameterExpression row, ParameterExpression context) => null;
 }
