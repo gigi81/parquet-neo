@@ -22,6 +22,8 @@ public class WriteComparison
     private ParquetWriterOptions _options = null!;
     private PqNetSchema.ParquetSchema _netSchema = null!;
     private PqNet.ParquetOptions _netOptions = null!;
+    private PqNetSchema.DataField[] _netFields = null!;
+    private ParquetWriterOptions _plainOptions = null!;
     private PqSharp.Column[] _sharpColumns = null!;
 
     [Params(CompressionCodec.Uncompressed, CompressionCodec.Snappy)]
@@ -47,6 +49,8 @@ public class WriteComparison
             new PqNetSchema.DataField<double?>("Amount"),
             new PqNetSchema.DataField<int>("Quantity"),
             new PqNetSchema.DataField<bool>("Shipped"));
+        _netFields = _netSchema.GetDataFields();
+        _plainOptions = _options with { DictionaryEnabled = false };
         _netOptions = new PqNet.ParquetOptions
         {
             CompressionMethod = Compression == CompressionCodec.Snappy ? PqNet.CompressionMethod.Snappy : PqNet.CompressionMethod.None,
@@ -83,6 +87,28 @@ public class WriteComparison
         return _output.Length;
     }
 
+    /// <summary>
+    /// Parquet.Net writes every column PLAIN, with no dictionary, which makes its files about twice the size of the others'; this
+    /// is ParquetNeo doing the same work, for a like-for-like comparison with it (see the sizes with <c>-- --sizes</c>).
+    /// </summary>
+    [Benchmark(Description = "ParquetNeo, columns, no dictionary")]
+    public long ParquetNeoColumnsPlain()
+    {
+        _output.SetLength(0);
+        using var writer = new ParquetFileWriter(_output, _schema, _plainOptions, leaveOpen: true);
+        using (var group = writer.AppendRowGroup())
+        {
+            group.NextColumn().WriteBatch(_data.Ids);
+            group.NextColumn().WriteStrings(_data.CustomerValues, _data.CustomerLevels);
+            group.NextColumn().WriteBatch(_data.AmountValues, _data.AmountLevels);
+            group.NextColumn().WriteBatch(_data.Quantities);
+            group.NextColumn().WriteBatch(_data.Shipped);
+        }
+
+        writer.Close();
+        return _output.Length;
+    }
+
     [Benchmark(Description = "ParquetNeo, serializer")]
     public long ParquetNeoSerializer()
     {
@@ -103,7 +129,7 @@ public class WriteComparison
     public async Task<long> ParquetNetColumns()
     {
         _output.SetLength(0);
-        var fields = _netSchema.GetDataFields();
+        var fields = _netFields;
         await using (var writer = await PqNet.ParquetWriter.CreateAsync(_netSchema, _output, _netOptions, append: false))
         {
             using var group = writer.CreateRowGroup();

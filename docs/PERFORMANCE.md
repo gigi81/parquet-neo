@@ -16,6 +16,21 @@ with Snappy, to and from memory.
 - **serializer**: objects in, objects out (`ParquetSerializer` of ParquetNeo and of Parquet.Net). ParquetSharp has none.
 - Reading: every library reads the same file, written by ParquetSharp, into arrays (columns) or into objects (serializer).
 
+The competitors are driven the way their own documentation makes fastest, and each choice was timed against the alternatives
+(1M rows, same machine) before it was kept:
+
+- **ParquetSharp, reading:** a native buffer (`BufferReader` over the pinned bytes) and its physical column readers for the
+  numbers (49 ms with the logical readers over a .NET stream, 38 ms with these, and 36 MB allocated against 8.5 MB). The text
+  columns have no physical form that makes strings, so they use the logical reader. A physical `ReadBatch` can return fewer values
+  than asked for, so it is called until every row is read (the benchmark checks the count).
+- **Parquet.Net, reading:** `ReadRawAsync` for the nullable double, which returns the values and their definition levels the way
+  ParquetNeo does, instead of `ReadAsync`, which expands them to `double?` (62–76 ms down to 46–52 ms).
+- **ParquetSharp, writing:** nothing was faster than the logical writers: physical writers, a native output buffer and switching
+  size statistics off all took 101–105 ms against 103 ms. The column descriptors are made once, outside the timed method.
+- **Parquet.Net, writing:** nothing was faster either: neither the pool limits, the dictionary settings (none of them make it use
+  a dictionary), nor reusing the fields changed its 73 ms.
+- Every library allocates the arrays it reads into inside the timed method, so none is helped by buffers made in advance.
+
 ```bash
 dotnet run -c Release --project benchmarks/ParquetNeo.Benchmarks -- --filter "*WriteComparison*"
 ```
@@ -33,32 +48,40 @@ short job, so the error margins are wide: see the notes). Smaller is better.
 
 ### Writing
 
-| | Uncompressed | Snappy | Allocated |
-|---|---:|---:|---:|
-| ParquetNeo, columns | 71 ms | 101 ms | 18 KB |
-| Parquet.Net, columns | 97 ms | 112 ms | 28 MB |
-| ParquetSharp, columns | 112 ms | 130 ms | 13 MB |
-| ParquetNeo, serializer | 125 ms | 145 ms | 36 MB |
-| ParquetNeo, serializer, 4 threads | 114 ms | 132 ms | 36 MB |
-| Parquet.Net, serializer | 163 ms | 184 ms | 128 MB |
+| | Uncompressed | Snappy | Allocated | File (uncompressed / Snappy) |
+|---|---:|---:|---:|---:|
+| ParquetNeo, columns | 67 ms | 89 ms | 18 KB | 16.2 / 8.8 MB |
+| ParquetNeo, columns, no dictionary | 38 ms | 65 ms | 13 KB | 31.3 / 10.9 MB |
+| Parquet.Net, columns | 88 ms | 123 ms | 28 MB | 32.7 / 11.0 MB |
+| ParquetSharp, columns | 112 ms | 128 ms | 13 MB | 15.7 / 8.2 MB |
+| ParquetNeo, serializer | 129 ms | 148 ms | 36 MB | 16.2 / 8.8 MB |
+| ParquetNeo, serializer, 4 threads | 103 ms | 107 ms | 36 MB | same |
+| Parquet.Net, serializer | 140 ms | 166 ms | 128 MB | 32.7 / 11.0 MB |
+
+Parquet.Net's column writer writes every column PLAIN, with no dictionary (its dictionary options do not change that), which is
+cheaper per row and makes its files about twice the size of those of the libraries that use a dictionary. The like-for-like
+comparison with it is the row of ParquetNeo without a dictionary, which writes the same kind of file (31 MB against 33 MB) in
+less than half the time uncompressed. `dotnet run -c Release --project benchmarks/ParquetNeo.Benchmarks -- --sizes` prints the
+sizes.
 
 ### Reading
 
 | | Uncompressed | Snappy | Allocated |
 |---|---:|---:|---:|
-| ParquetNeo, columns | 22 ms | 43 ms | 34 MB |
-| Parquet.Net, columns | 94 ms | 93 ms | 77–96 MB |
-| ParquetSharp, columns | 62 ms | 87 ms | 36 MB |
-| ParquetNeo, serializer | 125 ms | 157 ms | 106 MB |
-| Parquet.Net, serializer | 176 ms | 172 ms | 148–167 MB |
+| ParquetNeo, columns | 22 ms | 44 ms | 34 MB |
+| Parquet.Net, columns | 88 ms | 94 ms | 73–92 MB |
+| ParquetSharp, columns | 51 ms | 80 ms | 30 MB |
+| ParquetNeo, serializer | 130 ms | 145 ms | 106 MB |
+| Parquet.Net, serializer | 210 ms | 180 ms | 148–167 MB |
 
 ### Notes on the numbers
 
 - They come from one machine, one dataset and a short BenchmarkDotNet job. Differences of 10 to 20 percent between two rows
-  are within the noise (the error column of the BenchmarkDotNet output is up to about 30 ms for writes, and the
-  Parquet.Net serializer read has an error larger than its mean). The large differences, such as reading through columns, are not.
-- Writing through columns is on a par with Parquet.Net and ahead of ParquetSharp. The serializer takes about 1.7 times as long
-  as the column API: it is on a par with Parquet.Net's when writing, and ahead of it when reading.
+  are within the noise (the error column of the BenchmarkDotNet output is up to about 15 ms for writes, and the
+  Parquet.Net serializer read has an error close to its mean). The large differences, such as reading through columns, are not.
+- Writing through columns is ahead of both libraries, and the like-for-like row (no dictionary, the file Parquet.Net writes)
+  is more than twice as fast as Parquet.Net uncompressed. The serializer takes about twice as long as the column API; it is
+  ahead of Parquet.Net's serializer in both directions.
 - ParquetNeo's writer takes its scratch space from the pool, so it allocates next to nothing once it is warm: the figure is for
   a file written after others, as in a benchmark or a service. A single file written in a fresh process still allocates for the
   pool to grow the first time.
@@ -116,7 +139,7 @@ then gave up, and the string column spent most of its 47 ms in its dictionary.
 - **A dictionary index is appended with one call** instead of a request for room and an advance.
 
 The unique `long` column went from 19 ms and 25 MB to 5 ms and nothing; the unique `double` column from 19 ms and 26 MB to 12 ms;
-the string column from 47 ms to 37 ms. The table through columns went from 86 ms and 52 MB to 71 ms and 18 KB.
+the string column from 47 ms to 37 ms. The table through columns went from 86 ms and 52 MB to 67–71 ms and 18 KB.
 
 ## Not done yet
 
