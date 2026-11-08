@@ -4,7 +4,7 @@ using ParquetNeo.Schema;
 namespace ParquetNeo.ColumnTypes;
 
 /// <summary>An unsigned 64-bit INTEGER column (UINT_64), stored as the signed bits of an INT64, as <see cref="ulong"/>.</summary>
-internal sealed class UInt64ColumnType : ConvertedColumnType<ulong, long, UInt64ColumnType.Converter>
+internal sealed class UInt64ColumnType : ConvertedColumnType<ulong, long, UInt64ColumnType>
 {
     public override string Name => "ulong";
 
@@ -13,12 +13,7 @@ internal sealed class UInt64ColumnType : ConvertedColumnType<ulong, long, UInt64
     public override string? GetProblem(PrimitiveNode column) =>
         column.Type == PhysicalType.Int64 && column.LogicalType is { Kind: LogicalTypeKind.Integer, BitWidth: 64, IsSigned: false } ? null : ColumnProblems.Mismatch(column, Name);
 
-    internal readonly struct Converter : IValueConverter<long, ulong, Converter>
-    {
-        public static Converter Create(PrimitiveNode column) => default;
+    public override ulong ToValue(long physical) => unchecked((ulong)physical);
 
-        public ulong ToValue(long physical) => unchecked((ulong)physical);
-
-        public long ToPhysical(ulong value) => unchecked((long)value);
-    }
+    public override long ToPhysical(ulong value) => unchecked((long)value);
 }

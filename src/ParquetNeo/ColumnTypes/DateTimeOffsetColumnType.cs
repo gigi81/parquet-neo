@@ -48,7 +48,7 @@ internal sealed class DateTimeOffsetColumnType(TimeUnit unit = TimeUnit.Micros, 
     protected override void WriteCore(ColumnWriter writer, ReadOnlySpan<DateTimeOffset> values, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels) =>
         PhysicalConversion.Write<long, DateTimeOffset, Converter>(writer, Converter.Create(writer.Column), values, definitionLevels, repetitionLevels);
 
-    internal readonly struct Converter : IValueConverter<long, DateTimeOffset, Converter>
+    internal readonly struct Converter : IValueConverter<long, DateTimeOffset>
     {
         private readonly TimeUnit _unit;
 

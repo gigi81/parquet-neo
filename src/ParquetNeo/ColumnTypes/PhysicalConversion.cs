@@ -12,7 +12,7 @@ internal static class PhysicalConversion
 {
     public static BatchRead Read<TPhysical, TValue, TConverter>(ColumnReader reader, TConverter converter, Span<TValue> values, Span<int> definitionLevels, Span<int> repetitionLevels)
         where TPhysical : unmanaged
-        where TConverter : struct, IValueConverter<TPhysical, TValue, TConverter>
+        where TConverter : IValueConverter<TPhysical, TValue>
     {
         var scratch = ArrayPool<TPhysical>.Shared.Rent(Math.Max(values.Length, 1));
         try
@@ -36,7 +36,7 @@ internal static class PhysicalConversion
 
     public static void Write<TPhysical, TValue, TConverter>(ColumnWriter writer, TConverter converter, ReadOnlySpan<TValue> values, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels)
         where TPhysical : unmanaged
-        where TConverter : struct, IValueConverter<TPhysical, TValue, TConverter>
+        where TConverter : IValueConverter<TPhysical, TValue>
     {
         var scratch = ArrayPool<TPhysical>.Shared.Rent(Math.Max(values.Length, 1));
         try
@@ -63,7 +63,7 @@ internal static class PhysicalConversion
     }
 
     public static BatchRead ReadFixed<TValue, TConverter>(ColumnReader reader, TConverter converter, Span<TValue> values, Span<int> definitionLevels, Span<int> repetitionLevels)
-        where TConverter : struct, IFixedLengthConverter<TValue, TConverter>
+        where TConverter : IFixedLengthConverter<TValue>
     {
         int width = converter.Width;
         var scratch = ArrayPool<byte>.Shared.Rent(Math.Max(values.Length * width, 1));
@@ -84,7 +84,7 @@ internal static class PhysicalConversion
     }
 
     public static void WriteFixed<TValue, TConverter>(ColumnWriter writer, TConverter converter, ReadOnlySpan<TValue> values, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels)
-        where TConverter : struct, IFixedLengthConverter<TValue, TConverter>
+        where TConverter : IFixedLengthConverter<TValue>
     {
         int width = converter.Width;
         var scratch = ArrayPool<byte>.Shared.Rent(Math.Max(values.Length * width, 1));

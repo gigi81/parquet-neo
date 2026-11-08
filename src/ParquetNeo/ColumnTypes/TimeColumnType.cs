@@ -42,7 +42,7 @@ internal sealed class TimeColumnType(TimeUnit unit = TimeUnit.Micros, bool isAdj
     }
 
     /// <summary>Milliseconds within a day, stored as INT32.</summary>
-    internal readonly struct MillisecondsConverter : IValueConverter<int, TimeOnly, MillisecondsConverter>
+    internal readonly struct MillisecondsConverter : IValueConverter<int, TimeOnly>
     {
         public static MillisecondsConverter Create(PrimitiveNode column) => default;
 
@@ -55,7 +55,7 @@ internal sealed class TimeColumnType(TimeUnit unit = TimeUnit.Micros, bool isAdj
     }
 
     /// <summary>Microseconds or nanoseconds within a day, stored as INT64.</summary>
-    internal readonly struct MicrosecondsConverter : IValueConverter<long, TimeOnly, MicrosecondsConverter>
+    internal readonly struct MicrosecondsConverter : IValueConverter<long, TimeOnly>
     {
         private readonly long _ticksPerUnitNumerator;
         private readonly long _unitsPerTick;

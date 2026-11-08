@@ -128,7 +128,7 @@ internal sealed class DecimalColumnType(int precision = DecimalColumnType.Defaul
     }
 
     /// <summary>A DECIMAL stored as INT32 (precision up to 9).</summary>
-    internal readonly struct Decimal32Converter : IValueConverter<int, decimal, Decimal32Converter>
+    internal readonly struct Decimal32Converter : IValueConverter<int, decimal>
     {
         private readonly int _scale;
         private readonly int _precision;
@@ -147,7 +147,7 @@ internal sealed class DecimalColumnType(int precision = DecimalColumnType.Defaul
     }
 
     /// <summary>A DECIMAL stored as INT64 (precision up to 18).</summary>
-    internal readonly struct Decimal64Converter : IValueConverter<long, decimal, Decimal64Converter>
+    internal readonly struct Decimal64Converter : IValueConverter<long, decimal>
     {
         private readonly int _scale;
         private readonly int _precision;
@@ -166,7 +166,7 @@ internal sealed class DecimalColumnType(int precision = DecimalColumnType.Defaul
     }
 
     /// <summary>A DECIMAL stored as FIXED_LEN_BYTE_ARRAY: big-endian two's complement.</summary>
-    internal readonly struct FixedConverter : IFixedLengthConverter<decimal, FixedConverter>
+    internal readonly struct FixedConverter : IFixedLengthConverter<decimal>
     {
         private readonly int _scale;
         private readonly int _precision;
@@ -190,7 +190,7 @@ internal sealed class DecimalColumnType(int precision = DecimalColumnType.Defaul
 
     /// <summary>
     /// A DECIMAL stored as BYTE_ARRAY. The values have no fixed width, so this does not implement
-    /// <see cref="IFixedLengthConverter{TValue, TSelf}"/>; the column type handles the arrays itself.
+    /// <see cref="IFixedLengthConverter{TValue}"/>; the column type handles the arrays itself.
     /// </summary>
     internal readonly struct ByteArrayConverter
     {

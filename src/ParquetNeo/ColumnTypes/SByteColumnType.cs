@@ -5,7 +5,7 @@ using ParquetNeo.Schema;
 namespace ParquetNeo.ColumnTypes;
 
 /// <summary>A signed 8-bit INTEGER column (INT_8) as <see cref="sbyte"/>.</summary>
-internal sealed class SByteColumnType : ConvertedColumnType<sbyte, int, SByteColumnType.Converter>
+internal sealed class SByteColumnType : ConvertedColumnType<sbyte, int, SByteColumnType>
 {
     public override string Name => "sbyte";
 
@@ -16,15 +16,10 @@ internal sealed class SByteColumnType : ConvertedColumnType<sbyte, int, SByteCol
             ? null
             : ColumnProblems.Mismatch(column, Name);
 
-    internal readonly struct Converter : IValueConverter<int, sbyte, Converter>
-    {
-        public static Converter Create(PrimitiveNode column) => default;
+    public override sbyte ToValue(int physical) => physical is >= sbyte.MinValue and <= sbyte.MaxValue ? (sbyte)physical : throw OutOfRange(physical);
 
-        public sbyte ToValue(int physical) => physical is >= sbyte.MinValue and <= sbyte.MaxValue ? (sbyte)physical : throw OutOfRange(physical);
+    public override int ToPhysical(sbyte value) => value;
 
-        public int ToPhysical(sbyte value) => value;
-
-        private static ValueConversionException OutOfRange(int physical) =>
-            new($"The value {physical} is outside the range of the {typeof(sbyte).Name} its column is stored as.");
-    }
+    private static ValueConversionException OutOfRange(int physical) =>
+        new($"The value {physical} is outside the range of the {typeof(sbyte).Name} its column is stored as.");
 }

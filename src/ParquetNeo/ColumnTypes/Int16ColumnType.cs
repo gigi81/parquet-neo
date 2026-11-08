@@ -5,7 +5,7 @@ using ParquetNeo.Schema;
 namespace ParquetNeo.ColumnTypes;
 
 /// <summary>A signed 16-bit INTEGER column (INT_16) as <see cref="short"/>.</summary>
-internal sealed class Int16ColumnType : ConvertedColumnType<short, int, Int16ColumnType.Converter>
+internal sealed class Int16ColumnType : ConvertedColumnType<short, int, Int16ColumnType>
 {
     public override string Name => "short";
 
@@ -16,15 +16,10 @@ internal sealed class Int16ColumnType : ConvertedColumnType<short, int, Int16Col
             ? null
             : ColumnProblems.Mismatch(column, Name);
 
-    internal readonly struct Converter : IValueConverter<int, short, Converter>
-    {
-        public static Converter Create(PrimitiveNode column) => default;
+    public override short ToValue(int physical) => physical is >= short.MinValue and <= short.MaxValue ? (short)physical : throw OutOfRange(physical);
 
-        public short ToValue(int physical) => physical is >= short.MinValue and <= short.MaxValue ? (short)physical : throw OutOfRange(physical);
+    public override int ToPhysical(short value) => value;
 
-        public int ToPhysical(short value) => value;
-
-        private static ValueConversionException OutOfRange(int physical) =>
-            new($"The value {physical} is outside the range of the {typeof(short).Name} its column is stored as.");
-    }
+    private static ValueConversionException OutOfRange(int physical) =>
+        new($"The value {physical} is outside the range of the {typeof(short).Name} its column is stored as.");
 }

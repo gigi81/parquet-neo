@@ -49,7 +49,7 @@ internal sealed class DateTimeColumnType(TimeUnit unit = TimeUnit.Micros, bool i
     protected override void WriteCore(ColumnWriter writer, ReadOnlySpan<DateTime> values, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels) =>
         PhysicalConversion.Write<long, DateTime, Converter>(writer, Converter.Create(writer.Column), values, definitionLevels, repetitionLevels);
 
-    internal readonly struct Converter : IValueConverter<long, DateTime, Converter>
+    internal readonly struct Converter : IValueConverter<long, DateTime>
     {
         private readonly TimeUnit _unit;
         private readonly bool _isAdjustedToUtc;
