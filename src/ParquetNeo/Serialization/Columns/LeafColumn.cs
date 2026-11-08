@@ -17,7 +17,6 @@ internal sealed class LeafColumn<TValue>(ColumnType<TValue> type) : ILeafColumn
     private int[] _repetition = [];
     private int _maxDefinition;
     private int _entries;
-    private int _present;
     private int _nextEntry;
     private int _nextValue;
     private bool _missing;
@@ -54,20 +53,20 @@ internal sealed class LeafColumn<TValue>(ColumnType<TValue> type) : ILeafColumn
 
     public bool AtEnd => _missing || _nextEntry >= _entries;
 
-    public void Fill(ColumnReader? column)
+    public void Fill(ColumnReader? reader)
     {
         _entries = 0;
-        _present = 0;
+        int present = 0;
         _nextEntry = 0;
         _nextValue = 0;
-        _missing = column is null;
+        _missing = reader is null;
         _repetition = [];
-        if (column is null)
+        if (reader is null)
         {
             return;
         }
 
-        var node = column.Column;
+        var node = reader.Column;
         Name = string.Join('.', node.Path);
         _maxDefinition = node.MaxDefinitionLevel;
         bool definitionLevels = node.MaxDefinitionLevel > 0;
@@ -79,7 +78,7 @@ internal sealed class LeafColumn<TValue>(ColumnType<TValue> type) : ILeafColumn
 
         while (true)
         {
-            Reserve(ref _values, _present);
+            Reserve(ref _values, present);
             if (definitionLevels)
             {
                 Reserve(ref _definition, _entries);
@@ -91,8 +90,8 @@ internal sealed class LeafColumn<TValue>(ColumnType<TValue> type) : ILeafColumn
             }
 
             var read = type.Read(
-                column,
-                _values.AsSpan(_present, Batch),
+                reader,
+                _values.AsSpan(present, Batch),
                 definitionLevels ? _definition.AsSpan(_entries, Batch) : default,
                 repetitionLevels ? _repetition.AsSpan(_entries, Batch) : default);
             if (read.Entries == 0)
@@ -101,7 +100,7 @@ internal sealed class LeafColumn<TValue>(ColumnType<TValue> type) : ILeafColumn
             }
 
             _entries += read.Entries;
-            _present += read.Values;
+            present += read.Values;
         }
     }
 

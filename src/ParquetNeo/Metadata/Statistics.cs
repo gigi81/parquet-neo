@@ -25,48 +25,48 @@ public sealed class Statistics : IThriftStruct<Statistics>
 
     public long? NanCount { get; set; }
 
-    static Statistics IThriftStruct<Statistics>.Read(ref ThriftCompactReader r)
+    static Statistics IThriftStruct<Statistics>.Read(ref ThriftCompactReader reader)
     {
         var s = new Statistics();
-        r.BeginStruct();
-        while (r.TryReadField(out short id, out var type))
+        reader.BeginStruct();
+        while (reader.TryReadField(out short id, out var type))
         {
             switch (id)
             {
-                case 1 when type == CompactType.Binary: s.Max = r.ReadBytes(); break;
-                case 2 when type == CompactType.Binary: s.Min = r.ReadBytes(); break;
-                case 3 when type == CompactType.I64: s.NullCount = r.ReadI64(); break;
-                case 4 when type == CompactType.I64: s.DistinctCount = r.ReadI64(); break;
-                case 5 when type == CompactType.Binary: s.MaxValue = r.ReadBytes(); break;
-                case 6 when type == CompactType.Binary: s.MinValue = r.ReadBytes(); break;
+                case 1 when type == CompactType.Binary: s.Max = reader.ReadBytes(); break;
+                case 2 when type == CompactType.Binary: s.Min = reader.ReadBytes(); break;
+                case 3 when type == CompactType.I64: s.NullCount = reader.ReadI64(); break;
+                case 4 when type == CompactType.I64: s.DistinctCount = reader.ReadI64(); break;
+                case 5 when type == CompactType.Binary: s.MaxValue = reader.ReadBytes(); break;
+                case 6 when type == CompactType.Binary: s.MinValue = reader.ReadBytes(); break;
                 case 7 when type is CompactType.BoolTrue or CompactType.BoolFalse:
                     s.IsMaxValueExact = type == CompactType.BoolTrue;
                     break;
                 case 8 when type is CompactType.BoolTrue or CompactType.BoolFalse:
                     s.IsMinValueExact = type == CompactType.BoolTrue;
                     break;
-                case 9 when type == CompactType.I64: s.NanCount = r.ReadI64(); break;
-                default: r.Skip(type); break;
+                case 9 when type == CompactType.I64: s.NanCount = reader.ReadI64(); break;
+                default: reader.Skip(type); break;
             }
         }
 
-        r.EndStruct();
+        reader.EndStruct();
         return s;
     }
 
-    void IThriftStruct<Statistics>.Write(ref ThriftCompactWriter w)
+    void IThriftStruct<Statistics>.Write(ref ThriftCompactWriter writer)
     {
-        w.BeginStruct();
-        if (Max is not null) w.WriteBinaryField(1, Max);
-        if (Min is not null) w.WriteBinaryField(2, Min);
-        if (NullCount is { } nullCount) w.WriteI64Field(3, nullCount);
-        if (DistinctCount is { } distinctCount) w.WriteI64Field(4, distinctCount);
-        if (MaxValue is not null) w.WriteBinaryField(5, MaxValue);
-        if (MinValue is not null) w.WriteBinaryField(6, MinValue);
-        if (IsMaxValueExact is { } maxExact) w.WriteBoolField(7, maxExact);
-        if (IsMinValueExact is { } minExact) w.WriteBoolField(8, minExact);
-        if (NanCount is { } nanCount) w.WriteI64Field(9, nanCount);
-        w.EndStruct();
+        writer.BeginStruct();
+        if (Max is not null) writer.WriteBinaryField(1, Max);
+        if (Min is not null) writer.WriteBinaryField(2, Min);
+        if (NullCount is { } nullCount) writer.WriteI64Field(3, nullCount);
+        if (DistinctCount is { } distinctCount) writer.WriteI64Field(4, distinctCount);
+        if (MaxValue is not null) writer.WriteBinaryField(5, MaxValue);
+        if (MinValue is not null) writer.WriteBinaryField(6, MinValue);
+        if (IsMaxValueExact is { } maxExact) writer.WriteBoolField(7, maxExact);
+        if (IsMinValueExact is { } minExact) writer.WriteBoolField(8, minExact);
+        if (NanCount is { } nanCount) writer.WriteI64Field(9, nanCount);
+        writer.EndStruct();
     }
 }
 
@@ -79,31 +79,31 @@ public sealed class SizeStatistics : IThriftStruct<SizeStatistics>
 
     public List<long>? DefinitionLevelHistogram { get; set; }
 
-    static SizeStatistics IThriftStruct<SizeStatistics>.Read(ref ThriftCompactReader r)
+    static SizeStatistics IThriftStruct<SizeStatistics>.Read(ref ThriftCompactReader reader)
     {
         var s = new SizeStatistics();
-        r.BeginStruct();
-        while (r.TryReadField(out short id, out var type))
+        reader.BeginStruct();
+        while (reader.TryReadField(out short id, out var type))
         {
             switch (id)
             {
-                case 1 when type == CompactType.I64: s.UnencodedByteArrayDataBytes = r.ReadI64(); break;
-                case 2 when type == CompactType.List: s.RepetitionLevelHistogram = ThriftStruct.ReadI64List(ref r); break;
-                case 3 when type == CompactType.List: s.DefinitionLevelHistogram = ThriftStruct.ReadI64List(ref r); break;
-                default: r.Skip(type); break;
+                case 1 when type == CompactType.I64: s.UnencodedByteArrayDataBytes = reader.ReadI64(); break;
+                case 2 when type == CompactType.List: s.RepetitionLevelHistogram = ThriftStruct.ReadI64List(ref reader); break;
+                case 3 when type == CompactType.List: s.DefinitionLevelHistogram = ThriftStruct.ReadI64List(ref reader); break;
+                default: reader.Skip(type); break;
             }
         }
 
-        r.EndStruct();
+        reader.EndStruct();
         return s;
     }
 
-    void IThriftStruct<SizeStatistics>.Write(ref ThriftCompactWriter w)
+    void IThriftStruct<SizeStatistics>.Write(ref ThriftCompactWriter writer)
     {
-        w.BeginStruct();
-        if (UnencodedByteArrayDataBytes is { } bytes) w.WriteI64Field(1, bytes);
-        if (RepetitionLevelHistogram is not null) ThriftStruct.WriteI64List(ref w, 2, RepetitionLevelHistogram);
-        if (DefinitionLevelHistogram is not null) ThriftStruct.WriteI64List(ref w, 3, DefinitionLevelHistogram);
-        w.EndStruct();
+        writer.BeginStruct();
+        if (UnencodedByteArrayDataBytes is { } bytes) writer.WriteI64Field(1, bytes);
+        if (RepetitionLevelHistogram is not null) ThriftStruct.WriteI64List(ref writer, 2, RepetitionLevelHistogram);
+        if (DefinitionLevelHistogram is not null) ThriftStruct.WriteI64List(ref writer, 3, DefinitionLevelHistogram);
+        writer.EndStruct();
     }
 }

@@ -14,13 +14,13 @@ internal sealed class MapShredder<TMap, TKey, TItem, TValue>(
     int columnCount,
     string description,
     int repetitionLevel,
-    Shredder<TKey> key,
+    Shredder<TKey> keyShredder,
     ItemReader<TItem, TValue> reader,
-    Shredder<TValue> value) : Shredder<TMap>(optional, firstColumn, columnCount, description)
+    Shredder<TValue> valueShredder) : Shredder<TMap>(optional, firstColumn, columnCount, description)
     where TKey : notnull
     where TMap : class, IEnumerable<KeyValuePair<TKey, TItem>>
 {
-    public override void Shred(TMap map, bool present, int definition, int repetition, ILeafBuffer[] buffers)
+    public override void Shred(TMap value, bool present, int definition, int repetition, ILeafBuffer[] buffers)
     {
         if (!present)
         {
@@ -35,7 +35,7 @@ internal sealed class MapShredder<TMap, TKey, TItem, TValue>(
 
         int mapDefinition = Optional ? definition + 1 : definition;
         bool empty = true;
-        if (map is Dictionary<TKey, TItem> dictionary)
+        if (value is Dictionary<TKey, TItem> dictionary)
         {
             foreach (var pair in dictionary)
             {
@@ -45,7 +45,7 @@ internal sealed class MapShredder<TMap, TKey, TItem, TValue>(
         }
         else
         {
-            foreach (var pair in map)
+            foreach (var pair in value)
             {
                 ShredPair(pair, empty, mapDefinition, repetition, buffers);
                 empty = false;
@@ -58,13 +58,13 @@ internal sealed class MapShredder<TMap, TKey, TItem, TValue>(
         }
     }
 
-    public override SchemaNode CreateSchemaNode(string name) => NestedSchema.Map(name, Repetition, key.CreateSchemaNode("key"), value.CreateSchemaNode("value"));
+    public override SchemaNode CreateSchemaNode(string name) => NestedSchema.Map(name, Repetition, keyShredder.CreateSchemaNode("key"), valueShredder.CreateSchemaNode("value"));
 
     private void ShredPair(KeyValuePair<TKey, TItem> pair, bool first, int mapDefinition, int repetition, ILeafBuffer[] buffers)
     {
         int entryRepetition = first ? repetition : repetitionLevel;
-        key.Shred(pair.Key, pair.Key is not null, mapDefinition + 1, entryRepetition, buffers);
+        keyShredder.Shred(pair.Key, pair.Key is not null, mapDefinition + 1, entryRepetition, buffers);
         bool present = reader(pair.Value, out TValue? read);
-        value.Shred(read, present, mapDefinition + 1, entryRepetition, buffers);
+        valueShredder.Shred(read, present, mapDefinition + 1, entryRepetition, buffers);
     }
 }

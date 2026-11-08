@@ -34,6 +34,14 @@ public sealed class RowGroupReader
         return new ColumnReader(_file, _file.Schema.Columns[index], Metadata.Columns[index], Metadata.NumRows);
     }
 
+    /// <summary>Opens a top-level column by name.</summary>
+    public ColumnReader OpenColumn(string name)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        var column = _file.Schema.FindColumn([name]) ?? throw new ArgumentException($"There is no column named '{name}'.", nameof(name));
+        return OpenColumn(column.ColumnIndex);
+    }
+
     /// <summary>
     /// Returns the statistics recorded for a column in this row group, or <c>null</c> when the writer recorded none.
     /// Works for every column.
@@ -53,13 +61,5 @@ public sealed class RowGroupReader
         ArgumentNullException.ThrowIfNull(name);
         var column = _file.Schema.FindColumn([name]) ?? throw new ArgumentException($"There is no column named '{name}'.", nameof(name));
         return GetStatistics(column.ColumnIndex);
-    }
-
-    /// <summary>Opens a top-level column by name.</summary>
-    public ColumnReader OpenColumn(string name)
-    {
-        ArgumentNullException.ThrowIfNull(name);
-        var column = _file.Schema.FindColumn([name]) ?? throw new ArgumentException($"There is no column named '{name}'.", nameof(name));
-        return OpenColumn(column.ColumnIndex);
     }
 }

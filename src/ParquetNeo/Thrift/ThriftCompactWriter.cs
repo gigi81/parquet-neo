@@ -1,5 +1,6 @@
-using System.Buffers;
 using System.Buffers.Binary;
+using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace ParquetNeo.Thrift;
@@ -10,6 +11,8 @@ internal ref struct ThriftCompactWriter
     private readonly IBufferWriter<byte> _output;
     private int _depth;
     private short _lastFieldId;
+    [SuppressMessage("Major Code Smell", "S3459:Unassigned members should be removed",
+        Justification = "An inline array is written through its span (the last field id of each open struct), never assigned as a whole.")]
     private FieldIdStack _fieldIds;
 
     public ThriftCompactWriter(IBufferWriter<byte> output)

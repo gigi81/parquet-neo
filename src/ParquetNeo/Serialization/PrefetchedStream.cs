@@ -11,7 +11,6 @@ internal sealed class PrefetchedStream(long length) : Stream
 {
     private readonly List<Range> _kept = [];
     private readonly List<Range> _loaded = [];
-    private long _position;
 
     private readonly record struct Range(long Start, byte[] Data)
     {
@@ -26,11 +25,7 @@ internal sealed class PrefetchedStream(long length) : Stream
 
     public override long Length => length;
 
-    public override long Position
-    {
-        get => _position;
-        set => _position = value;
-    }
+    public override long Position { get; set; }
 
     /// <summary>Reads a range of the source and keeps it until the stream is disposed: the markers and the footer.</summary>
     public Task LoadKeptAsync(Stream source, long start, int count, CancellationToken cancellationToken) =>
@@ -58,29 +53,29 @@ internal sealed class PrefetchedStream(long length) : Stream
 
     public override int Read(Span<byte> buffer)
     {
-        if (buffer.IsEmpty || _position >= length)
+        if (buffer.IsEmpty || Position >= length)
         {
             return 0;
         }
 
-        var range = Find(_kept, _position) ?? Find(_loaded, _position)
-            ?? throw new InvalidOperationException($"Byte {_position} of the file was not read ahead; this is a bug of the reader.");
-        int offset = (int)(_position - range.Start);
-        int count = (int)Math.Min(buffer.Length, range.Data.Length - offset);
+        var range = Find(_kept, Position) ?? Find(_loaded, Position)
+            ?? throw new InvalidOperationException($"Byte {Position} of the file was not read ahead; this is a bug of the reader.");
+        int offset = (int)(Position - range.Start);
+        int count = Math.Min(buffer.Length, range.Data.Length - offset);
         range.Data.AsSpan(offset, count).CopyTo(buffer);
-        _position += count;
+        Position += count;
         return count;
     }
 
     public override long Seek(long offset, SeekOrigin origin)
     {
-        _position = origin switch
+        Position = origin switch
         {
             SeekOrigin.Begin => offset,
-            SeekOrigin.Current => _position + offset,
+            SeekOrigin.Current => Position + offset,
             _ => length + offset,
         };
-        return _position;
+        return Position;
     }
 
     public override void Flush()

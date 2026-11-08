@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using ParquetNeo.Exceptions;
 
@@ -16,6 +17,8 @@ internal ref struct ThriftCompactReader
     private int _position;
     private int _depth;
     private short _lastFieldId;
+    [SuppressMessage("Major Code Smell", "S3459:Unassigned members should be removed",
+        Justification = "An inline array is written through its span (the last field id of each open struct), never assigned as a whole.")]
     private FieldIdStack _fieldIds;
 
     public ThriftCompactReader(ReadOnlySpan<byte> data)

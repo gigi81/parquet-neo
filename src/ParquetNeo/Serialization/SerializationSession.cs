@@ -23,8 +23,15 @@ internal sealed class SerializationSession<TRow> : IDisposable
     public SerializationSession(ParquetSerializerOptions? options)
     {
         options ??= new ParquetSerializerOptions();
-        ArgumentOutOfRangeException.ThrowIfLessThan(options.RowGroupSize, 1, nameof(options));
-        ArgumentNullException.ThrowIfNull(options.Writer, nameof(options));
+        if (options.RowGroupSize < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(options), options.RowGroupSize, "The row group size must be at least 1.");
+        }
+
+        if (options.Writer is null)
+        {
+            throw new ArgumentNullException(nameof(options), "The writer options must not be null.");
+        }
 
         _model = RowModel<TRow>.Get();
         _rowGroupSize = options.RowGroupSize;
@@ -55,7 +62,7 @@ internal sealed class SerializationSession<TRow> : IDisposable
 
     public void Add(TRow row)
     {
-        ArgumentNullException.ThrowIfNull(row, nameof(row));
+        ArgumentNullException.ThrowIfNull(row);
         try
         {
             _model.Row.ShredProperties(row, 0, 0, _buffers);

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
@@ -72,15 +73,13 @@ internal sealed class AssemblerBuilder
             }
 
             var names = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var property in properties)
+            var duplicate = properties.Find(property => !names.Add(ColumnName(property)));
+            if (duplicate is not null)
             {
-                if (!names.Add(ColumnName(property)))
-                {
-                    throw new InvalidOperationException($"Two properties of {type.Name} are read from a column named '{ColumnName(property)}'. Rename one with {nameof(ParquetColumnAttribute)} or leave it out with {nameof(ParquetIgnoreAttribute)}.");
-                }
+                throw new InvalidOperationException($"Two properties of {type.Name} are read from a column named '{ColumnName(duplicate)}'. Rename one with {nameof(ParquetColumnAttribute)} or leave it out with {nameof(ParquetIgnoreAttribute)}.");
             }
 
-            RowFactory<TValue> factory = direct ? CreateInstanceFactory<TValue>() : CreateConstructorFactory<TValue>(constructor!, properties);
+            IRowFactory<TValue> factory = direct ? CreateInstanceFactory<TValue>() : CreateConstructorFactory<TValue>(constructor!, properties);
             var assemblers = properties.Select((property, index) => CreateProperty<TValue>(property, index, factory.UsesSlots, repetition)).ToArray();
             return new StructAssembler<TValue>(node, context, optional, first, _slots - first, description, assemblers, factory);
         }
@@ -140,7 +139,7 @@ internal sealed class AssemblerBuilder
         return new ConstructorRowFactory<TValue>(properties.Count, build);
     }
 
-    private PropertyAssembler<TParent> CreateProperty<TParent>(PropertyInfo property, int slot, bool usesSlots, int repetition)
+    private IPropertyAssembler<TParent> CreateProperty<TParent>(PropertyInfo property, int slot, bool usesSlots, int repetition)
     {
         var nullable = Nullable.GetUnderlyingType(property.PropertyType);
         var valueType = nullable ?? property.PropertyType;
@@ -148,10 +147,10 @@ internal sealed class AssemblerBuilder
         bool optional = nullable is not null || (!valueType.IsValueType && nullability.ReadState != NullabilityState.NotNull);
         string description = PropertyColumns.Describe(property);
         var value = BuildValue(valueType, nullability, optional, repetition, description);
-        return (PropertyAssembler<TParent>)Call(nameof(CreateTypedProperty), [typeof(TParent), valueType], property, slot, usesSlots, optional, description, value);
+        return (IPropertyAssembler<TParent>)Call(nameof(CreateTypedProperty), [typeof(TParent), valueType], property, slot, usesSlots, optional, description, value);
     }
 
-    private PropertyAssembler<TParent> CreateTypedProperty<TParent, TValue>(PropertyInfo property, int slot, bool usesSlots, bool optional, string description, Assembler<TValue> value)
+    private static IPropertyAssembler<TParent> CreateTypedProperty<TParent, TValue>(PropertyInfo property, int slot, bool usesSlots, bool optional, string description, Assembler<TValue> value)
     {
         if (usesSlots || property.SetMethod is not { IsPublic: true })
         {
@@ -208,7 +207,7 @@ internal sealed class AssemblerBuilder
         return (Assembler)Call(nameof(CreateList), [collection, itemType, elementType], node, first, _slots - first, description, elementOptional, element);
     }
 
-    private Assembler CreateList<TCollection, TItem, TElement>(int node, int first, int count, string description, bool elementOptional, Assembler<TElement> element)
+    private static Assembler CreateList<TCollection, TItem, TElement>(int node, int first, int count, string description, bool elementOptional, Assembler<TElement> element)
         where TCollection : class
     {
         var type = typeof(TCollection);
@@ -220,9 +219,18 @@ internal sealed class AssemblerBuilder
         }
         else if (type.IsInterface)
         {
-            create = type.IsAssignableFrom(typeof(List<TItem>)) ? () => new List<TItem>()
-                : type.IsAssignableFrom(typeof(HashSet<TItem>)) ? () => new HashSet<TItem>()
-                : throw new NotSupportedException($"{description} is a {type.Name}, an interface that cannot be created. Use an array, a List<T>, a HashSet<T> or an interface they implement.");
+            if (type.IsAssignableFrom(typeof(List<TItem>)))
+            {
+                create = () => new List<TItem>();
+            }
+            else if (type.IsAssignableFrom(typeof(HashSet<TItem>)))
+            {
+                create = () => new HashSet<TItem>();
+            }
+            else
+            {
+                throw new NotSupportedException($"{description} is a {type.Name}, an interface that cannot be created. Use an array, a List<T>, a HashSet<T> or an interface they implement.");
+            }
         }
         else if (typeof(ICollection<TItem>).IsAssignableFrom(type) && type.GetConstructor(Type.EmptyTypes) is { IsPublic: true })
         {
@@ -257,7 +265,7 @@ internal sealed class AssemblerBuilder
         return (Assembler)Call(nameof(CreateMap), [map, keyType, valueItemType, valueType], node, first, _slots - first, description, valueOptional, key, value);
     }
 
-    private Assembler CreateMap<TMap, TKey, TItem, TValue>(int node, int first, int count, string description, bool valueOptional, Assembler<TKey> key, Assembler<TValue> value)
+    private static Assembler CreateMap<TMap, TKey, TItem, TValue>(int node, int first, int count, string description, bool valueOptional, Assembler<TKey> key, Assembler<TValue> value)
         where TMap : class
         where TKey : notnull
     {
@@ -302,6 +310,8 @@ internal sealed class AssemblerBuilder
     }
 
     /// <summary>Calls one of the generic methods of this class with the given type arguments, and lets its exceptions through as they are.</summary>
+    [SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields",
+        Justification = "The generic helpers called here are this class's own private methods; the type arguments are only known at run time, so they are closed over with reflection.")]
     private object Call(string method, Type[] typeArguments, params object?[] arguments)
     {
         var generic = typeof(AssemblerBuilder).GetMethod(method, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)!.MakeGenericMethod(typeArguments);

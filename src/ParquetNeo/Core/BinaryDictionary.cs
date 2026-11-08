@@ -1,12 +1,12 @@
-using System.Buffers;
 using System.Buffers.Binary;
+using System.Buffers;
 using System.Numerics;
 using ParquetNeo.Encodings;
 
 namespace ParquetNeo.Core;
 
 /// <summary>Dictionary for BYTE_ARRAY and FIXED_LEN_BYTE_ARRAY values, looked up by span so a hit allocates nothing.</summary>
-internal sealed class BinaryDictionary : DictionaryBuilder
+internal sealed class BinaryDictionary : IDictionaryBuilder
 {
     private readonly Dictionary<byte[], int> _indexes;
     private readonly Dictionary<byte[], int>.AlternateLookup<ReadOnlySpan<byte>> _lookup;
@@ -22,9 +22,9 @@ internal sealed class BinaryDictionary : DictionaryBuilder
         _lookup = _indexes.GetAlternateLookup<ReadOnlySpan<byte>>();
     }
 
-    public override int Count => _entries.Count;
+    public int Count => _entries.Count;
 
-    public override long EncodedSize => _encodedSize;
+    public long EncodedSize => _encodedSize;
 
     /// <summary>Returns the index of <paramref name="value"/>, adding it (as a copy) if it is new.</summary>
     public int GetOrAdd(ReadOnlySpan<byte> value)
@@ -42,7 +42,7 @@ internal sealed class BinaryDictionary : DictionaryBuilder
         return index;
     }
 
-    public override void WritePlain(IBufferWriter<byte> output)
+    public void WritePlain(IBufferWriter<byte> output)
     {
         foreach (var entry in _entries)
         {

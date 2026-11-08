@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using ParquetNeo.Exceptions;
@@ -25,6 +26,8 @@ internal ref struct RleBitPackedDecoder
     private uint _repeatedValue;
     private int _packedPosition; // byte offset of the next unread group of the current bit-packed run
 
+    [SuppressMessage("Major Code Smell", "S3459:Unassigned members should be removed",
+        Justification = "An inline array is written through its span (the group is filled by unpacking into it), never assigned as a whole.")]
     private DecodedGroup _group;
     private int _groupIndex;
     private int _groupCount;
@@ -182,6 +185,8 @@ internal ref struct RleBitPackedDecoder
     [InlineArray(8)]
     private struct DecodedGroup
     {
+        [SuppressMessage("Major Code Smell", "S1144:Unused private types or members should be removed",
+            Justification = "The single field of an [InlineArray]; the runtime lays out eight of them, and they are accessed as a span.")]
         private uint _element;
     }
 }

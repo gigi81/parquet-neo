@@ -15,9 +15,9 @@ internal sealed class PropertyAssembler<TParent, TValue>(
     int slot,
     Assembler<TValue> value,
     Setter<TParent, TValue>? set,
-    DefaultSetter<TParent>? setNull) : PropertyAssembler<TParent>
+    DefaultSetter<TParent>? setNull) : IPropertyAssembler<TParent>
 {
-    public override void Bind(GroupNode? group, string where, ReadBinder binder)
+    public void Bind(GroupNode? group, string where, ReadBinder binder)
     {
         var node = group is null ? null : ReadBinder.Find(group, name);
         if (node is null && group is not null && !optional)
@@ -29,9 +29,9 @@ internal sealed class PropertyAssembler<TParent, TValue>(
         value.Bind(node, binder);
     }
 
-    public override void AddState(List<ILeafColumn> columns, List<object> objects) => value.AddState(columns, objects);
+    public void AddState(List<ILeafColumn> columns, List<object> objects) => value.AddState(columns, objects);
 
-    public override void Read(ReadContext context, RowContext<TParent> parent)
+    public void Read(ReadContext context, RowContext<TParent> parent)
     {
         if (value.Read(context, out TValue? read))
         {

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using ParquetNeo.ColumnTypes;
@@ -17,8 +18,6 @@ namespace ParquetNeo.Serialization.Shredders;
 /// </remarks>
 internal sealed class ShredderBuilder
 {
-    private static readonly Type[] NoTypes = [];
-
     private readonly NullabilityInfoContext _nullability = new();
     private readonly List<LeafInfo> _leaves = [];
     private readonly Stack<Type> _objects = new();
@@ -101,10 +100,10 @@ internal sealed class ShredderBuilder
         return (PropertyShredder<TParent>)Call(create, [typeof(TParent), valueType], property, name, value);
     }
 
-    private PropertyShredder<TParent> CreateProperty<TParent, TValue>(PropertyInfo property, string name, Shredder<TValue> value) =>
+    private static PropertyShredder<TParent> CreateProperty<TParent, TValue>(PropertyInfo property, string name, Shredder<TValue> value) =>
         new PropertyShredder<TParent, TValue>(name, Getters.Direct<TParent, TValue>(property), value);
 
-    private PropertyShredder<TParent> CreateNullableProperty<TParent, TValue>(PropertyInfo property, string name, Shredder<TValue> value)
+    private static PropertyShredder<TParent> CreateNullableProperty<TParent, TValue>(PropertyInfo property, string name, Shredder<TValue> value)
         where TValue : struct =>
         new PropertyShredder<TParent, TValue>(name, Getters.OfNullable<TParent, TValue>(property), value);
 
@@ -117,7 +116,7 @@ internal sealed class ShredderBuilder
         }
 
         if (type.Namespace is { } space && (space == "System" || space.StartsWith("System.", StringComparison.Ordinal) || space.StartsWith("Microsoft.", StringComparison.Ordinal))
-            && !type.IsArray && TryGetDictionary(type, out _, out _) is false && TryGetItem(type, out _) is false)
+            && !type.IsArray && !TryGetDictionary(type, out _, out _) && !TryGetItem(type, out _))
         {
             throw new NotSupportedException($"{description} is a {type}, which cannot be written as a column.");
         }
@@ -166,7 +165,7 @@ internal sealed class ShredderBuilder
         return (Shredder)Call(nameof(CreateList), [collection, itemType, elementType], optional, first, _leaves.Count - first, description, position.Repetition + 1, reader, element);
     }
 
-    private Shredder CreateList<TCollection, TItem, TElement>(bool optional, int first, int count, string description, int repetitionLevel, ItemReader<TItem, TElement> reader, Shredder<TElement> element)
+    private static ListShredder<TCollection, TItem, TElement> CreateList<TCollection, TItem, TElement>(bool optional, int first, int count, string description, int repetitionLevel, ItemReader<TItem, TElement> reader, Shredder<TElement> element)
         where TCollection : class, IEnumerable<TItem> =>
         new ListShredder<TCollection, TItem, TElement>(optional, first, count, description, repetitionLevel, reader, element);
 
@@ -196,7 +195,7 @@ internal sealed class ShredderBuilder
         return (Shredder)Call(nameof(CreateMap), [map, keyType, valueItemType, valueType], optional, first, _leaves.Count - first, description, position.Repetition + 1, key, reader, value);
     }
 
-    private Shredder CreateMap<TMap, TKey, TItem, TValue>(bool optional, int first, int count, string description, int repetitionLevel, Shredder<TKey> key, ItemReader<TItem, TValue> reader, Shredder<TValue> value)
+    private static MapShredder<TMap, TKey, TItem, TValue> CreateMap<TMap, TKey, TItem, TValue>(bool optional, int first, int count, string description, int repetitionLevel, Shredder<TKey> key, ItemReader<TItem, TValue> reader, Shredder<TValue> value)
         where TKey : notnull
         where TMap : class, IEnumerable<KeyValuePair<TKey, TItem>> =>
         new MapShredder<TMap, TKey, TItem, TValue>(optional, first, count, description, repetitionLevel, key, reader, value);
@@ -266,6 +265,8 @@ internal sealed class ShredderBuilder
         (type.IsInterface ? type.GetInterfaces().Append(type) : type.GetInterfaces()).Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == definition);
 
     /// <summary>Calls one of the generic methods of this class with the given type arguments, and lets its exceptions through as they are.</summary>
+    [SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields",
+        Justification = "The generic helpers called here are this class's own private methods; the type arguments are only known at run time, so they are closed over with reflection.")]
     private object Call(string method, Type[] typeArguments, params object?[] arguments)
     {
         var generic = typeof(ShredderBuilder).GetMethod(method, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)!.MakeGenericMethod(typeArguments);

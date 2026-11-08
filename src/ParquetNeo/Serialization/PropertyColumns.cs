@@ -59,12 +59,10 @@ internal static class PropertyColumns
     /// <exception cref="InvalidOperationException">The property has one of them.</exception>
     public static void RejectColumnAttributes(PropertyInfo property, Type type)
     {
-        foreach (var kind in Kinds)
+        var misplaced = Array.Find(Kinds, kind => property.GetCustomAttribute(kind.Attribute) is not null);
+        if (misplaced is not null)
         {
-            if (property.GetCustomAttribute(kind.Attribute) is not null)
-            {
-                throw Misplaced(property, kind, type);
-            }
+            throw Misplaced(property, misplaced, type);
         }
     }
 
@@ -72,13 +70,13 @@ internal static class PropertyColumns
     /// <exception cref="InvalidOperationException">An attribute suits none of the types.</exception>
     public static void RejectUnusedAttributes(PropertyInfo property, params Type[] types)
     {
-        foreach (var kind in Kinds)
+        var unused = Array.Find(
+            Kinds,
+            kind => property.GetCustomAttribute(kind.Attribute) is not null
+                && !types.Any(t => ColumnTypeRegistry.TryGet(t) is { } columnType && (columnType.SupportedSettings & kind.Kind) != 0));
+        if (unused is not null)
         {
-            if (property.GetCustomAttribute(kind.Attribute) is not null
-                && !types.Any(t => ColumnTypeRegistry.TryGet(t) is { } columnType && (columnType.SupportedSettings & kind.Kind) != 0))
-            {
-                throw new InvalidOperationException($"{Describe(property)} has {kind.Attribute.Name}, but none of what it is made of is {kind.Needs}.");
-            }
+            throw new InvalidOperationException($"{Describe(property)} has {unused.Attribute.Name}, but none of what it is made of is {unused.Needs}.");
         }
     }
 

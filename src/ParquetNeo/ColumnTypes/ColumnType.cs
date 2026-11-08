@@ -9,7 +9,7 @@ namespace ParquetNeo.ColumnTypes;
 /// </summary>
 public abstract class ColumnType
 {
-    internal ColumnType()
+    private protected ColumnType()
     {
     }
 

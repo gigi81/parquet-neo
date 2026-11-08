@@ -1,8 +1,8 @@
+using System.Buffers.Binary;
+using System.Buffers;
 using ParquetNeo.Compression;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
-using System.Buffers;
-using System.Buffers.Binary;
 
 namespace ParquetNeo.Core;
 
@@ -51,7 +51,11 @@ public sealed class ParquetFileWriter : IDisposable, IAsyncDisposable
         }
 
         _options = options ?? new ParquetWriterOptions();
-        ArgumentOutOfRangeException.ThrowIfLessThan(_options.DataPageSize, 1, nameof(options));
+        if (_options.DataPageSize < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(options), _options.DataPageSize, "The data page size must be at least 1.");
+        }
+
         if (!Enum.IsDefined(_options.DataPageVersion))
         {
             throw new ArgumentOutOfRangeException(nameof(options), _options.DataPageVersion, "The data page version must be V1 or V2.");
