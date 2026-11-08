@@ -47,7 +47,7 @@ public sealed partial class ColumnWriter
     /// <summary>Strings up to this many characters are encoded to UTF-8 in one pass.</summary>
     private const int ShortStringChars = 1024;
 
-    private readonly ParquetFileWriter _file;
+    private readonly IColumnSink _sink;
     private readonly WriterBuffers _buffers;
     private readonly ICodec _codec;
     private readonly int _pageSize;
@@ -87,9 +87,16 @@ public sealed partial class ColumnWriter
     private bool _completed;
 
     internal ColumnWriter(ParquetFileWriter file, PrimitiveNode column, ICodec codec, ParquetWriterOptions options)
+        : this(file, file.Buffers, column, codec, options)
     {
-        _file = file;
-        _buffers = file.Buffers;
+    }
+
+    /// <param name="sink">Where the pages go.</param>
+    /// <param name="buffers">The scratch buffers of the writer; one set can only be used by one column writer at a time.</param>
+    internal ColumnWriter(IColumnSink sink, WriterBuffers buffers, PrimitiveNode column, ICodec codec, ParquetWriterOptions options)
+    {
+        _sink = sink;
+        _buffers = buffers;
         Column = column;
         _codec = codec;
         _pageSize = options.DataPageSize;
@@ -814,22 +821,22 @@ public sealed partial class ColumnWriter
         int uncompressedSize = (int)uncompressedLength;
         if (_firstPageOffset < 0)
         {
-            _firstPageOffset = _file.Position;
+            _firstPageOffset = _sink.Position;
         }
 
         if (_dataPageOffset < 0)
         {
-            _dataPageOffset = _file.Position;
+            _dataPageOffset = _sink.Position;
         }
 
         if (_codec.Id == CompressionCodec.Uncompressed)
         {
             // No copy needed: the three parts go straight to the stream.
             int headerLength = WriteHeader(PageType.DataPage, _pageLevelCount, _valueEncoding, uncompressedSize, uncompressedSize);
-            _file.Write(_buffers.Header.WrittenSpan);
-            _file.Write(levelPrefix);
-            _file.Write(levelData);
-            _file.Write(values);
+            _sink.Write(_buffers.Header.WrittenSpan);
+            _sink.Write(levelPrefix);
+            _sink.Write(levelData);
+            _sink.Write(values);
             Account(headerLength, uncompressedSize, uncompressedSize);
         }
         else
@@ -882,11 +889,11 @@ public sealed partial class ColumnWriter
         _dictionary!.WritePlain(_buffers.Values);
         var dictionaryPage = BuildPage(PageType.DictionaryPage, _dictionary.Count, ParquetEncoding.Plain, default, default, _buffers.Values.WrittenSpan);
 
-        _firstPageOffset = _dictionaryPageOffset = _file.Position;
+        _firstPageOffset = _dictionaryPageOffset = _sink.Position;
         WriteEncoded(dictionaryPage);
         _dictionaryPages = 1;
 
-        _dataPageOffset = _file.Position;
+        _dataPageOffset = _sink.Position;
         foreach (var page in _pending)
         {
             WriteEncoded(page);
@@ -988,7 +995,7 @@ public sealed partial class ColumnWriter
 
     private void WriteEncoded(EncodedPage page)
     {
-        _file.Write(page.Buffer.AsSpan(0, page.Length));
+        _sink.Write(page.Buffer.AsSpan(0, page.Length));
         Account(page.HeaderLength, page.UncompressedSize, page.CompressedSize);
         ArrayPool<byte>.Shared.Return(page.Buffer);
     }
@@ -1063,7 +1070,7 @@ public sealed partial class ColumnWriter
             throw new InvalidOperationException($"Column '{Column.Name}' is already complete; this writer can no longer be used.");
         }
 
-        _file.EnsureUsable();
+        _sink.EnsureUsable();
     }
 
     private readonly record struct EncodedPage(byte[] Buffer, int Length, int HeaderLength, int UncompressedSize, int CompressedSize);

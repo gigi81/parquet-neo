@@ -19,6 +19,7 @@ internal sealed class DataWriteSession : IDisposable
     private readonly ParquetFileWriter _writer;
     private readonly IColumnBuffer[] _buffers;
     private readonly int _rowGroupSize;
+    private readonly int _degreeOfParallelism;
     private int _rowsInGroup;
     private long _totalRows;
 
@@ -42,7 +43,13 @@ internal sealed class DataWriteSession : IDisposable
             throw new ArgumentException("The reader has no columns.", nameof(source));
         }
 
+        if (options.MaxDegreeOfParallelism < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(options), options.MaxDegreeOfParallelism, "The degree of parallelism must be at least 1.");
+        }
+
         _rowGroupSize = options.RowGroupSize;
+        _degreeOfParallelism = options.MaxDegreeOfParallelism;
         var schemaTable = TryGetSchemaTable(source);
         var nodes = new List<SchemaNode>(source.FieldCount);
         _buffers = new IColumnBuffer[source.FieldCount];
@@ -94,9 +101,16 @@ internal sealed class DataWriteSession : IDisposable
 
         using (var group = _writer.AppendRowGroup())
         {
-            foreach (var buffer in _buffers)
+            if (_degreeOfParallelism > 1 && _buffers.Length > 1)
             {
-                buffer.WriteAndClear(group.NextColumn());
+                group.WriteColumns([.. _buffers.Select(buffer => (Action<ColumnWriter>)buffer.WriteAndClear)], _degreeOfParallelism);
+            }
+            else
+            {
+                foreach (var buffer in _buffers)
+                {
+                    buffer.WriteAndClear(group.NextColumn());
+                }
             }
         }
 

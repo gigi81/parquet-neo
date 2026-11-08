@@ -12,10 +12,13 @@ public static partial class ParquetSerializer
     /// <exception cref="ParquetException">The file is malformed.</exception>
     public static List<TRow> Deserialize<TRow>(Stream source, ParquetDeserializerOptions? options = null)
     {
-        var rows = new List<TRow>();
-        foreach (var row in DeserializeAll<TRow>(source, options))
+        RequireReadable(source);
+        using var reader = new ParquetFileReader(source, (options ?? new ParquetDeserializerOptions()).Reader, leaveOpen: true);
+        var session = new DeserializationSession<TRow>(reader);
+        var rows = new List<TRow>((int)Math.Min(session.RowCount, DeserializationSession<TRow>.MaxPreallocatedRows));
+        for (int group = 0; group < session.RowGroupCount; group++)
         {
-            rows.Add(row);
+            rows.AddRange(session.ReadRowGroup(group));
         }
 
         return rows;

@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using ParquetNeo.ColumnTypes;
 using ParquetNeo.Core;
 
@@ -11,20 +12,21 @@ namespace ParquetNeo.Serialization.Buffers;
 /// </summary>
 internal sealed class LeafBuffer<TValue> : ILeafBuffer
 {
-    private const int InitialCapacity = 256;
-
     private readonly ColumnType<TValue> _type;
-    private TValue[] _values = new TValue[InitialCapacity];
+    private TValue[] _values;
     private int[]? _definition;
     private int[]? _repetition;
     private int _present;
     private int _entries;
 
-    public LeafBuffer(bool hasDefinitionLevels, bool hasRepetitionLevels, ColumnType<TValue> type)
+    /// <param name="capacity">The number of entries to make room for; the buffer grows when there are more.</param>
+    public LeafBuffer(bool hasDefinitionLevels, bool hasRepetitionLevels, ColumnType<TValue> type, int capacity)
     {
+        capacity = Math.Max(capacity, 1);
         _type = type;
-        _definition = hasDefinitionLevels ? new int[InitialCapacity] : null;
-        _repetition = hasRepetitionLevels ? new int[InitialCapacity] : null;
+        _values = new TValue[capacity];
+        _definition = hasDefinitionLevels ? new int[capacity] : null;
+        _repetition = hasRepetitionLevels ? new int[capacity] : null;
     }
 
     public void AddValue(TValue value, int definition, int repetition)
@@ -34,7 +36,8 @@ internal sealed class LeafBuffer<TValue> : ILeafBuffer
             Array.Resize(ref _values, _values.Length * 2);
         }
 
-        _values[_present++] = value;
+        // The array is exactly TValue[], so the store needs no check of the array's actual element type (which a reference type would get).
+        Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(_values), _present++) = value;
         AddLevels(definition, repetition);
     }
 

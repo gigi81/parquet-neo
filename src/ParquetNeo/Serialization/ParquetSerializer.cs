@@ -70,22 +70,18 @@ public static partial class ParquetSerializer
     {
         ArgumentNullException.ThrowIfNull(rows);
         RequireWritable(destination);
-        using var session = new SerializationSession<TRow>(options);
-        destination.Write(session.Staged.Span);
-        session.ResetStaged();
+        // The synchronous serializer has nothing to gain from staging the file in memory: the pages go straight to the stream.
+        using var session = new SerializationSession<TRow>(options, rows.TryGetNonEnumeratedCount(out int count) ? count : null, destination);
         foreach (var row in rows)
         {
             session.Add(row);
             if (session.IsFull)
             {
                 session.CloseRowGroup();
-                destination.Write(session.Staged.Span);
-                session.ResetStaged();
             }
         }
 
         session.Finish();
-        destination.Write(session.Staged.Span);
     }
 
     /// <summary>Writes the rows to the stream as a Parquet file, without blocking while the stream is written.</summary>
@@ -94,7 +90,7 @@ public static partial class ParquetSerializer
     {
         ArgumentNullException.ThrowIfNull(rows);
         RequireWritable(destination);
-        using var session = new SerializationSession<TRow>(options);
+        using var session = new SerializationSession<TRow>(options, rows.TryGetNonEnumeratedCount(out int count) ? count : null);
         await FlushAsync(session, destination, cancellationToken).ConfigureAwait(false);
         foreach (var row in rows)
         {

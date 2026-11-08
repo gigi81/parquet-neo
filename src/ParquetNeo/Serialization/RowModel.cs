@@ -31,7 +31,8 @@ internal sealed class RowModel<TRow>
 
     public IEnumerable<SchemaNode> CreateSchemaNodes() => Row.CreateChildren();
 
-    public ILeafBuffer[] CreateBuffers() => Columns.Select(c => c.CreateBuffer()).ToArray();
+    /// <param name="capacity">The number of entries each buffer makes room for to begin with.</param>
+    public ILeafBuffer[] CreateBuffers(int capacity) => Columns.Select(c => c.CreateBuffer(capacity)).ToArray();
 
     private static RowModel<TRow> Create()
     {

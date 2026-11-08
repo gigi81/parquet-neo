@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Runtime.ExceptionServices;
 using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Core;
@@ -19,6 +21,7 @@ public sealed class RowGroupWriter : IDisposable
     private long _totalUncompressed;
     private long _totalCompressed;
     private bool _closed;
+    private bool _allColumnsWritten;
 
     internal RowGroupWriter(ParquetFileWriter file, int ordinal)
     {
@@ -42,6 +45,71 @@ public sealed class RowGroupWriter : IDisposable
         }
 
         return _current = _file.CreateColumnWriter(columns[_nextColumn++]);
+    }
+
+    /// <summary>
+    /// Writes every column of the group, encoding up to <paramref name="maxDegreeOfParallelism"/> of them at a time. The columns
+    /// are encoded into buffers of their own and then copied to the file in the order of the schema, so the file is the same
+    /// as the one <see cref="NextColumn"/> makes. The group must not have started: this does all of its columns.
+    /// </summary>
+    /// <param name="columns">What to write to each column, in the order of the schema. They run on different threads.</param>
+    /// <exception cref="InvalidOperationException">A column has been started already, or there is not one action per column.</exception>
+    internal void WriteColumns(IReadOnlyList<Action<ColumnWriter>> columns, int maxDegreeOfParallelism)
+    {
+        EnsureOpen();
+        CompleteCurrent();
+        var schemaColumns = _file.Schema.Columns;
+        if (_nextColumn != 0 || columns.Count != schemaColumns.Count)
+        {
+            throw new InvalidOperationException($"All {schemaColumns.Count} columns must be written at once, into a row group that has none yet.");
+        }
+
+        int count = columns.Count;
+        var sinks = new DetachedColumnSink?[count];
+        var writers = new ColumnWriter?[count];
+        var chunks = new ColumnChunk?[count];
+        var spare = new ConcurrentBag<WriterBuffers>();
+        try
+        {
+            Parallel.For(0, count, new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, maxDegreeOfParallelism) }, i =>
+            {
+                if (!spare.TryTake(out var buffers))
+                {
+                    buffers = new WriterBuffers();
+                }
+
+                var sink = new DetachedColumnSink();
+                var writer = _file.CreateDetachedColumnWriter(schemaColumns[i], sink, buffers);
+                columns[i](writer);
+                chunks[i] = writer.Complete();
+                sinks[i] = sink;
+                writers[i] = writer;
+                spare.Add(buffers);
+            });
+        }
+        catch (AggregateException exception) when (exception.InnerExceptions.Count > 0)
+        {
+            ExceptionDispatchInfo.Capture(exception.InnerExceptions[0]).Throw();
+        }
+
+        for (int i = 0; i < count; i++)
+        {
+            long start = _file.Position;
+            _file.Write(sinks[i]!.Written);
+            var chunk = chunks[i]!;
+            var metadata = chunk.MetaData!;
+            metadata.DataPageOffset += start;
+            if (metadata.DictionaryPageOffset is { } dictionaryOffset)
+            {
+                metadata.DictionaryPageOffset = dictionaryOffset + start;
+            }
+
+            Record(writers[i]!, chunk, writers[i]!.FirstPageOffset + start);
+            sinks[i] = null;
+        }
+
+        _nextColumn = count;
+        _allColumnsWritten = true;
     }
 
     /// <summary>Finishes the group and records it in the file.</summary>
@@ -88,7 +156,7 @@ public sealed class RowGroupWriter : IDisposable
 
         try
         {
-            if (_current is not null && _nextColumn == _file.Schema.Columns.Count)
+            if ((_current is not null || _allColumnsWritten) && _nextColumn == _file.Schema.Columns.Count)
             {
                 Close();
                 return;
@@ -111,11 +179,16 @@ public sealed class RowGroupWriter : IDisposable
 
         var column = _current;
         _current = null;
-        var chunk = column.Complete();
+        Record(column, column.Complete(), column.FirstPageOffset);
+    }
+
+    /// <summary>Adds the finished chunk of a column to the group, after checking that it has as many rows as the columns before it.</summary>
+    private void Record(ColumnWriter column, ColumnChunk chunk, long firstPageOffset)
+    {
         if (_rows < 0)
         {
             _rows = column.RowCount;
-            _firstPageOffset = column.FirstPageOffset;
+            _firstPageOffset = firstPageOffset;
         }
         else if (column.RowCount != _rows)
         {
