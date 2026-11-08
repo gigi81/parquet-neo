@@ -147,7 +147,7 @@ internal sealed class ShredderBuilder
         int maxDefinition = optional ? position.Definition + 1 : position.Definition;
         bool definitionLevels = maxDefinition > 0;
         bool repetitionLevels = position.Repetition > 0;
-        _leaves.Add(new LeafInfo(path, encoding, capacity => new LeafBuffer<TValue>(definitionLevels, repetitionLevels, columnType, capacity)));
+        _leaves.Add(new LeafInfo(path, encoding, source.GetCustomAttribute<ParquetDictionaryAttribute>()?.Mode, capacity => new LeafBuffer<TValue>(definitionLevels, repetitionLevels, columnType, capacity)));
         return new LeafShredder<TValue>(column, optional, columnType, description);
     }
 

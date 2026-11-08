@@ -30,6 +30,13 @@ public sealed record ParquetWriterOptions
     public bool DictionaryEnabled { get; init; } = true;
 
     /// <summary>
+    /// How chosen columns are dictionary encoded, keyed by column path with dots (<c>scores.list.element</c>); the others use
+    /// <see cref="DictionaryMode.Standard"/>. Nothing here makes a column use a dictionary when <see cref="DictionaryEnabled"/> is off.
+    /// </summary>
+    /// <exception cref="ArgumentException">Reported when the writer is created: a column that does not exist.</exception>
+    public IReadOnlyDictionary<string, DictionaryMode>? ColumnDictionaries { get; init; }
+
+    /// <summary>
     /// The size, in bytes, a column chunk's dictionary may reach before the writer stops adding to it and falls back to
     /// plain encoding for the rest of the chunk. Defaults to 1 MiB. The size is checked after every page worth of
     /// values (and after every batch written), so a dictionary can overshoot the limit by up to that much.

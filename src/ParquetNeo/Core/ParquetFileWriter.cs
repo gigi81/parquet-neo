@@ -62,6 +62,7 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
         }
         ValidateSchema(schema);
         ValueEncodingRules.Validate(schema, _options.ColumnEncodings);
+        DictionaryModeRules.Validate(schema, _options.ColumnDictionaries);
 
         _output = output;
         _leaveOpen = leaveOpen;

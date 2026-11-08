@@ -20,6 +20,7 @@ internal static class ComparisonSizes
                 Console.WriteLine($"{compression}, 1,000,000 rows, 5 columns");
                 Print("ParquetNeo, columns", benchmark.ParquetNeoColumns());
                 Print("ParquetNeo, columns, no dictionary", benchmark.ParquetNeoColumnsPlain());
+                Print("ParquetNeo, columns, adaptive dictionaries", benchmark.ParquetNeoColumnsAdaptive());
                 Print("ParquetNeo, serializer", benchmark.ParquetNeoSerializer());
                 Print("Parquet.Net, columns", await benchmark.ParquetNetColumns());
                 Print("Parquet.Net, serializer", await benchmark.ParquetNetSerializer());

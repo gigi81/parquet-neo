@@ -156,6 +156,25 @@ trees, instead of a loop over a tree of small objects that each make a virtual c
 On the 1,000,000-row table of five columns the serializer writes in about 118 ms where it took 142 ms, and reads in about 65 ms where
 it took about 90 ms (the floor, objects made by hand from arrays read through the column API, is 39 ms).
 
+A fifth round gave up on dictionaries sooner, as an option because it changes which files are written. A column of mostly
+different values (an identifier, a measurement) fills a dictionary up to its size limit (131,000 entries for a `long`) before the
+writer gives it up, which cost 5 ms for the identifier column against 1.4 ms written plain, and left a file 7% bigger because of
+the dictionary page and the pages held for it.
+
+- **`DictionaryMode`** says, for a column, how it is dictionary encoded: `Standard` (the default, as before), `Adaptive` or
+  `Disabled`. It is set for chosen columns with `ParquetWriterOptions.ColumnDictionaries` (by column path, like
+  `ColumnEncodings`) or, in the serializer, with `[ParquetDictionary(DictionaryMode.Adaptive)]` on the property; the options win
+  over the attribute, and `DictionaryEnabled = false` turns every dictionary off whatever a column says.
+- **`Adaptive`** looks at the first 32 KiB of the values of the column (4,096 longs); if more than nine in ten are different, the
+  dictionary is dropped there and the rest is written plain. The dictionary page and page written for those first values stay in
+  the file (32 KB for a long), which readers handle like any other column that gave up its dictionary. A column that repeats is
+  unchanged, byte for byte.
+
+On the benchmark table (identifier and amount adaptive; one laptop that was busy, so the ratios are what matters) writing the
+columns takes 0.80 of the time it did, 1 MB less in the file (16.2 MB to 15.2 MB uncompressed, 8.8 MB to 7.8 MB with Snappy). Written
+plain, without any dictionary, it takes 0.55 of the time, but the file is twice the size: the remaining difference is the
+dictionary of the string column.
+
 ## Not done yet
 
 Left for a follow-up, with what is known so far:
@@ -166,8 +185,4 @@ Left for a follow-up, with what is known so far:
   serializer and the ADO.NET writer use it; there is no public form for people who write columns by hand.
 - **Encoding strings.** The dictionary encoded string column is still the slowest column to write (about 37 ms of the 71 ms
   here), in the loop that encodes, hashes and looks up each value.
-- **Giving up a dictionary early.** A column of unique values (an identifier) still fills a dictionary up to its size limit (131,000
-  entries for a `long`) before the writer gives it up: 5 ms for the identifier column against 1.4 ms written plain, and a file
-  that is 7% bigger because of the dictionary page and the pages held for it. Deciding sooner (as Parquet.Net does, after a
-  sample) would be faster and smaller, but changes which files are written for such columns.
 - **Asynchronous input and output** has not been tuned, and the asynchronous serializer still stages the file in memory.

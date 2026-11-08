@@ -50,18 +50,39 @@ internal sealed class SerializationSession<TRow> : IDisposable
         _buffers = _model.CreateBuffers(Math.Min(_rowGroupSize, expectedRows ?? InitialBufferCapacity));
 
         var writerOptions = options.Writer;
-        var encodings = _model.Columns.Where(c => c.Encoding is not null).ToDictionary(c => c.Path, c => c.Encoding!.Value);
-        if (encodings.Count > 0)
+        var encodings = AttributeChoices(_model.Columns, c => c.Encoding, writerOptions.ColumnEncodings);
+        var dictionaries = AttributeChoices(_model.Columns, c => c.Dictionary, writerOptions.ColumnDictionaries);
+        if (encodings is not null || dictionaries is not null)
         {
-            foreach (var (column, encoding) in writerOptions.ColumnEncodings ?? new Dictionary<string, ParquetEncoding>() as IReadOnlyDictionary<string, ParquetEncoding>)
+            writerOptions = writerOptions with
             {
-                encodings[column] = encoding;
-            }
-
-            writerOptions = writerOptions with { ColumnEncodings = encodings };
+                ColumnEncodings = encodings ?? writerOptions.ColumnEncodings,
+                ColumnDictionaries = dictionaries ?? writerOptions.ColumnDictionaries,
+            };
         }
 
         _writer = new ParquetFileWriter(destination ?? _staging, new ParquetSchema(_model.CreateSchemaNodes()), writerOptions, leaveOpen: true);
+    }
+
+    /// <summary>
+    /// What the attributes of the properties choose for their columns, with what the options choose put over it; null when no
+    /// attribute chooses anything, and then the options stand as they are.
+    /// </summary>
+    private static Dictionary<string, TChoice>? AttributeChoices<TChoice>(IReadOnlyList<LeafInfo> columns, Func<LeafInfo, TChoice?> choice, IReadOnlyDictionary<string, TChoice>? fromOptions)
+        where TChoice : struct
+    {
+        var choices = columns.Where(c => choice(c) is not null).ToDictionary(c => c.Path, c => choice(c)!.Value);
+        if (choices.Count == 0)
+        {
+            return null;
+        }
+
+        foreach (var (column, chosen) in fromOptions ?? new Dictionary<string, TChoice>())
+        {
+            choices[column] = chosen;
+        }
+
+        return choices;
     }
 
     /// <summary>Whether the row group holds as many rows as the options ask for.</summary>
