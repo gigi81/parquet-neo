@@ -63,6 +63,25 @@ using (var group = writer.AppendRowGroup())
 The footer is written when the writer is disposed. Read a column back with
 `new ParquetFileReader(stream).OpenRowGroup(0).OpenColumn("id").ReadBatch(values)`.
 
+## ADO.NET
+
+Write the rows of any `IDataReader` (a database query, `DataTable.CreateDataReader()`, ...) as a Parquet file, and read a Parquet file as a `DbDataReader`, which works with `SqlBulkCopy`, `DataTable.Load` and the like.
+
+```csharp
+using ParquetNeo.Data;
+
+using var query = command.ExecuteReader();
+using var output = File.Create("orders.parquet");
+ParquetDataWriter.Write(query, output);
+
+using var input = File.OpenRead("orders.parquet");
+using var reader = new ParquetDataReader(input);
+while (reader.Read())
+{
+    Console.WriteLine($"{reader.GetInt64(0)} {reader.GetString(1)}");
+}
+```
+
 ## Repository layout
 
 | Path | Contents |

@@ -34,6 +34,9 @@ public abstract class ColumnType<TValue> : ColumnType
     /// <summary>The type with the settings that suit it applied, or this type when there are none.</summary>
     public virtual ColumnType<TValue> Configure(ColumnSettings settings) => this;
 
+    /// <inheritdoc/>
+    public sealed override ColumnType WithSettings(ColumnSettings settings) => Configure(settings);
+
     /// <summary>Reads a batch of the column as values of this type; see <c>ColumnReader.ReadBatch</c> for what the arguments mean.</summary>
     /// <exception cref="ArgumentException">The column cannot be read as this type.</exception>
     /// <exception cref="Exceptions.ValueConversionException">A stored value cannot be represented by the type.</exception>
