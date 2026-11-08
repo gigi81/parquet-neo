@@ -20,40 +20,40 @@ public sealed class ColumnChunk : IThriftStruct<ColumnChunk>
 
     public int? ColumnIndexLength { get; set; }
 
-    static ColumnChunk IThriftStruct<ColumnChunk>.Read(ref ThriftCompactReader r)
+    static ColumnChunk IThriftStruct<ColumnChunk>.Read(ref ThriftCompactReader reader)
     {
         var c = new ColumnChunk();
-        r.BeginStruct();
-        while (r.TryReadField(out short id, out var type))
+        reader.BeginStruct();
+        while (reader.TryReadField(out short id, out var type))
         {
             switch (id)
             {
-                case 1 when type == CompactType.Binary: c.FilePath = r.ReadString(); break;
-                case 2 when type == CompactType.I64: c.FileOffset = r.ReadI64(); break;
-                case 3 when type == CompactType.Struct: c.MetaData = ThriftStruct.ReadStruct<ColumnMetaData>(ref r); break;
-                case 4 when type == CompactType.I64: c.OffsetIndexOffset = r.ReadI64(); break;
-                case 5 when type == CompactType.I32: c.OffsetIndexLength = r.ReadI32(); break;
-                case 6 when type == CompactType.I64: c.ColumnIndexOffset = r.ReadI64(); break;
-                case 7 when type == CompactType.I32: c.ColumnIndexLength = r.ReadI32(); break;
-                default: r.Skip(type); break;
+                case 1 when type == CompactType.Binary: c.FilePath = reader.ReadString(); break;
+                case 2 when type == CompactType.I64: c.FileOffset = reader.ReadI64(); break;
+                case 3 when type == CompactType.Struct: c.MetaData = ThriftStruct.ReadStruct<ColumnMetaData>(ref reader); break;
+                case 4 when type == CompactType.I64: c.OffsetIndexOffset = reader.ReadI64(); break;
+                case 5 when type == CompactType.I32: c.OffsetIndexLength = reader.ReadI32(); break;
+                case 6 when type == CompactType.I64: c.ColumnIndexOffset = reader.ReadI64(); break;
+                case 7 when type == CompactType.I32: c.ColumnIndexLength = reader.ReadI32(); break;
+                default: reader.Skip(type); break;
             }
         }
 
-        r.EndStruct();
+        reader.EndStruct();
         return c;
     }
 
-    void IThriftStruct<ColumnChunk>.Write(ref ThriftCompactWriter w)
+    void IThriftStruct<ColumnChunk>.Write(ref ThriftCompactWriter writer)
     {
-        w.BeginStruct();
-        if (FilePath is not null) w.WriteStringField(1, FilePath);
-        w.WriteI64Field(2, FileOffset);
-        if (MetaData is not null) ThriftStruct.WriteStructField(ref w, 3, MetaData);
-        if (OffsetIndexOffset is { } offsetIndexOffset) w.WriteI64Field(4, offsetIndexOffset);
-        if (OffsetIndexLength is { } offsetIndexLength) w.WriteI32Field(5, offsetIndexLength);
-        if (ColumnIndexOffset is { } columnIndexOffset) w.WriteI64Field(6, columnIndexOffset);
-        if (ColumnIndexLength is { } columnIndexLength) w.WriteI32Field(7, columnIndexLength);
-        w.EndStruct();
+        writer.BeginStruct();
+        if (FilePath is not null) writer.WriteStringField(1, FilePath);
+        writer.WriteI64Field(2, FileOffset);
+        if (MetaData is not null) ThriftStruct.WriteStructField(ref writer, 3, MetaData);
+        if (OffsetIndexOffset is { } offsetIndexOffset) writer.WriteI64Field(4, offsetIndexOffset);
+        if (OffsetIndexLength is { } offsetIndexLength) writer.WriteI32Field(5, offsetIndexLength);
+        if (ColumnIndexOffset is { } columnIndexOffset) writer.WriteI64Field(6, columnIndexOffset);
+        if (ColumnIndexLength is { } columnIndexLength) writer.WriteI32Field(7, columnIndexLength);
+        writer.EndStruct();
     }
 }
 
@@ -73,40 +73,40 @@ public sealed class RowGroup : IThriftStruct<RowGroup>
 
     public short? Ordinal { get; set; }
 
-    static RowGroup IThriftStruct<RowGroup>.Read(ref ThriftCompactReader r)
+    static RowGroup IThriftStruct<RowGroup>.Read(ref ThriftCompactReader reader)
     {
         var g = new RowGroup();
-        r.BeginStruct();
-        while (r.TryReadField(out short id, out var type))
+        reader.BeginStruct();
+        while (reader.TryReadField(out short id, out var type))
         {
             switch (id)
             {
-                case 1 when type == CompactType.List: g.Columns = ThriftStruct.ReadStructList<ColumnChunk>(ref r); break;
-                case 2 when type == CompactType.I64: g.TotalByteSize = r.ReadI64(); break;
-                case 3 when type == CompactType.I64: g.NumRows = r.ReadI64(); break;
-                case 4 when type == CompactType.List: g.SortingColumns = ThriftStruct.ReadStructList<SortingColumn>(ref r); break;
-                case 5 when type == CompactType.I64: g.FileOffset = r.ReadI64(); break;
-                case 6 when type == CompactType.I64: g.TotalCompressedSize = r.ReadI64(); break;
-                case 7 when type == CompactType.I16: g.Ordinal = r.ReadI16(); break;
-                default: r.Skip(type); break;
+                case 1 when type == CompactType.List: g.Columns = ThriftStruct.ReadStructList<ColumnChunk>(ref reader); break;
+                case 2 when type == CompactType.I64: g.TotalByteSize = reader.ReadI64(); break;
+                case 3 when type == CompactType.I64: g.NumRows = reader.ReadI64(); break;
+                case 4 when type == CompactType.List: g.SortingColumns = ThriftStruct.ReadStructList<SortingColumn>(ref reader); break;
+                case 5 when type == CompactType.I64: g.FileOffset = reader.ReadI64(); break;
+                case 6 when type == CompactType.I64: g.TotalCompressedSize = reader.ReadI64(); break;
+                case 7 when type == CompactType.I16: g.Ordinal = reader.ReadI16(); break;
+                default: reader.Skip(type); break;
             }
         }
 
-        r.EndStruct();
+        reader.EndStruct();
         return g;
     }
 
-    void IThriftStruct<RowGroup>.Write(ref ThriftCompactWriter w)
+    void IThriftStruct<RowGroup>.Write(ref ThriftCompactWriter writer)
     {
-        w.BeginStruct();
-        ThriftStruct.WriteStructList(ref w, 1, Columns);
-        w.WriteI64Field(2, TotalByteSize);
-        w.WriteI64Field(3, NumRows);
-        if (SortingColumns is not null) ThriftStruct.WriteStructList(ref w, 4, SortingColumns);
-        if (FileOffset is { } fileOffset) w.WriteI64Field(5, fileOffset);
-        if (TotalCompressedSize is { } totalCompressedSize) w.WriteI64Field(6, totalCompressedSize);
-        if (Ordinal is { } ordinal) w.WriteI16Field(7, ordinal);
-        w.EndStruct();
+        writer.BeginStruct();
+        ThriftStruct.WriteStructList(ref writer, 1, Columns);
+        writer.WriteI64Field(2, TotalByteSize);
+        writer.WriteI64Field(3, NumRows);
+        if (SortingColumns is not null) ThriftStruct.WriteStructList(ref writer, 4, SortingColumns);
+        if (FileOffset is { } fileOffset) writer.WriteI64Field(5, fileOffset);
+        if (TotalCompressedSize is { } totalCompressedSize) writer.WriteI64Field(6, totalCompressedSize);
+        if (Ordinal is { } ordinal) writer.WriteI16Field(7, ordinal);
+        writer.EndStruct();
     }
 }
 
@@ -137,61 +137,61 @@ public sealed class FileMetaData : IThriftStruct<FileMetaData>
 
     public void Serialize(IBufferWriter<byte> output) => ThriftStruct.Serialize(this, output);
 
-    static FileMetaData IThriftStruct<FileMetaData>.Read(ref ThriftCompactReader r)
+    static FileMetaData IThriftStruct<FileMetaData>.Read(ref ThriftCompactReader reader)
     {
         var m = new FileMetaData();
-        r.BeginStruct();
-        while (r.TryReadField(out short id, out var type))
+        reader.BeginStruct();
+        while (reader.TryReadField(out short id, out var type))
         {
             switch (id)
             {
-                case 1 when type == CompactType.I32: m.Version = r.ReadI32(); break;
-                case 2 when type == CompactType.List: m.Schema = ThriftStruct.ReadStructList<SchemaElement>(ref r); break;
-                case 3 when type == CompactType.I64: m.NumRows = r.ReadI64(); break;
-                case 4 when type == CompactType.List: m.RowGroups = ThriftStruct.ReadStructList<RowGroup>(ref r); break;
-                case 5 when type == CompactType.List: m.KeyValueMetadata = ThriftStruct.ReadStructList<KeyValue>(ref r); break;
-                case 6 when type == CompactType.Binary: m.CreatedBy = r.ReadString(); break;
-                case 7 when type == CompactType.List: m.ColumnOrders = ReadColumnOrders(ref r); break;
-                default: r.Skip(type); break;
+                case 1 when type == CompactType.I32: m.Version = reader.ReadI32(); break;
+                case 2 when type == CompactType.List: m.Schema = ThriftStruct.ReadStructList<SchemaElement>(ref reader); break;
+                case 3 when type == CompactType.I64: m.NumRows = reader.ReadI64(); break;
+                case 4 when type == CompactType.List: m.RowGroups = ThriftStruct.ReadStructList<RowGroup>(ref reader); break;
+                case 5 when type == CompactType.List: m.KeyValueMetadata = ThriftStruct.ReadStructList<KeyValue>(ref reader); break;
+                case 6 when type == CompactType.Binary: m.CreatedBy = reader.ReadString(); break;
+                case 7 when type == CompactType.List: m.ColumnOrders = ReadColumnOrders(ref reader); break;
+                default: reader.Skip(type); break;
             }
         }
 
-        r.EndStruct();
+        reader.EndStruct();
         return m;
     }
 
-    void IThriftStruct<FileMetaData>.Write(ref ThriftCompactWriter w)
+    void IThriftStruct<FileMetaData>.Write(ref ThriftCompactWriter writer)
     {
-        w.BeginStruct();
-        w.WriteI32Field(1, Version);
-        ThriftStruct.WriteStructList(ref w, 2, Schema);
-        w.WriteI64Field(3, NumRows);
-        ThriftStruct.WriteStructList(ref w, 4, RowGroups);
-        if (KeyValueMetadata is not null) ThriftStruct.WriteStructList(ref w, 5, KeyValueMetadata);
-        if (CreatedBy is not null) w.WriteStringField(6, CreatedBy);
-        if (ColumnOrders is not null) WriteColumnOrders(ref w, ColumnOrders);
-        w.EndStruct();
+        writer.BeginStruct();
+        writer.WriteI32Field(1, Version);
+        ThriftStruct.WriteStructList(ref writer, 2, Schema);
+        writer.WriteI64Field(3, NumRows);
+        ThriftStruct.WriteStructList(ref writer, 4, RowGroups);
+        if (KeyValueMetadata is not null) ThriftStruct.WriteStructList(ref writer, 5, KeyValueMetadata);
+        if (CreatedBy is not null) writer.WriteStringField(6, CreatedBy);
+        if (ColumnOrders is not null) WriteColumnOrders(ref writer, ColumnOrders);
+        writer.EndStruct();
     }
 
-    private static List<ColumnOrder> ReadColumnOrders(ref ThriftCompactReader r)
+    private static List<ColumnOrder> ReadColumnOrders(ref ThriftCompactReader reader)
     {
-        int count = r.ReadListHeader(CompactType.Struct);
+        int count = reader.ReadListHeader(CompactType.Struct);
         var orders = new List<ColumnOrder>(count);
         for (int i = 0; i < count; i++)
         {
             var order = ColumnOrder.Unrecognized;
-            r.BeginStruct();
-            while (r.TryReadField(out short id, out var type))
+            reader.BeginStruct();
+            while (reader.TryReadField(out short id, out var type))
             {
                 if (id is >= 1 and <= 3 && type == CompactType.Struct)
                 {
                     order = (ColumnOrder)id;
                 }
 
-                r.Skip(type);
+                reader.Skip(type);
             }
 
-            r.EndStruct();
+            reader.EndStruct();
             orders.Add(order);
         }
 

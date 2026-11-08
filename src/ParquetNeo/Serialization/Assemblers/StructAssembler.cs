@@ -14,8 +14,8 @@ internal sealed class StructAssembler<TValue>(
     int firstColumn,
     int columnCount,
     string description,
-    PropertyAssembler<TValue>[] properties,
-    RowFactory<TValue> factory) : Assembler<TValue>(firstColumn, columnCount, description)
+    IPropertyAssembler<TValue>[] properties,
+    IRowFactory<TValue> factory) : Assembler<TValue>(firstColumn, columnCount, description)
 {
     public override bool Read(ReadContext context, out TValue value)
     {

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
@@ -13,6 +14,8 @@ namespace ParquetNeo.Compression;
 /// deflate stream ends though, so a member that was cut off inside its 8-byte trailer still yields all of its
 /// data and is accepted. Parquet's optional per-page CRC32 is the integrity check for that.
 /// </remarks>
+[SuppressMessage("Major Code Smell", "S6640:Using unsafe code blocks is security-sensitive",
+    Justification = "UnmanagedMemoryStream wraps the caller's spans so that GZipStream reads and writes them in place; the alternative is copying every page through a managed buffer. The pointers are pinned by 'fixed' for the length of the call and never escape.")]
 public sealed unsafe class GzipCodec : ICodec
 {
     /// <summary>A gzip member holding no data: header, an empty final deflate block, CRC32 0 and size 0.</summary>

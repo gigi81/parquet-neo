@@ -73,7 +73,7 @@ internal static class DecimalConversion
     public static Int128 ToUnscaled(decimal value, int scale, int precision)
     {
         Span<int> bits = stackalloc int[4];
-        decimal.GetBits(value, bits);
+        _ = decimal.GetBits(value, bits);
         int valueScale = (bits[3] >> 16) & 0xFF;
         bool negative = bits[3] < 0;
         UInt128 magnitude = ((UInt128)(uint)bits[2] << 64) | ((UInt128)(uint)bits[1] << 32) | (uint)bits[0];

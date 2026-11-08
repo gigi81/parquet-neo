@@ -9,5 +9,5 @@ internal struct FieldIdStack
     /// <summary>Maximum supported nesting depth of structs, lists and maps.</summary>
     public const int Size = 32;
 
-    private short _element;
+    public short Element;
 }

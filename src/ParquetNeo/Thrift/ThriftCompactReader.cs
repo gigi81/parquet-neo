@@ -16,7 +16,7 @@ internal ref struct ThriftCompactReader
     private int _position;
     private int _depth;
     private short _lastFieldId;
-    private FieldIdStack _fieldIds;
+    public FieldIdStack FieldIds;
 
     public ThriftCompactReader(ReadOnlySpan<byte> data)
     {
@@ -31,13 +31,13 @@ internal ref struct ThriftCompactReader
     public void BeginStruct()
     {
         Enter();
-        _fieldIds[_depth - 1] = _lastFieldId;
+        FieldIds[_depth - 1] = _lastFieldId;
         _lastFieldId = 0;
     }
 
     public void EndStruct()
     {
-        _lastFieldId = _fieldIds[--_depth];
+        _lastFieldId = FieldIds[--_depth];
     }
 
     /// <summary>Reads the next field header; returns false when the struct's stop byte is reached.</summary>

@@ -17,15 +17,15 @@ internal sealed class MapAssembler<TMap, TKey, TItem, TValue>(
     bool valueOptional,
     Func<IDictionary<TKey, TItem>> createSink,
     ItemWrapper<TValue, TItem> wrap,
-    Assembler<TKey> key,
-    Assembler<TValue> value) : Assembler<TMap>(firstColumn, columnCount, description)
+    Assembler<TKey> keyAssembler,
+    Assembler<TValue> valueAssembler) : Assembler<TMap>(firstColumn, columnCount, description)
     where TMap : class
     where TKey : notnull
 {
-    public override bool Read(ReadContext context, out TMap map)
+    public override bool Read(ReadContext context, out TMap value)
     {
         var binding = context.Nodes[node];
-        map = default!;
+        value = default!;
         if (binding.Controller < 0)
         {
             return false;
@@ -44,18 +44,18 @@ internal sealed class MapAssembler<TMap, TKey, TItem, TValue>(
         {
             do
             {
-                if (!key.Read(context, out TKey? readKey))
+                if (!keyAssembler.Read(context, out TKey? readKey))
                 {
                     throw new ValueConversionException($"{Description} has a null key in row {context.Row} of the file, but keys cannot be null.");
                 }
 
-                bool present = value.Read(context, out TValue? readValue);
+                bool present = valueAssembler.Read(context, out TValue? readValue);
                 if (!present && !valueOptional)
                 {
                     throw new ValueConversionException($"{Description} cannot hold a null value, but row {context.Row} of the file has one.");
                 }
 
-                sink[readKey!] = present ? wrap(readValue!) : default!;
+                sink[readKey] = present ? wrap(readValue!) : default!;
             }
             while (!first.AtEnd && first.Repetition == binding.RepetitionLevel);
         }
@@ -64,7 +64,7 @@ internal sealed class MapAssembler<TMap, TKey, TItem, TValue>(
             SkipAll(context);
         }
 
-        map = (TMap)sink;
+        value = (TMap)sink;
         return true;
     }
 
@@ -72,8 +72,8 @@ internal sealed class MapAssembler<TMap, TKey, TItem, TValue>(
     {
         if (file is null)
         {
-            key.Bind(null, binder);
-            value.Bind(null, binder);
+            keyAssembler.Bind(null, binder);
+            valueAssembler.Bind(null, binder);
             binder.BindNode(node, FirstColumn, ColumnCount, 0, 0, 0);
             return;
         }
@@ -85,14 +85,14 @@ internal sealed class MapAssembler<TMap, TKey, TItem, TValue>(
             throw ReadBinder.Mismatch($"The map '{string.Join('.', file.Path)}' of the file, for {Description}, has keys but no values.");
         }
 
-        key.Bind(layout.Key, binder);
-        value.Bind(layout.Value, binder);
+        keyAssembler.Bind(layout.Key, binder);
+        valueAssembler.Bind(layout.Value, binder);
         binder.BindNode(node, FirstColumn, ColumnCount, layout.Container.MaxDefinitionLevel, layout.KeyValue.MaxDefinitionLevel, layout.KeyValue.MaxRepetitionLevel);
     }
 
     public override void AddState(List<ILeafColumn> columns, List<object> objects)
     {
-        key.AddState(columns, objects);
-        value.AddState(columns, objects);
+        keyAssembler.AddState(columns, objects);
+        valueAssembler.AddState(columns, objects);
     }
 }

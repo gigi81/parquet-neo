@@ -25,7 +25,7 @@ internal ref struct RleBitPackedDecoder
     private uint _repeatedValue;
     private int _packedPosition; // byte offset of the next unread group of the current bit-packed run
 
-    private DecodedGroup _group;
+    public DecodedGroup Group;
     private int _groupIndex;
     private int _groupCount;
 
@@ -132,7 +132,7 @@ internal ref struct RleBitPackedDecoder
         if (buffered > 0)
         {
             int take = Math.Min(buffered, destination.Length);
-            ((Span<uint>)_group).Slice(_groupIndex, take).CopyTo(destination);
+            ((Span<uint>)Group).Slice(_groupIndex, take).CopyTo(destination);
             _groupIndex += take;
             done = take;
         }
@@ -149,7 +149,7 @@ internal ref struct RleBitPackedDecoder
         int tail = destination.Length - done;
         if (tail > 0)
         {
-            Span<uint> group = _group;
+            Span<uint> group = Group;
             BitPacking.Unpack(_data.Slice(_packedPosition, _bitWidth), group, _bitWidth);
             _packedPosition += _bitWidth;
             _groupCount = 8;
@@ -180,8 +180,8 @@ internal ref struct RleBitPackedDecoder
     }
 
     [InlineArray(8)]
-    private struct DecodedGroup
+    internal struct DecodedGroup
     {
-        private uint _element;
+        public uint Element;
     }
 }

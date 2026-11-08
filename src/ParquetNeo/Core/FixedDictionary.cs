@@ -7,7 +7,7 @@ namespace ParquetNeo.Core;
 /// Dictionary for 4- and 8-byte values. Floating-point values are added as their bit patterns, so that -0.0 and
 /// +0.0 stay distinct and every NaN payload survives; the PLAIN bytes are the same either way.
 /// </summary>
-internal sealed class FixedDictionary<T> : DictionaryBuilder where T : unmanaged, IEquatable<T>
+internal sealed class FixedDictionary<T> : IDictionaryBuilder where T : unmanaged, IEquatable<T>
 {
     private readonly Dictionary<T, int> _indexes = new();
     private readonly List<T> _entries = new();
@@ -18,9 +18,9 @@ internal sealed class FixedDictionary<T> : DictionaryBuilder where T : unmanaged
         _writePlain = writePlain;
     }
 
-    public override int Count => _entries.Count;
+    public int Count => _entries.Count;
 
-    public override long EncodedSize => (long)_entries.Count * System.Runtime.CompilerServices.Unsafe.SizeOf<T>();
+    public long EncodedSize => (long)_entries.Count * System.Runtime.CompilerServices.Unsafe.SizeOf<T>();
 
     /// <summary>Adds the values, appending the dictionary index of each one to <paramref name="indexes"/>.</summary>
     public void Add(ReadOnlySpan<T> values, ArrayBufferWriter<int> indexes)
@@ -41,5 +41,5 @@ internal sealed class FixedDictionary<T> : DictionaryBuilder where T : unmanaged
         indexes.Advance(values.Length);
     }
 
-    public override void WritePlain(IBufferWriter<byte> output) => _writePlain(CollectionsMarshal.AsSpan(_entries), output);
+    public void WritePlain(IBufferWriter<byte> output) => _writePlain(CollectionsMarshal.AsSpan(_entries), output);
 }

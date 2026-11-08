@@ -1,5 +1,5 @@
-using System.Buffers;
 using System.Buffers.Binary;
+using System.Buffers;
 using System.Text;
 
 namespace ParquetNeo.Thrift;
@@ -10,7 +10,7 @@ internal ref struct ThriftCompactWriter
     private readonly IBufferWriter<byte> _output;
     private int _depth;
     private short _lastFieldId;
-    private FieldIdStack _fieldIds;
+    public FieldIdStack FieldIds;
 
     public ThriftCompactWriter(IBufferWriter<byte> output)
     {
@@ -24,14 +24,14 @@ internal ref struct ThriftCompactWriter
             throw new InvalidOperationException("Thrift structure nesting too deep.");
         }
 
-        _fieldIds[_depth++] = _lastFieldId;
+        FieldIds[_depth++] = _lastFieldId;
         _lastFieldId = 0;
     }
 
     public void EndStruct()
     {
         WriteByte(0);
-        _lastFieldId = _fieldIds[--_depth];
+        _lastFieldId = FieldIds[--_depth];
     }
 
     public void WriteBoolField(short id, bool value) =>

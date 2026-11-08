@@ -1,5 +1,5 @@
-using System.Buffers;
 using System.Buffers.Binary;
+using System.Buffers;
 using System.Numerics;
 using ParquetNeo.Compression;
 using ParquetNeo.Encodings;
@@ -167,13 +167,10 @@ public sealed partial class ColumnReader : IDisposable
         Span<ByteRange> ranges = stackalloc ByteRange[256];
         while (entries < requested)
         {
-            if (_pageEntryIndex == _pageEntries)
+            // Loading the next page would reuse the buffer the values returned so far point into.
+            if (_pageEntryIndex == _pageEntries && (entries > 0 || !LoadNextPage()))
             {
-                // Loading the next page would reuse the buffer the values returned so far point into.
-                if (entries > 0 || !LoadNextPage())
-                {
-                    break;
-                }
+                break;
             }
 
             int take = Math.Min(requested - entries, _pageEntries - _pageEntryIndex);

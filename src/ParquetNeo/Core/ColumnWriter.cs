@@ -1,14 +1,14 @@
-using System.Buffers;
 using System.Buffers.Binary;
+using System.Buffers;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Text;
 using ParquetNeo.Compression;
 using ParquetNeo.ColumnTypes;
 using ParquetNeo.Encodings;
 using ParquetNeo.Metadata;
 using ParquetNeo.Nested;
 using ParquetNeo.Schema;
-using System.Text;
 using ParquetNeo.Core.Statistics;
 
 namespace ParquetNeo.Core;
@@ -55,7 +55,7 @@ public sealed partial class ColumnWriter
 
     // Non-null while the chunk is dictionary encoded. Its data pages are encoded as they fill but held back,
     // because the dictionary page, which is only complete at the end, has to come first in the file.
-    private DictionaryBuilder? _dictionary;
+    private IDictionaryBuilder? _dictionary;
     private readonly List<EncodedPage> _pending = new();
     private byte[]? _stringScratch;
     private readonly StatisticsCollector? _statistics;
@@ -155,6 +155,37 @@ public sealed partial class ColumnWriter
         }
     }
 
+    /// <summary>Writes INT32 values whose nesting is given as validity and offsets; the structure supplies the levels.</summary>
+    public void WriteBatch(ReadOnlySpan<int> values, ColumnStructure structure)
+    {
+        var (definition, repetition) = LevelsOf(structure);
+        WriteBatch(values, definition, repetition);
+    }
+
+    public void WriteBatch(ReadOnlySpan<long> values, ColumnStructure structure)
+    {
+        var (definition, repetition) = LevelsOf(structure);
+        WriteBatch(values, definition, repetition);
+    }
+
+    public void WriteBatch(ReadOnlySpan<float> values, ColumnStructure structure)
+    {
+        var (definition, repetition) = LevelsOf(structure);
+        WriteBatch(values, definition, repetition);
+    }
+
+    public void WriteBatch(ReadOnlySpan<double> values, ColumnStructure structure)
+    {
+        var (definition, repetition) = LevelsOf(structure);
+        WriteBatch(values, definition, repetition);
+    }
+
+    public void WriteBatch(ReadOnlySpan<bool> values, ColumnStructure structure)
+    {
+        var (definition, repetition) = LevelsOf(structure);
+        WriteBatch(values, definition, repetition);
+    }
+
     /// <summary>Writes BYTE_ARRAY values; the memory of each value is read immediately and not retained.</summary>
     public void WriteByteArrays(ReadOnlySpan<ReadOnlyMemory<byte>> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default)
     {
@@ -182,12 +213,24 @@ public sealed partial class ColumnWriter
         }
     }
 
+    public void WriteByteArrays(ReadOnlySpan<ReadOnlyMemory<byte>> values, ColumnStructure structure)
+    {
+        var (definition, repetition) = LevelsOf(structure);
+        WriteByteArrays(values, definition, repetition);
+    }
+
     /// <summary>
     /// Writes BYTE_ARRAY values from strings, encoded as UTF-8 straight into the page buffer. The column is annotated STRING, ENUM
     /// or JSON, or not annotated; any other annotation is an <see cref="ArgumentException"/>.
     /// </summary>
     public void WriteStrings(ReadOnlySpan<string> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default) =>
         ColumnTypeRegistry.Get<string>().Write(this, values, definitionLevels, repetitionLevels);
+
+    public void WriteStrings(ReadOnlySpan<string> values, ColumnStructure structure)
+    {
+        var (definition, repetition) = LevelsOf(structure);
+        WriteStrings(values, definition, repetition);
+    }
 
     /// <summary>Writes the strings of a column that has been checked to hold text; <see cref="WriteStrings(ReadOnlySpan{string}, ReadOnlySpan{int}, ReadOnlySpan{int})"/> checks it first.</summary>
     internal void WriteUtf8Strings(ReadOnlySpan<string> values, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels)
@@ -230,7 +273,7 @@ public sealed partial class ColumnWriter
         int next = 0;
         while (entry < entries)
         {
-            int take = (int)Math.Min(Math.Min(entries - entry, Math.Max(1, (_pageSize - PageBytes) / length)), RowsFree);
+            int take = Math.Min(Math.Min(entries - entry, Math.Max(1, (_pageSize - PageBytes) / length)), RowsFree);
             take = ExtendToRecordEnd(repetitionLevels, entry, take, entries);
             int valueCount = AppendLevels(definitionLevels, repetitionLevels, entry, take);
             var chunk = values.Slice(next * length, valueCount * length);
@@ -261,51 +304,6 @@ public sealed partial class ColumnWriter
             entry += take;
             next += valueCount;
         }
-    }
-
-    // ---- the same, with the shape of the data given as a ColumnStructure instead of levels ----
-
-    /// <summary>Writes INT32 values whose nesting is given as validity and offsets; the structure supplies the levels.</summary>
-    public void WriteBatch(ReadOnlySpan<int> values, ColumnStructure structure)
-    {
-        var (definition, repetition) = LevelsOf(structure);
-        WriteBatch(values, definition, repetition);
-    }
-
-    public void WriteBatch(ReadOnlySpan<long> values, ColumnStructure structure)
-    {
-        var (definition, repetition) = LevelsOf(structure);
-        WriteBatch(values, definition, repetition);
-    }
-
-    public void WriteBatch(ReadOnlySpan<float> values, ColumnStructure structure)
-    {
-        var (definition, repetition) = LevelsOf(structure);
-        WriteBatch(values, definition, repetition);
-    }
-
-    public void WriteBatch(ReadOnlySpan<double> values, ColumnStructure structure)
-    {
-        var (definition, repetition) = LevelsOf(structure);
-        WriteBatch(values, definition, repetition);
-    }
-
-    public void WriteBatch(ReadOnlySpan<bool> values, ColumnStructure structure)
-    {
-        var (definition, repetition) = LevelsOf(structure);
-        WriteBatch(values, definition, repetition);
-    }
-
-    public void WriteByteArrays(ReadOnlySpan<ReadOnlyMemory<byte>> values, ColumnStructure structure)
-    {
-        var (definition, repetition) = LevelsOf(structure);
-        WriteByteArrays(values, definition, repetition);
-    }
-
-    public void WriteStrings(ReadOnlySpan<string> values, ColumnStructure structure)
-    {
-        var (definition, repetition) = LevelsOf(structure);
-        WriteStrings(values, definition, repetition);
     }
 
     public void WriteFixedLengthByteArrays(ReadOnlySpan<byte> values, ColumnStructure structure)
@@ -418,7 +416,7 @@ public sealed partial class ColumnWriter
         while (entry < entries)
         {
             // As many entries as fit in the rest of the page (at least one), so pages close close to the target size.
-            int take = (int)Math.Min(Math.Min(entries - entry, Math.Max(1, (_pageSize - PageBytes) / valueBytes)), RowsFree);
+            int take = Math.Min(Math.Min(entries - entry, Math.Max(1, (_pageSize - PageBytes) / valueBytes)), RowsFree);
             take = ExtendToRecordEnd(repetitionLevels, entry, take, entries);
             int valueCount = AppendLevels(definitionLevels, repetitionLevels, entry, take);
             var chunk = values.Slice(next, valueCount);
@@ -1015,7 +1013,7 @@ public sealed partial class ColumnWriter
     /// <summary>The bits needed for the largest index of a dictionary of <paramref name="count"/> entries (at least 1, which every reader handles).</summary>
     private static int IndexBitWidth(int count) => count <= 1 ? 1 : 32 - BitOperations.LeadingZeroCount((uint)(count - 1));
 
-    private static DictionaryBuilder? CreateDictionary(PhysicalType type, int? typeLength) => type switch
+    private static IDictionaryBuilder? CreateDictionary(PhysicalType type, int? typeLength) => type switch
     {
         // Floating-point values go in as their bit patterns, which keeps -0.0, +0.0 and every NaN distinct.
         PhysicalType.Int32 or PhysicalType.Float => new FixedDictionary<int>(PlainEncoder.WriteInt32s),
@@ -1041,14 +1039,14 @@ public sealed partial class ColumnWriter
     {
         static abstract void Write(ReadOnlySpan<T> values, IBufferWriter<byte> output);
 
-        static abstract void AddToDictionary(ReadOnlySpan<T> values, DictionaryBuilder dictionary, ArrayBufferWriter<int> indexes);
+        static abstract void AddToDictionary(ReadOnlySpan<T> values, IDictionaryBuilder dictionary, ArrayBufferWriter<int> indexes);
     }
 
     private readonly struct Int32Encoder : IPlainValueEncoder<int>
     {
         public static void Write(ReadOnlySpan<int> values, IBufferWriter<byte> output) => PlainEncoder.WriteInt32s(values, output);
 
-        public static void AddToDictionary(ReadOnlySpan<int> values, DictionaryBuilder dictionary, ArrayBufferWriter<int> indexes) =>
+        public static void AddToDictionary(ReadOnlySpan<int> values, IDictionaryBuilder dictionary, ArrayBufferWriter<int> indexes) =>
             ((FixedDictionary<int>)dictionary).Add(values, indexes);
     }
 
@@ -1056,7 +1054,7 @@ public sealed partial class ColumnWriter
     {
         public static void Write(ReadOnlySpan<long> values, IBufferWriter<byte> output) => PlainEncoder.WriteInt64s(values, output);
 
-        public static void AddToDictionary(ReadOnlySpan<long> values, DictionaryBuilder dictionary, ArrayBufferWriter<int> indexes) =>
+        public static void AddToDictionary(ReadOnlySpan<long> values, IDictionaryBuilder dictionary, ArrayBufferWriter<int> indexes) =>
             ((FixedDictionary<long>)dictionary).Add(values, indexes);
     }
 
@@ -1064,7 +1062,7 @@ public sealed partial class ColumnWriter
     {
         public static void Write(ReadOnlySpan<float> values, IBufferWriter<byte> output) => PlainEncoder.WriteSingles(values, output);
 
-        public static void AddToDictionary(ReadOnlySpan<float> values, DictionaryBuilder dictionary, ArrayBufferWriter<int> indexes) =>
+        public static void AddToDictionary(ReadOnlySpan<float> values, IDictionaryBuilder dictionary, ArrayBufferWriter<int> indexes) =>
             ((FixedDictionary<int>)dictionary).Add(MemoryMarshal.Cast<float, int>(values), indexes);
     }
 
@@ -1072,7 +1070,7 @@ public sealed partial class ColumnWriter
     {
         public static void Write(ReadOnlySpan<double> values, IBufferWriter<byte> output) => PlainEncoder.WriteDoubles(values, output);
 
-        public static void AddToDictionary(ReadOnlySpan<double> values, DictionaryBuilder dictionary, ArrayBufferWriter<int> indexes) =>
+        public static void AddToDictionary(ReadOnlySpan<double> values, IDictionaryBuilder dictionary, ArrayBufferWriter<int> indexes) =>
             ((FixedDictionary<long>)dictionary).Add(MemoryMarshal.Cast<double, long>(values), indexes);
     }
 }

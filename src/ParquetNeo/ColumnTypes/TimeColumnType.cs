@@ -19,10 +19,16 @@ internal sealed class TimeColumnType(TimeUnit unit = TimeUnit.Micros, bool isAdj
     public override PrimitiveNode CreateNode(string name, FieldRepetitionType repetition) =>
         new(name, unit == TimeUnit.Millis ? PhysicalType.Int32 : PhysicalType.Int64, repetition, LogicalType.Time(isAdjustedToUtc, unit));
 
-    public override string? GetProblem(PrimitiveNode column) =>
-        column.LogicalType is { Kind: LogicalTypeKind.Time } time && column.Type == (time.Unit == TimeUnit.Millis ? PhysicalType.Int32 : PhysicalType.Int64)
-            ? null
-            : ColumnProblems.Mismatch(column, Name);
+    public override string? GetProblem(PrimitiveNode column)
+    {
+        if (column.LogicalType is not { Kind: LogicalTypeKind.Time } time)
+        {
+            return ColumnProblems.Mismatch(column, Name);
+        }
+
+        var expected = time.Unit == TimeUnit.Millis ? PhysicalType.Int32 : PhysicalType.Int64;
+        return column.Type == expected ? null : ColumnProblems.Mismatch(column, Name);
+    }
 
     protected override BatchRead ReadCore(ColumnReader reader, Span<TimeOnly> values, Span<int> definitionLevels, Span<int> repetitionLevels) =>
         reader.Column.Type == PhysicalType.Int32
