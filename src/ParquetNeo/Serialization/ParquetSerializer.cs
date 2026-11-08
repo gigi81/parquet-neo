@@ -3,7 +3,9 @@ using ParquetNeo.Schema;
 namespace ParquetNeo.Serialization;
 
 /// <summary>
-/// Writes objects as rows of a Parquet file. Each public property becomes a column, named after the property and typed by
+/// Writes objects as rows of a Parquet file (<see cref="Serialize{TRow}"/> and <see cref="SerializeAsync{TRow}(IEnumerable{TRow}, Stream, ParquetSerializerOptions?, CancellationToken)"/>),
+/// and reads rows back (<see cref="Deserialize{TRow}"/>, <see cref="DeserializeAll{TRow}"/> and their asynchronous forms; see
+/// the remarks below for what reading supports). Each public property becomes a column, named after the property and typed by
 /// the convention below, which attributes on the property adjust: <see cref="ParquetColumnAttribute"/>,
 /// <see cref="ParquetIgnoreAttribute"/>, <see cref="ParquetDecimalAttribute"/>, <see cref="ParquetTimestampAttribute"/>,
 /// <see cref="ParquetTimeAttribute"/> and <see cref="ParquetEncodingAttribute"/>.
@@ -37,11 +39,20 @@ namespace ParquetNeo.Serialization;
 /// <see cref="NotSupportedException"/> that names the property.
 /// </para>
 /// <para>
+/// Reading takes the columns of a file by the names of the properties (or of <see cref="ParquetColumnAttribute"/>; a name that
+/// differs only by case also fits when there is just one such column) and reads nothing else, so a row type can be a projection
+/// of a wider file. A column the file lacks leaves a property that can hold null at null; for any other property it is a
+/// <see cref="Exceptions.SchemaMismatchException"/>, as is a column stored as a type the property cannot hold. A type with a
+/// constructor that takes nothing is created and its properties with a public setter (including init-only) are set; otherwise
+/// a public constructor whose parameters are properties is used, as for a record. Only the simple types (numbers, text, dates
+/// and times, enums) can be read so far; nested objects, collections and dictionaries are written but not yet read.
+/// </para>
+/// <para>
 /// The rows go into row groups of <see cref="ParquetSerializerOptions.RowGroupSize"/> rows, each encoded and written to the
 /// stream when it is full. The stream is not closed, and holds a partial file if serializing fails.
 /// </para>
 /// </remarks>
-public static class ParquetSerializer
+public static partial class ParquetSerializer
 {
     /// <summary>The schema that rows of <typeparamref name="TRow"/> are written with.</summary>
     /// <exception cref="NotSupportedException">A property has a type that cannot be written as a column.</exception>

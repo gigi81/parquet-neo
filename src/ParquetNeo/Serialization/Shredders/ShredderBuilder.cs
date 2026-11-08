@@ -67,7 +67,7 @@ internal sealed class ShredderBuilder
     }
 
     /// <summary>The public readable properties of an object that are written, in the order of their columns.</summary>
-    private static List<PropertyInfo> Discover(Type type) =>
+    internal static List<PropertyInfo> Discover(Type type) =>
         type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
             .Where(p => p.GetMethod is { IsPublic: true } && p.GetIndexParameters().Length == 0 && p.GetCustomAttribute<ParquetIgnoreAttribute>() is null)
             .OrderBy(p => p.GetCustomAttribute<ParquetColumnAttribute>()?.Order ?? 0)

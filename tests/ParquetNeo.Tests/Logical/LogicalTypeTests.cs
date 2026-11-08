@@ -169,6 +169,26 @@ public class LogicalTypeTests
     }
 
     [Test]
+    public async Task ATimeThatOverflowsWhenConvertedToTicks_IsReported_NotWrappedAround()
+    {
+        // 10 ticks per microsecond: these counts would wrap around to a small or negative number of ticks.
+        long[] micros = [long.MaxValue, long.MaxValue / 10 + 1, 1_844_674_407_370_955_162, 922_337_203_685_477_581];
+        foreach (long value in micros)
+        {
+            var bytes = WritePhysical(new PrimitiveNode("x", PhysicalType.Int64, FieldRepetitionType.Required, LogicalType.Time(false, TimeUnit.Micros)), w => w.WriteBatch([value]));
+
+            await Assert.That(() => Open(bytes).ReadBatch(new TimeOnly[1])).Throws<ValueConversionException>().Because($"{value} microseconds");
+        }
+
+        var nanoseconds = WritePhysical(new PrimitiveNode("x", PhysicalType.Int64, FieldRepetitionType.Required, LogicalType.Time(false, TimeUnit.Nanos)), w => w.WriteBatch([long.MaxValue, 86_399_999_999_999L]));
+        var times = new TimeOnly[1];
+        await Assert.That(() => Open(nanoseconds).ReadBatch(new TimeOnly[2])).Throws<ValueConversionException>();
+        var last = WritePhysical(new PrimitiveNode("x", PhysicalType.Int64, FieldRepetitionType.Required, LogicalType.Time(false, TimeUnit.Nanos)), w => w.WriteBatch([86_399_999_999_999L]));
+        Open(last).ReadBatch(times);
+        await Assert.That(times[0]).IsEqualTo(new TimeOnly(863_999_999_999L));
+    }
+
+    [Test]
     public async Task ValuesTheColumnCannotStore_AreRejectedWhenWriting()
     {
         var nanoseconds = new PrimitiveNode("t", PhysicalType.Int64, FieldRepetitionType.Required, LogicalType.Timestamp(true, TimeUnit.Nanos));
