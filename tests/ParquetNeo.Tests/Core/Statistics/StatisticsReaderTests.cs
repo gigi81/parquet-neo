@@ -1,8 +1,8 @@
 using System.Text;
 using ParquetNeo.Core;
-using ParquetNeo.Core.Statistics;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
+using ParquetNeo.Statistics;
 
 namespace ParquetNeo.Tests.Core.Statistics;
 

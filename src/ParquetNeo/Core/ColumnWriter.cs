@@ -9,7 +9,7 @@ using ParquetNeo.Encodings;
 using ParquetNeo.Metadata;
 using ParquetNeo.Nested;
 using ParquetNeo.Schema;
-using ParquetNeo.Core.Statistics;
+using ParquetNeo.Statistics;
 
 namespace ParquetNeo.Core;
 

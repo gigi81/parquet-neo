@@ -1,4 +1,4 @@
-namespace ParquetNeo.Core.Statistics;
+namespace ParquetNeo.Statistics;
 
 /// <summary>How the values of a BYTE_ARRAY or FIXED_LEN_BYTE_ARRAY column compare.</summary>
 internal enum BinaryOrder

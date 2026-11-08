@@ -813,3 +813,4 @@ fabric.properties
 # End of https://www.toptal.com/developers/gitignore/api/csharp,visualstudio,visualstudiocode,rider,node
 
 TestResults/
+.idea

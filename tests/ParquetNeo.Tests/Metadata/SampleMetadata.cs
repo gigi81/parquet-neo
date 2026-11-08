@@ -5,7 +5,7 @@ namespace ParquetNeo.Tests.Metadata;
 /// <summary>Builders for metadata objects with every optional field populated.</summary>
 internal static class SampleMetadata
 {
-    public static Statistics Statistics() => new()
+    public static ParquetNeo.Metadata.Statistics Statistics() => new()
     {
         Max = [9],
         Min = [1],

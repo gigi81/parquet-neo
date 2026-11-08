@@ -3,7 +3,7 @@ using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Core.Statistics;
+namespace ParquetNeo.Statistics;
 
 /// <summary>Turns the raw <see cref="Statistics"/> of a column chunk into a <see cref="ColumnStatistics"/>.</summary>
 internal static class ColumnStatisticsDecoder

@@ -1,6 +1,6 @@
-using ParquetNeo.Core.Statistics;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
+using ParquetNeo.Statistics;
 
 namespace ParquetNeo.Core;
 

@@ -1,9 +1,7 @@
-using ParquetNeo.Metadata;
-
-namespace ParquetNeo.Core.Statistics;
+namespace ParquetNeo.Statistics;
 
 // A namespace called Statistics would otherwise hide the Statistics type of the metadata.
-using Statistics = ParquetNeo.Metadata.Statistics;
+using Statistics = Metadata.Statistics;
 
 /// <summary>Statistics of BOOLEAN values, ordered false before true and stored as one byte.</summary>
 internal sealed class BooleanStatistics : StatisticsCollector, IStatisticsSink<bool>

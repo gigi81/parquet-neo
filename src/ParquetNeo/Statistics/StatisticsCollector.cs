@@ -1,10 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
-using ParquetNeo.Metadata;
 
-namespace ParquetNeo.Core.Statistics;
+namespace ParquetNeo.Statistics;
 
 // A namespace called Statistics would otherwise hide the Statistics type of the metadata.
-using Statistics = ParquetNeo.Metadata.Statistics;
+using Statistics = Metadata.Statistics;
 
 /// <summary>
 /// Gathers the minimum, maximum and counts of the values written to one column chunk, to be stored in the chunk's

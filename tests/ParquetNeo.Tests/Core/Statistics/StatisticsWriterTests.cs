@@ -1,9 +1,9 @@
 using System.Text;
 using ParquetNeo.Compression;
 using ParquetNeo.Core;
-using ParquetNeo.Core.Statistics;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
+using ParquetNeo.Statistics;
 
 namespace ParquetNeo.Tests.Core.Statistics;
 
