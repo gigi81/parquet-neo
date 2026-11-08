@@ -44,5 +44,5 @@ internal abstract class Shredder
         }
     }
 
-    protected MissingRequiredValueException Missing() => new($"{Description} is null, but its column is required. Make it nullable to store nulls.");
+    internal MissingRequiredValueException Missing() => new($"{Description} is null, but its column is required. Make it nullable to store nulls.");
 }

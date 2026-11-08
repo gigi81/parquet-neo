@@ -102,11 +102,11 @@ internal sealed class ShredderBuilder
     }
 
     private static PropertyShredder<TParent> CreateProperty<TParent, TValue>(PropertyInfo property, string name, Shredder<TValue> value) =>
-        new PropertyShredder<TParent, TValue>(name, Getters.Direct<TParent, TValue>(property), value);
+        new PropertyShredder<TParent, TValue>(name, Getters.Direct<TParent, TValue>(property), value, property, nullable: false);
 
     private static PropertyShredder<TParent> CreateNullableProperty<TParent, TValue>(PropertyInfo property, string name, Shredder<TValue> value)
         where TValue : struct =>
-        new PropertyShredder<TParent, TValue>(name, Getters.OfNullable<TParent, TValue>(property), value);
+        new PropertyShredder<TParent, TValue>(name, Getters.OfNullable<TParent, TValue>(property), value, property, nullable: true);
 
     /// <summary>The shredder for values of a type, whatever kind of column or columns it is written as.</summary>
     private Shredder BuildValue(Type type, NullabilityInfo? nullability, bool optional, PropertyInfo source, Position position, string path, ParquetEncoding? encoding, string description, bool lenient = false)
