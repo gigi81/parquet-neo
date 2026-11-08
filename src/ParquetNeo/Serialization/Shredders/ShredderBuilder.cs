@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using ParquetNeo.ColumnTypes;
 using ParquetNeo.Metadata;
 using ParquetNeo.Serialization.Buffers;
 
@@ -95,7 +96,7 @@ internal sealed class ShredderBuilder
         string path = parentPath.Length == 0 ? name : $"{parentPath}.{name}";
         var encoding = property.GetCustomAttribute<ParquetEncodingAttribute>()?.Encoding;
 
-        var value = BuildValue(valueType, nullability, optional, property, position, path, encoding, ColumnShapes.Describe(property));
+        var value = BuildValue(valueType, nullability, optional, property, position, path, encoding, PropertyColumns.Describe(property));
         var create = nullable is not null ? nameof(CreateNullableProperty) : nameof(CreateProperty);
         return (PropertyShredder<TParent>)Call(create, [typeof(TParent), valueType], property, name, value);
     }
@@ -110,19 +111,9 @@ internal sealed class ShredderBuilder
     /// <summary>The shredder for values of a type, whatever kind of column or columns it is written as.</summary>
     private Shredder BuildValue(Type type, NullabilityInfo? nullability, bool optional, PropertyInfo source, Position position, string path, ParquetEncoding? encoding, string description, bool lenient = false)
     {
-        if (ColumnShapes.IsPrimitive(type))
+        if (ColumnTypeRegistry.IsSupported(type))
         {
-            return BuildLeaf(typeof(PlainLeafShredder<>), type, ColumnShapes.For(type, source, lenient), optional, position, path, encoding, description);
-        }
-
-        if (type.IsEnum)
-        {
-            if (!lenient)
-            {
-                ColumnShapes.RejectColumnAttributes(source, type);
-            }
-
-            return BuildLeaf(typeof(EnumLeafShredder<>), type, ColumnShapes.ForEnum(), optional, position, path, encoding, description);
+            return (Shredder)Call(nameof(BuildLeaf), [type], source, lenient, optional, position, path, encoding, description);
         }
 
         if (type.Namespace is { } space && (space == "System" || space.StartsWith("System.", StringComparison.Ordinal) || space.StartsWith("Microsoft.", StringComparison.Ordinal))
@@ -143,25 +134,21 @@ internal sealed class ShredderBuilder
 
         if (!lenient)
         {
-            ColumnShapes.RejectColumnAttributes(source, type);
+            PropertyColumns.RejectColumnAttributes(source, type);
         }
 
         return (Shredder)Call(nameof(BuildObject), [type], optional, position, path, description);
     }
 
-    private Shredder BuildLeaf(Type shredder, Type type, ColumnShape shape, bool optional, Position position, string path, ParquetEncoding? encoding, string description)
+    private Shredder BuildLeaf<TValue>(PropertyInfo source, bool lenient, bool optional, Position position, string path, ParquetEncoding? encoding, string description)
     {
+        var columnType = PropertyColumns.For<TValue>(source, lenient);
         int column = _leaves.Count;
         int maxDefinition = optional ? position.Definition + 1 : position.Definition;
-        int maxRepetition = position.Repetition;
-        _leaves.Add((LeafInfo)Call(nameof(CreateLeafInfo), [type is { IsEnum: true } ? typeof(string) : type], path, encoding, maxDefinition > 0, maxRepetition > 0));
-        return (Shredder)shredder.MakeGenericType(type).GetConstructors()[0].Invoke([column, optional, shape, description]);
-    }
-
-    private static LeafInfo CreateLeafInfo<TStored>(string path, ParquetEncoding? encoding, bool definitionLevels, bool repetitionLevels)
-    {
-        var writer = ColumnWriters.For<TStored>();
-        return new LeafInfo(path, encoding, () => new LeafBuffer<TStored>(definitionLevels, repetitionLevels, writer));
+        bool definitionLevels = maxDefinition > 0;
+        bool repetitionLevels = position.Repetition > 0;
+        _leaves.Add(new LeafInfo(path, encoding, () => new LeafBuffer<TValue>(definitionLevels, repetitionLevels, columnType)));
+        return new LeafShredder<TValue>(column, optional, columnType, description);
     }
 
     private Shredder BuildList(Type collection, Type itemType, NullabilityInfo? nullability, bool optional, PropertyInfo source, Position position, string path, ParquetEncoding? encoding, string description, bool lenient)
@@ -200,7 +187,7 @@ internal sealed class ShredderBuilder
         var inside = new Position((optional ? position.Definition + 1 : position.Definition) + 1, position.Repetition + 1);
         if (!lenient)
         {
-            ColumnShapes.RejectUnusedAttributes(source, LeafTypes(map).ToArray());
+            PropertyColumns.RejectUnusedAttributes(source, LeafTypes(map).ToArray());
         }
 
         var key = BuildValue(keyType, null, false, source, inside, $"{path}.key_value.key", encoding, $"{description}, a key,", lenient: true);
@@ -223,7 +210,7 @@ internal sealed class ShredderBuilder
     private static IEnumerable<Type> LeafTypes(Type type)
     {
         type = Nullable.GetUnderlyingType(type) ?? type;
-        if (ColumnShapes.IsPrimitive(type))
+        if (ColumnTypeRegistry.IsSupported(type))
         {
             yield return type;
         }

@@ -1,26 +1,18 @@
 using System.Runtime.CompilerServices;
+using ParquetNeo.ColumnTypes;
 using ParquetNeo.Schema;
 using ParquetNeo.Serialization.Columns;
 
 namespace ParquetNeo.Serialization.Assemblers;
 
-/// <summary>A value that has a column of its own, read as <typeparamref name="TStored"/> and converted to <typeparamref name="TValue"/>.</summary>
+/// <summary>A value that has a column of its own, read in the way its <see cref="ColumnType{TValue}"/> says.</summary>
 /// <param name="repetition">How many collections the value is in, which is how many repeated nodes its column must have.</param>
-internal abstract class LeafAssembler<TValue, TStored>(int slot, int repetition, string description) : Assembler<TValue>(slot, 1, description)
+internal sealed class LeafAssembler<TValue>(int slot, int repetition, string description) : Assembler<TValue>(slot, 1, description)
 {
-    protected abstract TValue Convert(TStored stored);
+    private readonly ColumnType<TValue> _type = ColumnTypeRegistry.Get<TValue>();
 
-    public override bool Read(ReadContext context, out TValue value)
-    {
-        if (Unsafe.As<LeafColumn<TStored>>(context.Columns[FirstColumn]).TryTake(out TStored? stored))
-        {
-            value = Convert(stored);
-            return true;
-        }
-
-        value = default!;
-        return false;
-    }
+    public override bool Read(ReadContext context, out TValue value) =>
+        Unsafe.As<LeafColumn<TValue>>(context.Columns[FirstColumn]).TryTake(out value!);
 
     public override void Bind(SchemaNode? file, ReadBinder binder)
     {
@@ -29,7 +21,7 @@ internal abstract class LeafAssembler<TValue, TStored>(int slot, int repetition,
             case null:
                 return;
             case PrimitiveNode column:
-                if (ColumnCompatibility.Problem(column, typeof(TValue), repetition) is { } problem)
+                if (Problem(column) is { } problem)
                 {
                     throw ReadBinder.Mismatch($"The column '{string.Join('.', column.Path)}' of the file cannot be read into {Description}: {problem}.");
                 }
@@ -41,5 +33,18 @@ internal abstract class LeafAssembler<TValue, TStored>(int slot, int repetition,
         }
     }
 
-    public override void AddState(List<ILeafColumn> columns, List<object> objects) => columns.Add(new LeafColumn<TStored>(ColumnReaders.For<TStored>()));
+    public override void AddState(List<ILeafColumn> columns, List<object> objects) => columns.Add(new LeafColumn<TValue>(_type));
+
+    /// <summary>Why the column cannot be read as the type of the property, or null when it can: its repetition must match the collections the property is in, and the type must fit it.</summary>
+    private string? Problem(PrimitiveNode column)
+    {
+        if (column.MaxRepetitionLevel != repetition)
+        {
+            return repetition == 0
+                ? "it is repeated, and only the elements of a collection can be read from a repeated column"
+                : $"it is repeated {column.MaxRepetitionLevel} times, but the property is in {repetition} collections";
+        }
+
+        return _type.GetProblem(column);
+    }
 }

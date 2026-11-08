@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using ParquetNeo.ColumnTypes;
 using ParquetNeo.Serialization.Shredders;
 
 namespace ParquetNeo.Serialization.Assemblers;
@@ -145,7 +146,7 @@ internal sealed class AssemblerBuilder
         var valueType = nullable ?? property.PropertyType;
         var nullability = _nullability.Create(property);
         bool optional = nullable is not null || (!valueType.IsValueType && nullability.ReadState != NullabilityState.NotNull);
-        string description = ColumnShapes.Describe(property);
+        string description = PropertyColumns.Describe(property);
         var value = BuildValue(valueType, nullability, optional, repetition, description);
         return (PropertyAssembler<TParent>)Call(nameof(CreateTypedProperty), [typeof(TParent), valueType], property, slot, usesSlots, optional, description, value);
     }
@@ -168,11 +169,10 @@ internal sealed class AssemblerBuilder
     /// <summary>The assembler for values of a type, whatever kind of column or columns it is read from.</summary>
     private Assembler BuildValue(Type type, NullabilityInfo? nullability, bool optional, int repetition, string description)
     {
-        if (ColumnShapes.IsPrimitive(type) || type.IsEnum)
+        if (ColumnTypeRegistry.IsSupported(type))
         {
             int slot = _slots++;
-            var assembler = type.IsEnum ? typeof(EnumLeafAssembler<>) : typeof(PlainLeafAssembler<>);
-            return (Assembler)assembler.MakeGenericType(type).GetConstructors()[0].Invoke([slot, repetition, description]);
+            return (Assembler)typeof(LeafAssembler<>).MakeGenericType(type).GetConstructors()[0].Invoke([slot, repetition, description]);
         }
 
         if (type.Namespace is { } space && (space == "System" || space.StartsWith("System.", StringComparison.Ordinal) || space.StartsWith("Microsoft.", StringComparison.Ordinal))

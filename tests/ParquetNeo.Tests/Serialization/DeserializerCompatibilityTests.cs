@@ -1,3 +1,4 @@
+using ParquetNeo.ColumnTypes;
 using ParquetNeo.Core;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
@@ -254,7 +255,7 @@ public class DeserializerCompatibilityTests
         var bytes = Serialize(Sample.Rows(3));
         using var reader = ReadHelper.Open(bytes);
         using var columnReader = reader.OpenRowGroup(0).OpenColumn("Int");
-        var column = new LeafColumn<int>(ColumnReaders.For<int>());
+        var column = new LeafColumn<int>(ColumnTypeRegistry.Get<int>());
         column.Fill(columnReader);
 
         for (int i = 0; i < 3; i++)
@@ -266,7 +267,7 @@ public class DeserializerCompatibilityTests
         await Assert.That(() => column.TryTake(out _)).Throws<CorruptColumnException>();
 
         // A column the file does not have is all nulls, however many entries are taken.
-        var missing = new LeafColumn<int>(ColumnReaders.For<int>());
+        var missing = new LeafColumn<int>(ColumnTypeRegistry.Get<int>());
         missing.Fill(null);
         for (int i = 0; i < 5; i++)
         {
