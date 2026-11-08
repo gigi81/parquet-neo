@@ -11,14 +11,30 @@ namespace ParquetNeo.Serialization;
 /// <remarks>
 /// <para>
 /// A column is optional (it can hold nulls) when the property is a <see cref="Nullable{T}"/>, or a reference type that is
-/// not declared non-nullable. Writing a null to a required column is an <see cref="ArgumentException"/>.
+/// not declared non-nullable (nullable reference types decide, including for the elements of collections and the values of
+/// dictionaries). Writing a null where the column is required is an <see cref="ArgumentException"/> that names the property
+/// and the row.
 /// </para>
 /// <para>
 /// Supported types: <see cref="bool"/>, the integers of every width, <see cref="float"/>, <see cref="double"/>,
 /// <see cref="Half"/>, <see cref="decimal"/> (precision 38 and scale 18 unless set), <see cref="string"/>, <see cref="byte"/>
 /// arrays, <see cref="Guid"/>, <see cref="DateTime"/> and <see cref="DateTimeOffset"/> (UTC microseconds unless set),
-/// <see cref="DateOnly"/> and <see cref="TimeOnly"/> (microseconds unless set). Others, including nested objects and
-/// collections, are a <see cref="NotSupportedException"/> for now.
+/// <see cref="DateOnly"/> and <see cref="TimeOnly"/> (microseconds unless set), and enums (written by name, annotated ENUM).
+/// Beyond those:
+/// </para>
+/// <list type="bullet">
+/// <item>an object (a class, record or struct with public properties) is a group of the columns of its own properties;</item>
+/// <item>an array, a <see cref="List{T}"/> or anything that is <see cref="IEnumerable{T}"/> is a LIST of its elements, which can be
+/// any of these types, including collections and objects;</item>
+/// <item>a <see cref="Dictionary{TKey, TValue}"/> or any <see cref="IDictionary{TKey, TValue}"/> or <see cref="IReadOnlyDictionary{TKey, TValue}"/>
+/// is a MAP; its keys are never null.</item>
+/// </list>
+/// <para>
+/// The attributes of a property that is a collection or dictionary apply to what it holds: <see cref="ParquetDecimalAttribute"/>
+/// to its decimals, <see cref="ParquetEncodingAttribute"/> to all its columns. Types that merely implement a few interfaces
+/// are guessed at only when their elements are clear; a type that contains itself, <see cref="TimeSpan"/> and the other
+/// types of the .NET libraries, multi-dimensional arrays and collections that are structs are a
+/// <see cref="NotSupportedException"/> that names the property.
 /// </para>
 /// <para>
 /// The rows go into row groups of <see cref="ParquetSerializerOptions.RowGroupSize"/> rows, each encoded and written to the
@@ -30,7 +46,7 @@ public static class ParquetSerializer
     /// <summary>The schema that rows of <typeparamref name="TRow"/> are written with.</summary>
     /// <exception cref="NotSupportedException">A property has a type that cannot be written as a column.</exception>
     /// <exception cref="InvalidOperationException">The type has no properties to write, two share a column name, or an attribute does not suit its property.</exception>
-    public static ParquetSchema GetSchema<TRow>() => new(RowModel<TRow>.Columns.Select(c => c.CreateNode()));
+    public static ParquetSchema GetSchema<TRow>() => new(RowModel<TRow>.Get().CreateSchemaNodes());
 
     /// <summary>Writes the rows to the stream as a Parquet file.</summary>
     /// <exception cref="ArgumentException">A row is null, or a null is written to a required column.</exception>
