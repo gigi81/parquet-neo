@@ -15,6 +15,7 @@ internal static class VectorMinMax
     {
         bool floating = typeof(T) == typeof(float) || typeof(T) == typeof(double);
         int next;
+
         if (Vector.IsHardwareAccelerated && values.Length >= Vector<T>.Count)
         {
             var low = new Vector<T>(values);
