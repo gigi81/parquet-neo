@@ -22,6 +22,12 @@ public abstract class ColumnType
     /// <summary>The kinds of <see cref="ColumnSettings"/> the type takes; none for most.</summary>
     public abstract ColumnSettingKinds SupportedSettings { get; }
 
+    /// <summary>
+    /// The type with the settings that suit it applied, or this type when there are none; the form of
+    /// <see cref="ColumnType{TValue}.Configure"/> for when the .NET type is only known at run time.
+    /// </summary>
+    public abstract ColumnType WithSettings(ColumnSettings settings);
+
     /// <summary>A new column of this type: its physical type, its logical type annotation and its length. A node belongs to one schema, so make one for each.</summary>
     public abstract PrimitiveNode CreateNode(string name, FieldRepetitionType repetition);
 
