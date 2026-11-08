@@ -22,6 +22,9 @@ public class WriteComparison
     private ParquetWriterOptions _options = null!;
     private PqNetSchema.ParquetSchema _netSchema = null!;
     private PqNet.ParquetOptions _netOptions = null!;
+    private PqNetSchema.DataField[] _netFields = null!;
+    private ParquetWriterOptions _plainOptions = null!;
+    private PqSharp.Column[] _sharpColumns = null!;
 
     [Params(CompressionCodec.Uncompressed, CompressionCodec.Snappy)]
     public CompressionCodec Compression { get; set; }
@@ -46,10 +49,20 @@ public class WriteComparison
             new PqNetSchema.DataField<double?>("Amount"),
             new PqNetSchema.DataField<int>("Quantity"),
             new PqNetSchema.DataField<bool>("Shipped"));
+        _netFields = _netSchema.GetDataFields();
+        _plainOptions = _options with { DictionaryEnabled = false };
         _netOptions = new PqNet.ParquetOptions
         {
             CompressionMethod = Compression == CompressionCodec.Snappy ? PqNet.CompressionMethod.Snappy : PqNet.CompressionMethod.None,
             RowGroupSize = ComparisonData.Rows,
+        };
+        _sharpColumns = new PqSharp.Column[]
+        {
+            new PqSharp.Column<long>("Id"),
+            new PqSharp.Column<string?>("Customer"),
+            new PqSharp.Column<double?>("Amount"),
+            new PqSharp.Column<int>("Quantity"),
+            new PqSharp.Column<bool>("Shipped"),
         };
     }
 
@@ -61,6 +74,28 @@ public class WriteComparison
     {
         _output.SetLength(0);
         using var writer = new ParquetFileWriter(_output, _schema, _options, leaveOpen: true);
+        using (var group = writer.AppendRowGroup())
+        {
+            group.NextColumn().WriteBatch(_data.Ids);
+            group.NextColumn().WriteStrings(_data.CustomerValues, _data.CustomerLevels);
+            group.NextColumn().WriteBatch(_data.AmountValues, _data.AmountLevels);
+            group.NextColumn().WriteBatch(_data.Quantities);
+            group.NextColumn().WriteBatch(_data.Shipped);
+        }
+
+        writer.Close();
+        return _output.Length;
+    }
+
+    /// <summary>
+    /// Parquet.Net writes every column PLAIN, with no dictionary, which makes its files about twice the size of the others'; this
+    /// is ParquetNeo doing the same work, for a like-for-like comparison with it (see the sizes with <c>-- --sizes</c>).
+    /// </summary>
+    [Benchmark(Description = "ParquetNeo, columns, no dictionary")]
+    public long ParquetNeoColumnsPlain()
+    {
+        _output.SetLength(0);
+        using var writer = new ParquetFileWriter(_output, _schema, _plainOptions, leaveOpen: true);
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(_data.Ids);
@@ -94,7 +129,7 @@ public class WriteComparison
     public async Task<long> ParquetNetColumns()
     {
         _output.SetLength(0);
-        var fields = _netSchema.GetDataFields();
+        var fields = _netFields;
         await using (var writer = await PqNet.ParquetWriter.CreateAsync(_netSchema, _output, _netOptions, append: false))
         {
             using var group = writer.CreateRowGroup();
@@ -120,15 +155,7 @@ public class WriteComparison
     public long ParquetSharpColumns()
     {
         _output.SetLength(0);
-        var columns = new PqSharp.Column[]
-        {
-            new PqSharp.Column<long>("Id"),
-            new PqSharp.Column<string?>("Customer"),
-            new PqSharp.Column<double?>("Amount"),
-            new PqSharp.Column<int>("Quantity"),
-            new PqSharp.Column<bool>("Shipped"),
-        };
-        using (var writer = new PqSharp.ParquetFileWriter(_output, columns, logicalTypeFactory: null, Compression == CompressionCodec.Snappy ? PqSharp.Compression.Snappy : PqSharp.Compression.Uncompressed, keyValueMetadata: null, leaveOpen: true))
+        using (var writer = new PqSharp.ParquetFileWriter(_output, _sharpColumns, logicalTypeFactory: null, Compression == CompressionCodec.Snappy ? PqSharp.Compression.Snappy : PqSharp.Compression.Uncompressed, keyValueMetadata: null, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             using (var column = group.NextColumn().LogicalWriter<long>())

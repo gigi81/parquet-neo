@@ -16,6 +16,21 @@ with Snappy, to and from memory.
 - **serializer**: objects in, objects out (`ParquetSerializer` of ParquetNeo and of Parquet.Net). ParquetSharp has none.
 - Reading: every library reads the same file, written by ParquetSharp, into arrays (columns) or into objects (serializer).
 
+The competitors are driven the way their own documentation makes fastest, and each choice was timed against the alternatives
+(1M rows, same machine) before it was kept:
+
+- **ParquetSharp, reading:** a native buffer (`BufferReader` over the pinned bytes) and its physical column readers for the
+  numbers (49 ms with the logical readers over a .NET stream, 38 ms with these, and 36 MB allocated against 8.5 MB). The text
+  columns have no physical form that makes strings, so they use the logical reader. A physical `ReadBatch` can return fewer values
+  than asked for, so it is called until every row is read (the benchmark checks the count).
+- **Parquet.Net, reading:** `ReadRawAsync` for the nullable double, which returns the values and their definition levels the way
+  ParquetNeo does, instead of `ReadAsync`, which expands them to `double?` (62–76 ms down to 46–52 ms).
+- **ParquetSharp, writing:** nothing was faster than the logical writers: physical writers, a native output buffer and switching
+  size statistics off all took 101–105 ms against 103 ms. The column descriptors are made once, outside the timed method.
+- **Parquet.Net, writing:** nothing was faster either: neither the pool limits, the dictionary settings (none of them make it use
+  a dictionary), nor reusing the fields changed its 73 ms.
+- Every library allocates the arrays it reads into inside the timed method, so none is helped by buffers made in advance.
+
 ```bash
 dotnet run -c Release --project benchmarks/ParquetNeo.Benchmarks -- --filter "*WriteComparison*"
 ```
@@ -33,35 +48,43 @@ short job, so the error margins are wide: see the notes). Smaller is better.
 
 ### Writing
 
-| | Uncompressed | Snappy | Allocated |
-|---|---:|---:|---:|
-| ParquetNeo, columns | 81 ms | 97 ms | 52 MB |
-| Parquet.Net, columns | 84 ms | 108 ms | 28 MB |
-| ParquetSharp, columns | 108 ms | 128 ms | 13 MB |
-| ParquetNeo, serializer | 143 ms | 162 ms | 87 MB |
-| ParquetNeo, serializer, 4 threads | 128 ms | 121 ms | 120–146 MB |
-| Parquet.Net, serializer | 142 ms | 158 ms | 125 MB |
+| | Uncompressed | Snappy | Allocated | File (uncompressed / Snappy) |
+|---|---:|---:|---:|---:|
+| ParquetNeo, columns | 67 ms | 89 ms | 18 KB | 16.2 / 8.8 MB |
+| ParquetNeo, columns, no dictionary | 38 ms | 65 ms | 13 KB | 31.3 / 10.9 MB |
+| Parquet.Net, columns | 88 ms | 123 ms | 28 MB | 32.7 / 11.0 MB |
+| ParquetSharp, columns | 112 ms | 128 ms | 13 MB | 15.7 / 8.2 MB |
+| ParquetNeo, serializer | 129 ms | 148 ms | 36 MB | 16.2 / 8.8 MB |
+| ParquetNeo, serializer, 4 threads | 103 ms | 107 ms | 36 MB | same |
+| Parquet.Net, serializer | 140 ms | 166 ms | 128 MB | 32.7 / 11.0 MB |
+
+Parquet.Net's column writer writes every column PLAIN, with no dictionary (its dictionary options do not change that), which is
+cheaper per row and makes its files about twice the size of those of the libraries that use a dictionary. The like-for-like
+comparison with it is the row of ParquetNeo without a dictionary, which writes the same kind of file (31 MB against 33 MB) in
+less than half the time uncompressed. `dotnet run -c Release --project benchmarks/ParquetNeo.Benchmarks -- --sizes` prints the
+sizes.
 
 ### Reading
 
 | | Uncompressed | Snappy | Allocated |
 |---|---:|---:|---:|
-| ParquetNeo, columns | 22 ms | 43 ms | 34 MB |
-| Parquet.Net, columns | 94 ms | 93 ms | 77–96 MB |
-| ParquetSharp, columns | 62 ms | 87 ms | 36 MB |
-| ParquetNeo, serializer | 125 ms | 157 ms | 106 MB |
-| Parquet.Net, serializer | 176 ms | 172 ms | 148–167 MB |
+| ParquetNeo, columns | 22 ms | 44 ms | 34 MB |
+| Parquet.Net, columns | 88 ms | 94 ms | 73–92 MB |
+| ParquetSharp, columns | 51 ms | 80 ms | 30 MB |
+| ParquetNeo, serializer | 130 ms | 145 ms | 106 MB |
+| Parquet.Net, serializer | 210 ms | 180 ms | 148–167 MB |
 
 ### Notes on the numbers
 
 - They come from one machine, one dataset and a short BenchmarkDotNet job. Differences of 10 to 20 percent between two rows
-  are within the noise (the error column of the BenchmarkDotNet output is up to about 30 ms for writes, and the
-  Parquet.Net serializer read has an error larger than its mean). The large differences, such as reading through columns, are not.
-- Writing through columns is on a par with Parquet.Net and ahead of ParquetSharp. The serializer takes about 1.7 times as long
-  as the column API: it is on a par with Parquet.Net's when writing, and ahead of it when reading.
-- ParquetSharp, being native code behind a managed interface, allocates the least; ParquetNeo allocates more than both when
-  writing through columns. Encoding columns on several threads holds the encoded columns of a row group at the same time, which
-  is where its extra allocation comes from.
+  are within the noise (the error column of the BenchmarkDotNet output is up to about 15 ms for writes, and the
+  Parquet.Net serializer read has an error close to its mean). The large differences, such as reading through columns, are not.
+- Writing through columns is ahead of both libraries, and the like-for-like row (no dictionary, the file Parquet.Net writes)
+  is more than twice as fast as Parquet.Net uncompressed. The serializer takes about twice as long as the column API; it is
+  ahead of Parquet.Net's serializer in both directions.
+- ParquetNeo's writer takes its scratch space from the pool, so it allocates next to nothing once it is warm: the figure is for
+  a file written after others, as in a benchmark or a service. A single file written in a fresh process still allocates for the
+  pool to grow the first time.
 
 ## What the measurements led to
 
@@ -102,6 +125,22 @@ about a third:
 The serializer writes in 143 ms where it took 198 ms, with 87 MB allocated instead of 188 MB, and reads in 125 ms where it took 186 ms,
 with 106 MB allocated instead of 162 MB.
 
+A third round went to writing through columns, which allocated 52 MB for the table (against 28 MB and 13 MB for the other libraries)
+and was slower than Parquet.Net on at least one laptop. Writing each column on its own showed where it went: the two columns of
+unique values (an identifier and an amount) spent 19 ms and 25 MB each building a dictionary of 131,000 entries that the writer
+then gave up, and the string column spent most of its 47 ms in its dictionary.
+
+- **The dictionaries are open-addressing tables over pooled arrays**, for numbers (`FixedDictionary`) and for byte arrays and
+  strings (`BinaryDictionary`: the values are copied one after the other into one array, and an entry is its offset, length and
+  hash, so most mismatches are told from the hash alone). Entries are numbered in order of first appearance, so the file is the
+  same. The hash is seeded randomly for every dictionary, so that input chosen by an attacker cannot be crafted to collide.
+- **The scratch buffers of a writer come from the pool** (`PooledBufferWriter`, in place of `ArrayBufferWriter`, which grows by
+  doubling and is made anew for every file) and go back when the file is closed.
+- **A dictionary index is appended with one call** instead of a request for room and an advance.
+
+The unique `long` column went from 19 ms and 25 MB to 5 ms and nothing; the unique `double` column from 19 ms and 26 MB to 12 ms;
+the string column from 47 ms to 37 ms. The table through columns went from 86 ms and 52 MB to 67–71 ms and 18 KB.
+
 ## Not done yet
 
 Left for a follow-up, with what is known so far:
@@ -111,9 +150,10 @@ Left for a follow-up, with what is known so far:
   next step would be to compile one function per row type that does it all, instead of walking a tree of small objects.
 - **Parallel encoding for the column API.** `RowGroupWriter` can encode all the columns of a group in parallel, but only the
   serializer and the ADO.NET writer use it; there is no public form for people who write columns by hand.
-- **Encoding strings.** The dictionary encoded string column is still the slowest column to write (about 47 ms of the 81 ms
-  here), mostly in hashing and looking up values and in the loop around them.
-- **Allocation of the column writer** is higher than that of the other libraries (the pages are held before they are written).
-- **Giving up a dictionary early.** A column of unique values (an identifier) fills a dictionary up to its size limit before the
-  writer gives it up. Deciding sooner would be faster, but changes which files are written for such columns.
+- **Encoding strings.** The dictionary encoded string column is still the slowest column to write (about 37 ms of the 71 ms
+  here), in the loop that encodes, hashes and looks up each value.
+- **Giving up a dictionary early.** A column of unique values (an identifier) still fills a dictionary up to its size limit (131,000
+  entries for a `long`) before the writer gives it up: 5 ms for the identifier column against 1.4 ms written plain, and a file
+  that is 7% bigger because of the dictionary page and the pages held for it. Deciding sooner (as Parquet.Net does, after a
+  sample) would be faster and smaller, but changes which files are written for such columns.
 - **Asynchronous input and output** has not been tuned, and the asynchronous serializer still stages the file in memory.

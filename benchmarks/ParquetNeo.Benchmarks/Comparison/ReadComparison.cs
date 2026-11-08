@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using BenchmarkDotNet.Attributes;
 using ParquetNeo.Compression;
 using ParquetNeo.Compression.Snappy;
@@ -13,6 +14,14 @@ namespace ParquetNeo.Benchmarks.Comparison;
 /// Reading the comparison dataset back into arrays (or objects, for the serializers). Every library reads the same file, written
 /// by ParquetSharp, which wraps the C++ implementation: one row group, dictionary encoded where it chooses to, Snappy or not.
 /// </summary>
+/// <remarks>
+/// Each library is driven by the fastest way it has to get arrays of values and, for a nullable column, which values are there:
+/// ParquetNeo reads the values with their definition levels; Parquet.Net's <c>ReadRawAsync</c> does the same for the nullable
+/// double (its <c>ReadAsync</c> expands it to <c>double?</c>, which takes about a quarter longer); ParquetSharp reads from a
+/// native buffer (no call back into managed code for each read) and its physical column readers for the numbers, which are
+/// quicker than its logical readers and allocate a fraction of the memory. Text goes through the logical readers of ParquetSharp
+/// and <c>ReadAsync</c> of Parquet.Net, the only ways they have to make strings. The arrays are allocated by each call, for all.
+/// </remarks>
 [MemoryDiagnoser]
 [SimpleJob(warmupCount: 2, iterationCount: 6)]
 public class ReadComparison
@@ -20,6 +29,7 @@ public class ReadComparison
     private byte[] _file = [];
     private ParquetReaderOptions _options = null!;
     private PqNet.ParquetOptions _netOptions = null!;
+    private GCHandle _pinnedFile;
 
     [Params(CompressionCodec.Uncompressed, CompressionCodec.Snappy)]
     public CompressionCodec Compression { get; set; }
@@ -69,8 +79,18 @@ public class ReadComparison
         }
 
         _file = stream.ToArray();
+        _pinnedFile = GCHandle.Alloc(_file, GCHandleType.Pinned);
         _options = new ParquetReaderOptions { Codecs = new CodecRegistry().AddSnappy() };
         _netOptions = new PqNet.ParquetOptions();
+    }
+
+    [GlobalCleanup]
+    public void Cleanup()
+    {
+        if (_pinnedFile.IsAllocated)
+        {
+            _pinnedFile.Free();
+        }
     }
 
     [Benchmark(Baseline = true, Description = "ParquetNeo, columns")]
@@ -146,12 +166,13 @@ public class ReadComparison
         var fields = reader.Schema.GetDataFields();
         var ids = new long[Rows];
         var customers = new string?[Rows];
-        var amounts = new double?[Rows];
+        var amounts = new double[Rows];
+        var definitionLevels = new int[Rows];
         var quantities = new int[Rows];
         var shipped = new bool[Rows];
         await group.ReadAsync<long>(fields[0], ids);
         await group.ReadAsync(fields[1], customers.AsMemory()!);
-        await group.ReadAsync<double>(fields[2], amounts);
+        await group.ReadRawAsync<double>(fields[2], amounts, definitionLevels, null);
         await group.ReadAsync<int>(fields[3], quantities);
         await group.ReadAsync<bool>(fields[4], shipped);
         return ids.Length + customers.Length + amounts.Length + quantities.Length + shipped.Length;
@@ -167,34 +188,76 @@ public class ReadComparison
     [Benchmark(Description = "ParquetSharp, columns")]
     public long ParquetSharpColumns()
     {
-        using var file = new PqSharp.ParquetFileReader(new MemoryStream(_file));
+        const int Rows = ComparisonData.Rows;
+        using var buffer = new PqSharp.IO.Buffer(_pinnedFile.AddrOfPinnedObject(), _file.Length);
+        using var input = new PqSharp.IO.BufferReader(buffer);
+        using var file = new PqSharp.ParquetFileReader(input);
         using var group = file.RowGroup(0);
-        long rows = 0;
-        using (var column = group.Column(0).LogicalReader<long>())
+        var ids = new long[Rows];
+        var amounts = new double[Rows];
+        var definitionLevels = new short[Rows];
+        var quantities = new int[Rows];
+        var shipped = new bool[Rows];
+        long entries = 0;
+        using (var column = (PqSharp.ColumnReader<long>)group.Column(0))
         {
-            rows += column.ReadAll(ComparisonData.Rows).Length;
+            entries += ReadAll(column, ids);
         }
 
         using (var column = group.Column(1).LogicalReader<string?>())
         {
-            rows += column.ReadAll(ComparisonData.Rows).Length;
+            entries += column.ReadAll(Rows).Length;
         }
 
-        using (var column = group.Column(2).LogicalReader<double?>())
+        using (var column = (PqSharp.ColumnReader<double>)group.Column(2))
         {
-            rows += column.ReadAll(ComparisonData.Rows).Length;
+            // A batch may be shorter than asked for: keep asking until every row is read.
+            long levels = 0;
+            long values = 0;
+            while (levels < Rows)
+            {
+                long read = column.ReadBatch(Rows - levels, definitionLevels.AsSpan((int)levels), Span<short>.Empty, amounts.AsSpan((int)values), out long present);
+                if (read == 0)
+                {
+                    break;
+                }
+
+                levels += read;
+                values += present;
+            }
+
+            entries += levels;
         }
 
-        using (var column = group.Column(3).LogicalReader<int>())
+        using (var column = (PqSharp.ColumnReader<int>)group.Column(3))
         {
-            rows += column.ReadAll(ComparisonData.Rows).Length;
+            entries += ReadAll(column, quantities);
         }
 
-        using (var column = group.Column(4).LogicalReader<bool>())
+        using (var column = (PqSharp.ColumnReader<bool>)group.Column(4))
         {
-            rows += column.ReadAll(ComparisonData.Rows).Length;
+            entries += ReadAll(column, shipped);
         }
 
-        return rows;
+        return entries;
+    }
+
+    /// <summary>Reads a column of required values; a batch may be shorter than asked for, so it asks until every row is read.</summary>
+    private static long ReadAll<T>(PqSharp.ColumnReader<T> column, T[] destination)
+        where T : unmanaged
+    {
+        long done = 0;
+        while (done < destination.Length)
+        {
+            column.ReadBatch(destination.Length - done, destination.AsSpan((int)done), out long read);
+            if (read == 0)
+            {
+                break;
+            }
+
+            done += read;
+        }
+
+        return done;
     }
 }
