@@ -1,3 +1,4 @@
+using ParquetNeo.ColumnTypes;
 using ParquetNeo.Core;
 using ParquetNeo.Exceptions;
 
@@ -7,11 +8,11 @@ namespace ParquetNeo.Serialization.Columns;
 /// The entries of one column of a row group: the values that are present in one array, and a definition level per entry when the
 /// column can have missing values (and a repetition level when it is repeated), read in order by taking one entry at a time.
 /// </summary>
-internal sealed class LeafColumn<TStored>(BatchReader<TStored> reader) : ILeafColumn
+internal sealed class LeafColumn<TValue>(ColumnType<TValue> type) : ILeafColumn
 {
     private const int Batch = 4096;
 
-    private TStored[] _values = [];
+    private TValue[] _values = [];
     private int[] _definition = [];
     private int[] _repetition = [];
     private int _maxDefinition;
@@ -89,7 +90,7 @@ internal sealed class LeafColumn<TStored>(BatchReader<TStored> reader) : ILeafCo
                 Reserve(ref _repetition, _entries);
             }
 
-            var read = reader(
+            var read = type.Read(
                 column,
                 _values.AsSpan(_present, Batch),
                 definitionLevels ? _definition.AsSpan(_entries, Batch) : default,
@@ -106,7 +107,7 @@ internal sealed class LeafColumn<TStored>(BatchReader<TStored> reader) : ILeafCo
 
     /// <summary>Takes the next entry: true and its value, or false when it is a null. A column the file lacks has only nulls.</summary>
     /// <exception cref="CorruptColumnException">The column holds fewer entries than the rows need.</exception>
-    public bool TryTake(out TStored value)
+    public bool TryTake(out TValue value)
     {
         value = default!;
         if (_missing)

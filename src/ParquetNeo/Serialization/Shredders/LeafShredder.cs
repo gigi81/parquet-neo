@@ -1,20 +1,19 @@
 using System.Runtime.CompilerServices;
+using ParquetNeo.ColumnTypes;
 using ParquetNeo.Schema;
 using ParquetNeo.Serialization.Buffers;
 
 namespace ParquetNeo.Serialization.Shredders;
 
-/// <summary>A value that is stored in a column of its own, as <typeparamref name="TStored"/>.</summary>
-internal abstract class LeafShredder<TValue, TStored>(int column, bool optional, ColumnShape shape, string description)
+/// <summary>A value that is stored in a column of its own, in the way its <see cref="ColumnType{TValue}"/> says.</summary>
+internal sealed class LeafShredder<TValue>(int column, bool optional, ColumnType<TValue> columnType, string description)
     : Shredder<TValue>(optional, column, 1, description)
 {
-    protected abstract TStored Store(TValue value);
-
     public override void Shred(TValue value, bool present, int definition, int repetition, ILeafBuffer[] buffers)
     {
         if (present)
         {
-            Unsafe.As<LeafBuffer<TStored>>(buffers[FirstColumn]).AddValue(Store(value), Optional ? definition + 1 : definition, repetition);
+            Unsafe.As<LeafBuffer<TValue>>(buffers[FirstColumn]).AddValue(value, Optional ? definition + 1 : definition, repetition);
         }
         else if (Optional)
         {
@@ -26,5 +25,5 @@ internal abstract class LeafShredder<TValue, TStored>(int column, bool optional,
         }
     }
 
-    public override SchemaNode CreateSchemaNode(string name) => new PrimitiveNode(name, shape.Type, Repetition, shape.LogicalType, shape.TypeLength);
+    public override SchemaNode CreateSchemaNode(string name) => columnType.CreateNode(name, Repetition);
 }

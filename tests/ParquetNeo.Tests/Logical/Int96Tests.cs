@@ -1,4 +1,4 @@
-using ParquetNeo.Converters;
+using ParquetNeo.ColumnTypes;
 using ParquetNeo.Core;
 using ParquetNeo.Encodings;
 using ParquetNeo.Exceptions;

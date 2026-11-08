@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using ParquetNeo.Compression;
-using ParquetNeo.Converters;
+using ParquetNeo.ColumnTypes;
 using ParquetNeo.Encodings;
 using ParquetNeo.Metadata;
 using ParquetNeo.Nested;
@@ -186,9 +186,12 @@ public sealed partial class ColumnWriter
     /// Writes BYTE_ARRAY values from strings, encoded as UTF-8 straight into the page buffer. The column is annotated STRING, ENUM
     /// or JSON, or not annotated; any other annotation is an <see cref="ArgumentException"/>.
     /// </summary>
-    public void WriteStrings(ReadOnlySpan<string> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default)
+    public void WriteStrings(ReadOnlySpan<string> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default) =>
+        ColumnTypeRegistry.Get<string>().Write(this, values, definitionLevels, repetitionLevels);
+
+    /// <summary>Writes the strings of a column that has been checked to hold text; <see cref="WriteStrings(ReadOnlySpan{string}, ReadOnlySpan{int}, ReadOnlySpan{int})"/> checks it first.</summary>
+    internal void WriteUtf8Strings(ReadOnlySpan<string> values, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels)
     {
-        ConversionRules.RequireText(Column);
         int entries = PrepareBatch(PhysicalType.ByteArray, values.Length, definitionLevels, repetitionLevels);
         int entry = 0;
         int next = 0;

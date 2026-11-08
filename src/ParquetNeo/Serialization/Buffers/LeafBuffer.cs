@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using ParquetNeo.ColumnTypes;
 using ParquetNeo.Core;
 
 namespace ParquetNeo.Serialization.Buffers;
@@ -8,25 +9,25 @@ namespace ParquetNeo.Serialization.Buffers;
 /// missing values or lists, a definition level per entry and a repetition level per entry when it is repeated. That is the form
 /// <see cref="ColumnWriter"/> takes.
 /// </summary>
-internal sealed class LeafBuffer<TStored> : ILeafBuffer
+internal sealed class LeafBuffer<TValue> : ILeafBuffer
 {
     private const int InitialCapacity = 256;
 
-    private readonly BatchWriter<TStored> _writer;
-    private TStored[] _values = new TStored[InitialCapacity];
+    private readonly ColumnType<TValue> _type;
+    private TValue[] _values = new TValue[InitialCapacity];
     private int[]? _definition;
     private int[]? _repetition;
     private int _present;
     private int _entries;
 
-    public LeafBuffer(bool hasDefinitionLevels, bool hasRepetitionLevels, BatchWriter<TStored> writer)
+    public LeafBuffer(bool hasDefinitionLevels, bool hasRepetitionLevels, ColumnType<TValue> type)
     {
-        _writer = writer;
+        _type = type;
         _definition = hasDefinitionLevels ? new int[InitialCapacity] : null;
         _repetition = hasRepetitionLevels ? new int[InitialCapacity] : null;
     }
 
-    public void AddValue(TStored value, int definition, int repetition)
+    public void AddValue(TValue value, int definition, int repetition)
     {
         if (_present == _values.Length)
         {
@@ -41,8 +42,8 @@ internal sealed class LeafBuffer<TStored> : ILeafBuffer
 
     public void WriteAndClear(ColumnWriter writer)
     {
-        _writer(writer, _values.AsSpan(0, _present), _definition is null ? default : _definition.AsSpan(0, _entries), _repetition is null ? default : _repetition.AsSpan(0, _entries));
-        if (RuntimeHelpers.IsReferenceOrContainsReferences<TStored>())
+        _type.Write(writer, _values.AsSpan(0, _present), _definition is null ? default : _definition.AsSpan(0, _entries), _repetition is null ? default : _repetition.AsSpan(0, _entries));
+        if (RuntimeHelpers.IsReferenceOrContainsReferences<TValue>())
         {
             Array.Clear(_values, 0, _present);
         }

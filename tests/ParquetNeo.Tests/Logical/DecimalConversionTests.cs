@@ -1,4 +1,4 @@
-using ParquetNeo.Converters;
+using ParquetNeo.ColumnTypes;
 using ParquetNeo.Exceptions;
 
 namespace ParquetNeo.Tests.Logical;
