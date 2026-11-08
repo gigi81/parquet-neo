@@ -23,16 +23,46 @@ internal sealed class LeafColumn<TStored>(BatchReader<TStored> reader) : ILeafCo
 
     public string Name { get; private set; } = "";
 
-    public void Fill(ColumnReader? column, long rows)
+    public int Definition
+    {
+        get
+        {
+            if (_missing)
+            {
+                return 0;
+            }
+
+            CheckNotAtEnd();
+            return _maxDefinition == 0 ? 0 : _definition[_nextEntry];
+        }
+    }
+
+    public int Repetition
+    {
+        get
+        {
+            if (_missing)
+            {
+                return 0;
+            }
+
+            CheckNotAtEnd();
+            return _repetition.Length == 0 ? 0 : _repetition[_nextEntry];
+        }
+    }
+
+    public bool AtEnd => _missing || _nextEntry >= _entries;
+
+    public void Fill(ColumnReader? column)
     {
         _entries = 0;
         _present = 0;
         _nextEntry = 0;
         _nextValue = 0;
         _missing = column is null;
+        _repetition = [];
         if (column is null)
         {
-            _entries = checked((int)rows);
             return;
         }
 
@@ -41,6 +71,11 @@ internal sealed class LeafColumn<TStored>(BatchReader<TStored> reader) : ILeafCo
         _maxDefinition = node.MaxDefinitionLevel;
         bool definitionLevels = node.MaxDefinitionLevel > 0;
         bool repetitionLevels = node.MaxRepetitionLevel > 0;
+        if (repetitionLevels)
+        {
+            _repetition = new int[Batch];
+        }
+
         while (true)
         {
             Reserve(ref _values, _present);
@@ -69,32 +104,50 @@ internal sealed class LeafColumn<TStored>(BatchReader<TStored> reader) : ILeafCo
         }
     }
 
-    /// <summary>Takes the next entry: true and its value, or false when it is a null.</summary>
-    /// <exception cref="CorruptColumnException">The column holds fewer entries than the row group has rows.</exception>
+    /// <summary>Takes the next entry: true and its value, or false when it is a null. A column the file lacks has only nulls.</summary>
+    /// <exception cref="CorruptColumnException">The column holds fewer entries than the rows need.</exception>
     public bool TryTake(out TStored value)
     {
-        if (_nextEntry >= _entries)
-        {
-            throw new CorruptColumnException(Name, $"it holds {_entries} entries, fewer than the rows of its row group");
-        }
-
+        value = default!;
         if (_missing)
         {
-            _nextEntry++;
-            value = default!;
             return false;
         }
 
+        CheckNotAtEnd();
         int definition = _maxDefinition == 0 ? 0 : _definition[_nextEntry];
         _nextEntry++;
         if (definition != _maxDefinition)
         {
-            value = default!;
             return false;
         }
 
         value = _values[_nextValue++];
         return true;
+    }
+
+    public void Skip()
+    {
+        if (_missing)
+        {
+            return;
+        }
+
+        CheckNotAtEnd();
+        int definition = _maxDefinition == 0 ? 0 : _definition[_nextEntry];
+        _nextEntry++;
+        if (definition == _maxDefinition)
+        {
+            _nextValue++;
+        }
+    }
+
+    private void CheckNotAtEnd()
+    {
+        if (_nextEntry >= _entries)
+        {
+            throw new CorruptColumnException(Name, $"it holds {_entries} entries, fewer than the rows of its row group need");
+        }
     }
 
     private static void Reserve<T>(ref T[] array, int used)

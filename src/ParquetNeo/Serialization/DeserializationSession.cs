@@ -1,4 +1,5 @@
 using ParquetNeo.Core;
+using ParquetNeo.Exceptions;
 using ParquetNeo.Serialization.Assemblers;
 using ParquetNeo.Serialization.Columns;
 
@@ -9,16 +10,15 @@ internal sealed class DeserializationSession<TRow>
 {
     private readonly ParquetFileReader _reader;
     private readonly ReadModel<TRow> _model = ReadModel<TRow>.Get();
-    private readonly int[] _fileColumns;
-    private readonly ILeafColumn[] _columns;
-    private readonly RowContext<TRow> _context = new();
+    private readonly ReadPlan _plan;
+    private readonly ReadContext _context;
 
     /// <exception cref="Exceptions.SchemaMismatchException">The file does not have the columns the row type needs, or has them as other types.</exception>
     public DeserializationSession(ParquetFileReader reader)
     {
         _reader = reader;
-        _fileColumns = _model.Bind(reader.Schema);
-        _columns = _model.CreateColumns();
+        _plan = _model.Bind(reader.Schema);
+        _context = _model.CreateContext(_plan);
     }
 
     public int RowGroupCount => _reader.RowGroupCount;
@@ -28,7 +28,7 @@ internal sealed class DeserializationSession<TRow>
     {
         var chunks = new List<(long Start, int Length)>();
         long fileLength = _reader.FileLength;
-        foreach (int column in _fileColumns.Where(c => c >= 0))
+        foreach (int column in _plan.FileColumns.Where(c => c >= 0))
         {
             var meta = _reader.Metadata.RowGroups[rowGroup].Columns[column].MetaData;
             if (meta is null)
@@ -55,23 +55,32 @@ internal sealed class DeserializationSession<TRow>
             throw new NotSupportedException($"Row group {rowGroup} has {count} rows, more than can be read into a list.");
         }
 
-        for (int i = 0; i < _columns.Length; i++)
+        for (int slot = 0; slot < _context.Columns.Length; slot++)
         {
-            if (_fileColumns[i] < 0)
+            if (_plan.FileColumns[slot] < 0)
             {
-                _columns[i].Fill(null, count);
+                _context.Columns[slot].Fill(null);
             }
             else
             {
-                using var column = group.OpenColumn(_fileColumns[i]);
-                _columns[i].Fill(column, count);
+                using var column = group.OpenColumn(_plan.FileColumns[slot]);
+                _context.Columns[slot].Fill(column);
             }
         }
 
         var rows = new List<TRow>();
         for (long row = 0; row < count; row++)
         {
-            rows.Add(_model.Row.Read(_columns, _context));
+            rows.Add(_model.Row.ReadRow(_context));
+        }
+
+        // Every entry of every column is for some row; if some are left the file and the rows do not fit together.
+        for (int slot = 0; slot < _context.Columns.Length; slot++)
+        {
+            if (_plan.FileColumns[slot] >= 0 && !_context.Columns[slot].AtEnd)
+            {
+                throw new CorruptColumnException(_context.Columns[slot].Name, $"it holds more entries than the {count} rows of its row group use");
+            }
         }
 
         return rows;

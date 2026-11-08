@@ -7,11 +7,14 @@ namespace ParquetNeo.Serialization;
 internal static class ColumnCompatibility
 {
     /// <summary>Why the column cannot be read as <paramref name="type"/>, or null when it can.</summary>
-    public static string? Problem(PrimitiveNode column, Type type)
+    /// <param name="repetition">The number of collections the type is in: the number of repeated nodes the column must have.</param>
+    public static string? Problem(PrimitiveNode column, Type type, int repetition)
     {
-        if (column.MaxRepetitionLevel > 0)
+        if (column.MaxRepetitionLevel != repetition)
         {
-            return "it is repeated, and only flat types can be read from a repeated column";
+            return repetition == 0
+                ? "it is repeated, and only the elements of a collection can be read from a repeated column"
+                : $"it is repeated {column.MaxRepetitionLevel} times, but the property is in {repetition} collections";
         }
 
         var logical = column.LogicalType;
