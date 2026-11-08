@@ -2,7 +2,7 @@
 
 A high-performance .NET library for reading and writing [Apache Parquet](https://parquet.apache.org/) files.
 
-> **Status:** early development. Nothing is usable yet — see the [implementation plan](docs/PLAN.md).
+> **Status:** early development. The low-level reader and writer and the high-level serializer work, but the API may still change and there is no NuGet package yet — see the [implementation plan](docs/PLAN.md).
 
 ## Goals
 
@@ -11,6 +11,57 @@ A high-performance .NET library for reading and writing [Apache Parquet](https:/
   - a *low-level* API working on row groups and column chunks,
   - a *high-level* API that reads and writes plain DTOs.
 - **Minimal dependencies:** the core depends only on the BCL.
+
+## Writing a file
+
+### High-level API
+
+Each public property of a class or record becomes a column. Nested objects, lists and dictionaries work too.
+
+```csharp
+using ParquetNeo.Serialization;
+
+var people = new List<Person>
+{
+    new(1, "Ada", new DateOnly(1815, 12, 10)),
+    new(2, "Alan", new DateOnly(1912, 6, 23)),
+    new(3, "Grace", new DateOnly(1906, 12, 9)),
+};
+
+using var file = File.Create("people.parquet");
+ParquetSerializer.Serialize(people, file);
+
+public record Person(int Id, string Name, DateOnly Born);
+```
+
+Read the rows back with `ParquetSerializer.Deserialize<Person>(stream)`.
+
+### Low-level API
+
+Describe the columns in a schema, then write one batch of values per column for each row group.
+
+```csharp
+using ParquetNeo.Core;
+using ParquetNeo.Metadata;
+using ParquetNeo.Schema;
+
+var schema = new ParquetSchema(
+[
+    new PrimitiveNode("id", PhysicalType.Int64, FieldRepetitionType.Required),
+    new PrimitiveNode("name", PhysicalType.ByteArray, FieldRepetitionType.Required, LogicalType.String),
+]);
+
+using var file = File.Create("people.parquet");
+using var writer = new ParquetFileWriter(file, schema);
+using (var group = writer.AppendRowGroup())
+{
+    group.NextColumn().WriteBatch([1L, 2L, 3L]);
+    group.NextColumn().WriteStrings(["Ada", "Alan", "Grace"]);
+}
+```
+
+The footer is written when the writer is disposed. Read a column back with
+`new ParquetFileReader(stream).OpenRowGroup(0).OpenColumn("id").ReadBatch(values)`.
 
 ## Repository layout
 
