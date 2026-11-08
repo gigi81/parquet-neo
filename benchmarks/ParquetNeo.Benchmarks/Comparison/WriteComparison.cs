@@ -22,6 +22,7 @@ public class WriteComparison
     private ParquetWriterOptions _options = null!;
     private PqNetSchema.ParquetSchema _netSchema = null!;
     private PqNet.ParquetOptions _netOptions = null!;
+    private PqSharp.Column[] _sharpColumns = null!;
 
     [Params(CompressionCodec.Uncompressed, CompressionCodec.Snappy)]
     public CompressionCodec Compression { get; set; }
@@ -50,6 +51,14 @@ public class WriteComparison
         {
             CompressionMethod = Compression == CompressionCodec.Snappy ? PqNet.CompressionMethod.Snappy : PqNet.CompressionMethod.None,
             RowGroupSize = ComparisonData.Rows,
+        };
+        _sharpColumns = new PqSharp.Column[]
+        {
+            new PqSharp.Column<long>("Id"),
+            new PqSharp.Column<string?>("Customer"),
+            new PqSharp.Column<double?>("Amount"),
+            new PqSharp.Column<int>("Quantity"),
+            new PqSharp.Column<bool>("Shipped"),
         };
     }
 
@@ -120,15 +129,7 @@ public class WriteComparison
     public long ParquetSharpColumns()
     {
         _output.SetLength(0);
-        var columns = new PqSharp.Column[]
-        {
-            new PqSharp.Column<long>("Id"),
-            new PqSharp.Column<string?>("Customer"),
-            new PqSharp.Column<double?>("Amount"),
-            new PqSharp.Column<int>("Quantity"),
-            new PqSharp.Column<bool>("Shipped"),
-        };
-        using (var writer = new PqSharp.ParquetFileWriter(_output, columns, logicalTypeFactory: null, Compression == CompressionCodec.Snappy ? PqSharp.Compression.Snappy : PqSharp.Compression.Uncompressed, keyValueMetadata: null, leaveOpen: true))
+        using (var writer = new PqSharp.ParquetFileWriter(_output, _sharpColumns, logicalTypeFactory: null, Compression == CompressionCodec.Snappy ? PqSharp.Compression.Snappy : PqSharp.Compression.Uncompressed, keyValueMetadata: null, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             using (var column = group.NextColumn().LogicalWriter<long>())
