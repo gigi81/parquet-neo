@@ -45,32 +45,18 @@ public static class ColumnTypeRegistry
     public static void Register<TValue>(ColumnType<TValue> type)
     {
         ArgumentNullException.ThrowIfNull(type);
-        Types[typeof(TValue)] = type;
+        Types[type.ValueType] = type;
     }
 
     private static ConcurrentDictionary<Type, ColumnType> CreateDefaults()
     {
-        var types = new ConcurrentDictionary<Type, ColumnType>();
-        types[typeof(bool)] = new BooleanColumnType();
-        types[typeof(sbyte)] = new SByteColumnType();
-        types[typeof(byte)] = new ByteColumnType();
-        types[typeof(short)] = new Int16ColumnType();
-        types[typeof(ushort)] = new UInt16ColumnType();
-        types[typeof(int)] = new Int32ColumnType();
-        types[typeof(uint)] = new UInt32ColumnType();
-        types[typeof(long)] = new Int64ColumnType();
-        types[typeof(ulong)] = new UInt64ColumnType();
-        types[typeof(float)] = new FloatColumnType();
-        types[typeof(double)] = new DoubleColumnType();
-        types[typeof(Half)] = new HalfColumnType();
-        types[typeof(decimal)] = new DecimalColumnType();
-        types[typeof(string)] = new StringColumnType();
-        types[typeof(byte[])] = new BinaryColumnType();
-        types[typeof(Guid)] = new GuidColumnType();
-        types[typeof(DateTime)] = new DateTimeColumnType();
-        types[typeof(DateTimeOffset)] = new DateTimeOffsetColumnType();
-        types[typeof(DateOnly)] = new DateColumnType();
-        types[typeof(TimeOnly)] = new TimeColumnType();
-        return types;
+        ColumnType[] defaults =
+        [
+            new BooleanColumnType(), new SByteColumnType(), new ByteColumnType(), new Int16ColumnType(), new UInt16ColumnType(),
+            new Int32ColumnType(), new UInt32ColumnType(), new Int64ColumnType(), new UInt64ColumnType(), new FloatColumnType(),
+            new DoubleColumnType(), new HalfColumnType(), new DecimalColumnType(), new StringColumnType(), new BinaryColumnType(),
+            new GuidColumnType(), new DateTimeColumnType(), new DateTimeOffsetColumnType(), new DateColumnType(), new TimeColumnType(),
+        ];
+        return new(defaults.Select(type => KeyValuePair.Create(type.ValueType, type)));
     }
 }
