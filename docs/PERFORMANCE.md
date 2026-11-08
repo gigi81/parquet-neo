@@ -141,13 +141,27 @@ then gave up, and the string column spent most of its 47 ms in its dictionary.
 The unique `long` column went from 19 ms and 25 MB to 5 ms and nothing; the unique `double` column from 19 ms and 26 MB to 12 ms;
 the string column from 47 ms to 37 ms. The table through columns went from 86 ms and 52 MB to 67–71 ms and 18 KB.
 
+A fourth round compiled the rows. A row type whose properties are all single columns (no nested objects, collections or maps,
+and, for reading, created by its parameterless constructor) is written and read by one function generated for it with expression
+trees, instead of a loop over a tree of small objects that each make a virtual call and call a delegate per value:
+
+- **Writing**: the function reads every property of the row and adds it to its column buffer (`LeafBuffer`), with the null
+  checks that the type of the property needs (none for a value type, `HasValue` for a nullable one, a reference check for a
+  reference type, and the same error naming the property and the row when a required column is null).
+- **Reading**: the function creates the instance, takes the next value of every column and sets the property, or sets it to null
+  (or raises the same error naming the row, when it cannot be).
+- Any other shape (nested objects, lists, maps, types built by a constructor) keeps
+  the general path, which does the same thing. The files written are the same, byte for byte.
+
+On the 1,000,000-row table of five columns the serializer writes in about 118 ms where it took 142 ms, and reads in about 65 ms where
+it took about 90 ms (the floor, objects made by hand from arrays read through the column API, is 39 ms).
+
 ## Not done yet
 
 Left for a follow-up, with what is known so far:
 
-- **The rows themselves.** What is left of the serializer's time is around the data: shredding each row into the column buffers
-  (virtual calls and delegates per value) when writing, and creating the objects and setting their properties when reading. The
-  next step would be to compile one function per row type that does it all, instead of walking a tree of small objects.
+- **Rows that are not flat.** Nested objects, lists and maps, and types built by a constructor, still go through the general
+  path of shredders and assemblers; the compiled function could cover them too.
 - **Parallel encoding for the column API.** `RowGroupWriter` can encode all the columns of a group in parallel, but only the
   serializer and the ADO.NET writer use it; there is no public form for people who write columns by hand.
 - **Encoding strings.** The dictionary encoded string column is still the slowest column to write (about 37 ms of the 71 ms
