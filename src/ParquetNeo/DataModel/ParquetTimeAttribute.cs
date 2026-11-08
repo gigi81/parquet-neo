@@ -1,6 +1,6 @@
 using ParquetNeo.Metadata;
 
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.DataModel;
 
 /// <summary>The unit and meaning of the column of a <see cref="TimeOnly"/> property. Without it times are written in microseconds, as wall-clock readings.</summary>
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]

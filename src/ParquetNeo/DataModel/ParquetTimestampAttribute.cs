@@ -1,6 +1,6 @@
 using ParquetNeo.Metadata;
 
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.DataModel;
 
 /// <summary>
 /// The unit and meaning of the column of a <see cref="DateTime"/> or <see cref="DateTimeOffset"/> property. Without it

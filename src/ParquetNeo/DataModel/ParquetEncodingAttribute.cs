@@ -1,6 +1,6 @@
 using ParquetNeo.Metadata;
 
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.DataModel;
 
 /// <summary>
 /// The encoding of the values of a property's column (every column of a collection or dictionary, but not of the properties of an

@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using ParquetNeo.ColumnTypes;
+using ParquetNeo.DataModel;
 using ParquetNeo.Metadata;
 using ParquetNeo.Serialization.Buffers;
 

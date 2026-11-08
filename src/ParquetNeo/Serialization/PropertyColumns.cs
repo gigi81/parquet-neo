@@ -1,5 +1,6 @@
 using System.Reflection;
 using ParquetNeo.ColumnTypes;
+using ParquetNeo.DataModel;
 
 namespace ParquetNeo.Serialization;
 

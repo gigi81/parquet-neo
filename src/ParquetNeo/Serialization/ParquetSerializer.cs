@@ -1,3 +1,4 @@
+using ParquetNeo.DataModel;
 using ParquetNeo.Schema;
 
 namespace ParquetNeo.Serialization;

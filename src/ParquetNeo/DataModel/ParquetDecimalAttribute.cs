@@ -1,4 +1,4 @@
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.DataModel;
 
 /// <summary>
 /// The precision and scale of a <see cref="decimal"/> property's column. Without it a decimal is written with a precision of 38

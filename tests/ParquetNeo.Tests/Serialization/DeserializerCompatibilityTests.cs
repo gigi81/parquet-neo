@@ -1,5 +1,6 @@
 using ParquetNeo.ColumnTypes;
 using ParquetNeo.Core;
+using ParquetNeo.DataModel;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;

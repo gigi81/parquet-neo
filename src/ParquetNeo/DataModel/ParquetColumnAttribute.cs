@@ -1,4 +1,4 @@
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.DataModel;
 
 /// <summary>Names the column a property is written to, or its position among the columns. Without it the column has the property's name.</summary>
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]

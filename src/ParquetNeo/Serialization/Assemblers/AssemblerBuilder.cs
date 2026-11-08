@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using ParquetNeo.ColumnTypes;
+using ParquetNeo.DataModel;
 using ParquetNeo.Serialization.Shredders;
 
 namespace ParquetNeo.Serialization.Assemblers;
