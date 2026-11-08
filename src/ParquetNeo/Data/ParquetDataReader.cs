@@ -20,8 +20,9 @@ namespace ParquetNeo.Data;
 /// <see cref="int"/> and <see cref="long"/> for plain integers, <see cref="sbyte"/> to <see cref="ulong"/> for the annotated
 /// ones, <see cref="string"/> for text, <see cref="byte"/> arrays for binary, <see cref="decimal"/>, <see cref="DateTime"/>
 /// (UTC when the column is adjusted to UTC), <see cref="DateOnly"/>, <see cref="TimeOnly"/>, <see cref="Guid"/>, <see cref="Half"/>,
-/// <see cref="float"/>, <see cref="double"/> and <see cref="bool"/>. A column that no .NET type fits, such as an unannotated
-/// FIXED_LEN_BYTE_ARRAY, is a <see cref="NotSupportedException"/> unless it is left out with <see cref="ParquetDataReaderOptions.Columns"/>.
+/// <see cref="float"/>, <see cref="double"/> and <see cref="bool"/>. Binary columns, including an unannotated
+/// FIXED_LEN_BYTE_ARRAY, are <see cref="byte"/> arrays. A column that no .NET type fits, such as an INTERVAL, is a
+/// <see cref="NotSupportedException"/> unless it is left out with <see cref="ParquetDataReaderOptions.Columns"/>.
 /// A null is <see cref="DBNull"/>.
 /// </para>
 /// <para>
