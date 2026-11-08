@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Buffers;
 using System.Numerics;
+using ParquetNeo.ColumnTypes;
 using ParquetNeo.Compression;
 using ParquetNeo.Encodings;
 using ParquetNeo.Exceptions;
@@ -57,6 +58,7 @@ public sealed partial class ColumnReader : IDisposable
     private Array? _dictionaryValues; // int[], long[], float[] or double[]
     private byte[]? _dictionaryBytes; // BYTE_ARRAY and FIXED_LEN_BYTE_ARRAY entries
     private ByteRange[]? _dictionaryRanges; // BYTE_ARRAY entries within _dictionaryBytes
+    private string?[]? _dictionaryStrings; // the entries of a text dictionary as strings, made when first used so that a value is one string however often it repeats
     private int _dictionaryCount;
     private bool _hasDictionary;
     private int[]? _indices;
@@ -160,6 +162,61 @@ public sealed partial class ColumnReader : IDisposable
     /// Because the views point into the page, a batch never spans two pages: it ends at the end of the current
     /// page and may return fewer rows than requested even though more remain. Call again until it returns 0 rows.
     /// </remarks>
+    /// <summary>
+    /// Reads BYTE_ARRAY values as UTF-8 text. Unlike <see cref="ReadByteArrays"/> the values are copies, so a batch does not end at the
+    /// end of a page, and the entries of a dictionary are turned into strings once, however often they repeat.
+    /// </summary>
+    /// <exception cref="Exceptions.ValueConversionException">A value is not valid UTF-8.</exception>
+    internal BatchRead ReadUtf8Strings(Span<string> values, Span<int> definitionLevels, Span<int> repetitionLevels)
+    {
+        int requested = PrepareBatch(PhysicalType.ByteArray, values.Length, definitionLevels, repetitionLevels);
+        int entries = 0;
+        int valuesRead = 0;
+        Span<ByteRange> ranges = stackalloc ByteRange[256];
+        while (entries < requested)
+        {
+            if (_pageEntryIndex == _pageEntries && !LoadNextPage())
+            {
+                break;
+            }
+
+            int take = Math.Min(requested - entries, _pageEntries - _pageEntryIndex);
+            int present = TakeLevels(definitionLevels, repetitionLevels, entries, take);
+            if (_pageIsDictionary)
+            {
+                var strings = _dictionaryStrings ??= new string?[_dictionaryCount];
+                for (int i = 0; i < present; i++)
+                {
+                    int index = _indices![_pageValueIndex + i];
+                    values[valuesRead + i] = strings[index] ??= StringColumnType.Decode(_dictionaryBytes.AsSpan(_dictionaryRanges![index].Offset, _dictionaryRanges[index].Length), Column.Name);
+                }
+            }
+            else
+            {
+                for (int done = 0; done < present;)
+                {
+                    int count = Math.Min(ranges.Length, present - done);
+                    var source = _valueSource.Span.Slice(_valuePosition, _valueEnd - _valuePosition);
+                    int consumed = PlainDecoder.ReadByteArrays(source, ranges[..count]);
+                    for (int i = 0; i < count; i++)
+                    {
+                        values[valuesRead + done + i] = StringColumnType.Decode(source.Slice(ranges[i].Offset, ranges[i].Length), Column.Name);
+                    }
+
+                    _valuePosition += consumed;
+                    done += count;
+                }
+            }
+
+            Advance(take, present);
+            entries += take;
+            valuesRead += present;
+        }
+
+        _entriesRead += entries;
+        return new BatchRead(entries, valuesRead);
+    }
+
     public BatchRead ReadByteArrays(Span<ReadOnlyMemory<byte>> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default)
     {
         int requested = PrepareBatch(PhysicalType.ByteArray, values.Length, definitionLevels, repetitionLevels);
@@ -298,6 +355,7 @@ public sealed partial class ColumnReader : IDisposable
         }
 
         _dictionaryValues = null;
+        _dictionaryStrings = null;
     }
 
     private BatchRead ReadFixedWidth<T, TDecoder>(PhysicalType expected, Span<T> values, Span<int> definitionLevels, Span<int> repetitionLevels)
@@ -535,6 +593,7 @@ public sealed partial class ColumnReader : IDisposable
                     throw Corrupt($"a dictionary of {count} byte arrays does not fit in {uncompressedSize} bytes");
                 }
 
+                _dictionaryStrings = null;
                 _dictionaryRanges = ArrayPool<ByteRange>.Shared.Rent(Math.Max(count, 1));
                 PlainDecoder.ReadByteArrays(source, _dictionaryRanges.AsSpan(0, count));
                 CopyDictionaryBytes(source);

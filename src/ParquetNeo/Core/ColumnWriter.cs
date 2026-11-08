@@ -44,6 +44,9 @@ public sealed partial class ColumnWriter
     /// </summary>
     internal const int MaxRowsPerPage = 1 << 20;
 
+    /// <summary>Strings up to this many characters are encoded to UTF-8 in one pass.</summary>
+    private const int ShortStringChars = 1024;
+
     private readonly ParquetFileWriter _file;
     private readonly WriterBuffers _buffers;
     private readonly ICodec _codec;
@@ -278,26 +281,32 @@ public sealed partial class ColumnWriter
             take = ExtendToRecordEnd(repetitionLevels, entry, take, entries);
             int valueCount = AppendLevels(definitionLevels, repetitionLevels, entry, take);
             var chunk = values.Slice(next * length, valueCount * length);
-            if (_statistics is not null)
-            {
-                for (int i = 0; i < valueCount; i++)
-                {
-                    _statistics.AddBinary(chunk.Slice(i * length, length));
-                }
-            }
-
             _valueCount += valueCount;
             if (_dictionary is BinaryDictionary dictionary)
             {
                 for (int i = 0; i < valueCount; i++)
                 {
-                    AddIndex(dictionary.GetOrAdd(chunk.Slice(i * length, length)));
+                    var value = chunk.Slice(i * length, length);
+                    AddIndex(dictionary.GetOrAdd(value, out bool added));
+                    if (added)
+                    {
+                        // The minimum and maximum only change for a value not seen before.
+                        _statistics?.AddBinary(value);
+                    }
                 }
 
                 _pageLogicalBytes += chunk.Length;
             }
             else
             {
+                if (_statistics is not null)
+                {
+                    for (int i = 0; i < valueCount; i++)
+                    {
+                        _statistics.AddBinary(chunk.Slice(i * length, length));
+                    }
+                }
+
                 _buffers.Values.Write(chunk);
             }
 
@@ -441,15 +450,21 @@ public sealed partial class ColumnWriter
 
     private void AppendByteArray(ReadOnlySpan<byte> value)
     {
-        _statistics?.AddBinary(value);
         _valueCount++;
         if (_dictionary is BinaryDictionary dictionary)
         {
-            AddIndex(dictionary.GetOrAdd(value));
+            AddIndex(dictionary.GetOrAdd(value, out bool added));
+            if (added)
+            {
+                // The minimum and maximum only change for a value not seen before.
+                _statistics?.AddBinary(value);
+            }
+
             _pageLogicalBytes += sizeof(int) + value.Length;
         }
         else
         {
+            _statistics?.AddBinary(value);
             PlainEncoder.WriteByteArray(value, _buffers.Values);
         }
     }
@@ -470,16 +485,33 @@ public sealed partial class ColumnWriter
             return;
         }
 
-        // A dictionary is keyed by bytes (strings and byte arrays share it), so encode before the lookup.
-        int length = Encoding.UTF8.GetByteCount(value);
-        if (_stringScratch is null || _stringScratch.Length < length)
+        // A dictionary is keyed by bytes (strings and byte arrays share it), so encode before the lookup. Short strings are
+        // encoded in one pass into a scratch buffer big enough for any of them; only long ones are measured first.
+        int length;
+        if (value.Length <= ShortStringChars)
         {
-            _stringScratch = new byte[Math.Max(length, 256)];
+            _stringScratch ??= new byte[Encoding.UTF8.GetMaxByteCount(ShortStringChars)];
+            length = Encoding.UTF8.GetBytes(value, _stringScratch);
+        }
+        else
+        {
+            length = Encoding.UTF8.GetByteCount(value);
+            if (_stringScratch is null || _stringScratch.Length < length)
+            {
+                _stringScratch = new byte[length];
+            }
+
+            Encoding.UTF8.GetBytes(value, _stringScratch);
         }
 
-        Encoding.UTF8.GetBytes(value, _stringScratch);
-        _statistics?.AddBinary(_stringScratch.AsSpan(0, length));
-        AddIndex(dictionary.GetOrAdd(_stringScratch.AsSpan(0, length)));
+        var bytes = _stringScratch.AsSpan(0, length);
+        AddIndex(dictionary.GetOrAdd(bytes, out bool added));
+        if (added)
+        {
+            // The minimum and maximum only change for a value not seen before.
+            _statistics?.AddBinary(bytes);
+        }
+
         _pageLogicalBytes += sizeof(int) + length;
     }
 

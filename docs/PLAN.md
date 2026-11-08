@@ -102,7 +102,8 @@ plus tests).
 
 | # | Step | Deliverable |
 |---|---|---|
-| 13 | **Performance pass** | Benchmarks vs Parquet.Net and ParquetSharp; buffer pooling, parallel column encoding, async I/O tuning driven by results. |
+| 13 | **Performance pass (measure, strings)** | Comparison benchmarks against Parquet.Net and ParquetSharp (`benchmarks/ParquetNeo.Benchmarks/Comparison`), a per-column breakdown, and the string fast paths they led to: text dictionaries decoded once per entry, one-pass UTF-8 encoding, statistics of a dictionary column from its new entries only. Results and open items in [PERFORMANCE.md](PERFORMANCE.md). |
+| 13b | **Performance pass (serializer, parallelism)** | The serializer's per-value overhead and allocation, parallel column encoding, writer allocation, an earlier decision to give up a dictionary, and asynchronous I/O tuning, each driven by the benchmarks of step 13. |
 | 14 | **Source generator** | AOT/trimming-safe DTO mapping replacing the reflection path; same tests run against both paths. |
 | 15 | **Read-side extras** | Row-group skipping via statistics, page index, bloom filters, CRC32 page checksums, optional `PAR3` / FlatBuffers footer. |
 | 16 | **Release** | README with examples, XML docs, NuGet packaging. |
