@@ -52,10 +52,26 @@ public static class ColumnTypeRegistry
     {
         ColumnType[] defaults =
         [
-            new BooleanColumnType(), new SByteColumnType(), new ByteColumnType(), new Int16ColumnType(), new UInt16ColumnType(),
-            new Int32ColumnType(), new UInt32ColumnType(), new Int64ColumnType(), new UInt64ColumnType(), new FloatColumnType(),
-            new DoubleColumnType(), new HalfColumnType(), new DecimalColumnType(), new StringColumnType(), new BinaryColumnType(),
-            new GuidColumnType(), new DateTimeColumnType(), new DateTimeOffsetColumnType(), new DateColumnType(), new TimeColumnType(),
+            new BinaryColumnType(),
+            new BooleanColumnType(),
+            new ByteColumnType(),
+            new DateColumnType(),
+            new DateTimeColumnType(),
+            new DateTimeOffsetColumnType(),
+            new DecimalColumnType(),
+            new DoubleColumnType(),
+            new FloatColumnType(),
+            new GuidColumnType(),
+            new HalfColumnType(),
+            new Int16ColumnType(),
+            new Int32ColumnType(),
+            new Int64ColumnType(),
+            new SByteColumnType(),
+            new StringColumnType(),
+            new TimeColumnType(),
+            new UInt16ColumnType(),
+            new UInt32ColumnType(),
+            new UInt64ColumnType(),
         ];
         return new(defaults.Select(type => KeyValuePair.Create(type.ValueType, type)));
     }
