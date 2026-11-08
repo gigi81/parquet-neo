@@ -12,8 +12,4 @@
     <InternalsVisibleTo Include="ParquetNeo.Benchmarks" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Metadata\Headers\" />
-  </ItemGroup>
-
 </Project>

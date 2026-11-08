@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using ParquetNeo.Metadata;
+using ParquetNeo.Metadata.Headers;
 
 namespace ParquetNeo.Tests.Metadata;
 

@@ -7,6 +7,7 @@ using ParquetNeo.Compression;
 using ParquetNeo.ColumnTypes;
 using ParquetNeo.Encodings;
 using ParquetNeo.Metadata;
+using ParquetNeo.Metadata.Headers;
 using ParquetNeo.Nested;
 using ParquetNeo.Schema;
 using ParquetNeo.Statistics;
@@ -977,7 +978,7 @@ public sealed partial class ColumnWriter
         else if (_dataPageV2)
         {
             header.Type = PageType.DataPageV2;
-            header.DataPageHeaderV2 = new DataPageHeaderV2
+            header.DataPageHeaderV2 = new DataPageV2Header
             {
                 NumValues = numValues,
                 NumNulls = _pageNullCount,

@@ -5,6 +5,7 @@ using ParquetNeo.Compression;
 using ParquetNeo.Encodings;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
+using ParquetNeo.Metadata.Headers;
 using ParquetNeo.Schema;
 
 namespace ParquetNeo.Core;

@@ -5,6 +5,7 @@ using ParquetNeo.Compression.Snappy;
 using ParquetNeo.Compression.Zstd;
 using ParquetNeo.Encodings;
 using ParquetNeo.Metadata;
+using ParquetNeo.Metadata.Headers;
 using ParquetNeo.Schema;
 
 namespace ParquetNeo.Tests.Core;

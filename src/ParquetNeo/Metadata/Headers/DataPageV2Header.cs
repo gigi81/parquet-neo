@@ -1,8 +1,8 @@
 using ParquetNeo.Thrift;
 
-namespace ParquetNeo.Metadata;
+namespace ParquetNeo.Metadata.Headers;
 
-public sealed class DataPageHeaderV2 : IThriftStruct<DataPageHeaderV2>
+public sealed class DataPageV2Header : IThriftStruct<DataPageV2Header>
 {
     public int NumValues { get; set; }
 
@@ -21,9 +21,9 @@ public sealed class DataPageHeaderV2 : IThriftStruct<DataPageHeaderV2>
 
     public Statistics? Statistics { get; set; }
 
-    static DataPageHeaderV2 IThriftStruct<DataPageHeaderV2>.Read(ref ThriftCompactReader reader)
+    static DataPageV2Header IThriftStruct<DataPageV2Header>.Read(ref ThriftCompactReader reader)
     {
-        var h = new DataPageHeaderV2();
+        var h = new DataPageV2Header();
         reader.BeginStruct();
         while (reader.TryReadField(out short id, out var type))
         {
@@ -45,7 +45,7 @@ public sealed class DataPageHeaderV2 : IThriftStruct<DataPageHeaderV2>
         return h;
     }
 
-    void IThriftStruct<DataPageHeaderV2>.Write(ref ThriftCompactWriter writer)
+    void IThriftStruct<DataPageV2Header>.Write(ref ThriftCompactWriter writer)
     {
         writer.BeginStruct();
         writer.WriteI32Field(1, NumValues);

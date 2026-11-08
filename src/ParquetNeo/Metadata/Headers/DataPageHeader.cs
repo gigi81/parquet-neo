@@ -1,6 +1,6 @@
 using ParquetNeo.Thrift;
 
-namespace ParquetNeo.Metadata;
+namespace ParquetNeo.Metadata.Headers;
 
 public sealed class DataPageHeader : IThriftStruct<DataPageHeader>
 {

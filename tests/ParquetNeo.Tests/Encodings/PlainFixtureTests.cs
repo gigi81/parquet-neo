@@ -2,6 +2,7 @@ using System.Buffers.Binary;
 using System.Text;
 using ParquetNeo.Encodings;
 using ParquetNeo.Metadata;
+using ParquetNeo.Metadata.Headers;
 
 namespace ParquetNeo.Tests.Encodings;
 

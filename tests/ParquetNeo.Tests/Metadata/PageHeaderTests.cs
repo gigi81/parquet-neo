@@ -1,4 +1,5 @@
 using ParquetNeo.Metadata;
+using ParquetNeo.Metadata.Headers;
 using ParquetNeo.Thrift;
 
 namespace ParquetNeo.Tests.Metadata;
@@ -48,7 +49,7 @@ public class PageHeaderTests
             Type = PageType.DataPageV2,
             UncompressedPageSize = 80,
             CompressedPageSize = 40,
-            DataPageHeaderV2 = new DataPageHeaderV2
+            DataPageHeaderV2 = new DataPageV2Header
             {
                 NumValues = 10,
                 NumNulls = 2,

@@ -1,7 +1,7 @@
 using System.Buffers;
 using ParquetNeo.Thrift;
 
-namespace ParquetNeo.Metadata;
+namespace ParquetNeo.Metadata.Headers;
 
 /// <summary>Header preceding every page in a column chunk (thrift <c>PageHeader</c>).</summary>
 public sealed class PageHeader : IThriftStruct<PageHeader>
@@ -19,7 +19,7 @@ public sealed class PageHeader : IThriftStruct<PageHeader>
 
     public DictionaryPageHeader? DictionaryPageHeader { get; set; }
 
-    public DataPageHeaderV2? DataPageHeaderV2 { get; set; }
+    public DataPageV2Header? DataPageHeaderV2 { get; set; }
 
     /// <summary>Parses a page header at the start of <paramref name="data"/>.</summary>
     /// <param name="bytesConsumed">The number of bytes the header occupies; the page data follows.</param>
@@ -42,7 +42,7 @@ public sealed class PageHeader : IThriftStruct<PageHeader>
                 case 4 when type == CompactType.I32: h.Crc = reader.ReadI32(); break;
                 case 5 when type == CompactType.Struct: h.DataPageHeader = ThriftStruct.ReadStruct<DataPageHeader>(ref reader); break;
                 case 7 when type == CompactType.Struct: h.DictionaryPageHeader = ThriftStruct.ReadStruct<DictionaryPageHeader>(ref reader); break;
-                case 8 when type == CompactType.Struct: h.DataPageHeaderV2 = ThriftStruct.ReadStruct<DataPageHeaderV2>(ref reader); break;
+                case 8 when type == CompactType.Struct: h.DataPageHeaderV2 = ThriftStruct.ReadStruct<DataPageV2Header>(ref reader); break;
                 default: reader.Skip(type); break; // includes the empty index_page_header (6)
             }
         }

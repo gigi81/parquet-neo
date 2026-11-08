@@ -41,7 +41,8 @@ public sealed class ColumnMetaData : IThriftStruct<ColumnMetaData>
     {
         var m = new ColumnMetaData();
         reader.BeginStruct();
-        while (reader.TryReadField(out short id, out var type))
+
+        while (reader.TryReadField(out var id, out var type))
         {
             switch (id)
             {
@@ -79,15 +80,33 @@ public sealed class ColumnMetaData : IThriftStruct<ColumnMetaData>
         writer.WriteI64Field(5, NumValues);
         writer.WriteI64Field(6, TotalUncompressedSize);
         writer.WriteI64Field(7, TotalCompressedSize);
-        if (KeyValueMetadata is not null) ThriftStruct.WriteStructList(ref writer, 8, KeyValueMetadata);
+
+        if (KeyValueMetadata is not null)
+            ThriftStruct.WriteStructList(ref writer, 8, KeyValueMetadata);
+
         writer.WriteI64Field(9, DataPageOffset);
-        if (IndexPageOffset is { } indexPageOffset) writer.WriteI64Field(10, indexPageOffset);
-        if (DictionaryPageOffset is { } dictionaryPageOffset) writer.WriteI64Field(11, dictionaryPageOffset);
-        if (Statistics is not null) ThriftStruct.WriteStructField(ref writer, 12, Statistics);
-        if (EncodingStats is not null) ThriftStruct.WriteStructList(ref writer, 13, EncodingStats);
-        if (BloomFilterOffset is { } bloomFilterOffset) writer.WriteI64Field(14, bloomFilterOffset);
-        if (BloomFilterLength is { } bloomFilterLength) writer.WriteI32Field(15, bloomFilterLength);
-        if (SizeStatistics is not null) ThriftStruct.WriteStructField(ref writer, 16, SizeStatistics);
+
+        if (IndexPageOffset is { } indexPageOffset)
+            writer.WriteI64Field(10, indexPageOffset);
+
+        if (DictionaryPageOffset is { } dictionaryPageOffset)
+            writer.WriteI64Field(11, dictionaryPageOffset);
+
+        if (Statistics is not null)
+            ThriftStruct.WriteStructField(ref writer, 12, Statistics);
+
+        if (EncodingStats is not null)
+            ThriftStruct.WriteStructList(ref writer, 13, EncodingStats);
+
+        if (BloomFilterOffset is { } bloomFilterOffset)
+            writer.WriteI64Field(14, bloomFilterOffset);
+
+        if (BloomFilterLength is { } bloomFilterLength)
+            writer.WriteI32Field(15, bloomFilterLength);
+
+        if (SizeStatistics is not null)
+            ThriftStruct.WriteStructField(ref writer, 16, SizeStatistics);
+
         writer.EndStruct();
     }
 }

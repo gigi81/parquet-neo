@@ -3,6 +3,7 @@ using ParquetNeo.Compression.Snappy;
 using ParquetNeo.Compression.Zstd;
 using ParquetNeo.Encodings;
 using ParquetNeo.Metadata;
+using ParquetNeo.Metadata.Headers;
 
 namespace ParquetNeo.Tests.Compression;
 

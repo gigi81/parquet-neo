@@ -4,6 +4,7 @@ using ParquetNeo.Compression;
 using ParquetNeo.Core;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
+using ParquetNeo.Metadata.Headers;
 using ParquetNeo.Schema;
 
 namespace ParquetNeo.Tests.Core;
