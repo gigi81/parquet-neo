@@ -12,11 +12,13 @@ internal readonly struct TimeConverter : IValueConverter<long, TimeOnly, TimeCon
 {
     private readonly long _ticksPerUnitNumerator;
     private readonly long _unitsPerTick;
+    private readonly long _unitsPerDay;
 
     private TimeConverter(TimeUnit unit)
     {
         // Microseconds are 10 ticks; a tick is 100 nanoseconds.
         (_ticksPerUnitNumerator, _unitsPerTick) = unit == TimeUnit.Micros ? (10L, 1L) : (1L, 100L);
+        _unitsPerDay = TimeSpan.TicksPerDay / _ticksPerUnitNumerator * _unitsPerTick;
     }
 
     public static TimeConverter Create(PrimitiveNode column)
@@ -29,13 +31,11 @@ internal readonly struct TimeConverter : IValueConverter<long, TimeOnly, TimeCon
         return new TimeConverter(time.Unit);
     }
 
-    public TimeOnly ToValue(long physical)
-    {
-        long ticks = physical / _unitsPerTick * _ticksPerUnitNumerator;
-        return physical >= 0 && ticks < TimeSpan.TicksPerDay
-            ? new TimeOnly(ticks)
+    public TimeOnly ToValue(long physical) =>
+        // Checked before converting to ticks, since a huge count of microseconds would overflow on the way.
+        physical >= 0 && physical < _unitsPerDay
+            ? new TimeOnly(physical / _unitsPerTick * _ticksPerUnitNumerator)
             : throw new ValueConversionException($"The time {physical} is not within a day.");
-    }
 
     public long ToPhysical(TimeOnly value) => value.Ticks / _ticksPerUnitNumerator * _unitsPerTick;
 }
