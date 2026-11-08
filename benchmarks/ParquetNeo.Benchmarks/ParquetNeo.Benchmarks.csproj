@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" />
+    <PackageReference Include="Parquet.Net" />
+    <PackageReference Include="ParquetSharp" />
   </ItemGroup>
 
   <ItemGroup>

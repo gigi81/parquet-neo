@@ -9,6 +9,9 @@ namespace ParquetNeo.Encodings;
 /// <summary>Encoders for the PLAIN encoding, appending to an <see cref="IBufferWriter{T}"/>.</summary>
 internal static class PlainEncoder
 {
+    /// <summary>Strings up to this many characters are encoded to UTF-8 in one pass.</summary>
+    private const int ShortStringChars = 1024;
+
     public static void WriteInt32s(ReadOnlySpan<int> values, IBufferWriter<byte> output)
     {
         if (BitConverter.IsLittleEndian)
@@ -126,6 +129,16 @@ internal static class PlainEncoder
     /// <summary>Appends one string as a BYTE_ARRAY value, UTF-8 encoded straight into the output.</summary>
     public static void WriteString(string value, IBufferWriter<byte> output)
     {
+        if (value.Length <= ShortStringChars)
+        {
+            // One pass: ask for room for the longest the string can be, encode into it, and take what was written.
+            var room = output.GetSpan(sizeof(int) + Encoding.UTF8.GetMaxByteCount(value.Length));
+            int written = Encoding.UTF8.GetBytes(value, room.Slice(sizeof(int)));
+            BinaryPrimitives.WriteInt32LittleEndian(room, written);
+            output.Advance(sizeof(int) + written);
+            return;
+        }
+
         int length = Encoding.UTF8.GetByteCount(value);
         var span = output.GetSpan(sizeof(int) + length);
         BinaryPrimitives.WriteInt32LittleEndian(span, length);

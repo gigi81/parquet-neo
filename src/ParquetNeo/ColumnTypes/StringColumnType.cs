@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.Text;
 using ParquetNeo.Core;
 using ParquetNeo.Exceptions;
@@ -25,31 +24,22 @@ internal sealed class StringColumnType : ColumnType<string>
     internal static bool IsText(PrimitiveNode column) =>
         column.Type == PhysicalType.ByteArray && (column.LogicalType is null || column.LogicalType.Kind is LogicalTypeKind.String or LogicalTypeKind.Enum or LogicalTypeKind.Json);
 
-    protected override BatchRead ReadCore(ColumnReader reader, Span<string> values, Span<int> definitionLevels, Span<int> repetitionLevels)
+    /// <summary>The text of UTF-8 bytes, which must be valid.</summary>
+    /// <exception cref="ValueConversionException">The bytes are not valid UTF-8.</exception>
+    internal static string Decode(ReadOnlySpan<byte> bytes, string columnName)
     {
-        var scratch = ArrayPool<ReadOnlyMemory<byte>>.Shared.Rent(Math.Max(values.Length, 1));
         try
         {
-            BatchRead read = reader.ReadByteArrays(scratch.AsSpan(0, values.Length), definitionLevels, repetitionLevels);
-            for (int i = 0; i < read.Values; i++)
-            {
-                try
-                {
-                    values[i] = StrictUtf8.GetString(scratch[i].Span);
-                }
-                catch (DecoderFallbackException exception)
-                {
-                    throw new ValueConversionException($"Column '{reader.Column.Name}' holds text that is not valid UTF-8.", exception);
-                }
-            }
-
-            return read;
+            return StrictUtf8.GetString(bytes);
         }
-        finally
+        catch (DecoderFallbackException exception)
         {
-            ArrayPool<ReadOnlyMemory<byte>>.Shared.Return(scratch, clearArray: true);
+            throw new ValueConversionException($"Column '{columnName}' holds text that is not valid UTF-8.", exception);
         }
     }
+
+    protected override BatchRead ReadCore(ColumnReader reader, Span<string> values, Span<int> definitionLevels, Span<int> repetitionLevels) =>
+        reader.ReadUtf8Strings(values, definitionLevels, repetitionLevels);
 
     protected override void WriteCore(ColumnWriter writer, ReadOnlySpan<string> values, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels) =>
         writer.WriteUtf8Strings(values, definitionLevels, repetitionLevels);

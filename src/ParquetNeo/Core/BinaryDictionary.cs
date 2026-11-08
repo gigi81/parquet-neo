@@ -26,14 +26,16 @@ internal sealed class BinaryDictionary : IDictionaryBuilder
 
     public long EncodedSize => _encodedSize;
 
-    /// <summary>Returns the index of <paramref name="value"/>, adding it (as a copy) if it is new.</summary>
-    public int GetOrAdd(ReadOnlySpan<byte> value)
+    /// <summary>Returns the index of <paramref name="value"/>, adding it (as a copy) if it is new, which <paramref name="added"/> says.</summary>
+    public int GetOrAdd(ReadOnlySpan<byte> value, out bool added)
     {
         if (_lookup.TryGetValue(value, out int index))
         {
+            added = false;
             return index;
         }
 
+        added = true;
         var copy = value.ToArray();
         index = _entries.Count;
         _entries.Add(copy);
