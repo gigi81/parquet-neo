@@ -1,6 +1,6 @@
 using System.Buffers;
 
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.Serialization.Buffers;
 
 /// <summary>Finds the <see cref="BatchWriter{TValue}"/> for a .NET type: the overload of the column writer that takes it.</summary>
 internal static class ColumnWriters

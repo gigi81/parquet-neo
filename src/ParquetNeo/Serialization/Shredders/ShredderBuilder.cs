@@ -1,8 +1,9 @@
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using ParquetNeo.Metadata;
+using ParquetNeo.Serialization.Buffers;
 
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.Serialization.Shredders;
 
 /// <summary>
 /// Works out, by reflection, how a row type is written: the tree of <see cref="Shredder"/>s that splits a row into the entries

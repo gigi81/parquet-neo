@@ -1,7 +1,8 @@
 using System.Runtime.CompilerServices;
 using ParquetNeo.Schema;
+using ParquetNeo.Serialization.Buffers;
 
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.Serialization.Shredders;
 
 /// <summary>A value that is stored in a column of its own, as <typeparamref name="TStored"/>.</summary>
 internal abstract class LeafShredder<TValue, TStored>(int column, bool optional, ColumnShape shape, string description)

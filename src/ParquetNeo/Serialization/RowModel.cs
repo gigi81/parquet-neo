@@ -1,4 +1,6 @@
 using ParquetNeo.Schema;
+using ParquetNeo.Serialization.Buffers;
+using ParquetNeo.Serialization.Shredders;
 
 namespace ParquetNeo.Serialization;
 

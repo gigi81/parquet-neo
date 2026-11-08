@@ -1,7 +1,8 @@
 using ParquetNeo.Nested;
 using ParquetNeo.Schema;
+using ParquetNeo.Serialization.Buffers;
 
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.Serialization.Shredders;
 
 /// <summary>A dictionary: a MAP group of repeated key and value pairs, optional when the dictionary may be null.</summary>
 /// <typeparam name="TMap">The type of the property.</typeparam>

@@ -1,4 +1,6 @@
-namespace ParquetNeo.Serialization;
+using ParquetNeo.Serialization.Buffers;
+
+namespace ParquetNeo.Serialization.Shredders;
 
 /// <summary>A <see cref="Shredder"/> for values of a .NET type.</summary>
 internal abstract class Shredder<TValue>(bool optional, int firstColumn, int columnCount, string description)

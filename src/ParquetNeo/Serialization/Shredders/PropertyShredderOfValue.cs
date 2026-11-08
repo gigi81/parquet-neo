@@ -1,6 +1,7 @@
 using ParquetNeo.Schema;
+using ParquetNeo.Serialization.Buffers;
 
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.Serialization.Shredders;
 
 internal sealed class PropertyShredder<TParent, TValue>(string name, TryGetter<TParent, TValue> getter, Shredder<TValue> value)
     : PropertyShredder<TParent>(name)

@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using ParquetNeo.Core;
 
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.Serialization.Buffers;
 
 /// <summary>
 /// Collects the entries of one column for a row group: the values that are present in one array and, when the column can have

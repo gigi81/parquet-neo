@@ -1,4 +1,4 @@
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.Serialization.Shredders;
 
 /// <summary>The names of the values of an enum, looked up in a table instead of formatted for every row.</summary>
 internal static class EnumNames<TEnum> where TEnum : struct, Enum

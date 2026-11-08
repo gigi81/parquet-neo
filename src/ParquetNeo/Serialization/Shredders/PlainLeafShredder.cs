@@ -1,4 +1,4 @@
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.Serialization.Shredders;
 
 /// <summary>A value stored as it is.</summary>
 internal sealed class PlainLeafShredder<TValue>(int column, bool optional, ColumnShape shape, string description)

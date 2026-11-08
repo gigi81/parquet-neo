@@ -1,4 +1,4 @@
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.Serialization.Shredders;
 
 /// <summary>An enum, stored as the name of its value.</summary>
 internal sealed class EnumLeafShredder<TEnum>(int column, bool optional, ColumnShape shape, string description)

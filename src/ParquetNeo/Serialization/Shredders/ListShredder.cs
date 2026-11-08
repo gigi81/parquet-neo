@@ -1,8 +1,9 @@
 using System.Runtime.InteropServices;
 using ParquetNeo.Nested;
 using ParquetNeo.Schema;
+using ParquetNeo.Serialization.Buffers;
 
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.Serialization.Shredders;
 
 /// <summary>A collection: a LIST group of repeated elements, optional when the collection may be null.</summary>
 /// <typeparam name="TCollection">The type of the property.</typeparam>

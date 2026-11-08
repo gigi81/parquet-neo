@@ -1,6 +1,6 @@
 using ParquetNeo.Core;
 
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.Serialization.Buffers;
 
 /// <summary>Collects the entries of one column for a row group.</summary>
 internal interface ILeafBuffer

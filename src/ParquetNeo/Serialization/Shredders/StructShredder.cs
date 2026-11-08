@@ -1,6 +1,7 @@
 using ParquetNeo.Schema;
+using ParquetNeo.Serialization.Buffers;
 
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.Serialization.Shredders;
 
 /// <summary>An object: a group of the properties it is written as, optional when the object may be null.</summary>
 internal sealed class StructShredder<TValue>(bool optional, int firstColumn, int columnCount, string description, PropertyShredder<TValue>[] properties)

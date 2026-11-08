@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace ParquetNeo.Serialization;
+namespace ParquetNeo.Serialization.Shredders;
 
 /// <summary>Readers of properties and of the elements of collections, of the two kinds a null is told apart in: by reference or by <see cref="Nullable{T}"/>.</summary>
 internal static class Getters
