@@ -14,4 +14,11 @@ public sealed record ParquetSerializerOptions
     /// readers more to skip at once; smaller ones need less memory. Defaults to 100,000.
     /// </summary>
     public int RowGroupSize { get; init; } = 100_000;
+
+    /// <summary>
+    /// How many columns of a row group are encoded at the same time. The columns are independent, so encoding them on several
+    /// threads makes a wide or compressed table faster, and the file is the same either way. Defaults to 1, which encodes on the
+    /// calling thread; <see cref="Environment.ProcessorCount"/> is a good value for a throughput-bound job.
+    /// </summary>
+    public int MaxDegreeOfParallelism { get; init; } = 1;
 }

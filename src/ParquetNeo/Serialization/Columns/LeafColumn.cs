@@ -12,6 +12,9 @@ internal sealed class LeafColumn<TValue>(ColumnType<TValue> type) : ILeafColumn
 {
     private const int Batch = 4096;
 
+    /// <summary>The most entries the arrays of a column are made room for up front on the word of the file.</summary>
+    private const int MaxPreallocatedEntries = 1 << 21;
+
     private TValue[] _values = [];
     private int[] _definition = [];
     private int[] _repetition = [];
@@ -71,9 +74,23 @@ internal sealed class LeafColumn<TValue>(ColumnType<TValue> type) : ILeafColumn
         _maxDefinition = node.MaxDefinitionLevel;
         bool definitionLevels = node.MaxDefinitionLevel > 0;
         bool repetitionLevels = node.MaxRepetitionLevel > 0;
+
+        // The chunk says how many entries it holds, so the arrays can be made that big at once instead of growing; the number is
+        // what the file says, so past a limit they grow as before.
+        int expected = (int)Math.Min(reader.EntryCount, MaxPreallocatedEntries) + Batch;
+        if (_values.Length < expected)
+        {
+            _values = new TValue[expected];
+        }
+
+        if (definitionLevels && _definition.Length < expected)
+        {
+            _definition = new int[expected];
+        }
+
         if (repetitionLevels)
         {
-            _repetition = new int[Batch];
+            _repetition = new int[expected];
         }
 
         while (true)

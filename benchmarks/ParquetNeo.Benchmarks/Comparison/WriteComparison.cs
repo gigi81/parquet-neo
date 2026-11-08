@@ -82,6 +82,14 @@ public class WriteComparison
         return _output.Length;
     }
 
+    [Benchmark(Description = "ParquetNeo, serializer, 4 threads")]
+    public long ParquetNeoSerializerInParallel()
+    {
+        _output.SetLength(0);
+        ParquetSerializer.Serialize(_data.Orders, _output, new ParquetSerializerOptions { RowGroupSize = ComparisonData.Rows, Writer = _options, MaxDegreeOfParallelism = 4 });
+        return _output.Length;
+    }
+
     [Benchmark(Description = "Parquet.Net, columns")]
     public async Task<long> ParquetNetColumns()
     {

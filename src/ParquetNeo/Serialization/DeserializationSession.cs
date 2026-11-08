@@ -8,6 +8,9 @@ namespace ParquetNeo.Serialization;
 /// <summary>Builds the rows of a file one row group at a time: the columns the row type needs are read into memory, then the rows are assembled from them.</summary>
 internal sealed class DeserializationSession<TRow>
 {
+    /// <summary>The most rows a list is made room for up front on the word of the file.</summary>
+    internal const int MaxPreallocatedRows = 1 << 21;
+
     private readonly ParquetFileReader _reader;
     private readonly ReadModel<TRow> _model = ReadModel<TRow>.Get();
     private readonly ReadPlan _plan;
@@ -22,6 +25,9 @@ internal sealed class DeserializationSession<TRow>
     }
 
     public int RowGroupCount => _reader.RowGroupCount;
+
+    /// <summary>The number of rows in the file, as the footer says.</summary>
+    public long RowCount => _reader.RowCount;
 
     /// <summary>The byte ranges of the file that hold the column chunks of a row group that are read.</summary>
     public List<(long Start, int Length)> Chunks(int rowGroup)
@@ -68,7 +74,8 @@ internal sealed class DeserializationSession<TRow>
             }
         }
 
-        var rows = new List<TRow>();
+        // The count is what the file says, so the list is only sized for it up to a limit, and grows past that.
+        var rows = new List<TRow>((int)Math.Min(count, MaxPreallocatedRows));
         for (long row = 0; row < count; row++)
         {
             rows.Add(_model.Row.ReadRow(_context));

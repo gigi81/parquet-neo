@@ -16,6 +16,13 @@ public sealed record ParquetDataWriterOptions
     public int RowGroupSize { get; init; } = 100_000;
 
     /// <summary>
+    /// How many columns of a row group are encoded at the same time. The columns are independent, so encoding them on several
+    /// threads makes a wide or compressed table faster, and the file is the same either way. Defaults to 1, which encodes on the
+    /// calling thread; <see cref="Environment.ProcessorCount"/> is a good value for a throughput-bound job.
+    /// </summary>
+    public int MaxDegreeOfParallelism { get; init; } = 1;
+
+    /// <summary>
     /// Adjusts the column written for a column of the reader, by its name: the precision and scale of a decimal, the unit of a
     /// time or timestamp. They override what the reader says about the column itself.
     /// </summary>

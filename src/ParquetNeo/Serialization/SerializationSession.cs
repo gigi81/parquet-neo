@@ -12,15 +12,21 @@ namespace ParquetNeo.Serialization;
 /// </summary>
 internal sealed class SerializationSession<TRow> : IDisposable
 {
+    /// <summary>The entries each column buffer makes room for when the number of rows is not known; they grow from there.</summary>
+    private const int InitialBufferCapacity = 4096;
+
     private readonly MemoryStream _staging = new();
     private readonly ParquetFileWriter _writer;
     private readonly RowModel<TRow> _model;
     private readonly ILeafBuffer[] _buffers;
     private readonly int _rowGroupSize;
+    private readonly int _degreeOfParallelism;
     private int _rowsInGroup;
     private long _totalRows;
 
-    public SerializationSession(ParquetSerializerOptions? options)
+    /// <param name="expectedRows">How many rows will be added, when that is known up front; it sizes the buffers that collect a row group.</param>
+    /// <param name="destination">A stream to write the file to as it is encoded, when the caller does not need the pieces staged in memory; then <see cref="Staged"/> is always empty.</param>
+    public SerializationSession(ParquetSerializerOptions? options, int? expectedRows = null, Stream? destination = null)
     {
         options ??= new ParquetSerializerOptions();
         if (options.RowGroupSize < 1)
@@ -34,8 +40,14 @@ internal sealed class SerializationSession<TRow> : IDisposable
         }
 
         _model = RowModel<TRow>.Get();
+        if (options.MaxDegreeOfParallelism < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(options), options.MaxDegreeOfParallelism, "The degree of parallelism must be at least 1.");
+        }
+
         _rowGroupSize = options.RowGroupSize;
-        _buffers = _model.CreateBuffers();
+        _degreeOfParallelism = options.MaxDegreeOfParallelism;
+        _buffers = _model.CreateBuffers(Math.Min(_rowGroupSize, expectedRows ?? InitialBufferCapacity));
 
         var writerOptions = options.Writer;
         var encodings = _model.Columns.Where(c => c.Encoding is not null).ToDictionary(c => c.Path, c => c.Encoding!.Value);
@@ -49,7 +61,7 @@ internal sealed class SerializationSession<TRow> : IDisposable
             writerOptions = writerOptions with { ColumnEncodings = encodings };
         }
 
-        _writer = new ParquetFileWriter(_staging, new ParquetSchema(_model.CreateSchemaNodes()), writerOptions, leaveOpen: true);
+        _writer = new ParquetFileWriter(destination ?? _staging, new ParquetSchema(_model.CreateSchemaNodes()), writerOptions, leaveOpen: true);
     }
 
     /// <summary>Whether the row group holds as many rows as the options ask for.</summary>
@@ -86,9 +98,16 @@ internal sealed class SerializationSession<TRow> : IDisposable
 
         using (var group = _writer.AppendRowGroup())
         {
-            foreach (var buffer in _buffers)
+            if (_degreeOfParallelism > 1 && _buffers.Length > 1)
             {
-                buffer.WriteAndClear(group.NextColumn());
+                group.WriteColumns([.. _buffers.Select(buffer => (Action<ColumnWriter>)buffer.WriteAndClear)], _degreeOfParallelism);
+            }
+            else
+            {
+                foreach (var buffer in _buffers)
+                {
+                    buffer.WriteAndClear(group.NextColumn());
+                }
             }
         }
 

@@ -22,7 +22,7 @@ namespace ParquetNeo.Core;
 /// </code>
 /// The footer is written when the writer is closed or disposed. Nothing here is thread safe.
 /// </example>
-public sealed class ParquetFileWriter : IDisposable, IAsyncDisposable
+public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposable
 {
     private static readonly byte[] Magic = "PAR1"u8.ToArray();
 
@@ -155,6 +155,9 @@ public sealed class ParquetFileWriter : IDisposable, IAsyncDisposable
 
     internal ColumnWriter CreateColumnWriter(PrimitiveNode column) => new(this, column, _codec, _options);
 
+    /// <summary>A writer of a column that puts its pages in <paramref name="sink"/> and not in the file, to be copied to the file later.</summary>
+    internal ColumnWriter CreateDetachedColumnWriter(PrimitiveNode column, DetachedColumnSink sink, WriterBuffers buffers) => new(sink, buffers, column, _codec, _options);
+
     internal void OnRowGroupClosed(RowGroup rowGroup)
     {
         _rowGroups.Add(rowGroup);
@@ -163,6 +166,10 @@ public sealed class ParquetFileWriter : IDisposable, IAsyncDisposable
     }
 
     internal void Abandon() => _abandoned = true;
+
+    void IColumnSink.EnsureUsable() => EnsureUsable();
+
+    void IColumnSink.Write(ReadOnlySpan<byte> bytes) => Write(bytes);
 
     internal void EnsureUsable()
     {
