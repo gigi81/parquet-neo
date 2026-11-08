@@ -353,6 +353,7 @@ public sealed partial class ColumnWriter
                 WriteDictionaryChunk();
             }
 
+            _dictionary.Dispose();
             _dictionary = null;
         }
 
@@ -522,12 +523,7 @@ public sealed partial class ColumnWriter
         _pageLogicalBytes += sizeof(int) + length;
     }
 
-    private void AddIndex(int index)
-    {
-        var span = _buffers.Indices.GetSpan(1);
-        span[0] = index;
-        _buffers.Indices.Advance(1);
-    }
+    private void AddIndex(int index) => _buffers.Indices.Append(index);
 
     /// <summary>Checks a batch and returns its number of level entries.</summary>
     private int PrepareBatch(PhysicalType expected, int valueCount, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels)
@@ -709,6 +705,7 @@ public sealed partial class ColumnWriter
     {
         FlushPage();
         WriteDictionaryChunk();
+        _dictionary!.Dispose();
         _dictionary = null;
     }
 
@@ -779,7 +776,7 @@ public sealed partial class ColumnWriter
         _buffers.Reset();
     }
 
-    private static void AppendSection(ArrayBufferWriter<byte> block, ReadOnlySpan<byte> encodedLevels)
+    private static void AppendSection(PooledBufferWriter<byte> block, ReadOnlySpan<byte> encodedLevels)
     {
         BinaryPrimitives.WriteInt32LittleEndian(block.GetSpan(sizeof(int)), encodedLevels.Length);
         block.Advance(sizeof(int));
@@ -1079,14 +1076,14 @@ public sealed partial class ColumnWriter
     {
         static abstract void Write(ReadOnlySpan<T> values, IBufferWriter<byte> output);
 
-        static abstract void AddToDictionary(ReadOnlySpan<T> values, IDictionaryBuilder dictionary, ArrayBufferWriter<int> indexes);
+        static abstract void AddToDictionary(ReadOnlySpan<T> values, IDictionaryBuilder dictionary, PooledBufferWriter<int> indexes);
     }
 
     private readonly struct Int32Encoder : IPlainValueEncoder<int>
     {
         public static void Write(ReadOnlySpan<int> values, IBufferWriter<byte> output) => PlainEncoder.WriteInt32s(values, output);
 
-        public static void AddToDictionary(ReadOnlySpan<int> values, IDictionaryBuilder dictionary, ArrayBufferWriter<int> indexes) =>
+        public static void AddToDictionary(ReadOnlySpan<int> values, IDictionaryBuilder dictionary, PooledBufferWriter<int> indexes) =>
             ((FixedDictionary<int>)dictionary).Add(values, indexes);
     }
 
@@ -1094,7 +1091,7 @@ public sealed partial class ColumnWriter
     {
         public static void Write(ReadOnlySpan<long> values, IBufferWriter<byte> output) => PlainEncoder.WriteInt64s(values, output);
 
-        public static void AddToDictionary(ReadOnlySpan<long> values, IDictionaryBuilder dictionary, ArrayBufferWriter<int> indexes) =>
+        public static void AddToDictionary(ReadOnlySpan<long> values, IDictionaryBuilder dictionary, PooledBufferWriter<int> indexes) =>
             ((FixedDictionary<long>)dictionary).Add(values, indexes);
     }
 
@@ -1102,7 +1099,7 @@ public sealed partial class ColumnWriter
     {
         public static void Write(ReadOnlySpan<float> values, IBufferWriter<byte> output) => PlainEncoder.WriteSingles(values, output);
 
-        public static void AddToDictionary(ReadOnlySpan<float> values, IDictionaryBuilder dictionary, ArrayBufferWriter<int> indexes) =>
+        public static void AddToDictionary(ReadOnlySpan<float> values, IDictionaryBuilder dictionary, PooledBufferWriter<int> indexes) =>
             ((FixedDictionary<int>)dictionary).Add(MemoryMarshal.Cast<float, int>(values), indexes);
     }
 
@@ -1110,7 +1107,7 @@ public sealed partial class ColumnWriter
     {
         public static void Write(ReadOnlySpan<double> values, IBufferWriter<byte> output) => PlainEncoder.WriteDoubles(values, output);
 
-        public static void AddToDictionary(ReadOnlySpan<double> values, IDictionaryBuilder dictionary, ArrayBufferWriter<int> indexes) =>
+        public static void AddToDictionary(ReadOnlySpan<double> values, IDictionaryBuilder dictionary, PooledBufferWriter<int> indexes) =>
             ((FixedDictionary<long>)dictionary).Add(MemoryMarshal.Cast<double, long>(values), indexes);
     }
 }

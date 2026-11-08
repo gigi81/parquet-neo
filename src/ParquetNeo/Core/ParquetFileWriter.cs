@@ -142,6 +142,7 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
             _closed = true;
             WriteFooter();
             await _output.FlushAsync().ConfigureAwait(false);
+            Buffers.Dispose();
             if (!_leaveOpen)
             {
                 await _output.DisposeAsync().ConfigureAwait(false);
@@ -215,6 +216,7 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
 
     private void ReleaseStream()
     {
+        Buffers.Dispose();
         if (!_leaveOpen)
         {
             _output.Dispose();

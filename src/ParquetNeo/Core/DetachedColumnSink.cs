@@ -6,9 +6,9 @@ namespace ParquetNeo.Core;
 /// Collects the pages of one column chunk in memory, with offsets that count from the start of the chunk, so that columns can be
 /// encoded on different threads and copied to the file one after the other (see <see cref="RowGroupWriter"/>).
 /// </summary>
-internal sealed class DetachedColumnSink : IColumnSink
+internal sealed class DetachedColumnSink : IColumnSink, IDisposable
 {
-    private readonly ArrayBufferWriter<byte> _bytes = new();
+    private readonly PooledBufferWriter<byte> _bytes = new();
 
     public long Position => _bytes.WrittenCount;
 
@@ -20,4 +20,7 @@ internal sealed class DetachedColumnSink : IColumnSink
     public void EnsureUsable()
     {
     }
+
+    /// <summary>Gives the storage back to the pool, once what was written has been copied to the file.</summary>
+    public void Dispose() => _bytes.Dispose();
 }

@@ -3,7 +3,7 @@ using System.Buffers;
 namespace ParquetNeo.Core;
 
 /// <summary>Collects the distinct values of a column chunk, in order of first appearance, for dictionary encoding.</summary>
-internal interface IDictionaryBuilder
+internal interface IDictionaryBuilder : IDisposable
 {
     /// <summary>The number of distinct values so far.</summary>
     int Count { get; }

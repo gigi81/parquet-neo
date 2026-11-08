@@ -71,41 +71,58 @@ public sealed class RowGroupWriter : IDisposable
         var spare = new ConcurrentBag<WriterBuffers>();
         try
         {
-            Parallel.For(0, count, new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, maxDegreeOfParallelism) }, i =>
+            try
             {
-                if (!spare.TryTake(out var buffers))
+                Parallel.For(0, count, new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, maxDegreeOfParallelism) }, i =>
                 {
-                    buffers = new WriterBuffers();
-                }
+                    if (!spare.TryTake(out var buffers))
+                    {
+                        buffers = new WriterBuffers();
+                    }
 
-                var sink = new DetachedColumnSink();
-                var writer = _file.CreateDetachedColumnWriter(schemaColumns[i], sink, buffers);
-                columns[i](writer);
-                chunks[i] = writer.Complete();
-                sinks[i] = sink;
-                writers[i] = writer;
-                spare.Add(buffers);
-            });
-        }
-        catch (AggregateException exception) when (exception.InnerExceptions.Count > 0)
-        {
-            ExceptionDispatchInfo.Capture(exception.InnerExceptions[0]).Throw();
-        }
-
-        for (int i = 0; i < count; i++)
-        {
-            long start = _file.Position;
-            _file.Write(sinks[i]!.Written);
-            var chunk = chunks[i]!;
-            var metadata = chunk.MetaData!;
-            metadata.DataPageOffset += start;
-            if (metadata.DictionaryPageOffset is { } dictionaryOffset)
+                    var sink = new DetachedColumnSink();
+                    sinks[i] = sink;
+                    var writer = _file.CreateDetachedColumnWriter(schemaColumns[i], sink, buffers);
+                    columns[i](writer);
+                    chunks[i] = writer.Complete();
+                    writers[i] = writer;
+                    spare.Add(buffers);
+                });
+            }
+            catch (AggregateException exception) when (exception.InnerExceptions.Count > 0)
             {
-                metadata.DictionaryPageOffset = dictionaryOffset + start;
+                ExceptionDispatchInfo.Capture(exception.InnerExceptions[0]).Throw();
             }
 
-            Record(writers[i]!, chunk, writers[i]!.FirstPageOffset + start);
-            sinks[i] = null;
+            for (int i = 0; i < count; i++)
+            {
+                long start = _file.Position;
+                _file.Write(sinks[i]!.Written);
+                var chunk = chunks[i]!;
+                var metadata = chunk.MetaData!;
+                metadata.DataPageOffset += start;
+                if (metadata.DictionaryPageOffset is { } dictionaryOffset)
+                {
+                    metadata.DictionaryPageOffset = dictionaryOffset + start;
+                }
+
+                Record(writers[i]!, chunk, writers[i]!.FirstPageOffset + start);
+                sinks[i]!.Dispose();
+                sinks[i] = null;
+            }
+        }
+        finally
+        {
+            // Whatever happened, the storage of the buffers goes back to the pool.
+            foreach (var buffers in spare)
+            {
+                buffers.Dispose();
+            }
+
+            foreach (var sink in sinks)
+            {
+                sink?.Dispose();
+            }
         }
 
         _nextColumn = count;
