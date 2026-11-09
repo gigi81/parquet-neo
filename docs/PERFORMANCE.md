@@ -193,14 +193,21 @@ A sixth round went to the string dictionary, whose loop was the hottest in a col
 The string column of 1,000,000 rows (900,000 values, 5,000 of them different) went from 26–28 ms to 24–25 ms; the table of five
 columns by 2 to 3 ms of 43 (the measurements of this laptop vary by that much). The files are the same, byte for byte.
 
+A seventh round made the parallel form public: `RowGroupWriter.WriteColumns(actions, maxDegreeOfParallelism)` (and an overload that
+uses the processors, and a cancellation token) takes one action per column, encodes them on different threads and copies the
+encoded columns to the file in the order of the schema, which is what the serializer and the ADO.NET writer already did. The
+file is the same, byte for byte, as the one written a column at a time (tested for several degrees, with and without
+compression). The encoded group is held in memory until every column is done, which `NextColumn` does not need.
+
+On the benchmark table, through the column API with four threads: 48.7 ms becomes 33.0 ms uncompressed (0.68) and 73.1 ms becomes
+34.1 ms with Snappy (0.47); the time is that of the slowest column, here the strings.
+
 ## Not done yet
 
 Left for a follow-up, with what is known so far:
 
 - **Rows that are not flat.** Nested objects, lists and maps, and types built by a constructor, still go through the general
   path of shredders and assemblers; the compiled function could cover them too.
-- **Parallel encoding for the column API.** `RowGroupWriter` can encode all the columns of a group in parallel, but only the
-  serializer and the ADO.NET writer use it; there is no public form for people who write columns by hand.
 - **Encoding strings further.** The dictionary encoded string column is still the slowest column to write (about 24 ms of the
   42 ms for the table, 27 ns for each of 900,000 values). The profile is flat: reading the string objects (they are all over
   the heap), narrowing them to bytes, hashing, the lookup (a table, an entry, then the bytes) and packing the indexes each take a

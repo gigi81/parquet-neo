@@ -48,14 +48,52 @@ public sealed class RowGroupWriter : IDisposable
     }
 
     /// <summary>
-    /// Writes every column of the group, encoding up to <paramref name="maxDegreeOfParallelism"/> of them at a time. The columns
-    /// are encoded into buffers of their own and then copied to the file in the order of the schema, so the file is the same
-    /// as the one <see cref="NextColumn"/> makes. The group must not have started: this does all of its columns.
+    /// Writes every column of the group on as many threads as the machine has processors; see
+    /// <see cref="WriteColumns(IReadOnlyList{Action{ColumnWriter}}, int, CancellationToken)"/>.
     /// </summary>
-    /// <param name="columns">What to write to each column, in the order of the schema. They run on different threads.</param>
-    /// <exception cref="InvalidOperationException">A column has been started already, or there is not one action per column.</exception>
-    internal void WriteColumns(IReadOnlyList<Action<ColumnWriter>> columns, int maxDegreeOfParallelism)
+    public void WriteColumns(IReadOnlyList<Action<ColumnWriter>> columns, CancellationToken cancellationToken = default) =>
+        WriteColumns(columns, Environment.ProcessorCount, cancellationToken);
+
+    /// <summary>
+    /// Writes every column of the group, encoding up to <paramref name="maxDegreeOfParallelism"/> of them at a time. Encoding
+    /// (the dictionary, the levels, compression, statistics) is most of the time of writing, so a group of several columns takes
+    /// about as long as its slowest column instead of the sum of them.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The columns are encoded into buffers of their own, and then copied to the file in the order of the schema, so the file is
+    /// the same, byte for byte, as the one <see cref="NextColumn"/> makes whatever the degree of parallelism. The group must not
+    /// have started: this does all of its columns.
+    /// </para>
+    /// <para>
+    /// The actions run on different threads, one thread for each action, so they must not share anything that is not safe to share
+    /// (the arrays they read from are fine as long as nothing writes to them). The <see cref="ColumnWriter"/> an action gets is for
+    /// that action alone and only until it returns: write the values of the column to it and do not keep it. The action does not
+    /// complete the column; the group does.
+    /// </para>
+    /// <para>
+    /// The encoded columns of the group are held in memory until all of them are done, so this takes about the size of the group
+    /// (compressed) more memory than <see cref="NextColumn"/>, which writes each column to the file as it goes. If an action throws,
+    /// that exception is thrown from here, nothing of the group is written, and disposing the group abandons the file. Use
+    /// <see cref="NextColumn"/> for a group that is too big to hold, or for a single column.
+    /// </para>
+    /// </remarks>
+    /// <param name="columns">What to write to each column, in the order of the schema.</param>
+    /// <param name="maxDegreeOfParallelism">The most columns encoded at the same time; at least 1.</param>
+    /// <param name="cancellationToken">Stops the columns that have not started; the exception is an <see cref="OperationCanceledException"/>.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="columns"/> is null.</exception>
+    /// <exception cref="ArgumentException">An action is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxDegreeOfParallelism"/> is below 1.</exception>
+    /// <exception cref="InvalidOperationException">A column has been started already, there is not one action per column, or the columns have different row counts.</exception>
+    public void WriteColumns(IReadOnlyList<Action<ColumnWriter>> columns, int maxDegreeOfParallelism, CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(columns);
+        ArgumentOutOfRangeException.ThrowIfLessThan(maxDegreeOfParallelism, 1);
+        if (columns.Any(action => action is null))
+        {
+            throw new ArgumentException("An action to write a column is null.", nameof(columns));
+        }
+
         EnsureOpen();
         CompleteCurrent();
         var schemaColumns = _file.Schema.Columns;
@@ -73,7 +111,7 @@ public sealed class RowGroupWriter : IDisposable
         {
             try
             {
-                Parallel.For(0, count, new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, maxDegreeOfParallelism) }, i =>
+                Parallel.For(0, count, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism, CancellationToken = cancellationToken }, i =>
                 {
                     if (!spare.TryTake(out var buffers))
                     {

@@ -60,6 +60,19 @@ using (var group = writer.AppendRowGroup())
 }
 ```
 
+With several columns, `WriteColumns` encodes them on different threads and makes the same file (it holds the encoded group in memory until all columns are done):
+
+```csharp
+using (var group = writer.AppendRowGroup())
+{
+    group.WriteColumns(
+    [
+        column => column.WriteBatch([1L, 2L, 3L]),
+        column => column.WriteStrings(["Ada", "Alan", "Grace"]),
+    ]);
+}
+```
+
 The footer is written when the writer is disposed. Read a column back with
 `new ParquetFileReader(stream).OpenRowGroup(0).OpenColumn("id").ReadBatch(values)`.
 
