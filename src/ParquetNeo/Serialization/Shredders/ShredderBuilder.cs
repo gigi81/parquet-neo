@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using ParquetNeo.ColumnTypes;
+using ParquetNeo.Core;
 using ParquetNeo.DataModel;
 using ParquetNeo.Metadata;
 using ParquetNeo.Serialization.Buffers;
@@ -140,6 +141,18 @@ internal sealed class ShredderBuilder
         return (Shredder)Call(nameof(BuildObject), [type], optional, position, path, description);
     }
 
+    private static DictionarySettings? DictionaryOf(PropertyInfo property)
+    {
+        if (property.GetCustomAttribute<ParquetDictionaryAttribute>() is not { } attribute)
+        {
+            return null;
+        }
+
+        // Zero, the default of the attribute, leaves the limit of the writer.
+        int? sizeLimit = attribute.SizeLimit == 0 ? null : attribute.SizeLimit;
+        return new DictionarySettings { Mode = attribute.Mode, SizeLimit = sizeLimit };
+    }
+
     private Shredder BuildLeaf<TValue>(PropertyInfo source, bool lenient, bool optional, Position position, string path, ParquetEncoding? encoding, string description)
     {
         var columnType = PropertyColumns.For<TValue>(source, lenient);
@@ -147,7 +160,7 @@ internal sealed class ShredderBuilder
         int maxDefinition = optional ? position.Definition + 1 : position.Definition;
         bool definitionLevels = maxDefinition > 0;
         bool repetitionLevels = position.Repetition > 0;
-        _leaves.Add(new LeafInfo(path, encoding, capacity => new LeafBuffer<TValue>(definitionLevels, repetitionLevels, columnType, capacity)));
+        _leaves.Add(new LeafInfo(path, encoding, DictionaryOf(source), capacity => new LeafBuffer<TValue>(definitionLevels, repetitionLevels, columnType, capacity)));
         return new LeafShredder<TValue>(column, optional, columnType, description);
     }
 

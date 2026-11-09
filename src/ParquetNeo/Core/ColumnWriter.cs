@@ -47,6 +47,12 @@ public sealed partial class ColumnWriter
     /// <summary>Strings up to this many characters are encoded to UTF-8 in one pass.</summary>
     private const int ShortStringChars = 1024;
 
+    /// <summary>
+    /// How much of a <see cref="DictionaryMode.Adaptive"/> column is looked at, as the bytes its values take PLAIN encoded, before
+    /// it is decided whether the column keeps its dictionary.
+    /// </summary>
+    private const int DictionaryProbeBytes = 32 * 1024;
+
     private readonly IColumnSink _sink;
     private readonly WriterBuffers _buffers;
     private readonly ICodec _codec;
@@ -60,6 +66,7 @@ public sealed partial class ColumnWriter
     // Non-null while the chunk is dictionary encoded. Its data pages are encoded as they fill but held back,
     // because the dictionary page, which is only complete at the end, has to come first in the file.
     private IDictionaryBuilder? _dictionary;
+    private bool _dictionaryProbePending; // an adaptive column that has not yet been looked at
     private readonly List<EncodedPage> _pending = new();
     private byte[]? _stringScratch;
     private readonly StatisticsCollector? _statistics;
@@ -100,12 +107,15 @@ public sealed partial class ColumnWriter
         Column = column;
         _codec = codec;
         _pageSize = options.DataPageSize;
-        _dictionaryLimit = options.DictionaryPageSizeLimit;
         _maxDefinitionLevel = column.MaxDefinitionLevel;
         _levelBitWidth = 32 - BitOperations.LeadingZeroCount((uint)_maxDefinitionLevel);
         _maxRepetitionLevel = column.MaxRepetitionLevel;
         _repetitionBitWidth = 32 - BitOperations.LeadingZeroCount((uint)_maxRepetitionLevel);
-        _dictionary = options.DictionaryEnabled ? CreateDictionary(column.Type, column.TypeLength) : null;
+        var dictionarySettings = DictionarySettingsRules.For(column, options.ColumnDictionaries);
+        var dictionaryMode = dictionarySettings.Mode;
+        _dictionaryLimit = dictionarySettings.SizeLimit ?? options.DictionaryPageSizeLimit;
+        _dictionary = options.DictionaryEnabled && dictionaryMode != DictionaryMode.Disabled ? CreateDictionary(column.Type, column.TypeLength) : null;
+        _dictionaryProbePending = _dictionary is not null && dictionaryMode == DictionaryMode.Adaptive;
         _statistics = StatisticsFactory.Create(column, options);
         _valueEncoding = ValueEncodingRules.For(column, options.ColumnEncodings);
         _dataPageV2 = options.DataPageVersion == DataPageVersion.V2;
@@ -126,6 +136,11 @@ public sealed partial class ColumnWriter
     private bool HasRepetition => _maxRepetitionLevel > 0;
 
     private int RowsFree => MaxRowsPerPage - _pageLevelCount;
+
+    /// <summary>How many bytes the values of a chunk written in one go may take: the rest of the page, or the part of an adaptive column to look at first.</summary>
+    private int ChunkLimit => _dictionaryProbePending ? Math.Min(_pageSize, DictionaryProbeBytes) : _pageSize;
+
+    private bool DictionaryProbeIsDue => _dictionaryProbePending && PageBytes >= DictionaryProbeBytes;
 
     private int BufferedBytes => Column.Type == PhysicalType.Boolean ? (_buffers.Booleans.WrittenCount + 7) / 8 : _buffers.Values.WrittenCount;
 
@@ -153,7 +168,7 @@ public sealed partial class ColumnWriter
         while (entry < entries)
         {
             // Booleans are bit-packed per page, so they are collected here and packed when the page closes.
-            long remainingBits = Math.Max(1L, (long)(_pageSize - PageBytes) * 8);
+            long remainingBits = Math.Max(1L, (long)(ChunkLimit - PageBytes) * 8);
             int take = (int)Math.Min(Math.Min(entries - entry, remainingBits), RowsFree);
             take = ExtendToRecordEnd(repetitionLevels, entry, take, entries);
             int valueCount = AppendLevels(definitionLevels, repetitionLevels, entry, take);
@@ -284,7 +299,7 @@ public sealed partial class ColumnWriter
         int next = 0;
         while (entry < entries)
         {
-            int take = Math.Min(Math.Min(entries - entry, Math.Max(1, (_pageSize - PageBytes) / length)), RowsFree);
+            int take = Math.Min(Math.Min(entries - entry, Math.Max(1, (ChunkLimit - PageBytes) / length)), RowsFree);
             take = ExtendToRecordEnd(repetitionLevels, entry, take, entries);
             int valueCount = AppendLevels(definitionLevels, repetitionLevels, entry, take);
             var chunk = values.Slice(next * length, valueCount * length);
@@ -434,7 +449,7 @@ public sealed partial class ColumnWriter
         while (entry < entries)
         {
             // As many entries as fit in the rest of the page (at least one), so pages close close to the target size.
-            int take = Math.Min(Math.Min(entries - entry, Math.Max(1, (_pageSize - PageBytes) / valueBytes)), RowsFree);
+            int take = Math.Min(Math.Min(entries - entry, Math.Max(1, (ChunkLimit - PageBytes) / valueBytes)), RowsFree);
             take = ExtendToRecordEnd(repetitionLevels, entry, take, entries);
             int valueCount = AppendLevels(definitionLevels, repetitionLevels, entry, take);
             var chunk = values.Slice(next, valueCount);
@@ -608,7 +623,7 @@ public sealed partial class ColumnWriter
 
     /// <summary>Whether the page being filled has reached its target size (counting rows as well as bytes).</summary>
     private bool PageIsFull(int batchStart, int batchEnd) =>
-        PageBytes >= _pageSize || _pageLevelCount + (batchEnd - batchStart) >= MaxRowsPerPage;
+        PageBytes >= ChunkLimit || _pageLevelCount + (batchEnd - batchStart) >= MaxRowsPerPage;
 
     /// <summary>Whether a page may end before entry <paramref name="entry"/>: the batch ends there, or a new record starts.</summary>
     private bool AtRecordStart(ReadOnlySpan<int> repetitionLevels, int entry, int entries) =>
@@ -675,7 +690,7 @@ public sealed partial class ColumnWriter
         _entries += levelCount;
         if (HasRepetition && atBatchEnd)
         {
-            _pageActionsDeferred |= PageBytes >= _pageSize || _pageLevelCount >= MaxRowsPerPage || DictionaryIsTooBig;
+            _pageActionsDeferred |= PageBytes >= _pageSize || _pageLevelCount >= MaxRowsPerPage || DictionaryIsTooBig || DictionaryProbeIsDue;
             return;
         }
 
@@ -687,6 +702,17 @@ public sealed partial class ColumnWriter
     /// <summary>Closes the page if it is full and gives up on the dictionary if it is too big; only at the end of a record.</summary>
     private void ApplyPageActions()
     {
+        if (DictionaryProbeIsDue)
+        {
+            // Done once: a column that is almost all different values has no use for a dictionary, and the part looked at is written
+            // with the one it has so far.
+            _dictionaryProbePending = false;
+            if (_dictionary!.Count * 10L > _valueCount * 9L)
+            {
+                FallBackToPlain();
+            }
+        }
+
         if (_pageActionsDeferred || PageBytes >= _pageSize || _pageLevelCount >= MaxRowsPerPage)
         {
             FlushPage();
@@ -712,6 +738,7 @@ public sealed partial class ColumnWriter
     private void FlushPage()
     {
         _pageActionsDeferred = false;
+        _dictionaryProbePending = false;
         if (_pageLevelCount == 0)
         {
             return;

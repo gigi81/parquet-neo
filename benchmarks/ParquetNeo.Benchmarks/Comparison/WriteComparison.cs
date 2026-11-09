@@ -24,6 +24,7 @@ public class WriteComparison
     private PqNet.ParquetOptions _netOptions = null!;
     private PqNetSchema.DataField[] _netFields = null!;
     private ParquetWriterOptions _plainOptions = null!;
+    private ParquetWriterOptions _adaptiveOptions = null!;
     private PqSharp.Column[] _sharpColumns = null!;
 
     [Params(CompressionCodec.Uncompressed, CompressionCodec.Snappy)]
@@ -51,6 +52,10 @@ public class WriteComparison
             new PqNetSchema.DataField<bool>("Shipped"));
         _netFields = _netSchema.GetDataFields();
         _plainOptions = _options with { DictionaryEnabled = false };
+        _adaptiveOptions = _options with
+        {
+            ColumnDictionaries = new Dictionary<string, DictionarySettings> { ["Id"] = DictionaryMode.Adaptive, ["Amount"] = DictionaryMode.Adaptive },
+        };
         _netOptions = new PqNet.ParquetOptions
         {
             CompressionMethod = Compression == CompressionCodec.Snappy ? PqNet.CompressionMethod.Snappy : PqNet.CompressionMethod.None,
@@ -96,6 +101,25 @@ public class WriteComparison
     {
         _output.SetLength(0);
         using var writer = new ParquetFileWriter(_output, _schema, _plainOptions, leaveOpen: true);
+        using (var group = writer.AppendRowGroup())
+        {
+            group.NextColumn().WriteBatch(_data.Ids);
+            group.NextColumn().WriteStrings(_data.CustomerValues, _data.CustomerLevels);
+            group.NextColumn().WriteBatch(_data.AmountValues, _data.AmountLevels);
+            group.NextColumn().WriteBatch(_data.Quantities);
+            group.NextColumn().WriteBatch(_data.Shipped);
+        }
+
+        writer.Close();
+        return _output.Length;
+    }
+
+    /// <summary>The columns of mostly different values (the identifier and the amount) drop their dictionary after the first values.</summary>
+    [Benchmark(Description = "ParquetNeo, columns, adaptive dictionaries")]
+    public long ParquetNeoColumnsAdaptive()
+    {
+        _output.SetLength(0);
+        using var writer = new ParquetFileWriter(_output, _schema, _adaptiveOptions, leaveOpen: true);
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(_data.Ids);
