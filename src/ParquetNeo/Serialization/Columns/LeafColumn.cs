@@ -77,7 +77,7 @@ internal sealed class LeafColumn<TValue>(ColumnType<TValue> type) : ILeafColumn
 
         // The chunk says how many entries it holds, so the arrays can be made that big at once instead of growing; the number is
         // what the file says, so past a limit they grow as before.
-        int expected = (int)Math.Min(reader.EntryCount, MaxPreallocatedEntries) + Batch;
+        int expected = (int)Math.Clamp(reader.EntryCount, 0, MaxPreallocatedEntries) + Batch;
         if (_values.Length < expected)
         {
             _values = new TValue[expected];
