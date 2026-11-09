@@ -107,12 +107,13 @@ public sealed partial class ColumnWriter
         Column = column;
         _codec = codec;
         _pageSize = options.DataPageSize;
-        _dictionaryLimit = options.DictionaryPageSizeLimit;
         _maxDefinitionLevel = column.MaxDefinitionLevel;
         _levelBitWidth = 32 - BitOperations.LeadingZeroCount((uint)_maxDefinitionLevel);
         _maxRepetitionLevel = column.MaxRepetitionLevel;
         _repetitionBitWidth = 32 - BitOperations.LeadingZeroCount((uint)_maxRepetitionLevel);
-        var dictionaryMode = DictionaryModeRules.For(column, options.ColumnDictionaries);
+        var dictionarySettings = DictionarySettingsRules.For(column, options.ColumnDictionaries);
+        var dictionaryMode = dictionarySettings.Mode;
+        _dictionaryLimit = dictionarySettings.SizeLimit ?? options.DictionaryPageSizeLimit;
         _dictionary = options.DictionaryEnabled && dictionaryMode != DictionaryMode.Disabled ? CreateDictionary(column.Type, column.TypeLength) : null;
         _dictionaryProbePending = _dictionary is not null && dictionaryMode == DictionaryMode.Adaptive;
         _statistics = StatisticsFactory.Create(column, options);

@@ -1,6 +1,6 @@
 namespace ParquetNeo.Core;
 
-/// <summary>How a column is dictionary encoded; see <see cref="ParquetWriterOptions.ColumnDictionaries"/>.</summary>
+/// <summary>How a column is dictionary encoded; see <see cref="DictionarySettings"/> and <see cref="ParquetWriterOptions.ColumnDictionaries"/>.</summary>
 public enum DictionaryMode
 {
     /// <summary>

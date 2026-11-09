@@ -50,8 +50,10 @@ internal sealed class SerializationSession<TRow> : IDisposable
         _buffers = _model.CreateBuffers(Math.Min(_rowGroupSize, expectedRows ?? InitialBufferCapacity));
 
         var writerOptions = options.Writer;
-        var encodings = AttributeChoices(_model.Columns, c => c.Encoding, writerOptions.ColumnEncodings);
-        var dictionaries = AttributeChoices(_model.Columns, c => c.Dictionary, writerOptions.ColumnDictionaries);
+        var encodings = AttributeChoices(
+            _model.Columns.Where(c => c.Encoding is not null).Select(c => KeyValuePair.Create(c.Path, c.Encoding!.Value)), writerOptions.ColumnEncodings);
+        var dictionaries = AttributeChoices(
+            _model.Columns.Where(c => c.Dictionary is not null).Select(c => KeyValuePair.Create(c.Path, c.Dictionary!)), writerOptions.ColumnDictionaries);
         if (encodings is not null || dictionaries is not null)
         {
             writerOptions = writerOptions with
@@ -68,10 +70,9 @@ internal sealed class SerializationSession<TRow> : IDisposable
     /// What the attributes of the properties choose for their columns, with what the options choose put over it; null when no
     /// attribute chooses anything, and then the options stand as they are.
     /// </summary>
-    private static Dictionary<string, TChoice>? AttributeChoices<TChoice>(IReadOnlyList<LeafInfo> columns, Func<LeafInfo, TChoice?> choice, IReadOnlyDictionary<string, TChoice>? fromOptions)
-        where TChoice : struct
+    private static Dictionary<string, TChoice>? AttributeChoices<TChoice>(IEnumerable<KeyValuePair<string, TChoice>> fromAttributes, IReadOnlyDictionary<string, TChoice>? fromOptions)
     {
-        var choices = columns.Where(c => choice(c) is not null).ToDictionary(c => c.Path, c => choice(c)!.Value);
+        var choices = new Dictionary<string, TChoice>(fromAttributes);
         if (choices.Count == 0)
         {
             return null;

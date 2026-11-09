@@ -30,11 +30,13 @@ public sealed record ParquetWriterOptions
     public bool DictionaryEnabled { get; init; } = true;
 
     /// <summary>
-    /// How chosen columns are dictionary encoded, keyed by column path with dots (<c>scores.list.element</c>); the others use
-    /// <see cref="DictionaryMode.Standard"/>. Nothing here makes a column use a dictionary when <see cref="DictionaryEnabled"/> is off.
+    /// How chosen columns are dictionary encoded, keyed by column path with dots (<c>scores.list.element</c>): the
+    /// <see cref="DictionaryMode"/> and the size limit of the dictionary, in place of <see cref="DictionaryPageSizeLimit"/>. The
+    /// others use <see cref="DictionaryMode.Standard"/> and the limit of the writer. A <see cref="DictionaryMode"/> can be given
+    /// where settings are expected. Nothing here makes a column use a dictionary when <see cref="DictionaryEnabled"/> is off.
     /// </summary>
-    /// <exception cref="ArgumentException">Reported when the writer is created: a column that does not exist.</exception>
-    public IReadOnlyDictionary<string, DictionaryMode>? ColumnDictionaries { get; init; }
+    /// <exception cref="ArgumentException">Reported when the writer is created: a column that does not exist, or a size limit below 1.</exception>
+    public IReadOnlyDictionary<string, DictionarySettings>? ColumnDictionaries { get; init; }
 
     /// <summary>
     /// The size, in bytes, a column chunk's dictionary may reach before the writer stops adding to it and falls back to

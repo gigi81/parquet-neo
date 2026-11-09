@@ -24,7 +24,7 @@ public class DictionaryModeTests
     }
 
     private static ParquetWriterOptions Mode(DictionaryMode mode) =>
-        new() { ColumnDictionaries = new Dictionary<string, DictionaryMode> { ["c"] = mode } };
+        new() { ColumnDictionaries = new Dictionary<string, DictionarySettings> { ["c"] = mode } };
 
     private static long[] Unique(int count) => Enumerable.Range(0, count).Select(i => i * 7_919L).ToArray();
 
@@ -100,7 +100,7 @@ public class DictionaryModeTests
     [Test]
     public async Task TurningDictionariesOff_StillWinsOverAColumnsMode()
     {
-        var options = new ParquetWriterOptions { DictionaryEnabled = false, ColumnDictionaries = new Dictionary<string, DictionaryMode> { ["c"] = DictionaryMode.Standard } };
+        var options = new ParquetWriterOptions { DictionaryEnabled = false, ColumnDictionaries = new Dictionary<string, DictionarySettings> { ["c"] = DictionaryMode.Standard } };
 
         var file = TestParquetFile.Parse(WriteLongs(Unique(1000), options));
 
@@ -111,7 +111,7 @@ public class DictionaryModeTests
     public async Task AColumnThatDoesNotExist_IsRefusedWhenTheWriterIsCreated()
     {
         var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.Int64, FieldRepetitionType.Required)]);
-        var options = new ParquetWriterOptions { ColumnDictionaries = new Dictionary<string, DictionaryMode> { ["nope"] = DictionaryMode.Disabled } };
+        var options = new ParquetWriterOptions { ColumnDictionaries = new Dictionary<string, DictionarySettings> { ["nope"] = DictionaryMode.Disabled } };
 
         var exception = Assert.Throws<ArgumentException>(() => new ParquetFileWriter(new MemoryStream(), schema, options));
 
@@ -122,10 +122,56 @@ public class DictionaryModeTests
     public async Task AModeThatIsNotDefined_IsRefusedWhenTheWriterIsCreated()
     {
         var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.Int64, FieldRepetitionType.Required)]);
-        var options = new ParquetWriterOptions { ColumnDictionaries = new Dictionary<string, DictionaryMode> { ["c"] = (DictionaryMode)7 } };
+        var options = new ParquetWriterOptions { ColumnDictionaries = new Dictionary<string, DictionarySettings> { ["c"] = (DictionaryMode)7 } };
 
         var exception = Assert.Throws<ArgumentException>(() => new ParquetFileWriter(new MemoryStream(), schema, options));
 
         await Assert.That(exception.Message).Contains("'c'");
+    }
+
+    private static ParquetWriterOptions Limits(int? writerLimit, int? columnLimit) =>
+        new()
+        {
+            DataPageSize = 600,
+            DictionaryPageSizeLimit = writerLimit ?? 1024 * 1024,
+            ColumnDictionaries = new Dictionary<string, DictionarySettings> { ["c"] = new DictionarySettings { SizeLimit = columnLimit } },
+        };
+
+    private static IEnumerable<ParquetEncoding> DataEncodings(byte[] bytes) =>
+        TestParquetFile.Parse(bytes).DataPages(0, 0).Select(p => p.Header.DataPageHeader!.Encoding);
+
+    [Test]
+    public async Task ASizeLimitOfAColumn_ReplacesTheLimitOfTheWriter_WhenHigher()
+    {
+        var values = Unique(5000);
+
+        // The limit of the writer would drop the dictionary after a few hundred values; the column's keeps it to the end.
+        var kept = DataEncodings(WriteLongs(values, Limits(writerLimit: 2000, columnLimit: 1024 * 1024), batchSize: 100)).ToList();
+        var dropped = DataEncodings(WriteLongs(values, Limits(writerLimit: 2000, columnLimit: null), batchSize: 100)).ToList();
+
+        await Assert.That(kept.All(e => e == ParquetEncoding.RleDictionary)).IsTrue();
+        await Assert.That(dropped.Last()).IsEqualTo(ParquetEncoding.Plain);
+    }
+
+    [Test]
+    public async Task ASizeLimitOfAColumn_ReplacesTheLimitOfTheWriter_WhenLower()
+    {
+        var values = Unique(5000);
+
+        var bytes = WriteLongs(values, Limits(writerLimit: null, columnLimit: 2000), batchSize: 100);
+        TestParquetFile.Parse(bytes).AssertStructure();
+
+        await Assert.That(DataEncodings(bytes).Last()).IsEqualTo(ParquetEncoding.Plain);
+        await Assert.That(TestParquetFile.Parse(bytes).ReadColumn<long>(0, 0)).IsEquivalentTo(values.Select(v => (long?)v));
+    }
+
+    [Test]
+    public async Task ASizeLimitBelowOne_IsRefusedWhenTheWriterIsCreated()
+    {
+        var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.Int64, FieldRepetitionType.Required)]);
+
+        var exception = Assert.Throws<ArgumentException>(() => new ParquetFileWriter(new MemoryStream(), schema, Limits(null, 0)));
+
+        await Assert.That(exception.Message).Contains("size limit");
     }
 }

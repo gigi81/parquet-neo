@@ -165,6 +165,11 @@ the dictionary page and the pages held for it.
   `Disabled`. It is set for chosen columns with `ParquetWriterOptions.ColumnDictionaries` (by column path, like
   `ColumnEncodings`) or, in the serializer, with `[ParquetDictionary(DictionaryMode.Adaptive)]` on the property; the options win
   over the attribute, and `DictionaryEnabled = false` turns every dictionary off whatever a column says.
+- **A size limit per column**: `DictionarySettings` carries the mode and an optional `SizeLimit` that replaces
+  `DictionaryPageSizeLimit` for that column (`SizeLimit = ` on `[ParquetDictionary]`, or a `DictionarySettings` in
+  `ColumnDictionaries`; a `DictionaryMode` alone converts to settings). Raise it for a column with few distinct values that are large
+  (long texts, urls), whose dictionary would be dropped half way through; the dictionary and its pages are held in memory until the
+  column is complete, so it costs memory.
 - **`Adaptive`** looks at the first 32 KiB of the values of the column (4,096 longs); if more than nine in ten are different, the
   dictionary is dropped there and the rest is written plain. The dictionary page and page written for those first values stay in
   the file (32 KB for a long), which readers handle like any other column that gave up its dictionary. A column that repeats is

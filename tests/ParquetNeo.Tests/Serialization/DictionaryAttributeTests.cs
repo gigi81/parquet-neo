@@ -63,11 +63,35 @@ public class DictionaryAttributeTests
     {
         var options = new ParquetSerializerOptions
         {
-            Writer = new ParquetWriterOptions { ColumnDictionaries = new Dictionary<string, DictionaryMode> { ["Id"] = DictionaryMode.Standard } },
+            Writer = new ParquetWriterOptions { ColumnDictionaries = new Dictionary<string, DictionarySettings> { ["Id"] = DictionaryMode.Standard } },
         };
 
         var file = TestParquetFile.Parse(Serialize(Orders(1000), options));
 
         await Assert.That(file.Chunk(0, 0).DictionaryPageOffset).IsNotNull();
+    }
+
+    private sealed class Page
+    {
+        [ParquetDictionary(DictionaryMode.Standard, SizeLimit = 1024 * 1024)]
+        public string Title { get; set; } = "";
+
+        public string Url { get; set; } = "";
+    }
+
+    [Test]
+    public async Task ASizeLimitOnTheAttribute_IsTheLimitOfThatColumnOnly()
+    {
+        // 3000 distinct values of 20 bytes make a dictionary of more than 60 KB, over the limit of 40 KB set for the writer.
+        var pages = Enumerable.Range(0, 20_000).Select(i => new Page { Title = "title-" + (i % 3000).ToString("D14"), Url = "url-" + (i % 3000).ToString("D16") }).ToArray();
+        var stream = new MemoryStream();
+        ParquetSerializer.Serialize(pages, stream, new ParquetSerializerOptions { Writer = new ParquetWriterOptions { DataPageSize = 4000, DictionaryPageSizeLimit = 40_000 } });
+        var file = TestParquetFile.Parse(stream.ToArray());
+
+        var title = file.DataPages(0, 0).Select(p => p.Header.DataPageHeader!.Encoding).Distinct().ToList();
+        var url = file.DataPages(0, 1).Select(p => p.Header.DataPageHeader!.Encoding).Distinct().ToList();
+
+        await Assert.That(title).IsEquivalentTo([ParquetNeo.Metadata.ParquetEncoding.RleDictionary]);
+        await Assert.That(url).Contains(ParquetNeo.Metadata.ParquetEncoding.Plain);
     }
 }

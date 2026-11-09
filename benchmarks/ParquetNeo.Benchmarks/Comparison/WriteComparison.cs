@@ -54,7 +54,7 @@ public class WriteComparison
         _plainOptions = _options with { DictionaryEnabled = false };
         _adaptiveOptions = _options with
         {
-            ColumnDictionaries = new Dictionary<string, DictionaryMode> { ["Id"] = DictionaryMode.Adaptive, ["Amount"] = DictionaryMode.Adaptive },
+            ColumnDictionaries = new Dictionary<string, DictionarySettings> { ["Id"] = DictionaryMode.Adaptive, ["Amount"] = DictionaryMode.Adaptive },
         };
         _netOptions = new PqNet.ParquetOptions
         {
