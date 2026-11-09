@@ -167,6 +167,30 @@ public class DictionaryBuilderTests
     }
 
     [Test]
+    public async Task ValuesThatDifferInOneByteAnywhere_AreTelledApart()
+    {
+        using var dictionary = new BinaryDictionary(lengthPrefixed: true);
+        // Every length to 70 (one word, two words, and the longer values folded 16 bytes at a time), each byte changed in turn.
+        var values = new List<byte[]>();
+        for (int length = 1; length <= 70; length++)
+        {
+            values.Add(new byte[length]);
+            for (int changed = 0; changed < length; changed++)
+            {
+                var value = new byte[length];
+                value[changed] = 0x80;
+                values.Add(value);
+            }
+        }
+
+        var first = values.Select(v => dictionary.GetOrAdd(v, out _)).ToArray();
+        var second = values.Select(v => dictionary.GetOrAdd(v, out bool added) is var index && !added ? index : -1).ToArray();
+
+        await Assert.That(first.Distinct().Count()).IsEqualTo(values.Count);
+        await Assert.That(second).IsEquivalentTo(first);
+    }
+
+    [Test]
     public async Task ABinaryDictionary_WritesPlainWithOrWithoutLengths()
     {
         using var prefixed = new BinaryDictionary(lengthPrefixed: true);

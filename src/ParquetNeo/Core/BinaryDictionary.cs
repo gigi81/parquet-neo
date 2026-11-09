@@ -20,6 +20,7 @@ internal sealed class BinaryDictionary : IDictionaryBuilder
 
     private readonly bool _lengthPrefixed;
     private readonly ulong _seed = (ulong)Random.Shared.NextInt64();
+    private readonly ulong _seedHigh = (ulong)Random.Shared.NextInt64() | 1;
 
     private byte[] _arena = ArrayPool<byte>.Shared.Rent(4096);
     private int _arenaLength;
@@ -177,40 +178,56 @@ internal sealed class BinaryDictionary : IDictionaryBuilder
         return table;
     }
 
-    /// <summary>A fast multiply-and-rotate hash over 8 bytes at a time, seeded per dictionary.</summary>
+    /// <summary>
+    /// A multiply-and-fold hash (in the manner of wyhash): up to 16 bytes are read as two overlapping words and mixed with one
+    /// 64 by 64 bit multiplication; longer values are folded 16 bytes at a time. Seeded per dictionary.
+    /// </summary>
     private uint Hash(ReadOnlySpan<byte> bytes)
     {
         int length = bytes.Length;
-        ulong hash = _seed ^ ((ulong)length * Multiplier);
-        int position = 0;
-        while (length - position >= sizeof(ulong))
+        ulong seed = _seed ^ ((ulong)length * Multiplier);
+        ulong first;
+        ulong second;
+        if (length > 2 * sizeof(ulong))
         {
-            hash = (BitOperations.RotateLeft(hash, 23) ^ BinaryPrimitives.ReadUInt64LittleEndian(bytes[position..])) * Multiplier;
-            position += sizeof(ulong);
+            int position = 0;
+            while (length - position > 2 * sizeof(ulong))
+            {
+                seed = Mix(BinaryPrimitives.ReadUInt64LittleEndian(bytes[position..]) ^ _seedHigh, BinaryPrimitives.ReadUInt64LittleEndian(bytes[(position + sizeof(ulong))..]) ^ seed);
+                position += 2 * sizeof(ulong);
+            }
+
+            first = BinaryPrimitives.ReadUInt64LittleEndian(bytes[^(2 * sizeof(ulong))..]);
+            second = BinaryPrimitives.ReadUInt64LittleEndian(bytes[^sizeof(ulong)..]);
+        }
+        else if (length >= sizeof(ulong))
+        {
+            first = BinaryPrimitives.ReadUInt64LittleEndian(bytes);
+            second = BinaryPrimitives.ReadUInt64LittleEndian(bytes[^sizeof(ulong)..]);
+        }
+        else if (length >= sizeof(uint))
+        {
+            first = BinaryPrimitives.ReadUInt32LittleEndian(bytes);
+            second = BinaryPrimitives.ReadUInt32LittleEndian(bytes[^sizeof(uint)..]);
+        }
+        else if (length > 0)
+        {
+            first = bytes[0] | ((ulong)bytes[length >> 1] << 8) | ((ulong)bytes[^1] << 16);
+            second = 0;
+        }
+        else
+        {
+            first = second = 0;
         }
 
-        if (position < length)
-        {
-            // The 1 to 7 bytes left, read as one word: the last 8 bytes again when there are that many, else two overlapping words.
-            ulong tail;
-            if (length >= sizeof(ulong))
-            {
-                tail = BinaryPrimitives.ReadUInt64LittleEndian(bytes[^sizeof(ulong)..]);
-            }
-            else if (length >= sizeof(uint))
-            {
-                tail = BinaryPrimitives.ReadUInt32LittleEndian(bytes) | ((ulong)BinaryPrimitives.ReadUInt32LittleEndian(bytes[^sizeof(uint)..]) << 32);
-            }
-            else
-            {
-                tail = bytes[0] | ((ulong)bytes[length >> 1] << 8) | ((ulong)bytes[^1] << 16);
-            }
+        ulong mixed = Mix(first ^ _seedHigh, second ^ seed);
+        return (uint)(mixed ^ (mixed >> 32));
+    }
 
-            hash = (BitOperations.RotateLeft(hash, 23) ^ tail) * Multiplier;
-        }
-
-        hash ^= hash >> 32;
-        hash *= Multiplier;
-        return (uint)(hash >> 32);
+    /// <summary>The high and low halves of the 128 bit product, folded together.</summary>
+    private static ulong Mix(ulong left, ulong right)
+    {
+        ulong high = Math.BigMul(left, right, out ulong low);
+        return high ^ low;
     }
 }
