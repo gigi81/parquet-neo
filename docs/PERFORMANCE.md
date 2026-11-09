@@ -180,6 +180,19 @@ columns takes 0.80 of the time it did, 1 MB less in the file (16.2 MB to 15.2 MB
 plain, without any dictionary, it takes 0.55 of the time, but the file is twice the size: the remaining difference is the
 dictionary of the string column.
 
+A sixth round went to the string dictionary, whose loop was the hottest in a column of text:
+
+- **The hash is one 64 by 64 bit multiplication** for values up to 16 bytes (two overlapping words, in the manner of wyhash) and
+  one per 16 bytes beyond that, in place of a rotate and multiply per 8 bytes. It is still seeded randomly for every dictionary,
+  and the output does not depend on it.
+- **ASCII text is narrowed with `Ascii.FromUtf16`**, a vector at a time, and only text that is not ASCII goes through the UTF-8
+  transcoder.
+- **One loop adds a page of strings to the dictionary**, keeping what changes in locals (the bytes of the page, the count of values,
+  the dictionary, the statistics) instead of fields that every value reads and writes.
+
+The string column of 1,000,000 rows (900,000 values, 5,000 of them different) went from 26–28 ms to 24–25 ms; the table of five
+columns by 2 to 3 ms of 43 (the measurements of this laptop vary by that much). The files are the same, byte for byte.
+
 ## Not done yet
 
 Left for a follow-up, with what is known so far:
@@ -188,6 +201,10 @@ Left for a follow-up, with what is known so far:
   path of shredders and assemblers; the compiled function could cover them too.
 - **Parallel encoding for the column API.** `RowGroupWriter` can encode all the columns of a group in parallel, but only the
   serializer and the ADO.NET writer use it; there is no public form for people who write columns by hand.
-- **Encoding strings.** The dictionary encoded string column is still the slowest column to write (about 37 ms of the 71 ms
-  here), in the loop that encodes, hashes and looks up each value.
+- **Encoding strings further.** The dictionary encoded string column is still the slowest column to write (about 24 ms of the
+  42 ms for the table, 27 ns for each of 900,000 values). The profile is flat: reading the string objects (they are all over
+  the heap), narrowing them to bytes, hashing, the lookup (a table, an entry, then the bytes) and packing the indexes each take a
+  few nanoseconds. A layout of the entries that puts offset, length and hash side by side was tried and did not show a gain.
+  What would help most is not doing the work for a value: a cache by string reference helps data that shares its strings, but
+  needs a hash of the reference, which the runtime does not give cheaply.
 - **Asynchronous input and output** has not been tuned, and the asynchronous serializer still stages the file in memory.

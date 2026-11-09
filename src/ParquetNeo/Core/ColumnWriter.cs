@@ -267,17 +267,24 @@ public sealed partial class ColumnWriter
         while (entry < entries)
         {
             int start = entry;
-            while (entry < entries)
+            if (_dictionary is BinaryDictionary dictionary)
             {
-                if (!HasLevels || definitionLevels[entry] == _maxDefinitionLevel)
+                entry = AddStringsToDictionary(dictionary, values, ref next, definitionLevels, repetitionLevels, start, entries);
+            }
+            else
+            {
+                while (entry < entries)
                 {
-                    AppendString(values[next++]);
-                }
+                    if (!HasLevels || definitionLevels[entry] == _maxDefinitionLevel)
+                    {
+                        AppendPlainString(values[next++]);
+                    }
 
-                entry++;
-                if (PageIsFull(start, entry) && AtRecordStart(repetitionLevels, entry, entries))
-                {
-                    break;
+                    entry++;
+                    if (PageIsFull(start, entry) && AtRecordStart(repetitionLevels, entry, entries))
+                    {
+                        break;
+                    }
                 }
             }
 
@@ -492,50 +499,91 @@ public sealed partial class ColumnWriter
         }
     }
 
-    private void AppendString(string value)
+    private void AppendPlainString(string value)
     {
         _valueCount++;
-        if (_dictionary is not BinaryDictionary dictionary)
+        int start = _buffers.Values.WrittenCount;
+        PlainEncoder.WriteString(value, _buffers.Values);
+        if (_statistics is not null)
         {
-            int start = _buffers.Values.WrittenCount;
-            PlainEncoder.WriteString(value, _buffers.Values);
-            if (_statistics is not null)
-            {
-                // The string was encoded straight into the page buffer; the statistics read it back from there.
-                _statistics.AddBinary(_buffers.Values.WrittenSpan[(start + sizeof(int))..]);
-            }
-
-            return;
+            // The string was encoded straight into the page buffer; the statistics read it back from there.
+            _statistics.AddBinary(_buffers.Values.WrittenSpan[(start + sizeof(int))..]);
         }
+    }
 
+    /// <summary>
+    /// Adds the strings of the entries from <paramref name="start"/> on to the dictionary and their indexes to the page, until the page
+    /// is full or the entries end, and returns the entry it stopped at. The same as appending them one at a time, with what the
+    /// loop changes kept in locals: this is the hottest loop of a column of text.
+    /// </summary>
+    private int AddStringsToDictionary(BinaryDictionary dictionary, ReadOnlySpan<string> values, ref int next, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels, int start, int entries)
+    {
         // A dictionary is keyed by bytes (strings and byte arrays share it), so encode before the lookup. Short strings are
         // encoded in one pass into a scratch buffer big enough for any of them; only long ones are measured first.
-        int length;
-        if (value.Length <= ShortStringChars)
+        var scratch = _stringScratch ??= new byte[Encoding.UTF8.GetMaxByteCount(ShortStringChars)];
+        var indices = _buffers.Indices;
+        var statistics = _statistics;
+        bool hasLevels = HasLevels;
+        int maxDefinition = _maxDefinitionLevel;
+        int limit = ChunkLimit;
+        int pageBytes = _pageLogicalBytes;
+        int found = 0;
+        int entry = start;
+        while (entry < entries)
         {
-            _stringScratch ??= new byte[Encoding.UTF8.GetMaxByteCount(ShortStringChars)];
-            length = Encoding.UTF8.GetBytes(value, _stringScratch);
-        }
-        else
-        {
-            length = Encoding.UTF8.GetByteCount(value);
-            if (_stringScratch is null || _stringScratch.Length < length)
+            if (!hasLevels || definitionLevels[entry] == maxDefinition)
             {
-                _stringScratch = new byte[length];
+                string value = values[next++];
+                ReadOnlySpan<byte> bytes;
+                if (value.Length <= ShortStringChars)
+                {
+                    // Most text is ASCII, which is narrowed a vector at a time and needs no transcoding.
+                    if (Ascii.FromUtf16(value, scratch, out int length) != OperationStatus.Done)
+                    {
+                        length = Encoding.UTF8.GetBytes(value, scratch);
+                    }
+
+                    bytes = scratch.AsSpan(0, length);
+                }
+                else
+                {
+                    bytes = EncodeLongString(value);
+                }
+
+                indices.Append(dictionary.GetOrAdd(bytes, out bool added));
+                if (added)
+                {
+                    // The minimum and maximum only change for a value not seen before.
+                    statistics?.AddBinary(bytes);
+                }
+
+                pageBytes += sizeof(int) + bytes.Length;
+                found++;
             }
 
-            Encoding.UTF8.GetBytes(value, _stringScratch);
+            entry++;
+            if ((pageBytes >= limit || _pageLevelCount + (entry - start) >= MaxRowsPerPage) && AtRecordStart(repetitionLevels, entry, entries))
+            {
+                break;
+            }
         }
 
-        var bytes = _stringScratch.AsSpan(0, length);
-        AddIndex(dictionary.GetOrAdd(bytes, out bool added));
-        if (added)
+        _pageLogicalBytes = pageBytes;
+        _valueCount += found;
+        return entry;
+    }
+
+    /// <summary>The UTF-8 bytes of a string too long for the scratch buffer of short ones, in a buffer that grows to fit.</summary>
+    private ReadOnlySpan<byte> EncodeLongString(string value)
+    {
+        int length = Encoding.UTF8.GetByteCount(value);
+        if (_stringScratch is null || _stringScratch.Length < length)
         {
-            // The minimum and maximum only change for a value not seen before.
-            _statistics?.AddBinary(bytes);
+            _stringScratch = new byte[length];
         }
 
-        _pageLogicalBytes += sizeof(int) + length;
+        Encoding.UTF8.GetBytes(value, _stringScratch);
+        return _stringScratch.AsSpan(0, length);
     }
 
     private void AddIndex(int index) => _buffers.Indices.Append(index);
