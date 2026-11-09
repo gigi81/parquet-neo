@@ -3,7 +3,6 @@ using ParquetNeo.ColumnTypes;
 using ParquetNeo.Core;
 using ParquetNeo.Data;
 using ParquetNeo.Metadata;
-using ParquetNeo.Schema;
 using ParquetNeo.Tests.Core;
 
 namespace ParquetNeo.Tests.Data;

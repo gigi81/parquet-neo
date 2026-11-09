@@ -1,6 +1,4 @@
 using ParquetNeo.DataModel;
-using ParquetNeo.Metadata;
-using ParquetNeo.Serialization;
 
 namespace ParquetNeo.Tests.Serialization;
 

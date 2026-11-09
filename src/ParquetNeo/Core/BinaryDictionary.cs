@@ -1,6 +1,5 @@
 using System.Buffers;
 using System.Buffers.Binary;
-using System.Numerics;
 using ParquetNeo.Encodings;
 
 namespace ParquetNeo.Core;

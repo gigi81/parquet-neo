@@ -1,7 +1,6 @@
 using ParquetNeo.Core;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Serialization.Assemblers;
-using ParquetNeo.Serialization.Columns;
 
 namespace ParquetNeo.Serialization;
 

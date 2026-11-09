@@ -1,4 +1,3 @@
-using ParquetNeo.Compression;
 using ParquetNeo.Compression.Snappy;
 using ParquetNeo.Exceptions;
 

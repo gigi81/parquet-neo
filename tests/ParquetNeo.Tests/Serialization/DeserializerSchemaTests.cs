@@ -1,8 +1,6 @@
 using ParquetNeo.DataModel;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Serialization;
-using ParquetNeo.Tests.Core;
-using ParquetNeo.Tests.Core.Nested;
 
 namespace ParquetNeo.Tests.Serialization;
 

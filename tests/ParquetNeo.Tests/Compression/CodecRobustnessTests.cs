@@ -1,4 +1,3 @@
-using ParquetNeo.Compression;
 using ParquetNeo.Exceptions;
 
 namespace ParquetNeo.Tests.Compression;

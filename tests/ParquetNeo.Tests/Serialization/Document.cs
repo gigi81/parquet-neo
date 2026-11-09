@@ -1,5 +1,4 @@
 using ParquetNeo.DataModel;
-using ParquetNeo.Serialization;
 
 namespace ParquetNeo.Tests.Serialization;
 
