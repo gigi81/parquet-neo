@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using ParquetNeo.ColumnTypes;
@@ -10,6 +11,12 @@ namespace ParquetNeo.Serialization.Buffers;
 /// missing values or lists, a definition level per entry and a repetition level per entry when it is repeated. That is the form
 /// <see cref="ColumnWriter"/> takes.
 /// </summary>
+/// <remarks>
+/// The arrays come from the shared array pool and go back to it when the buffer is disposed: a row group of a million rows takes
+/// tens of megabytes of arrays that would be allocated on the large object heap and collected, with a full garbage collection, for
+/// every file written. The pool gives out arrays that are not cleared and may be larger than asked for, so nothing here depends on
+/// the arrays being empty or of an exact length.
+/// </remarks>
 internal sealed class LeafBuffer<TValue> : ILeafBuffer
 {
     private readonly ColumnType<TValue> _type;
@@ -24,16 +31,16 @@ internal sealed class LeafBuffer<TValue> : ILeafBuffer
     {
         capacity = Math.Max(capacity, 1);
         _type = type;
-        _values = new TValue[capacity];
-        _definition = hasDefinitionLevels ? new int[capacity] : null;
-        _repetition = hasRepetitionLevels ? new int[capacity] : null;
+        _values = ArrayPool<TValue>.Shared.Rent(capacity);
+        _definition = hasDefinitionLevels ? ArrayPool<int>.Shared.Rent(capacity) : null;
+        _repetition = hasRepetitionLevels ? ArrayPool<int>.Shared.Rent(capacity) : null;
     }
 
     public void AddValue(TValue value, int definition, int repetition)
     {
         if (_present == _values.Length)
         {
-            Array.Resize(ref _values, _values.Length * 2);
+            Grow(ref _values, _present, clear: RuntimeHelpers.IsReferenceOrContainsReferences<TValue>());
         }
 
         // The array is exactly TValue[], so the store needs no check of the array's actual element type (which a reference type would get).
@@ -61,7 +68,7 @@ internal sealed class LeafBuffer<TValue> : ILeafBuffer
         {
             if (_entries == _definition.Length)
             {
-                Array.Resize(ref _definition, _definition.Length * 2);
+                Grow(ref _definition, _entries, clear: false);
             }
 
             _definition[_entries] = definition;
@@ -71,12 +78,43 @@ internal sealed class LeafBuffer<TValue> : ILeafBuffer
         {
             if (_entries == _repetition.Length)
             {
-                Array.Resize(ref _repetition, _repetition.Length * 2);
+                Grow(ref _repetition, _entries, clear: false);
             }
 
             _repetition[_entries] = repetition;
         }
 
         _entries++;
+    }
+
+    /// <summary>Gives the arrays back to the pool; the buffer cannot be used after this.</summary>
+    public void Dispose()
+    {
+        // References are cleared on the way back, so that the pool does not keep the objects of the rows alive.
+        ArrayPool<TValue>.Shared.Return(_values, RuntimeHelpers.IsReferenceOrContainsReferences<TValue>());
+        _values = [];
+        if (_definition is not null)
+        {
+            ArrayPool<int>.Shared.Return(_definition);
+            _definition = [];
+        }
+
+        if (_repetition is not null)
+        {
+            ArrayPool<int>.Shared.Return(_repetition);
+            _repetition = [];
+        }
+
+        _present = 0;
+        _entries = 0;
+    }
+
+    /// <summary>Replaces <paramref name="array"/> with one twice as long that holds the <paramref name="used"/> items it had, and returns the old one to the pool.</summary>
+    private static void Grow<T>(ref T[] array, int used, bool clear)
+    {
+        var larger = ArrayPool<T>.Shared.Rent(array.Length * 2);
+        array.AsSpan(0, used).CopyTo(larger);
+        ArrayPool<T>.Shared.Return(array, clear);
+        array = larger;
     }
 }
