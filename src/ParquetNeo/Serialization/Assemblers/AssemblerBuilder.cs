@@ -49,7 +49,6 @@ internal sealed class AssemblerBuilder
         try
         {
             int node = _nodes++;
-            int context = _contexts++;
             int first = _slots;
             var discovered = ShredderBuilder.Discover(type);
             var settable = discovered.Where(p => p.SetMethod is { IsPublic: true }).ToList();
@@ -80,8 +79,11 @@ internal sealed class AssemblerBuilder
                 throw new InvalidOperationException($"Two properties of {type.Name} are read from a column named '{ColumnName(duplicate)}'. Rename one with {nameof(ParquetColumnAttribute)} or leave it out with {nameof(ParquetIgnoreAttribute)}.");
             }
 
-            IRowFactory<TValue> factory = direct ? CreateInstanceFactory<TValue>() : CreateConstructorFactory<TValue>(constructor!, properties);
-            var assemblers = properties.Select((property, index) => CreateProperty<TValue>(property, index, factory.UsesSlots, repetition)).ToArray();
+            // An object built by a constructor keeps the values waiting in a context of the read, which is numbered, like the
+            // collections' scratch, in depth-first order: before those of the properties.
+            int context = direct ? -1 : _contexts++;
+            var factory = direct ? null : CreateConstructorFactory<TValue>(constructor!, properties);
+            var assemblers = properties.Select((property, index) => CreateProperty(property, index, repetition)).ToArray();
             return new StructAssembler<TValue>(node, context, optional, first, _slots - first, description, assemblers, factory);
         }
         finally
@@ -109,12 +111,6 @@ internal sealed class AssemblerBuilder
             $"{type.Name} has no public constructor without parameters and none whose parameters are all properties of the same names and types, so rows cannot be created.");
     }
 
-    private static InstanceRowFactory<TValue> CreateInstanceFactory<TValue>()
-    {
-        Expression create = typeof(TValue).IsValueType ? Expression.Default(typeof(TValue)) : Expression.New(typeof(TValue));
-        return new InstanceRowFactory<TValue>(Expression.Lambda<Func<TValue>>(create).Compile());
-    }
-
     private static ConstructorRowFactory<TValue> CreateConstructorFactory<TValue>(ConstructorInfo constructor, List<PropertyInfo> properties)
     {
         var slots = Expression.Parameter(typeof(object[]), "slots");
@@ -140,7 +136,7 @@ internal sealed class AssemblerBuilder
         return new ConstructorRowFactory<TValue>(properties.Count, build);
     }
 
-    private IPropertyAssembler<TParent> CreateProperty<TParent>(PropertyInfo property, int slot, bool usesSlots, int repetition)
+    private IPropertyAssembler CreateProperty(PropertyInfo property, int slot, int repetition)
     {
         var nullable = Nullable.GetUnderlyingType(property.PropertyType);
         var valueType = nullable ?? property.PropertyType;
@@ -148,23 +144,11 @@ internal sealed class AssemblerBuilder
         bool optional = nullable is not null || (!valueType.IsValueType && nullability.ReadState != NullabilityState.NotNull);
         string description = PropertyColumns.Describe(property);
         var value = BuildValue(valueType, nullability, optional, repetition, description);
-        return (IPropertyAssembler<TParent>)Call(nameof(CreateTypedProperty), [typeof(TParent), valueType], property, slot, usesSlots, optional, description, value);
+        return (IPropertyAssembler)Call(nameof(CreateTypedProperty), [valueType], property, slot, optional, description, value);
     }
 
-    private static IPropertyAssembler<TParent> CreateTypedProperty<TParent, TValue>(PropertyInfo property, int slot, bool usesSlots, bool optional, string description, Assembler<TValue> value)
-    {
-        if (usesSlots || property.SetMethod is not { IsPublic: true })
-        {
-            return new PropertyAssembler<TParent, TValue>(ColumnName(property), description, optional, slot, value, null, null, property);
-        }
-
-        var row = Expression.Parameter(typeof(TParent).MakeByRefType(), "row");
-        var input = Expression.Parameter(typeof(TValue), "value");
-        var target = Expression.Property(row, property);
-        var set = Expression.Lambda<Setter<TParent, TValue>>(Expression.Assign(target, Expression.Convert(input, property.PropertyType)), row, input).Compile();
-        var setNull = Expression.Lambda<DefaultSetter<TParent>>(Expression.Assign(target, Expression.Default(property.PropertyType)), row).Compile();
-        return new PropertyAssembler<TParent, TValue>(ColumnName(property), description, optional, slot, value, set, setNull, property);
-    }
+    private static PropertyAssembler<TValue> CreateTypedProperty<TValue>(PropertyInfo property, int slot, bool optional, string description, Assembler<TValue> value) =>
+        new(ColumnName(property), description, optional, slot, value, property);
 
     /// <summary>The assembler for values of a type, whatever kind of column or columns it is read from.</summary>
     private Assembler BuildValue(Type type, NullabilityInfo? nullability, bool optional, int repetition, string description)
@@ -223,38 +207,28 @@ internal sealed class AssemblerBuilder
         where TCollection : class
     {
         var type = typeof(TCollection);
-        Func<ICollection<TItem>> create;
-        bool toArray = type.IsArray;
-        if (toArray)
+
+        // An array or a List<T> is made from the scratch; any other collection is created first and added to.
+        Func<ICollection<TItem>>? create = null;
+        if (scratch < 0)
         {
-            create = () => new List<TItem>();
-        }
-        else if (type.IsInterface)
-        {
-            if (type.IsAssignableFrom(typeof(List<TItem>)))
+            if (type.IsInterface)
             {
-                create = () => new List<TItem>();
+                create = type.IsAssignableFrom(typeof(HashSet<TItem>))
+                    ? () => new HashSet<TItem>()
+                    : throw new NotSupportedException($"{description} is a {type.Name}, an interface that cannot be created. Use an array, a List<T>, a HashSet<T> or an interface they implement.");
             }
-            else if (type.IsAssignableFrom(typeof(HashSet<TItem>)))
+            else if (typeof(ICollection<TItem>).IsAssignableFrom(type) && type.GetConstructor(Type.EmptyTypes) is { IsPublic: true })
             {
-                create = () => new HashSet<TItem>();
+                create = Expression.Lambda<Func<ICollection<TItem>>>(Expression.Convert(Expression.New(type), typeof(ICollection<TItem>))).Compile();
             }
             else
             {
-                throw new NotSupportedException($"{description} is a {type.Name}, an interface that cannot be created. Use an array, a List<T>, a HashSet<T> or an interface they implement.");
+                throw new NotSupportedException($"{description} is a {type.Name}, which cannot be created: it needs a public constructor without parameters and to be an ICollection<T>.");
             }
         }
-        else if (typeof(ICollection<TItem>).IsAssignableFrom(type) && type.GetConstructor(Type.EmptyTypes) is { IsPublic: true })
-        {
-            var constructed = Expression.Lambda<Func<ICollection<TItem>>>(Expression.Convert(Expression.New(type), typeof(ICollection<TItem>))).Compile();
-            create = constructed;
-        }
-        else
-        {
-            throw new NotSupportedException($"{description} is a {type.Name}, which cannot be created: it needs a public constructor without parameters and to be an ICollection<T>.");
-        }
 
-        return new ListAssembler<TCollection, TItem, TElement>(node, first, count, description, elementOptional, create, toArray, scratch, Wrapper<TElement, TItem>(), element);
+        return new ListAssembler<TCollection, TItem, TElement>(node, first, count, description, elementOptional, create, type.IsArray, scratch, Wrapper<TElement, TItem>(), element);
     }
 
     private Assembler BuildMap(Type map, Type keyType, Type valueItemType, NullabilityInfo? nullability, int repetition, string description)

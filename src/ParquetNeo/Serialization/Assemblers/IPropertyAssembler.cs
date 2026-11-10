@@ -5,7 +5,7 @@ using ParquetNeo.Serialization.Columns;
 namespace ParquetNeo.Serialization.Assemblers;
 
 /// <summary>A property of an object: takes its value from the columns and puts it in the object.</summary>
-internal interface IPropertyAssembler<TParent>
+internal interface IPropertyAssembler
 {
     /// <summary>Matches the property to a child of the group of the file the object is read from, or to nothing when there is no such group.</summary>
     /// <param name="group">Null when the object itself is missing from the file.</param>
@@ -14,11 +14,13 @@ internal interface IPropertyAssembler<TParent>
 
     void AddState(List<ILeafColumn> columns, List<object> objects);
 
-    void Read(ReadContext context, RowContext<TParent> parent);
+    /// <summary>Reads the property into its slot among the values that wait for the constructor of an object built by one.</summary>
+    void Read(ReadContext context, RowContext parent);
 
     /// <summary>
-    /// The code that does what <see cref="Read"/> does for a property read straight into <paramref name="row"/>, an instance of the
-    /// parent, from a column of its own; or null when the property is anything else. See <see cref="StructAssembler{TValue}"/>.
+    /// The code that reads the property into <paramref name="row"/>, an instance of the object that was created with its
+    /// parameterless constructor, from <paramref name="context"/>: the code a <see cref="StructAssembler{TValue}"/> of such an
+    /// object is made of.
     /// </summary>
-    Expression? EmitFlat(ParameterExpression row, ParameterExpression context) => null;
+    Expression EmitFlat(ParameterExpression row, ParameterExpression context);
 }

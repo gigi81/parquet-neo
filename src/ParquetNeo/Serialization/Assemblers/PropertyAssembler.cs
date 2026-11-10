@@ -9,18 +9,14 @@ namespace ParquetNeo.Serialization.Assemblers;
 
 /// <param name="name">The name of the column or field of the file.</param>
 /// <param name="slot">The index of the property among the values waiting for a constructor.</param>
-/// <param name="set">Sets the property on the instance, or null when the values wait for a constructor.</param>
-/// <param name="setNull">Sets the property to null, or null when the values wait for a constructor.</param>
-/// <param name="property">The property, for the compiled form of the reading.</param>
-internal sealed class PropertyAssembler<TParent, TValue>(
+/// <param name="property">The property, which the generated code of an object created without a constructor sets.</param>
+internal sealed class PropertyAssembler<TValue>(
     string name,
     string description,
     bool optional,
     int slot,
     Assembler<TValue> value,
-    Setter<TParent, TValue>? set,
-    DefaultSetter<TParent>? setNull,
-    PropertyInfo property) : IPropertyAssembler<TParent>
+    PropertyInfo property) : IPropertyAssembler
 {
     public void Bind(GroupNode? group, string where, ReadBinder binder)
     {
@@ -36,36 +32,20 @@ internal sealed class PropertyAssembler<TParent, TValue>(
 
     public void AddState(List<ILeafColumn> columns, List<object> objects) => value.AddState(columns, objects);
 
-    public void Read(ReadContext context, RowContext<TParent> parent)
+    public void Read(ReadContext context, RowContext parent)
     {
         if (value.Read(context, out TValue? read))
         {
-            if (set is not null)
-            {
-                set(ref parent.Instance, read);
-            }
-            else
-            {
-                parent.Slots![slot] = read;
-            }
+            parent.Slots![slot] = read;
         }
         else if (!optional)
         {
             throw new ValueConversionException($"{description} cannot be null, but row {context.Row} of the file has a null for it.");
         }
-        else
-        {
-            setNull?.Invoke(ref parent.Instance);
-        }
     }
 
-    public Expression? EmitFlat(ParameterExpression row, ParameterExpression context)
+    public Expression EmitFlat(ParameterExpression row, ParameterExpression context)
     {
-        if (set is null)
-        {
-            return null;
-        }
-
         var read = Expression.Variable(typeof(TValue), "read");
         var target = Expression.Property(row, property);
 

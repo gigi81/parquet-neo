@@ -1,10 +1,8 @@
 namespace ParquetNeo.Serialization.Assemblers;
 
-/// <summary>An object being built: the instance itself or, for types built by a constructor, the values waiting for it.</summary>
-internal sealed class RowContext<TRow>
+/// <summary>The values of the properties of an object that is built by a constructor, waiting until all of them have been read.</summary>
+internal sealed class RowContext
 {
-    public TRow Instance = default!;
-
-    /// <summary>The values of the properties, boxed, for a type that is built by a constructor.</summary>
+    /// <summary>The values of the properties, boxed, in the order of the slots.</summary>
     public object?[]? Slots;
 }

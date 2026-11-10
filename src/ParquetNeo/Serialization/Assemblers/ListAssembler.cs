@@ -10,7 +10,7 @@ namespace ParquetNeo.Serialization.Assemblers;
 /// <summary>A collection: the elements of a LIST of the file, in the kind of collection the property has.</summary>
 /// <typeparam name="TCollection">The type of the property.</typeparam>
 /// <typeparam name="TItem">What the collection holds, which is <typeparamref name="TElement"/> or a <see cref="Nullable{T}"/> of it.</typeparam>
-/// <param name="createSink">Creates the collection that the elements are added to.</param>
+/// <param name="createSink">Creates the collection that the elements are added to; null when they are collected in a scratch (see <paramref name="scratchIndex"/>).</param>
 /// <param name="toArray">Whether the property is an array, which is made from the collection once it is full.</param>
 /// <param name="scratchIndex">
 /// The index of the <see cref="ItemScratch{TItem}"/> of this list among <see cref="ReadContext.Objects"/>, or -1 for a collection
@@ -22,7 +22,7 @@ internal sealed class ListAssembler<TCollection, TItem, TElement>(
     int columnCount,
     string description,
     bool elementOptional,
-    Func<ICollection<TItem>> createSink,
+    Func<ICollection<TItem>>? createSink,
     bool toArray,
     int scratchIndex,
     ItemWrapper<TElement, TItem> wrap,
@@ -52,7 +52,7 @@ internal sealed class ListAssembler<TCollection, TItem, TElement>(
             return true;
         }
 
-        var sink = createSink();
+        var sink = createSink!();
         if (definition >= binding.ElementsDefinition)
         {
             do
