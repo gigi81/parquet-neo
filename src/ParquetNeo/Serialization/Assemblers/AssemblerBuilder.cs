@@ -203,12 +203,23 @@ internal sealed class AssemblerBuilder
         bool elementOptional = nullableElement is not null || (!elementType.IsValueType && itemNullability?.ReadState != NullabilityState.NotNull);
 
         int node = _nodes++;
+
+        // An array or a List<T> is made from the elements collected in a scratch of its own, which is one more object of the
+        // context; it comes before those of the element, as the objects are numbered in depth-first order.
+        int scratch = UsesScratch(collection, itemType) ? _contexts++ : -1;
         int first = _slots;
         var element = BuildValue(elementType, itemNullability, elementOptional, repetition + 1, $"{description}, an element,");
-        return (Assembler)Call(nameof(CreateList), [collection, itemType, elementType], node, first, _slots - first, description, elementOptional, element);
+        return (Assembler)Call(nameof(CreateList), [collection, itemType, elementType], node, first, _slots - first, description, elementOptional, scratch, element);
     }
 
-    private static Assembler CreateList<TCollection, TItem, TElement>(int node, int first, int count, string description, bool elementOptional, Assembler<TElement> element)
+    /// <summary>Whether a collection is an array or a <see cref="List{T}"/> (or an interface that one is made for), which are made from a scratch of the elements.</summary>
+    private static bool UsesScratch(Type collection, Type itemType)
+    {
+        var list = typeof(List<>).MakeGenericType(itemType);
+        return collection.IsArray || collection == list || (collection.IsInterface && collection.IsAssignableFrom(list));
+    }
+
+    private static Assembler CreateList<TCollection, TItem, TElement>(int node, int first, int count, string description, bool elementOptional, int scratch, Assembler<TElement> element)
         where TCollection : class
     {
         var type = typeof(TCollection);
@@ -243,7 +254,7 @@ internal sealed class AssemblerBuilder
             throw new NotSupportedException($"{description} is a {type.Name}, which cannot be created: it needs a public constructor without parameters and to be an ICollection<T>.");
         }
 
-        return new ListAssembler<TCollection, TItem, TElement>(node, first, count, description, elementOptional, create, toArray, Wrapper<TElement, TItem>(), element);
+        return new ListAssembler<TCollection, TItem, TElement>(node, first, count, description, elementOptional, create, toArray, scratch, Wrapper<TElement, TItem>(), element);
     }
 
     private Assembler BuildMap(Type map, Type keyType, Type valueItemType, NullabilityInfo? nullability, int repetition, string description)

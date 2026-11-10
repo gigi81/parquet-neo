@@ -61,25 +61,35 @@ internal sealed class PropertyAssembler<TParent, TValue>(
 
     public Expression? EmitFlat(ParameterExpression row, ParameterExpression context)
     {
-        if (set is null || value is not LeafAssembler<TValue> leaf)
+        if (set is null)
         {
             return null;
         }
 
-        var columnType = typeof(LeafColumn<TValue>);
-        var column = Expression.Call(
-            typeof(Unsafe), nameof(Unsafe.As), [columnType],
-            Expression.Convert(Expression.ArrayIndex(Expression.Property(context, nameof(ReadContext.Columns)), Expression.Constant(leaf.FirstColumn)), typeof(object)));
         var read = Expression.Variable(typeof(TValue), "read");
         var target = Expression.Property(row, property);
+
+        // A value in a column of its own is taken from the column right here; any other (an object, a collection, a dictionary)
+        // is read by its assembler, which is called directly instead of through the delegate that sets the property.
+        Expression taken;
+        if (value is LeafAssembler<TValue> leaf)
+        {
+            var columnType = typeof(LeafColumn<TValue>);
+            var column = Expression.Call(
+                typeof(Unsafe), nameof(Unsafe.As), [columnType],
+                Expression.Convert(Expression.ArrayIndex(Expression.Property(context, nameof(ReadContext.Columns)), Expression.Constant(leaf.FirstColumn)), typeof(object)));
+            taken = Expression.Call(column, columnType.GetMethod(nameof(LeafColumn<TValue>.TryTake))!, read);
+        }
+        else
+        {
+            taken = Expression.Call(Expression.Constant(value), typeof(Assembler<TValue>).GetMethod(nameof(Assembler<TValue>.Read))!, context, read);
+        }
+
         Expression whenNull = optional
             ? Expression.Assign(target, Expression.Default(property.PropertyType))
             : Expression.Invoke(Expression.Constant((Action<long>)(number => throw new ValueConversionException($"{description} cannot be null, but row {number} of the file has a null for it."))), Expression.Property(context, nameof(ReadContext.Row)));
         return Expression.Block(
             [read],
-            Expression.IfThenElse(
-                Expression.Call(column, columnType.GetMethod(nameof(LeafColumn<TValue>.TryTake))!, read),
-                Expression.Assign(target, Expression.Convert(read, property.PropertyType)),
-                whenNull));
+            Expression.IfThenElse(taken, Expression.Assign(target, Expression.Convert(read, property.PropertyType)), whenNull));
     }
 }
