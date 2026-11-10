@@ -1,3 +1,4 @@
+using ParquetNeo.Core;
 using ParquetNeo.DataModel;
 using ParquetNeo.Schema;
 
@@ -84,54 +85,59 @@ public static partial class ParquetSerializer
         session.Finish();
     }
 
-    /// <summary>Writes the rows to the stream as a Parquet file, without blocking while the stream is written.</summary>
+    /// <summary>
+    /// Writes the rows to the stream as a Parquet file, without blocking while the stream is written. A row group is encoded while the
+    /// one before is being written, so the time is that of the slower of the two instead of both, and no more than two row groups
+    /// are held in memory.
+    /// </summary>
     /// <exception cref="ArgumentException">A row is null, or a null is written to a required column.</exception>
     public static async Task SerializeAsync<TRow>(IEnumerable<TRow> rows, Stream destination, ParquetSerializerOptions? options = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(rows);
         RequireWritable(destination);
+        await using var pipeline = new PipelinedWriter(destination, cancellationToken);
         using var session = new SerializationSession<TRow>(options, rows.TryGetNonEnumeratedCount(out int count) ? count : null);
-        await FlushAsync(session, destination, cancellationToken).ConfigureAwait(false);
+        await pipeline.WriteAsync(session.TakeStaged()).ConfigureAwait(false);
         foreach (var row in rows)
         {
             session.Add(row);
             if (session.IsFull)
             {
                 session.CloseRowGroup();
-                await FlushAsync(session, destination, cancellationToken).ConfigureAwait(false);
+                await pipeline.WriteAsync(session.TakeStaged()).ConfigureAwait(false);
             }
         }
 
         session.Finish();
-        await FlushAsync(session, destination, cancellationToken).ConfigureAwait(false);
+        await pipeline.WriteAsync(session.TakeStaged()).ConfigureAwait(false);
+        await pipeline.CompleteAsync().ConfigureAwait(false);
     }
 
-    /// <summary>Writes the rows to the stream as a Parquet file as they arrive, holding one row group in memory at a time.</summary>
+    /// <summary>
+    /// Writes the rows to the stream as a Parquet file as they arrive, holding one row group in memory at a time, plus the one that
+    /// is being written while the next is collected.
+    /// </summary>
     /// <exception cref="ArgumentException">A row is null, or a null is written to a required column.</exception>
     public static async Task SerializeAsync<TRow>(IAsyncEnumerable<TRow> rows, Stream destination, ParquetSerializerOptions? options = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(rows);
         RequireWritable(destination);
+        await using var pipeline = new PipelinedWriter(destination, cancellationToken);
         using var session = new SerializationSession<TRow>(options);
-        await FlushAsync(session, destination, cancellationToken).ConfigureAwait(false);
+        await pipeline.WriteAsync(session.TakeStaged()).ConfigureAwait(false);
         await foreach (var row in rows.WithCancellation(cancellationToken).ConfigureAwait(false))
         {
             session.Add(row);
             if (session.IsFull)
             {
                 session.CloseRowGroup();
-                await FlushAsync(session, destination, cancellationToken).ConfigureAwait(false);
+                await pipeline.WriteAsync(session.TakeStaged()).ConfigureAwait(false);
             }
         }
 
         session.Finish();
-        await FlushAsync(session, destination, cancellationToken).ConfigureAwait(false);
-    }
-
-    private static async Task FlushAsync<TRow>(SerializationSession<TRow> session, Stream destination, CancellationToken cancellationToken)
-    {
-        await destination.WriteAsync(session.Staged, cancellationToken).ConfigureAwait(false);
-        session.ResetStaged();
+        await pipeline.WriteAsync(session.TakeStaged()).ConfigureAwait(false);
+        await pipeline.CompleteAsync().ConfigureAwait(false);
     }
 
     private static void RequireWritable(Stream destination)

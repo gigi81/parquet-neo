@@ -230,6 +230,34 @@ the time with one thread is unchanged within the noise of the measurements. The 
 files (it releases them when memory is short), so a process that writes one big file and then nothing holds on to that much memory
 for a while.
 
+A tenth round tuned asynchronous output, which had two costs: the encoded row group was staged in a `MemoryStream` that doubles on the
+large object heap for every file, and the next row group was not collected or encoded until the write of the one before had
+ended, so the time was that of encoding plus that of writing. Now:
+
+- **The staging area is pooled** (`StagingStream`): the bytes of a row group are encoded into arrays from the array pool, and the
+  buffer that follows starts as big as the one before, so a file does not grow its staging by doubling and copying.
+- **A row group is written while the next is collected and encoded** (`PipelinedWriter`): `WriteAsync` of the stream is started and not
+  awaited until the next row group is ready to be handed over, since a stream takes one write at a time. At most two row groups
+  are in memory. A failed or cancelled write surfaces at the next hand-over or at the end, and the memory of a write that is
+  going is not given back to the pool until the write ends. The same for `SerializeAsync` of asynchronous rows and for the
+  asynchronous ADO.NET writer.
+- **The synchronous ADO.NET writer writes straight to the stream**, as the synchronous serializer already did, instead of staging
+  each row group in memory first.
+
+Four row groups of the benchmark table (4,000,000 rows, 64.7 MB), to a destination that takes the time a given speed would:
+
+| Destination | before | after |
+|---|---|---|
+| memory stream | 394 ms | 322 ms |
+| 400 MB/s | 535 ms | 360 ms |
+| 200 MB/s | 663 ms | 435 ms |
+| 100 MB/s | 1,011 ms | 756 ms |
+
+With a destination that takes no time the gain comes from the pooled staging (97 MB allocated on the calling thread becomes
+35 MB, and 0.1 MB with the pooled column buffers of the round before); with a slow one the encoding hides behind the writes (at 100 MB/s the writes alone take about 650 ms). Only the row groups
+overlap: a file of a single row group has nothing to overlap, so `RowGroupSize` should be a fraction of the rows for a slow
+destination. `AsyncWriteComparison` reproduces it with BenchmarkDotNet.
+
 ## Not done yet
 
 Left for a follow-up, with what is known so far:
@@ -245,4 +273,5 @@ Left for a follow-up, with what is known so far:
   few nanoseconds. A layout of the entries that puts offset, length and hash side by side was tried and did not show a gain.
   What would help most is not doing the work for a value: a cache by string reference helps data that shares its strings, but
   needs a hash of the reference, which the runtime does not give cheaply.
-- **Asynchronous input and output** has not been tuned, and the asynchronous serializer still stages the file in memory.
+- **Asynchronous input.** `DeserializeAllAsync` reads the footer and the byte ranges of the columns the row type needs; it does
+  not read the next row group while the rows of one are assembled, as the writer now does in the other direction.
