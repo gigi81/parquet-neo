@@ -92,6 +92,29 @@ public class WriteComparison
         return _output.Length;
     }
 
+    /// <summary>The same columns encoded on four threads with <see cref="RowGroupWriter.WriteColumns(IReadOnlyList{Action{ColumnWriter}}, int, CancellationToken)"/>; the file is the same.</summary>
+    [Benchmark(Description = "ParquetNeo, columns, 4 threads")]
+    public long ParquetNeoColumnsInParallel()
+    {
+        _output.SetLength(0);
+        using var writer = new ParquetFileWriter(_output, _schema, _options, leaveOpen: true);
+        using (var group = writer.AppendRowGroup())
+        {
+            group.WriteColumns(
+                [
+                    column => column.WriteBatch(_data.Ids),
+                    column => column.WriteStrings(_data.CustomerValues, _data.CustomerLevels),
+                    column => column.WriteBatch(_data.AmountValues, _data.AmountLevels),
+                    column => column.WriteBatch(_data.Quantities),
+                    column => column.WriteBatch(_data.Shipped),
+                ],
+                maxDegreeOfParallelism: 4);
+        }
+
+        writer.Close();
+        return _output.Length;
+    }
+
     /// <summary>
     /// Parquet.Net writes every column PLAIN, with no dictionary, which makes its files about twice the size of the others'; this
     /// is ParquetNeo doing the same work, for a like-for-like comparison with it (see the sizes with <c>-- --sizes</c>).

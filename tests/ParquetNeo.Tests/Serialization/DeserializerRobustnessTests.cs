@@ -13,7 +13,25 @@ public class DeserializerRobustnessTests
         Reader = new ParquetReaderOptions { Codecs = TestParquetFile.Registry, MaxPageSize = 1 << 20, MaxRowsPerPage = 1 << 18, MaxFooterSize = 1 << 20 },
     };
 
+    /// <summary>A seed from the name of a file that is the same in every run (<see cref="string.GetHashCode()"/> is not), so that a failure can be reproduced.</summary>
+    private static int StableSeed(string name) => name.Aggregate(17, (seed, character) => unchecked((seed * 31) + character));
+
     private static bool IsExpected(Exception exception) => exception is ParquetException or NotSupportedException;
+
+    [Test]
+    public async Task AFooterThatCountsANegativeNumberOfRows_IsNotAnArgumentException()
+    {
+        // Found by damaging a file at random: the number of rows of a row group is taken from the file, and a list was sized with it.
+        var bytes = File.ReadAllBytes(TestBytes.FixturePath("damaged-negative-row-count.parquet"));
+
+        var sync = Record(() => ParquetSerializer.Deserialize<Document>(new MemoryStream(bytes), Limited));
+        var lazy = Record(() => ParquetSerializer.DeserializeAll<Document>(new MemoryStream(bytes), Limited).ToList());
+        var asynchronous = await RecordAsync(async () => await ParquetSerializer.DeserializeAsync<Document>(new MemoryStream(bytes), Limited));
+
+        await Assert.That(sync is null || IsExpected(sync)).IsTrue().Because($"sync: {sync}");
+        await Assert.That(lazy is null || IsExpected(lazy)).IsTrue().Because($"lazy: {lazy}");
+        await Assert.That(asynchronous is null || IsExpected(asynchronous)).IsTrue().Because($"async: {asynchronous}");
+    }
 
     [Test]
     public async Task RandomlyDamagedFiles_OnlyEverFailWithParquetExceptions_WhenReadIntoRows()
@@ -27,7 +45,7 @@ public class DeserializerRobustnessTests
 
         foreach (var (name, original) in files)
         {
-            var random = new Random(name.GetHashCode());
+            var random = new Random(StableSeed(name));
             for (int attempt = 0; attempt < 300; attempt++)
             {
                 var damaged = (byte[])original.Clone();
@@ -57,7 +75,7 @@ public class DeserializerRobustnessTests
 
         foreach (var (name, original) in files)
         {
-            var random = new Random(name.GetHashCode());
+            var random = new Random(StableSeed(name));
             for (int attempt = 0; attempt < 300; attempt++)
             {
                 var damaged = (byte[])original.Clone();

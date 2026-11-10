@@ -15,7 +15,7 @@ public static partial class ParquetSerializer
         RequireReadable(source);
         using var reader = new ParquetFileReader(source, (options ?? new ParquetDeserializerOptions()).Reader, leaveOpen: true);
         var session = new DeserializationSession<TRow>(reader);
-        var rows = new List<TRow>((int)Math.Min(session.RowCount, DeserializationSession<TRow>.MaxPreallocatedRows));
+        var rows = new List<TRow>(DeserializationSession<TRow>.PreallocatedRows(session.RowCount));
         for (int group = 0; group < session.RowGroupCount; group++)
         {
             rows.AddRange(session.ReadRowGroup(group));

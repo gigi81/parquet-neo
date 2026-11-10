@@ -10,6 +10,9 @@ internal sealed class DeserializationSession<TRow>
     /// <summary>The most rows a list is made room for up front on the word of the file.</summary>
     internal const int MaxPreallocatedRows = 1 << 21;
 
+    /// <summary>How many rows to make room for on the word of the file, which a damaged file can make negative or enormous.</summary>
+    internal static int PreallocatedRows(long rowsAccordingToTheFile) => (int)Math.Clamp(rowsAccordingToTheFile, 0, MaxPreallocatedRows);
+
     private readonly ParquetFileReader _reader;
     private readonly ReadModel<TRow> _model = ReadModel<TRow>.Get();
     private readonly ReadPlan _plan;
@@ -74,7 +77,7 @@ internal sealed class DeserializationSession<TRow>
         }
 
         // The count is what the file says, so the list is only sized for it up to a limit, and grows past that.
-        var rows = new List<TRow>((int)Math.Min(count, MaxPreallocatedRows));
+        var rows = new List<TRow>(PreallocatedRows(count));
         for (long row = 0; row < count; row++)
         {
             rows.Add(_model.Row.ReadRow(_context));
