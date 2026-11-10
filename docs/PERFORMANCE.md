@@ -254,7 +254,7 @@ Four row groups of the benchmark table (4,000,000 rows, 64.7 MB), to a destinati
 | 100 MB/s | 1,011 ms | 756 ms |
 
 With a destination that takes no time the gain comes from the pooled staging (97 MB allocated on the calling thread becomes
-35 MB, and the pooled column buffers of the round before take that to nearly nothing); with a slow one the encoding hides behind the writes (at 100 MB/s the writes alone take about 650 ms). Only the row groups
+35 MB, and 0.1 MB with the pooled column buffers of the round before); with a slow one the encoding hides behind the writes (at 100 MB/s the writes alone take about 650 ms). Only the row groups
 overlap: a file of a single row group has nothing to overlap, so `RowGroupSize` should be a fraction of the rows for a slow
 destination. `AsyncWriteComparison` reproduces it with BenchmarkDotNet.
 
