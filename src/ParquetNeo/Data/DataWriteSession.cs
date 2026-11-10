@@ -128,6 +128,10 @@ internal sealed class DataWriteSession : IDisposable
     {
         _writer.Dispose();
         _staging.Dispose();
+        foreach (var buffer in _buffers)
+        {
+            buffer?.Dispose();
+        }
     }
 
     private static DataTable? TryGetSchemaTable(IDataReader source)

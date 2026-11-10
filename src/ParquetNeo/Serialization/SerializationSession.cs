@@ -146,5 +146,9 @@ internal sealed class SerializationSession<TRow> : IDisposable
     {
         _writer.Dispose();
         _staging.Dispose();
+        foreach (var buffer in _buffers)
+        {
+            buffer.Dispose();
+        }
     }
 }

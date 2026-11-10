@@ -54,7 +54,7 @@ short job, so the error margins are wide: see the notes). Smaller is better.
 | ParquetNeo, columns, no dictionary | 38 ms | 65 ms | 13 KB | 31.3 / 10.9 MB |
 | Parquet.Net, columns | 88 ms | 123 ms | 28 MB | 32.7 / 11.0 MB |
 | ParquetSharp, columns | 112 ms | 128 ms | 13 MB | 15.7 / 8.2 MB |
-| ParquetNeo, serializer | 129 ms | 148 ms | 36 MB | 16.2 / 8.8 MB |
+| ParquetNeo, serializer | 129 ms | 148 ms | 36 MB (20 KB since the pooled buffers, below) | 16.2 / 8.8 MB |
 | ParquetNeo, serializer, 4 threads | 103 ms | 107 ms | 36 MB | same |
 | Parquet.Net, serializer | 140 ms | 166 ms | 128 MB | 32.7 / 11.0 MB |
 
@@ -215,6 +215,20 @@ On 200,000 orders with an optional customer, an address, a list of tags, an arra
 memory stream and read back (the `NestedSerializerBenchmarks` class), the time to write went from 117–131 ms to 104–118 ms, the time
 to read from 78–91 ms to 71–78 ms, and the memory allocated when reading from 144 MB to 124 MB. Reading is bound by the garbage
 collector (the objects it creates), so the time improves less than the allocation does. The files are the same, byte for byte.
+
+A ninth round pooled the column buffers of the serializer. A row group of a million rows takes about 35 MB of arrays (the values and
+the levels of each column), and they were allocated for every file written: on the large object heap, so every file caused a full
+garbage collection or more. A benchmark run on a laptop showed it as Gen2 collections for the serializer with four threads (one for
+every 16 files) that the column API does not have. `LeafBuffer` now takes its arrays from the shared array pool and gives them
+back when the serializer is disposed (cleared, for arrays of references, so that the pool does not keep the rows' strings alive),
+and so does the buffer of the ADO.NET writer. The pool hands out arrays that are not cleared and may be larger than asked, which
+nothing here depends on (checked by writing sparse rows into arrays a run of full ones left behind: the file is the same bytes).
+
+Per file of the benchmark table, the serializer allocates 20 KB (it was 36 MB) and 27 KB with four threads, with no garbage
+collection at all in a steady state; the time with four threads went from about 72 ms to 62 ms on the machine of the tests, and
+the time with one thread is unchanged within the noise of the measurements. The cost is that the pool keeps the arrays between
+files (it releases them when memory is short), so a process that writes one big file and then nothing holds on to that much memory
+for a while.
 
 ## Not done yet
 

@@ -4,7 +4,7 @@ using ParquetNeo.Core;
 namespace ParquetNeo.Data;
 
 /// <summary>Collects the values of one column of the rows of a reader for a row group, whatever their type.</summary>
-internal interface IColumnBuffer
+internal interface IColumnBuffer : IDisposable
 {
     /// <summary>Takes the value of the column from the current row.</summary>
     /// <exception cref="InvalidOperationException">The value is null, but the column is required.</exception>
