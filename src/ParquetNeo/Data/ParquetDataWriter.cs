@@ -1,3 +1,4 @@
+using ParquetNeo.Core;
 using System.Data;
 using System.Data.Common;
 
@@ -25,22 +26,18 @@ public static class ParquetDataWriter
     {
         ArgumentNullException.ThrowIfNull(source);
         RequireWritable(destination);
-        using var session = new DataWriteSession(source, options);
-        destination.Write(session.Staged.Span);
-        session.ResetStaged();
+        // The synchronous writer has nothing to gain from staging the file in memory: the pages go straight to the stream.
+        using var session = new DataWriteSession(source, options, destination);
         while (source.Read())
         {
             session.Add(source);
             if (session.IsFull)
             {
                 session.CloseRowGroup();
-                destination.Write(session.Staged.Span);
-                session.ResetStaged();
             }
         }
 
         session.Finish();
-        destination.Write(session.Staged.Span);
     }
 
     /// <summary>Writes the rest of the rows of the reader to the stream as a Parquet file, without blocking while the reader or the stream waits.</summary>
@@ -51,26 +48,22 @@ public static class ParquetDataWriter
     {
         ArgumentNullException.ThrowIfNull(source);
         RequireWritable(destination);
+        await using var pipeline = new PipelinedWriter(destination, cancellationToken);
         using var session = new DataWriteSession(source, options);
-        await FlushAsync(session, destination, cancellationToken).ConfigureAwait(false);
+        await pipeline.WriteAsync(session.TakeStaged()).ConfigureAwait(false);
         while (await source.ReadAsync(cancellationToken).ConfigureAwait(false))
         {
             session.Add(source);
             if (session.IsFull)
             {
                 session.CloseRowGroup();
-                await FlushAsync(session, destination, cancellationToken).ConfigureAwait(false);
+                await pipeline.WriteAsync(session.TakeStaged()).ConfigureAwait(false);
             }
         }
 
         session.Finish();
-        await FlushAsync(session, destination, cancellationToken).ConfigureAwait(false);
-    }
-
-    private static async Task FlushAsync(DataWriteSession session, Stream destination, CancellationToken cancellationToken)
-    {
-        await destination.WriteAsync(session.Staged, cancellationToken).ConfigureAwait(false);
-        session.ResetStaged();
+        await pipeline.WriteAsync(session.TakeStaged()).ConfigureAwait(false);
+        await pipeline.CompleteAsync().ConfigureAwait(false);
     }
 
     private static void RequireWritable(Stream destination)

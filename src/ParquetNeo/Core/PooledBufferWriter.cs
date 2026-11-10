@@ -14,10 +14,25 @@ internal sealed class PooledBufferWriter<T> : IBufferWriter<T>, IDisposable wher
     private T[] _buffer = [];
     private int _written;
 
+    public PooledBufferWriter()
+    {
+    }
+
+    /// <param name="initialCapacity">The room to start with, when it is known about how much will be written, so that the storage does not grow in steps.</param>
+    public PooledBufferWriter(int initialCapacity)
+    {
+        if (initialCapacity > 0)
+        {
+            _buffer = ArrayPool<T>.Shared.Rent(initialCapacity);
+        }
+    }
+
     /// <summary>The number of items written since the last <see cref="ResetWrittenCount"/>.</summary>
     public int WrittenCount => _written;
 
     public ReadOnlySpan<T> WrittenSpan => _buffer.AsSpan(0, _written);
+
+    public ReadOnlyMemory<T> WrittenMemory => _buffer.AsMemory(0, _written);
 
     public void Advance(int count)
     {

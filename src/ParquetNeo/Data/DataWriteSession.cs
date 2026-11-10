@@ -8,14 +8,14 @@ namespace ParquetNeo.Data;
 
 /// <summary>
 /// Turns the rows of a reader into a Parquet file. The file is encoded into memory, one row group at a time, and handed over in
-/// pieces (<see cref="Staged"/>), so that the caller can write the pieces to the stream however it likes, synchronously or not.
+/// pieces (<see cref="TakeStaged"/>), so that the caller can write the pieces to the stream however it likes, synchronously or not.
 /// </summary>
 internal sealed class DataWriteSession : IDisposable
 {
     /// <summary>The largest precision a Parquet decimal is written with here; providers say 255 for a decimal without one.</summary>
     private const int MaxPrecision = 38;
 
-    private readonly MemoryStream _staging = new();
+    private readonly StagingStream _staging = new();
     private readonly ParquetFileWriter _writer;
     private readonly IColumnBuffer[] _buffers;
     private readonly int _rowGroupSize;
@@ -25,7 +25,8 @@ internal sealed class DataWriteSession : IDisposable
 
     /// <exception cref="ArgumentException">The reader has no columns.</exception>
     /// <exception cref="NotSupportedException">A column has a type that cannot be written.</exception>
-    public DataWriteSession(IDataReader source, ParquetDataWriterOptions? options)
+    /// <param name="destination">A stream to write the file to as it is encoded, when the caller does not need the pieces staged in memory; then <see cref="TakeStaged"/> is always empty.</param>
+    public DataWriteSession(IDataReader source, ParquetDataWriterOptions? options, Stream? destination = null)
     {
         options ??= new ParquetDataWriterOptions();
         if (options.RowGroupSize < 1)
@@ -69,16 +70,14 @@ internal sealed class DataWriteSession : IDisposable
             _buffers[i] = CreateBuffer(columnType, i, name, optional);
         }
 
-        _writer = new ParquetFileWriter(_staging, new ParquetSchema(nodes), options.Writer, leaveOpen: true);
+        _writer = new ParquetFileWriter(destination ?? _staging, new ParquetSchema(nodes), options.Writer, leaveOpen: true);
     }
 
     /// <summary>Whether the row group holds as many rows as the options ask for.</summary>
     public bool IsFull => _rowsInGroup >= _rowGroupSize;
 
-    /// <summary>The bytes of the file encoded so far and not yet taken: call <see cref="ResetStaged"/> once they are written.</summary>
-    public ReadOnlyMemory<byte> Staged => _staging.GetBuffer().AsMemory(0, (int)_staging.Length);
-
-    public void ResetStaged() => _staging.SetLength(0);
+    /// <summary>The bytes of the file encoded so far, which the caller writes and then disposes; the next bytes go to a new buffer.</summary>
+    public StagedBytes TakeStaged() => _staging.Take();
 
     public void Add(IDataRecord row)
     {
