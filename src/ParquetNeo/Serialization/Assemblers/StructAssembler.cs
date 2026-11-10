@@ -15,15 +15,18 @@ internal sealed class StructAssembler<TValue>(
     int firstColumn,
     int columnCount,
     string description,
-    IPropertyAssembler<TValue>[] properties,
-    IRowFactory<TValue> factory) : Assembler<TValue>(firstColumn, columnCount, description)
+    IPropertyAssembler[] properties,
+    ConstructorRowFactory<TValue>? constructor) : Assembler<TValue>(firstColumn, columnCount, description)
 {
     /// <summary>
-    /// When the object is created with its parameterless constructor and every property is read from a column of its own: one
-    /// compiled function that creates it and sets them all, instead of a loop over the properties that each call into their
-    /// column. It does what <see cref="ReadPresent"/> does otherwise.
+    /// Builds the object from the columns: for an object created with its parameterless constructor, one function generated for the
+    /// type that creates it and sets every property, instead of a loop over the properties that each call into their column; for an
+    /// object built by a constructor with parameters (a record, for example), the properties are read into slots, and the
+    /// constructor is called with them.
     /// </summary>
-    private readonly Func<ReadContext, TValue>? _flat = CompileFlat(properties, factory);
+    private readonly Func<ReadContext, TValue> _build = constructor is { } slots
+        ? context => ReadWithConstructor(context, properties, slots, objectIndex)
+        : CompileDirect(properties);
 
     public override bool Read(ReadContext context, out TValue value)
     {
@@ -85,7 +88,11 @@ internal sealed class StructAssembler<TValue>(
 
     public override void AddState(List<ILeafColumn> columns, List<object> objects)
     {
-        objects.Add(new RowContext<TValue>());
+        if (constructor is not null)
+        {
+            objects.Add(new RowContext());
+        }
+
         foreach (var property in properties)
         {
             property.AddState(columns, objects);
@@ -105,43 +112,27 @@ internal sealed class StructAssembler<TValue>(
         }
     }
 
-    private TValue ReadPresent(ReadContext context)
-    {
-        if (_flat is not null)
-        {
-            return _flat(context);
-        }
+    private TValue ReadPresent(ReadContext context) => _build(context);
 
-        var current = (RowContext<TValue>)context.Objects[objectIndex];
-        factory.Begin(current);
+    private static TValue ReadWithConstructor(ReadContext context, IPropertyAssembler[] properties, ConstructorRowFactory<TValue> constructor, int objectIndex)
+    {
+        var current = (RowContext)context.Objects[objectIndex];
+        constructor.Begin(current);
         foreach (var property in properties)
         {
             property.Read(context, current);
         }
 
-        return factory.End(current);
+        return constructor.End(current);
     }
 
-    private static Func<ReadContext, TValue>? CompileFlat(IPropertyAssembler<TValue>[] properties, IRowFactory<TValue> factory)
+    private static Func<ReadContext, TValue> CompileDirect(IPropertyAssembler[] properties)
     {
-        if (factory is not InstanceRowFactory<TValue> instances)
-        {
-            return null;
-        }
-
         var context = Expression.Parameter(typeof(ReadContext), "context");
         var row = Expression.Variable(typeof(TValue), "row");
-        var steps = new List<Expression> { Expression.Assign(row, instances.Create) };
-        foreach (var property in properties)
-        {
-            if (property.EmitFlat(row, context) is not { } step)
-            {
-                return null;
-            }
-
-            steps.Add(step);
-        }
-
+        Expression create = typeof(TValue).IsValueType ? Expression.Default(typeof(TValue)) : Expression.New(typeof(TValue));
+        var steps = new List<Expression> { Expression.Assign(row, create) };
+        steps.AddRange(properties.Select(property => property.EmitFlat(row, context)));
         steps.Add(row);
         return Expression.Lambda<Func<ReadContext, TValue>>(Expression.Block([row], steps), context).Compile();
     }

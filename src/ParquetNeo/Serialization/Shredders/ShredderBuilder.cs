@@ -47,7 +47,7 @@ internal sealed class ShredderBuilder
                 throw new InvalidOperationException($"{typeof(TValue).Name} has no public properties to write as columns.");
             }
 
-            var shredders = new List<PropertyShredder<TValue>>();
+            var shredders = new List<PropertyShredder>();
             var names = new HashSet<string>(StringComparer.Ordinal);
             foreach (var property in properties)
             {
@@ -57,7 +57,7 @@ internal sealed class ShredderBuilder
                     throw new InvalidOperationException($"Two properties of {typeof(TValue).Name} are written to a column named '{name}'. Rename one with {nameof(ParquetColumnAttribute)} or leave it out with {nameof(ParquetIgnoreAttribute)}.");
                 }
 
-                shredders.Add(BuildProperty<TValue>(property, name, inside, path));
+                shredders.Add(BuildProperty(property, name, inside, path));
             }
 
             return new StructShredder<TValue>(optional, first, _leaves.Count - first, description, shredders.ToArray());
@@ -88,7 +88,7 @@ internal sealed class ShredderBuilder
         return depth;
     }
 
-    private PropertyShredder<TParent> BuildProperty<TParent>(PropertyInfo property, string name, Position position, string parentPath)
+    private PropertyShredder BuildProperty(PropertyInfo property, string name, Position position, string parentPath)
     {
         var nullable = Nullable.GetUnderlyingType(property.PropertyType);
         var valueType = nullable ?? property.PropertyType;
@@ -99,15 +99,15 @@ internal sealed class ShredderBuilder
 
         var value = BuildValue(valueType, nullability, optional, property, position, path, encoding, PropertyColumns.Describe(property));
         var create = nullable is not null ? nameof(CreateNullableProperty) : nameof(CreateProperty);
-        return (PropertyShredder<TParent>)Call(create, [typeof(TParent), valueType], property, name, value);
+        return (PropertyShredder)Call(create, [valueType], property, name, value);
     }
 
-    private static PropertyShredder<TParent> CreateProperty<TParent, TValue>(PropertyInfo property, string name, Shredder<TValue> value) =>
-        new PropertyShredder<TParent, TValue>(name, Getters.Direct<TParent, TValue>(property), value, property, nullable: false);
+    private static PropertyShredder CreateProperty<TValue>(PropertyInfo property, string name, Shredder<TValue> value) =>
+        new PropertyShredder<TValue>(name, value, property, nullable: false);
 
-    private static PropertyShredder<TParent> CreateNullableProperty<TParent, TValue>(PropertyInfo property, string name, Shredder<TValue> value)
+    private static PropertyShredder CreateNullableProperty<TValue>(PropertyInfo property, string name, Shredder<TValue> value)
         where TValue : struct =>
-        new PropertyShredder<TParent, TValue>(name, Getters.OfNullable<TParent, TValue>(property), value, property, nullable: true);
+        new PropertyShredder<TValue>(name, value, property, nullable: true);
 
     /// <summary>The shredder for values of a type, whatever kind of column or columns it is written as.</summary>
     private Shredder BuildValue(Type type, NullabilityInfo? nullability, bool optional, PropertyInfo source, Position position, string path, ParquetEncoding? encoding, string description, bool lenient = false)

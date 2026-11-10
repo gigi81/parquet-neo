@@ -1,11 +1,9 @@
 namespace ParquetNeo.Serialization.Assemblers;
 
 /// <summary>A row type built by a constructor whose parameters are properties, such as a record: the values are collected, then passed together.</summary>
-internal sealed class ConstructorRowFactory<TRow>(int slotCount, Func<object?[], TRow> build) : IRowFactory<TRow>
+internal sealed class ConstructorRowFactory<TRow>(int slotCount, Func<object?[], TRow> build)
 {
-    public bool UsesSlots => true;
-
-    public void Begin(RowContext<TRow> context)
+    public void Begin(RowContext context)
     {
         if (context.Slots is null)
         {
@@ -17,5 +15,5 @@ internal sealed class ConstructorRowFactory<TRow>(int slotCount, Func<object?[],
         }
     }
 
-    public TRow End(RowContext<TRow> context) => build(context.Slots!);
+    public TRow End(RowContext context) => build(context.Slots!);
 }

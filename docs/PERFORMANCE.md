@@ -202,12 +202,29 @@ compression). The encoded group is held in memory until every column is done, wh
 On the benchmark table, through the column API with four threads: 48.7 ms becomes 33.0 ms uncompressed (0.68) and 73.1 ms becomes
 34.1 ms with Snappy (0.47); the time is that of the slowest column, here the strings.
 
+An eighth round brought the compiled functions to rows that are not flat. The function generated for an object now handles every
+kind of property: a single column goes straight to its buffer (or is taken from its column), and an object, collection or
+dictionary is handed to its shredder (or assembler), which is called directly from the generated code instead of through a delegate
+that reads or sets the property. An object anywhere in the row is compiled, with the definition and repetition levels as arguments
+because it can be anywhere in the row. When reading, a list that is an array or a `List<T>` collects its elements in a scratch buffer
+of the read and is then made once, with exactly the room it needs, in place of a list that grows by doubling (and for an array, is
+copied again by `ToArray`); the scratch belongs to the read, not to the assembler, since assemblers are shared by every read of a row
+type.
+
+On 200,000 orders with an optional customer, an address, a list of tags, an array of scores and a list of order lines, written to a
+memory stream and read back (the `NestedSerializerBenchmarks` class), the time to write went from 117–131 ms to 104–118 ms, the time
+to read from 78–91 ms to 71–78 ms, and the memory allocated when reading from 144 MB to 124 MB. Reading is bound by the garbage
+collector (the objects it creates), so the time improves less than the allocation does. The files are the same, byte for byte.
+
 ## Not done yet
 
 Left for a follow-up, with what is known so far:
 
-- **Rows that are not flat.** Nested objects, lists and maps, and types built by a constructor, still go through the general
-  path of shredders and assemblers; the compiled function could cover them too.
+- **Rows built by a constructor.** Types that are created by a constructor with parameters (records, for example) still read through
+  the general path, which holds the values in boxed slots until the constructor is called; the compiled function could call the
+  constructor with the values straight from the columns.
+- **Collections and dictionaries inside rows** are walked by their shredders and assemblers (a virtual call for each element); only
+  the properties around them are compiled. Maps are still created empty and added to.
 - **Encoding strings further.** The dictionary encoded string column is still the slowest column to write (about 24 ms of the
   42 ms for the table, 27 ns for each of 900,000 values). The profile is flat: reading the string objects (they are all over
   the heap), narrowing them to bytes, hashing, the lookup (a table, an entry, then the bytes) and packing the indexes each take a

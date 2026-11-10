@@ -5,15 +5,15 @@ using ParquetNeo.Serialization.Buffers;
 namespace ParquetNeo.Serialization.Shredders;
 
 /// <summary>An object: a group of the properties it is written as, optional when the object may be null.</summary>
-internal sealed class StructShredder<TValue>(bool optional, int firstColumn, int columnCount, string description, PropertyShredder<TValue>[] properties)
+internal sealed class StructShredder<TValue>(bool optional, int firstColumn, int columnCount, string description, PropertyShredder[] properties)
     : Shredder<TValue>(optional, firstColumn, columnCount, description)
 {
     /// <summary>
-    /// When every property is a single column: the shredding of all of them in one compiled function, for an object that has no
-    /// optional or repeated ancestor. It does what the loop over the properties does without the calls between the small objects
-    /// that make it up.
+    /// The shredding of all the properties in one function generated for the type, instead of a loop over small objects that each
+    /// read a property through a delegate and call the shredder of its type: the properties are read and added to their columns
+    /// (or handed to the shredder of an object, collection or dictionary) in one piece of code.
     /// </summary>
-    private readonly Action<TValue, ILeafBuffer[]>? _flat = CompileFlat(properties);
+    private readonly Action<TValue, int, int, ILeafBuffer[]> _shredProperties = Compile(properties);
 
     public override void Shred(TValue value, bool present, int definition, int repetition, ILeafBuffer[] buffers)
     {
@@ -32,39 +32,20 @@ internal sealed class StructShredder<TValue>(bool optional, int firstColumn, int
     }
 
     /// <summary>Shreds the properties of an object that is there; the root, which is not a group of the file, starts here.</summary>
-    public void ShredProperties(TValue value, int definition, int repetition, ILeafBuffer[] buffers)
-    {
-        if (_flat is not null && definition == 0 && repetition == 0)
-        {
-            _flat(value, buffers);
-            return;
-        }
-
-        foreach (var property in properties)
-        {
-            property.Shred(value, definition, repetition, buffers);
-        }
-    }
+    public void ShredProperties(TValue value, int definition, int repetition, ILeafBuffer[] buffers) =>
+        _shredProperties(value, definition, repetition, buffers);
 
     public override SchemaNode CreateSchemaNode(string name) => new GroupNode(name, Repetition, CreateChildren());
 
     public IEnumerable<SchemaNode> CreateChildren() => properties.Select(p => p.CreateSchemaNode());
 
-    private static Action<TValue, ILeafBuffer[]>? CompileFlat(PropertyShredder<TValue>[] properties)
+    private static Action<TValue, int, int, ILeafBuffer[]> Compile(PropertyShredder[] properties)
     {
         var parent = Expression.Parameter(typeof(TValue), "row");
+        var definition = Expression.Parameter(typeof(int), "definition");
+        var repetition = Expression.Parameter(typeof(int), "repetition");
         var buffers = Expression.Parameter(typeof(ILeafBuffer[]), "buffers");
-        var steps = new List<Expression>(properties.Length);
-        foreach (var property in properties)
-        {
-            if (property.EmitFlat(parent, buffers) is not { } step)
-            {
-                return null;
-            }
-
-            steps.Add(step);
-        }
-
-        return Expression.Lambda<Action<TValue, ILeafBuffer[]>>(Expression.Block(steps), parent, buffers).Compile();
+        var steps = properties.Select(property => property.Emit(parent, definition, repetition, buffers)).ToList();
+        return Expression.Lambda<Action<TValue, int, int, ILeafBuffer[]>>(Expression.Block(steps), parent, definition, repetition, buffers).Compile();
     }
 }
