@@ -1,4 +1,4 @@
-namespace ParquetNeo.Metadata;
+namespace ParquetNeo;
 
 // Values match parquet.thrift. Unknown values read from a file are preserved as-is.
 

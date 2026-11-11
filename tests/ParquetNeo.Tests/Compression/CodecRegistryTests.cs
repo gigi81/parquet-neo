@@ -2,7 +2,6 @@ using ParquetNeo.Compression;
 using ParquetNeo.Compression.Lz4;
 using ParquetNeo.Compression.Snappy;
 using ParquetNeo.Compression.Zstd;
-using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Tests.Compression;
 

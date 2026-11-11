@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using ParquetNeo.Exceptions;
-using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Compression;
 

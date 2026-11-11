@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ParquetNeo.Enums\ParquetNeo.Enums.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="ParquetNeo.Tests" />
     <InternalsVisibleTo Include="ParquetNeo.Benchmarks" />
   </ItemGroup>

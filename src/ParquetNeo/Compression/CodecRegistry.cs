@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Compression;
 

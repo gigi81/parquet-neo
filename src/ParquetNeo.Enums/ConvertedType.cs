@@ -1,6 +1,6 @@
-namespace ParquetNeo.Metadata;
+namespace ParquetNeo;
 
-/// <summary>Legacy type annotations, superseded by <see cref="LogicalType"/>.</summary>
+/// <summary>Legacy type annotations, superseded by <c>LogicalType</c>.</summary>
 public enum ConvertedType
 {
     Utf8 = 0,

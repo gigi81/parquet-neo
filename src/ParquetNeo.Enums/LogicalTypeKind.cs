@@ -1,6 +1,6 @@
-namespace ParquetNeo.Metadata;
+namespace ParquetNeo;
 
-/// <summary>Kind of a <see cref="LogicalType"/>. Values are the field ids of the thrift union.</summary>
+/// <summary>Kind of a <c>LogicalType</c>. Values are the field ids of the thrift union.</summary>
 public enum LogicalTypeKind
 {
     /// <summary>A union member this library does not know; callers should fall back to the physical type.</summary>

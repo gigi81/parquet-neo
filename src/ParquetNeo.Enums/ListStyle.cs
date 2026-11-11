@@ -1,4 +1,4 @@
-namespace ParquetNeo.Nested;
+namespace ParquetNeo;
 
 /// <summary>How a list is laid out in the schema. Writers have used several; readers must accept them all.</summary>
 public enum ListStyle

@@ -1,6 +1,5 @@
 using K4os.Compression.LZ4;
 using ParquetNeo.Exceptions;
-using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Compression.Lz4;
 

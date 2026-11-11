@@ -1,4 +1,4 @@
-namespace ParquetNeo.Core;
+namespace ParquetNeo;
 
 /// <summary>The layout of the data pages a writer produces.</summary>
 public enum DataPageVersion

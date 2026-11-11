@@ -1,6 +1,6 @@
-namespace ParquetNeo.ColumnTypes;
+namespace ParquetNeo;
 
-/// <summary>The kinds of <see cref="ColumnSettings"/> a column type can take.</summary>
+/// <summary>The kinds of <c>ColumnSettings</c> a column type can take.</summary>
 [Flags]
 public enum ColumnSettingKinds
 {

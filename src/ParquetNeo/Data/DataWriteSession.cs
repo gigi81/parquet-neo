@@ -1,7 +1,6 @@
 using System.Data;
 using ParquetNeo.ColumnTypes;
 using ParquetNeo.Core;
-using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
 namespace ParquetNeo.Data;

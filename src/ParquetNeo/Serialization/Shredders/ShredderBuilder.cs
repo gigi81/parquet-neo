@@ -4,7 +4,6 @@ using System.Runtime.ExceptionServices;
 using ParquetNeo.ColumnTypes;
 using ParquetNeo.Core;
 using ParquetNeo.DataModel;
-using ParquetNeo.Metadata;
 using ParquetNeo.Serialization.Buffers;
 
 namespace ParquetNeo.Serialization.Shredders;

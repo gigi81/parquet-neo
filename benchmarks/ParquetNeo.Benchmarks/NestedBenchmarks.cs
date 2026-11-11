@@ -1,6 +1,5 @@
 using BenchmarkDotNet.Attributes;
 using ParquetNeo.Core;
-using ParquetNeo.Metadata;
 using ParquetNeo.Nested;
 using ParquetNeo.Schema;
 
