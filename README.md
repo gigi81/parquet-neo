@@ -102,7 +102,8 @@ while (reader.Read())
 |---|---|
 | `src/ParquetNeo` | The library |
 | `src/ParquetNeo.Enums` | The enumerations (the types of the Parquet format, and the options that name a choice), all in the `ParquetNeo` namespace |
-| `tests/ParquetNeo.Tests` | Unit tests ([TUnit](https://tunit.dev/)) |
+| `tests/ParquetNeo.Tests` | Unit tests of `ParquetNeo` ([TUnit](https://tunit.dev/)) |
+| `tests/ParquetNeo.Enums.Tests`, `tests/ParquetNeo.Compression.*.Tests` | Each project has a test project of its own; the add-on codec projects run the shared codec checks of `tests/ParquetNeo.Tests.Common` |
 | `benchmarks/ParquetNeo.Benchmarks` | [BenchmarkDotNet](https://benchmarkdotnet.org/) benchmarks |
 | `specs` | Local copy of the Parquet format specification and `parquet.thrift` |
 | `docs` | Project documentation, including the plan |

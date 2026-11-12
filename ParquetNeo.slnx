@@ -10,6 +10,11 @@
     <Project Path="src/ParquetNeo.Compression.Zstd/ParquetNeo.Compression.Zstd.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/ParquetNeo.Compression.Lz4.Tests/ParquetNeo.Compression.Lz4.Tests.csproj" />
+    <Project Path="tests/ParquetNeo.Compression.Snappy.Tests/ParquetNeo.Compression.Snappy.Tests.csproj" />
+    <Project Path="tests/ParquetNeo.Compression.Zstd.Tests/ParquetNeo.Compression.Zstd.Tests.csproj" />
+    <Project Path="tests/ParquetNeo.Enums.Tests/ParquetNeo.Enums.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Tests/ParquetNeo.Tests.csproj" />
+    <Project Path="tests/ParquetNeo.Tests.Common/ParquetNeo.Tests.Common.csproj" />
   </Folder>
 </Solution>

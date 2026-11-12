@@ -116,8 +116,13 @@ deliver the DTO API. Steps 13–15 may be reordered based on benchmark results.
 
 ## Testing
 
-- Framework: **TUnit**, one test project per library project (`tests/ParquetNeo.Tests`, plus
-  add-on test projects as they appear).
+- Framework: **TUnit**. **Every library project has a test project of its own**
+  (`tests/<Project>.Tests`: `ParquetNeo.Tests`, `ParquetNeo.Enums.Tests`,
+  `ParquetNeo.Compression.Snappy.Tests`, ...), with the fixtures it needs in its own `Fixtures` folder.
+  Test code that several of them share (the checks every codec must pass, the data they run on) is in
+  `tests/ParquetNeo.Tests.Common`, a library with no tests. A test belongs to the project of the code it is about;
+  a test that exercises several projects together (the writer with every codec, for example) lives with the
+  project that uses the others.
 - Unit tests for every encoder/decoder: golden-byte vectors from the spec, edge cases
   (empty, single value, run boundaries, bit widths 0–64), and randomized round-trips.
 - Write → read round-trip tests for every physical/logical type, encoding and codec.

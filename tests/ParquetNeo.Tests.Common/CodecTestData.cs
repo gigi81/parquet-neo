@@ -1,17 +1,12 @@
-using System.IO.Compression;
-using K4os.Compression.LZ4;
 using ParquetNeo.Compression;
-using ParquetNeo.Compression.Lz4;
-using ParquetNeo.Compression.Snappy;
-using ParquetNeo.Compression.Zstd;
 
 namespace ParquetNeo.Tests.Compression;
 
 /// <summary>
 /// The inputs of the compression vectors, rebuilt from formulas that mirror
-/// tests/fixtures/generate_codec_fixtures.py, plus the codecs under test.
+/// tests/fixtures/generate_codec_fixtures.py. The vectors themselves are in the Fixtures/Codecs folder of the test project of each codec.
 /// </summary>
-internal static class CodecTestData
+public static class CodecTestData
 {
     public static IReadOnlyDictionary<string, byte[]> Cases { get; } = new Dictionary<string, byte[]>
     {
@@ -23,24 +18,6 @@ internal static class CodecTestData
         ["noise"] = Lcg(5000, 12345),
         ["mixed"] = Mixed(140_000),
     };
-
-    /// <summary>Every codec configuration the round-trip and robustness tests run against.</summary>
-    public static IReadOnlyList<(string Name, ICodec Codec)> Codecs { get; } =
-    [
-        ("uncompressed", new UncompressedCodec()),
-        ("snappy", new SnappyCodec()),
-        ("gzip", new GzipCodec()),
-        ("gzip-fastest", new GzipCodec(CompressionLevel.Fastest)),
-        ("gzip-smallest", new GzipCodec(CompressionLevel.SmallestSize)),
-        ("brotli", new BrotliCodec()),
-        ("brotli-0", new BrotliCodec(0)),
-        ("brotli-9", new BrotliCodec(9)),
-        ("zstd", new ZstdCodec()),
-        ("zstd-1", new ZstdCodec(1)),
-        ("zstd-19", new ZstdCodec(19)),
-        ("lz4raw", new Lz4RawCodec()),
-        ("lz4raw-hc", new Lz4RawCodec(LZ4Level.L09_HC)),
-    ];
 
     public static byte[] Lcg(int count, uint seed)
     {
@@ -55,8 +32,9 @@ internal static class CodecTestData
         return bytes;
     }
 
+    /// <summary>The bytes a reference implementation compressed a case to, from the Fixtures/Codecs folder of the test project that runs.</summary>
     public static byte[] Vector(string name, string extension) =>
-        File.ReadAllBytes(TestBytes.FixturePath($"Codecs/{name}.{extension}"));
+        File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Fixtures", "Codecs", $"{name}.{extension}"));
 
     public static byte[] Compress(ICodec codec, byte[] data)
     {
