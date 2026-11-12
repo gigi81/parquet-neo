@@ -1,5 +1,4 @@
 using ParquetNeo.Compression;
-using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Core;
 

@@ -1,4 +1,4 @@
-namespace ParquetNeo.Metadata;
+namespace ParquetNeo;
 
 /// <summary>Order of a column's type-defined sort (thrift <c>ColumnOrder</c> union).</summary>
 public enum ColumnOrder

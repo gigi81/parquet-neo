@@ -1,6 +1,5 @@
 using ParquetNeo.Core;
 using ParquetNeo.Exceptions;
-using ParquetNeo.Metadata;
 using ParquetNeo.Tests.Core;
 
 namespace ParquetNeo.Tests.Encodings;

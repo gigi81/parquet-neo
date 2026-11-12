@@ -1,7 +1,8 @@
-using ParquetNeo.Compression.Snappy;
 using ParquetNeo.Exceptions;
+using ParquetNeo.Tests;
+using ParquetNeo.Tests.Compression;
 
-namespace ParquetNeo.Tests.Compression;
+namespace ParquetNeo.Compression.Snappy.Tests;
 
 /// <summary>Hand-built Snappy streams, one per element type of the format, and the ways they can be wrong.</summary>
 public class SnappyCodecTests
@@ -16,12 +17,12 @@ public class SnappyCodecTests
 
         // A 100-byte literal needs the 1-byte length form: tag 60<<2 = 0xF0 then length-1 = 99.
         var hundred = new string('x', 100);
-        var stream = TestBytes.Hex("64 F0 63").Concat(System.Text.Encoding.ASCII.GetBytes(hundred)).ToArray();
+        var stream = TestHex.Parse("64 F0 63").Concat(System.Text.Encoding.ASCII.GetBytes(hundred)).ToArray();
         await Assert.That(Decode(stream, 100)).IsEqualTo(hundred);
 
         // 300 bytes: tag 61<<2 = 0xF4, then length-1 = 299 in two bytes (2B 01).
         var threeHundred = new string('y', 300);
-        var longStream = TestBytes.Hex("AC 02 F4 2B 01").Concat(System.Text.Encoding.ASCII.GetBytes(threeHundred)).ToArray();
+        var longStream = TestHex.Parse("AC 02 F4 2B 01").Concat(System.Text.Encoding.ASCII.GetBytes(threeHundred)).ToArray();
         await Assert.That(Decode(longStream, 300)).IsEqualTo(threeHundred);
     }
 
@@ -59,15 +60,15 @@ public class SnappyCodecTests
     public async Task EmptyOutput_IsJustThePreamble()
     {
         await Assert.That(Decode("00", 0)).IsEqualTo(string.Empty);
-        await Assert.That(TestBytes.ToHex(CodecTestData.Compress(Snappy, []))).IsEqualTo("00");
+        await Assert.That(TestHex.Format(CodecTestData.Compress(Snappy, []))).IsEqualTo("00");
     }
 
     [Test]
     public async Task TheEncoder_EmitsTheSameBytesAsLibsnappy_ForSimpleInputs()
     {
         // Reference outputs produced by libsnappy through pyarrow.
-        await Assert.That(TestBytes.ToHex(CodecTestData.Compress(Snappy, "a"u8.ToArray()))).IsEqualTo("010061");
-        await Assert.That(TestBytes.ToHex(CodecTestData.Compress(Snappy, Enumerable.Repeat((byte)'a', 100).ToArray())))
+        await Assert.That(TestHex.Format(CodecTestData.Compress(Snappy, "a"u8.ToArray()))).IsEqualTo("010061");
+        await Assert.That(TestHex.Format(CodecTestData.Compress(Snappy, Enumerable.Repeat((byte)'a', 100).ToArray())))
             .IsEqualTo("640061FE01008A0100");
     }
 
@@ -99,7 +100,7 @@ public class SnappyCodecTests
 
         foreach (var (reason, hex, length) in cases)
         {
-            var data = TestBytes.Hex(hex);
+            var data = TestHex.Parse(hex);
 
             await Assert.That(() => Snappy.Decompress(data, new byte[length])).Throws<CompressionException>().Because(reason);
         }
@@ -183,7 +184,36 @@ public class SnappyCodecTests
         return bytes.ToArray();
     }
 
-    private static string Decode(string hex, int length) => Decode(TestBytes.Hex(hex), length);
+    [Test]
+    public async Task OutputOfTheReferenceEncoder_MatchesOurs_ForSmallInputs()
+    {
+        // pyarrow's libsnappy output for 100 x 'a': preamble, literal 'a', two overlapping copies at offset 1.
+        var hundred = Enumerable.Repeat((byte)'a', 100).ToArray();
+
+        var ours = CodecTestData.Compress(Snappy, hundred);
+
+        await Assert.That(TestHex.Format(ours)).IsEqualTo("640061FE01008A0100");
+    }
+
+    [Test]
+    public async Task StreamsWithACorrectPreamble_AndGarbageBodies_OnlyFailWithCompressionException()
+    {
+        // Random garbage almost never declares the destination's length, so it is rejected before decoding.
+        // Declare it correctly so the element decoder itself sees hostile bytes.
+        var random = new Random(17);
+        for (int attempt = 0; attempt < 5000; attempt++)
+        {
+            int length = random.Next(0, 400);
+            var body = new byte[random.Next(0, 150)];
+            random.NextBytes(body);
+            var preamble = length < 128 ? new[] { (byte)length } : new[] { (byte)(length | 0x80), (byte)(length >> 7) };
+            var input = preamble.Concat(body).ToArray();
+
+            await Assert.That(CodecConformance.Probe(() => Snappy.Decompress(input, new byte[length]))).IsNull().Because($"attempt {attempt}");
+        }
+    }
+
+    private static string Decode(string hex, int length) => Decode(TestHex.Parse(hex), length);
 
     private static string Decode(byte[] data, int length) =>
         System.Text.Encoding.ASCII.GetString(CodecTestData.Decompress(Snappy, data, length));

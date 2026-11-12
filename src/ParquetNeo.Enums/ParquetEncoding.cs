@@ -1,4 +1,4 @@
-namespace ParquetNeo.Metadata;
+namespace ParquetNeo;
 
 /// <summary>Value encodings (thrift <c>Encoding</c>).</summary>
 public enum ParquetEncoding

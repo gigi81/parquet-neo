@@ -1,4 +1,4 @@
-namespace ParquetNeo.Metadata;
+namespace ParquetNeo;
 
 public enum PageType
 {

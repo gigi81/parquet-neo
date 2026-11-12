@@ -47,8 +47,8 @@ public class DictionaryAttributeTests
 
         // Id: no dictionary. Reference and Tickets: dropped after the first values. Country: repeats, kept to the end.
         await Assert.That(file.Chunk(0, 0).DictionaryPageOffset).IsNull();
-        await Assert.That(file.DataPages(0, 1).Select(p => p.Header.DataPageHeader!.Encoding).Distinct()).IsEquivalentTo([ParquetNeo.Metadata.ParquetEncoding.RleDictionary, ParquetNeo.Metadata.ParquetEncoding.Plain]);
-        await Assert.That(file.DataPages(0, 2).Select(p => p.Header.DataPageHeader!.Encoding).Distinct()).IsEquivalentTo([ParquetNeo.Metadata.ParquetEncoding.RleDictionary]);
+        await Assert.That(file.DataPages(0, 1).Select(p => p.Header.DataPageHeader!.Encoding).Distinct()).IsEquivalentTo([ParquetEncoding.RleDictionary, ParquetEncoding.Plain]);
+        await Assert.That(file.DataPages(0, 2).Select(p => p.Header.DataPageHeader!.Encoding).Distinct()).IsEquivalentTo([ParquetEncoding.RleDictionary]);
         await Assert.That(file.Chunk(0, 3).DictionaryPageOffset).IsNotNull();
 
         var read = ParquetSerializer.Deserialize<Order>(new MemoryStream(bytes)).ToList();
@@ -91,7 +91,7 @@ public class DictionaryAttributeTests
         var title = file.DataPages(0, 0).Select(p => p.Header.DataPageHeader!.Encoding).Distinct().ToList();
         var url = file.DataPages(0, 1).Select(p => p.Header.DataPageHeader!.Encoding).Distinct().ToList();
 
-        await Assert.That(title).IsEquivalentTo([ParquetNeo.Metadata.ParquetEncoding.RleDictionary]);
-        await Assert.That(url).Contains(ParquetNeo.Metadata.ParquetEncoding.Plain);
+        await Assert.That(title).IsEquivalentTo([ParquetEncoding.RleDictionary]);
+        await Assert.That(url).Contains(ParquetEncoding.Plain);
     }
 }

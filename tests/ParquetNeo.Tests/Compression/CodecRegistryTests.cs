@@ -1,8 +1,4 @@
 using ParquetNeo.Compression;
-using ParquetNeo.Compression.Lz4;
-using ParquetNeo.Compression.Snappy;
-using ParquetNeo.Compression.Zstd;
-using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Tests.Compression;
 
@@ -41,18 +37,6 @@ public class CodecRegistryTests
         await Assert.That(lzo.Message).Contains("LZO");
         await Assert.That(unknown.Message).Contains("99");
         await Assert.That(registry.TryGet(CompressionCodec.Zstd, out _)).IsFalse();
-    }
-
-    [Test]
-    public async Task AddOnCodecs_RegisterThroughExtensionMethods()
-    {
-        var registry = new CodecRegistry().AddSnappy().AddZstd(level: 5).AddLz4Raw();
-
-        await Assert.That(registry.Get(CompressionCodec.Snappy)).IsTypeOf<SnappyCodec>();
-        await Assert.That(registry.Get(CompressionCodec.Zstd)).IsTypeOf<ZstdCodec>();
-        await Assert.That(registry.Get(CompressionCodec.Lz4Raw)).IsTypeOf<Lz4RawCodec>();
-        await Assert.That(registry.TryGet(CompressionCodec.Zstd, out var codec)).IsTrue();
-        await Assert.That(codec.Id).IsEqualTo(CompressionCodec.Zstd);
     }
 
     [Test]
@@ -95,12 +79,12 @@ public class CodecRegistryTests
     [Test]
     public async Task Registry_IsSafeToUseFromManyThreads()
     {
-        var registry = new CodecRegistry().AddSnappy();
+        var registry = new CodecRegistry();
         var data = CodecTestData.Cases["mixed"];
 
         var results = await Task.WhenAll(Enumerable.Range(0, 16).Select(i => Task.Run(() =>
         {
-            var codec = registry.Get(i % 2 == 0 ? CompressionCodec.Snappy : CompressionCodec.Gzip);
+            var codec = registry.Get(i % 2 == 0 ? CompressionCodec.Brotli : CompressionCodec.Gzip);
             var restored = CodecTestData.Decompress(codec, CodecTestData.Compress(codec, data), data.Length);
             return restored.AsSpan().SequenceEqual(data);
         })));

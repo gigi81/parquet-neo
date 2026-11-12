@@ -1,4 +1,3 @@
-using ParquetNeo.Metadata;
 
 namespace ParquetNeo.ColumnTypes;
 

@@ -1,10 +1,10 @@
-namespace ParquetNeo.Core;
+namespace ParquetNeo;
 
-/// <summary>How a column is dictionary encoded; see <see cref="DictionarySettings"/> and <see cref="ParquetWriterOptions.ColumnDictionaries"/>.</summary>
+/// <summary>How a column is dictionary encoded; see <c>DictionarySettings</c> and <c>ParquetWriterOptions.ColumnDictionaries</c>.</summary>
 public enum DictionaryMode
 {
     /// <summary>
-    /// Every distinct value goes into a dictionary until the dictionary passes <see cref="ParquetWriterOptions.DictionaryPageSizeLimit"/>,
+    /// Every distinct value goes into a dictionary until the dictionary passes <c>ParquetWriterOptions.DictionaryPageSizeLimit</c>,
     /// and then the rest of the column is written plain. The best choice for data that repeats; it is the default.
     /// </summary>
     Standard = 0,

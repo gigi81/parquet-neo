@@ -1,6 +1,6 @@
-namespace ParquetNeo.Nested;
+namespace ParquetNeo;
 
-/// <summary>What a <see cref="StructureLevel"/> records about its schema node.</summary>
+/// <summary>What a <c>StructureLevel</c> records about its schema node.</summary>
 public enum StructureLevelKind
 {
     /// <summary>An optional node: for each item, whether the value is present.</summary>

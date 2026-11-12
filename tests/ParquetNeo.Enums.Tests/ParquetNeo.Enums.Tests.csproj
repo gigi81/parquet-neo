@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ParquetNeo.Enums\ParquetNeo.Enums.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The format specification the values of the enumerations of the format are checked against. -->
+    <None Include="..\..\specs\parquet.thrift" Link="specs\parquet.thrift" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

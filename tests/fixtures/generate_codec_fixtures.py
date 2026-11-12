@@ -4,8 +4,10 @@
     python tests/fixtures/generate_codec_fixtures.py
 
 1. Fixtures/Codecs/<case>.<ext>: the same inputs compressed by independent implementations
-   (.snappy raw block, .gz RFC 1952, .br, .zst, .lz4 raw block). The inputs are NOT stored: the tests
-   rebuild them with the formulas in CodecTestData, which must stay in sync with `cases` below.
+   (.snappy raw block, .gz RFC 1952, .br, .zst, .lz4 raw block), in the test project of the package of the codec
+   (.snappy in ParquetNeo.Compression.Snappy.Tests, .zst in ...Zstd.Tests, .lz4 in ...Lz4.Tests; .gz and .br in
+   ParquetNeo.Tests). The inputs are NOT stored: the tests rebuild them with the formulas in CodecTestData
+   (tests/ParquetNeo.Tests.Common), which must stay in sync with `cases` below.
 2. Fixtures/pyarrow-codec-<codec>-v<page version>.parquet: real Parquet files whose pages use each
    codec (pyarrow cannot write LZ4_RAW, so that codec is only covered by the vectors above).
 """
@@ -15,9 +17,18 @@ import pathlib
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-OUT = pathlib.Path(__file__).resolve().parent.parent / "ParquetNeo.Tests" / "Fixtures"
+TESTS = pathlib.Path(__file__).resolve().parent.parent
+OUT = TESTS / "ParquetNeo.Tests" / "Fixtures"
 CODECS = OUT / "Codecs"
 CODECS.mkdir(parents=True, exist_ok=True)
+
+# The vectors of an add-on codec live with the tests of its package.
+ADD_ON_CODECS = {
+    ext: TESTS / f"ParquetNeo.Compression.{package}.Tests" / "Fixtures" / "Codecs"
+    for ext, package in (("snappy", "Snappy"), ("zst", "Zstd"), ("lz4", "Lz4"))
+}
+for folder in ADD_ON_CODECS.values():
+    folder.mkdir(parents=True, exist_ok=True)
 
 
 def lcg_bytes(n, seed):
@@ -55,7 +66,7 @@ cases = {
 
 for name, data in cases.items():
     for ext, codec in (("snappy", "snappy"), ("br", "brotli"), ("zst", "zstd"), ("lz4", "lz4_raw")):
-        (CODECS / f"{name}.{ext}").write_bytes(pa.compress(data, codec=codec, asbytes=True))
+        (ADD_ON_CODECS.get(ext, CODECS) / f"{name}.{ext}").write_bytes(pa.compress(data, codec=codec, asbytes=True))
     (CODECS / f"{name}.gz").write_bytes(gzip.compress(data, mtime=0))
 
 # RFC 1952 allows several members back to back; readers should accept them.

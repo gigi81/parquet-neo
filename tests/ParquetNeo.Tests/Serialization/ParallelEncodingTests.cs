@@ -2,7 +2,6 @@ using System.Data;
 using ParquetNeo.Core;
 using ParquetNeo.Data;
 using ParquetNeo.DataModel;
-using ParquetNeo.Metadata;
 using ParquetNeo.Serialization;
 using ParquetNeo.Tests.Core;
 

@@ -41,6 +41,7 @@ Read the rows back with `ParquetSerializer.Deserialize<Person>(stream)`.
 Describe the columns in a schema, then write one batch of values per column for each row group.
 
 ```csharp
+using ParquetNeo;
 using ParquetNeo.Core;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
@@ -100,7 +101,9 @@ while (reader.Read())
 | Path | Contents |
 |---|---|
 | `src/ParquetNeo` | The library |
-| `tests/ParquetNeo.Tests` | Unit tests ([TUnit](https://tunit.dev/)) |
+| `src/ParquetNeo.Enums` | The enumerations (the types of the Parquet format, and the options that name a choice), all in the `ParquetNeo` namespace |
+| `tests/ParquetNeo.Tests` | Unit tests of `ParquetNeo` ([TUnit](https://tunit.dev/)) |
+| `tests/ParquetNeo.Enums.Tests`, `tests/ParquetNeo.Compression.*.Tests` | Each project has a test project of its own; the add-on codec projects run the shared codec checks of `tests/ParquetNeo.Tests.Common` |
 | `benchmarks/ParquetNeo.Benchmarks` | [BenchmarkDotNet](https://benchmarkdotnet.org/) benchmarks |
 | `specs` | Local copy of the Parquet format specification and `parquet.thrift` |
 | `docs` | Project documentation, including the plan |

@@ -1,5 +1,4 @@
 using ParquetNeo.Exceptions;
-using ParquetNeo.Metadata;
 using SnappierCodec = Snappier.Snappy;
 
 namespace ParquetNeo.Compression.Snappy;

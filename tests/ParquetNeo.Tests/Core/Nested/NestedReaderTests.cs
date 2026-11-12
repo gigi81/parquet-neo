@@ -1,5 +1,4 @@
 using ParquetNeo.Exceptions;
-using ParquetNeo.Metadata;
 
 namespace ParquetNeo.Tests.Core.Nested;
 
