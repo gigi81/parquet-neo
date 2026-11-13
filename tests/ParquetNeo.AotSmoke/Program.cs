@@ -93,6 +93,44 @@ foreach (var codec in new[] { CompressionCodec.Uncompressed, CompressionCodec.Gz
     }
 }
 
+// Nested objects, lists, arrays, sets and dictionaries.
+Customer[] customers =
+[
+    new()
+    {
+        Id = 1,
+        Home = new Address { Street = "1 Main", Zip = 12345 },
+        Work = null,
+        Orders = [orders[0], orders[1]],
+        Tags = ["vip", "early"],
+        Lucky = [3, 7],
+        Scores = new() { ["math"] = [1, 2], ["art"] = [] },
+        Places = new() { ["a"] = new Address { Street = "x" }, ["b"] = null },
+    },
+    new() { Id = 2, Home = new Address { Street = "2 Side" }, Work = new Address { Street = "Office", Zip = 9 } },
+];
+
+foreach (var codec in new[] { CompressionCodec.Uncompressed, CompressionCodec.Gzip, CompressionCodec.Brotli })
+{
+    var file = new MemoryStream();
+    ParquetSerializer.Serialize(customers, file, new ParquetSerializerOptions { Writer = new ParquetWriterOptions { Compression = codec }, RowGroupSize = 1 });
+    file.Position = 0;
+    var read = ParquetSerializer.Deserialize<Customer>(file);
+    var first = read[0];
+    bool same = read.Count == 2
+        && first.Id == 1 && first.Home.Street == "1 Main" && first.Home.Zip == 12345 && first.Work is null
+        && first.Orders.Count == 2 && first.Orders[1].Name is null && first.Orders[0].Status == OrderStatus.New
+        && first.Tags.SequenceEqual(["vip", "early"]) && first.Lucky.SetEquals([3, 7])
+        && first.Scores["math"].SequenceEqual([1, 2]) && first.Scores["art"].Count == 0
+        && first.Places["a"]!.Street == "x" && first.Places["b"] is null
+        && read[1].Work!.Street == "Office" && read[1].Work!.Zip == 9 && read[1].Orders.Count == 0;
+    if (!same)
+    {
+        Console.WriteLine($"{codec}: the customers differ");
+        return 1;
+    }
+}
+
 // A type with no mapping is refused with an explanation, not a crash from the trimmer.
 try
 {

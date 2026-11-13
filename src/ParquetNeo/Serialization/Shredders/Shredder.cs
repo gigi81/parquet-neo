@@ -31,6 +31,9 @@ internal abstract class Shredder
 
     protected FieldRepetitionType Repetition => Optional ? FieldRepetitionType.Optional : FieldRepetitionType.Required;
 
+    /// <summary>The property of an object that has this part as its value, which has no <see cref="System.Reflection.PropertyInfo"/> when the code that reads it was generated.</summary>
+    public abstract PropertyShredder CreateProperty(string name);
+
     /// <summary>A new schema node for the part: a node belongs to one schema, so every schema gets its own.</summary>
     public abstract SchemaNode CreateSchemaNode(string name);
 
