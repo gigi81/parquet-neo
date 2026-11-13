@@ -15,9 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- The mapping written by hand for the Native AOT smoke test: the tests check it against what the reflection path does. -->
-    <Compile Include="..\ParquetNeo.AotSmoke\Order.cs" Link="Serialization\HandWritten\Order.cs" />
-    <Compile Include="..\ParquetNeo.AotSmoke\OrderMapping.cs" Link="Serialization\HandWritten\OrderMapping.cs" />
+    <!-- The row of the Native AOT smoke test, with the mapping the generator writes for it: the tests check it against what the reflection path does. -->
+    <Compile Include="..\ParquetNeo.AotSmoke\Order.cs" Link="Serialization\Generated\Order.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ParquetNeo.Generator\ParquetNeo.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>

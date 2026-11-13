@@ -1,3 +1,5 @@
+using ParquetNeo.DataModel;
+
 namespace ParquetNeo.AotSmoke;
 
 /// <summary>The states an order goes through.</summary>
@@ -8,7 +10,8 @@ public enum OrderStatus
     Returned,
 }
 
-/// <summary>A flat row of a few kinds of column: a required value, a nullable string, an enum and a nullable value type.</summary>
+/// <summary>A flat row of a few kinds of column: a required value, a nullable string, an enum and a nullable value type; its mapping is written by the source generator.</summary>
+[ParquetSerializable]
 public sealed class Order
 {
     public long Id { get; set; }
