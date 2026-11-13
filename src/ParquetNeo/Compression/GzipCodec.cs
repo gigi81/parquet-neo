@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+using System.Buffers;
 using System.IO.Compression;
 using ParquetNeo.Exceptions;
 
@@ -13,9 +13,7 @@ namespace ParquetNeo.Compression;
 /// deflate stream ends though, so a member that was cut off inside its 8-byte trailer still yields all of its
 /// data and is accepted. Parquet's optional per-page CRC32 is the integrity check for that.
 /// </remarks>
-[SuppressMessage("Major Code Smell", "S6640:Using unsafe code blocks is security-sensitive",
-    Justification = "UnmanagedMemoryStream wraps the caller's spans so that GZipStream reads and writes them in place; the alternative is copying every page through a managed buffer. The pointers are pinned by 'fixed' for the length of the call and never escape.")]
-public sealed unsafe class GzipCodec : ICodec
+public sealed class GzipCodec : ICodec
 {
     /// <summary>A gzip member holding no data: header, an empty final deflate block, CRC32 0 and size 0.</summary>
     private static ReadOnlySpan<byte> EmptyMember =>
@@ -44,7 +42,8 @@ public sealed unsafe class GzipCodec : ICodec
 
     public int Compress(ReadOnlySpan<byte> source, Span<byte> destination)
     {
-        if (destination.Length < GetMaxCompressedLength(source.Length))
+        int bound = GetMaxCompressedLength(source.Length);
+        if (destination.Length < bound)
         {
             throw new ArgumentException("The destination is smaller than GetMaxCompressedLength.", nameof(destination));
         }
@@ -56,10 +55,13 @@ public sealed unsafe class GzipCodec : ICodec
             return EmptyMember.Length;
         }
 
-        fixed (byte* target = destination)
+        // A stream cannot hold the destination span, so GZipStream writes into a pooled array of the maximum length and the
+        // compressed bytes, a fraction of the page, are copied to the destination: about 1% of the time of compressing.
+        var buffer = ArrayPool<byte>.Shared.Rent(bound);
+        try
         {
-            // The stream writes straight into the destination and fails if it would overflow it.
-            using var output = new UnmanagedMemoryStream(target, 0, destination.Length, FileAccess.Write);
+            // A stream over an array has a fixed size: it fails, instead of growing, if the output would overflow it.
+            using var output = new MemoryStream(buffer, 0, bound, writable: true);
             try
             {
                 using var gzip = new GZipStream(output, _level, leaveOpen: true);
@@ -68,11 +70,17 @@ public sealed unsafe class GzipCodec : ICodec
             catch (NotSupportedException)
             {
                 throw new InvalidOperationException(
-                    $"GZIP output exceeded the {destination.Length}-byte buffer for {source.Length} input bytes; " +
+                    $"GZIP output exceeded the {bound}-byte buffer for {source.Length} input bytes; " +
                     "GetMaxCompressedLength was not a true upper bound.");
             }
 
-            return checked((int)output.Position);
+            int length = checked((int)output.Position);
+            buffer.AsSpan(0, length).CopyTo(destination);
+            return length;
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(buffer);
         }
     }
 
@@ -88,35 +96,40 @@ public sealed unsafe class GzipCodec : ICodec
             throw new CompressionException("A GZIP page is empty but its header expects data.");
         }
 
+        // A stream cannot hold the source span either: the compressed page is copied to a pooled array that the stream reads, and
+        // GZipStream decompresses straight into the destination.
+        var buffer = ArrayPool<byte>.Shared.Rent(source.Length);
         try
         {
-            fixed (byte* input = source)
+            source.CopyTo(buffer);
+            using var stream = new MemoryStream(buffer, 0, source.Length, writable: false);
+            using var gzip = new GZipStream(stream, CompressionMode.Decompress);
+
+            int total = 0;
+            while (total < destination.Length)
             {
-                using var stream = new UnmanagedMemoryStream(input, source.Length);
-                using var gzip = new GZipStream(stream, CompressionMode.Decompress);
-
-                int total = 0;
-                while (total < destination.Length)
+                int read = gzip.Read(destination.Slice(total));
+                if (read == 0)
                 {
-                    int read = gzip.Read(destination.Slice(total));
-                    if (read == 0)
-                    {
-                        break;
-                    }
-
-                    total += read;
+                    break;
                 }
 
-                if (total != destination.Length || gzip.ReadByte() != -1)
-                {
-                    throw new CompressionException(
-                        $"GZIP data does not decompress to the {destination.Length} bytes its page header declares.");
-                }
+                total += read;
+            }
+
+            if (total != destination.Length || gzip.ReadByte() != -1)
+            {
+                throw new CompressionException(
+                    $"GZIP data does not decompress to the {destination.Length} bytes its page header declares.");
             }
         }
         catch (InvalidDataException exception)
         {
             throw new CompressionException($"Invalid GZIP data: {exception.Message}", exception);
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(buffer);
         }
     }
 }
