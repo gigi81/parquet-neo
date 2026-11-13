@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using ParquetNeo.Schema;
 using ParquetNeo.Serialization.Assemblers;
 using ParquetNeo.Serialization.Columns;
@@ -5,14 +7,15 @@ using ParquetNeo.Serialization.Columns;
 namespace ParquetNeo.Serialization;
 
 /// <summary>
-/// How rows of <typeparamref name="TRow"/> are read, found once by reflection and cached: the assembler that builds a row from
+/// How rows of <typeparamref name="TRow"/> are read, found once and cached: by <see cref="Register"/>, when a mapping was
+/// generated for the type at build time, and otherwise by reflection. It holds the assembler that builds a row from
 /// the columns. It is matched to the schema of each file by <see cref="Bind"/>.
 /// </summary>
 internal sealed class ReadModel<TRow>
 {
     private static ReadModel<TRow>? _model;
 
-    private ReadModel(StructAssembler<TRow> row, int columnCount, int nodeCount)
+    internal ReadModel(StructAssembler<TRow> row, int columnCount, int nodeCount)
     {
         Row = row;
         ColumnCount = columnCount;
@@ -28,7 +31,11 @@ internal sealed class ReadModel<TRow>
 
     /// <exception cref="NotSupportedException">A property has a type that cannot be read as a column.</exception>
     /// <exception cref="InvalidOperationException">A type cannot be created, has nothing to read, or has two properties for one column name.</exception>
-    public static ReadModel<TRow> Get() => _model ??= Create();
+    /// <exception cref="NotSupportedException">There is no generated mapping, and the program cannot compile code at run time (Native AOT).</exception>
+    public static ReadModel<TRow> Get() => _model ??= CreateByReflection();
+
+    /// <summary>Makes a model that was generated for the type known, so that the type is never looked at by reflection.</summary>
+    public static void Register(ReadModel<TRow> model) => _model = model;
 
     /// <summary>
     /// Matches the row type to the schema of a file: each property to the column or group of the same name or, when there is none
@@ -50,8 +57,18 @@ internal sealed class ReadModel<TRow>
         return new ReadContext(columns.ToArray(), objects.ToArray(), plan.Nodes);
     }
 
-    private static ReadModel<TRow> Create()
+    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with RequiresUnreferencedCodeAttribute",
+        Justification = "The reflection path is the fallback for a type without a generated mapping, and is documented as not trim safe; it is refused where code cannot be compiled.")]
+    [UnconditionalSuppressMessage("AOT", "IL3050:Members annotated with RequiresDynamicCodeAttribute",
+        Justification = "Guarded by RuntimeFeature.IsDynamicCodeSupported.")]
+    private static ReadModel<TRow> CreateByReflection()
     {
+        if (!RuntimeFeature.IsDynamicCodeSupported)
+        {
+            throw new NotSupportedException(
+                $"{typeof(TRow).Name} has no generated mapping, and this program cannot compile the mapping at run time (Native AOT).");
+        }
+
         var builder = new AssemblerBuilder();
         var row = builder.BuildRow<TRow>();
         return new ReadModel<TRow>(row, builder.SlotCount, builder.NodeCount);

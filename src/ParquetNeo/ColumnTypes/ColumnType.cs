@@ -18,6 +18,9 @@ public abstract class ColumnType
     /// <summary>The .NET type the column type reads and writes.</summary>
     public abstract Type ValueType { get; }
 
+    /// <summary>Hands the type, with its .NET type as a type argument, to a visitor.</summary>
+    internal abstract TResult Accept<TResult>(IColumnTypeVisitor<TResult> visitor);
+
     /// <summary>The kinds of <see cref="ColumnSettings"/> the type takes; none for most.</summary>
     public abstract ColumnSettingKinds SupportedSettings { get; }
 

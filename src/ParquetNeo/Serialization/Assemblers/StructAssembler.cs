@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 using ParquetNeo.Serialization.Columns;
@@ -16,17 +15,19 @@ internal sealed class StructAssembler<TValue>(
     int columnCount,
     string description,
     IPropertyAssembler[] properties,
-    ConstructorRowFactory<TValue>? constructor) : Assembler<TValue>(firstColumn, columnCount, description)
+    ConstructorRowFactory<TValue>? constructor,
+    Func<ReadContext, TValue>? build) : Assembler<TValue>(firstColumn, columnCount, description)
 {
     /// <summary>
     /// Builds the object from the columns: for an object created with its parameterless constructor, one function generated for the
     /// type that creates it and sets every property, instead of a loop over the properties that each call into their column; for an
     /// object built by a constructor with parameters (a record, for example), the properties are read into slots, and the
-    /// constructor is called with them.
+    /// constructor is called with them. The function of the first kind is <paramref name="build"/>, compiled for the type or written
+    /// for it by the source generator.
     /// </summary>
     private readonly Func<ReadContext, TValue> _build = constructor is { } slots
         ? context => ReadWithConstructor(context, properties, slots, objectIndex)
-        : CompileDirect(properties);
+        : build ?? throw new ArgumentException("An object built without a constructor needs the function that builds it.", nameof(build));
 
     public override bool Read(ReadContext context, out TValue value)
     {
@@ -124,16 +125,5 @@ internal sealed class StructAssembler<TValue>(
         }
 
         return constructor.End(current);
-    }
-
-    private static Func<ReadContext, TValue> CompileDirect(IPropertyAssembler[] properties)
-    {
-        var context = Expression.Parameter(typeof(ReadContext), "context");
-        var row = Expression.Variable(typeof(TValue), "row");
-        Expression create = typeof(TValue).IsValueType ? Expression.Default(typeof(TValue)) : Expression.New(typeof(TValue));
-        var steps = new List<Expression> { Expression.Assign(row, create) };
-        steps.AddRange(properties.Select(property => property.EmitFlat(row, context)));
-        steps.Add(row);
-        return Expression.Lambda<Func<ReadContext, TValue>>(Expression.Block([row], steps), context).Compile();
     }
 }

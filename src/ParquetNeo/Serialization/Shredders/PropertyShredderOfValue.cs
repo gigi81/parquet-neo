@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -6,15 +7,22 @@ using ParquetNeo.Serialization.Buffers;
 
 namespace ParquetNeo.Serialization.Shredders;
 
-/// <param name="property">The property, which the generated code reads.</param>
+/// <param name="property">The property, which the code made by reflection reads; null when a generated mapping supplies that code, and the property is only here for the schema.</param>
 /// <param name="nullable">Whether the property is a <see cref="Nullable{T}"/> of <typeparamref name="TValue"/>.</param>
-internal sealed class PropertyShredder<TValue>(string name, Shredder<TValue> value, PropertyInfo property, bool nullable)
+internal sealed class PropertyShredder<TValue>(string name, Shredder<TValue> value, PropertyInfo? property, bool nullable)
     : PropertyShredder(name)
 {
     public override SchemaNode CreateSchemaNode() => value.CreateSchemaNode(Name);
 
+    [RequiresUnreferencedCode("Reads the property by reflection.")]
+    [RequiresDynamicCode("Builds code to be compiled at run time.")]
     public override Expression Emit(ParameterExpression parent, Expression definition, Expression repetition, ParameterExpression buffers)
     {
+        if (property is null)
+        {
+            throw new InvalidOperationException($"The property '{Name}' has no PropertyInfo: its code comes from the generated mapping.");
+        }
+
         var read = Expression.Property(parent, property);
         var alwaysThere = typeof(TValue).IsValueType && !nullable;
 

@@ -28,6 +28,13 @@ jobs:
       - name: Test
         run: dotnet test -c Release --no-build --coverage --coverage-output-format cobertura --results-directory TestResults
 
+      - name: Native AOT smoke test
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          dotnet publish tests/ParquetNeo.AotSmoke -c Release -r linux-x64 -o aot-smoke
+          ./aot-smoke/ParquetNeo.AotSmoke
+
       - name: Coverage summary
         if: always()
         shell: bash
