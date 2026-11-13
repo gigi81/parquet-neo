@@ -62,8 +62,7 @@ for (int group = 0; group < reader.RowGroupCount; group++)
     }
 }
 
-// The row serializer with a mapping written by hand (the generator's job later): no reflection, no code compiled at run time.
-OrderMapping.Register();
+// The row serializer with the mapping the source generator wrote for Order (registered when the assembly loads): no reflection, no code compiled at run time.
 Order[] orders =
 [
     new() { Id = 1, Name = "Ada", Score = 0.5, Status = OrderStatus.New, Quantity = 3 },

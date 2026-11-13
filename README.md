@@ -36,6 +36,15 @@ public record Person(int Id, string Name, DateOnly Born);
 
 Read the rows back with `ParquetSerializer.Deserialize<Person>(stream)`.
 
+#### Trimming and Native AOT
+
+By default the serializer finds out how a type maps to columns by reflection and compiles that into code the first time the type
+is used, which neither trimming nor Native AOT allows. Put `[ParquetSerializable]` on a type (or, for a type you do not own,
+`[assembly: ParquetSerializable(typeof(TheirType))]`) and the source generator writes the mapping when you build, so nothing is
+looked at or compiled at run time; the serializer is called as before. The generator handles types whose properties are all single
+columns (numbers, strings, dates, `Guid`, enums, byte arrays and their nullable forms); for any other type it reports a warning and
+the type keeps working through reflection. In a Native AOT program a type with no generated mapping is refused with an explanation.
+
 ### Low-level API
 
 Describe the columns in a schema, then write one batch of values per column for each row group.
@@ -101,9 +110,11 @@ while (reader.Read())
 | Path | Contents |
 |---|---|
 | `src/ParquetNeo` | The library |
+| `src/ParquetNeo.Generator` | The source generator behind `[ParquetSerializable]` (a Roslyn component, not a reference of your code) |
 | `src/ParquetNeo.Enums` | The enumerations (the types of the Parquet format, and the options that name a choice), all in the `ParquetNeo` namespace |
 | `tests/ParquetNeo.Tests` | Unit tests of `ParquetNeo` ([TUnit](https://tunit.dev/)) |
-| `tests/ParquetNeo.Enums.Tests`, `tests/ParquetNeo.Compression.*.Tests` | Each project has a test project of its own; the add-on codec projects run the shared codec checks of `tests/ParquetNeo.Tests.Common` |
+| `tests/ParquetNeo.AotSmoke` | A program published with Native AOT in CI: it uses the serializer with a generated mapping |
+| `tests/ParquetNeo.Enums.Tests`, `tests/ParquetNeo.Generator.Tests`, `tests/ParquetNeo.Compression.*.Tests` | Each project has a test project of its own; the add-on codec projects run the shared codec checks of `tests/ParquetNeo.Tests.Common` |
 | `benchmarks/ParquetNeo.Benchmarks` | [BenchmarkDotNet](https://benchmarkdotnet.org/) benchmarks |
 | `specs` | Local copy of the Parquet format specification and `parquet.thrift` |
 | `docs` | Project documentation, including the plan |

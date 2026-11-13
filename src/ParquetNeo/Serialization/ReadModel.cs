@@ -14,6 +14,7 @@ namespace ParquetNeo.Serialization;
 internal sealed class ReadModel<TRow>
 {
     private static ReadModel<TRow>? _model;
+    private static Func<ReadModel<TRow>>? _create;
 
     internal ReadModel(StructAssembler<TRow> row, int columnCount, int nodeCount)
     {
@@ -32,10 +33,14 @@ internal sealed class ReadModel<TRow>
     /// <exception cref="NotSupportedException">A property has a type that cannot be read as a column.</exception>
     /// <exception cref="InvalidOperationException">A type cannot be created, has nothing to read, or has two properties for one column name.</exception>
     /// <exception cref="NotSupportedException">There is no generated mapping, and the program cannot compile code at run time (Native AOT).</exception>
-    public static ReadModel<TRow> Get() => _model ??= CreateByReflection();
+    public static ReadModel<TRow> Get() => _model ??= _create?.Invoke() ?? CreateByReflection();
 
-    /// <summary>Makes a model that was generated for the type known, so that the type is never looked at by reflection.</summary>
-    public static void Register(ReadModel<TRow> model) => _model = model;
+    /// <summary>Makes the model that was generated for the type the one to use, when it is first needed, so that the type is never looked at by reflection.</summary>
+    public static void Register(Func<ReadModel<TRow>> create)
+    {
+        _model = null;
+        _create = create;
+    }
 
     /// <summary>
     /// Matches the row type to the schema of a file: each property to the column or group of the same name or, when there is none

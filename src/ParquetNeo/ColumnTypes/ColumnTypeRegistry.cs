@@ -70,6 +70,9 @@ public static class ColumnTypeRegistry
         return (ColumnType)Activator.CreateInstance(typeof(EnumColumnType<>).MakeGenericType(type))!;
     }
 
+    /// <summary>The .NET types of the column types that come with the library, not counting enums, which are made as they are asked for.</summary>
+    internal static IReadOnlyCollection<Type> GetBuiltInValueTypes() => CreateDefaults().Keys.ToArray();
+
     private static ConcurrentDictionary<Type, ColumnType> CreateDefaults()
     {
         ColumnType[] defaults =

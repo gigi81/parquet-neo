@@ -14,7 +14,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="ParquetNeo.Tests" />
     <InternalsVisibleTo Include="ParquetNeo.Benchmarks" />
-    <InternalsVisibleTo Include="ParquetNeo.AotSmoke" />
+    <InternalsVisibleTo Include="ParquetNeo.Generator.Tests" />
   </ItemGroup>
 
 </Project>

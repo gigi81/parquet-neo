@@ -7,11 +7,11 @@ using ParquetNeo.Serialization;
 namespace ParquetNeo.Tests.Serialization;
 
 /// <summary>
-/// A mapping that is registered for a type is used instead of reflection. The one written by hand for <see cref="Order"/> (the form
-/// the source generator writes) is checked against the reflection path, which handles <see cref="Twin"/>, a type with the same
-/// properties that nothing registers: both must write the same bytes and read the same rows.
+/// A mapping that is registered for a type is used instead of reflection. The one the source generator writes for <see cref="Order"/>
+/// (marked <c>[ParquetSerializable]</c>) is checked against the reflection path, which handles <see cref="Twin"/>, a type with the
+/// same properties that has no mapping: both must write the same bytes and read the same rows.
 /// </summary>
-public class HandWrittenMappingTests
+public class GeneratedMappingTests
 {
     private sealed class Twin
     {
@@ -38,9 +38,6 @@ public class HandWrittenMappingTests
 
         public int? Quantity { get; set; }
     }
-
-    [Before(Class)]
-    public static void Register() => OrderMapping.Register();
 
     private static Order[] Orders() =>
     [

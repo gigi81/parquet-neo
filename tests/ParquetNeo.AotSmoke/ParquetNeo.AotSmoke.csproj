@@ -18,6 +18,7 @@
   <ItemGroup>
     <PackageReference Remove="TUnit" />
     <ProjectReference Include="..\..\src\ParquetNeo\ParquetNeo.csproj" />
+    <ProjectReference Include="..\..\src\ParquetNeo.Generator\ParquetNeo.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

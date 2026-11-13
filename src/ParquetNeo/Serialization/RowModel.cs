@@ -16,6 +16,7 @@ namespace ParquetNeo.Serialization;
 internal sealed class RowModel<TRow>
 {
     private static RowModel<TRow>? _model;
+    private static Func<RowModel<TRow>>? _create;
 
     internal RowModel(StructShredder<TRow> row, IReadOnlyList<LeafInfo> columns)
     {
@@ -31,10 +32,14 @@ internal sealed class RowModel<TRow>
     /// <exception cref="NotSupportedException">A property has a type that cannot be written as a column.</exception>
     /// <exception cref="InvalidOperationException">The type has no properties, two share a column name, or an attribute does not suit its property.</exception>
     /// <exception cref="NotSupportedException">There is no generated mapping, and the program cannot compile code at run time (Native AOT).</exception>
-    public static RowModel<TRow> Get() => _model ??= CreateByReflection();
+    public static RowModel<TRow> Get() => _model ??= _create?.Invoke() ?? CreateByReflection();
 
-    /// <summary>Makes a model that was generated for the type known, so that the type is never looked at by reflection.</summary>
-    public static void Register(RowModel<TRow> model) => _model = model;
+    /// <summary>Makes the model that was generated for the type the one to use, when it is first needed, so that the type is never looked at by reflection.</summary>
+    public static void Register(Func<RowModel<TRow>> create)
+    {
+        _model = null;
+        _create = create;
+    }
 
     public IEnumerable<SchemaNode> CreateSchemaNodes() => Row.CreateChildren();
 
