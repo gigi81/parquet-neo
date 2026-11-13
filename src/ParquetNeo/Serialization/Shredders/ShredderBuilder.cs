@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using ParquetNeo.ColumnTypes;
@@ -17,11 +18,25 @@ namespace ParquetNeo.Serialization.Shredders;
 /// (a group of columns); a collection is a list of one of those, and a dictionary a map. Anything in the <c>System</c> namespace
 /// that is not one of the primitives is refused rather than guessed at, since its public properties are not its data.
 /// </remarks>
+[UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with RequiresUnreferencedCodeAttribute", Justification = "The builder can only be made through its constructor, which is annotated: whoever calls it has accepted that it reads types by reflection and compiles code, so everything inside is covered by that.")]
+[UnconditionalSuppressMessage("Trimming", "IL2060:Call to MakeGenericMethod can not be statically analyzed", Justification = "The builder can only be made through its constructor, which is annotated: whoever calls it has accepted that it reads types by reflection and compiles code, so everything inside is covered by that.")]
+[UnconditionalSuppressMessage("Trimming", "IL2070:Argument does not satisfy DynamicallyAccessedMembers requirements", Justification = "The builder can only be made through its constructor, which is annotated: whoever calls it has accepted that it reads types by reflection and compiles code, so everything inside is covered by that.")]
+[UnconditionalSuppressMessage("Trimming", "IL2075:Return value does not satisfy DynamicallyAccessedMembers requirements", Justification = "The builder can only be made through its constructor, which is annotated: whoever calls it has accepted that it reads types by reflection and compiles code, so everything inside is covered by that.")]
+[UnconditionalSuppressMessage("Trimming", "IL2087:Argument does not satisfy DynamicallyAccessedMembers requirements", Justification = "The builder can only be made through its constructor, which is annotated: whoever calls it has accepted that it reads types by reflection and compiles code, so everything inside is covered by that.")]
+[UnconditionalSuppressMessage("Trimming", "IL2090:Argument does not satisfy DynamicallyAccessedMembers requirements", Justification = "The builder can only be made through its constructor, which is annotated: whoever calls it has accepted that it reads types by reflection and compiles code, so everything inside is covered by that.")]
+[UnconditionalSuppressMessage("AOT", "IL3050:Members annotated with RequiresDynamicCodeAttribute", Justification = "The builder can only be made through its constructor, which is annotated: whoever calls it has accepted that it reads types by reflection and compiles code, so everything inside is covered by that.")]
 internal sealed class ShredderBuilder
 {
     private readonly NullabilityInfoContext _nullability = new();
     private readonly List<LeafInfo> _leaves = [];
     private readonly Stack<Type> _objects = new();
+
+    /// <summary>Makes a builder, which reads types by reflection and compiles code at run time: neither works trimmed or with Native AOT.</summary>
+    [RequiresUnreferencedCode("Reads the properties of the row type by reflection, which trimming can remove.")]
+    [RequiresDynamicCode("Compiles the code that shreds a row, and closes generic types over the types of the properties.")]
+    public ShredderBuilder()
+    {
+    }
 
     public IReadOnlyList<LeafInfo> Leaves => _leaves;
 
@@ -59,12 +74,28 @@ internal sealed class ShredderBuilder
                 shredders.Add(BuildProperty(property, name, inside, path));
             }
 
-            return new StructShredder<TValue>(optional, first, _leaves.Count - first, description, shredders.ToArray());
+            var shredded = shredders.ToArray();
+            return new StructShredder<TValue>(optional, first, _leaves.Count - first, description, shredded, CompileProperties<TValue>(shredded));
         }
         finally
         {
             _objects.Pop();
         }
+    }
+
+    /// <summary>
+    /// The shredding of all the properties in one function generated for the type, instead of a loop over small objects that each
+    /// read a property through a delegate and call the shredder of its type: the properties are read and added to their columns
+    /// (or handed to the shredder of an object, collection or dictionary) in one piece of code.
+    /// </summary>
+    private static Action<TValue, int, int, ILeafBuffer[]> CompileProperties<TValue>(PropertyShredder[] properties)
+    {
+        var parent = Expression.Parameter(typeof(TValue), "row");
+        var definition = Expression.Parameter(typeof(int), "definition");
+        var repetition = Expression.Parameter(typeof(int), "repetition");
+        var buffers = Expression.Parameter(typeof(ILeafBuffer[]), "buffers");
+        var steps = properties.Select(property => property.Emit(parent, definition, repetition, buffers)).ToList();
+        return Expression.Lambda<Action<TValue, int, int, ILeafBuffer[]>>(Expression.Block(steps), parent, definition, repetition, buffers).Compile();
     }
 
     /// <summary>The public readable properties of an object that are written, in the order of their columns.</summary>

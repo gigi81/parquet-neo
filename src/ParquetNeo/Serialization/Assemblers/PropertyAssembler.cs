@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -9,14 +10,14 @@ namespace ParquetNeo.Serialization.Assemblers;
 
 /// <param name="name">The name of the column or field of the file.</param>
 /// <param name="slot">The index of the property among the values waiting for a constructor.</param>
-/// <param name="property">The property, which the generated code of an object created without a constructor sets.</param>
+/// <param name="property">The property, which the code made by reflection for an object created without a constructor sets; null when a generated mapping supplies that code.</param>
 internal sealed class PropertyAssembler<TValue>(
     string name,
     string description,
     bool optional,
     int slot,
     Assembler<TValue> value,
-    PropertyInfo property) : IPropertyAssembler
+    PropertyInfo? property) : IPropertyAssembler
 {
     public void Bind(GroupNode? group, string where, ReadBinder binder)
     {
@@ -44,8 +45,15 @@ internal sealed class PropertyAssembler<TValue>(
         }
     }
 
+    [RequiresUnreferencedCode("Sets the property by reflection.")]
+    [RequiresDynamicCode("Builds code to be compiled at run time.")]
     public Expression EmitFlat(ParameterExpression row, ParameterExpression context)
     {
+        if (property is null)
+        {
+            throw new InvalidOperationException($"The property '{name}' has no PropertyInfo: its code comes from the generated mapping.");
+        }
+
         var read = Expression.Variable(typeof(TValue), "read");
         var target = Expression.Property(row, property);
 

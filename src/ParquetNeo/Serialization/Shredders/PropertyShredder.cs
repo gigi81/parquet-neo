@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using ParquetNeo.Schema;
 
@@ -19,5 +20,7 @@ internal abstract class PropertyShredder(string name)
     /// <param name="definition">An <see cref="int"/>: the optional and repeated ancestors that are present.</param>
     /// <param name="repetition">An <see cref="int"/>: the repetition level of the first entry.</param>
     /// <param name="buffers">The <see cref="Buffers.ILeafBuffer"/>s of the columns of the file.</param>
+    [RequiresUnreferencedCode("Reads the property by reflection.")]
+    [RequiresDynamicCode("Builds code to be compiled at run time.")]
     public abstract Expression Emit(ParameterExpression parent, Expression definition, Expression repetition, ParameterExpression buffers);
 }

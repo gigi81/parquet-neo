@@ -23,6 +23,8 @@ public abstract class ColumnType<TValue> : ColumnType
     /// <inheritdoc/>
     public override string Name => typeof(TValue).Name;
 
+    internal sealed override TResult Accept<TResult>(IColumnTypeVisitor<TResult> visitor) => visitor.Visit(this);
+
     /// <inheritdoc/>
     public override ColumnSettingKinds SupportedSettings => ColumnSettingKinds.None;
 

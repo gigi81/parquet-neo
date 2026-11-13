@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using ParquetNeo.Schema;
 using ParquetNeo.Serialization.Columns;
@@ -22,5 +23,7 @@ internal interface IPropertyAssembler
     /// parameterless constructor, from <paramref name="context"/>: the code a <see cref="StructAssembler{TValue}"/> of such an
     /// object is made of.
     /// </summary>
+    [RequiresUnreferencedCode("Sets the property by reflection.")]
+    [RequiresDynamicCode("Builds code to be compiled at run time.")]
     Expression EmitFlat(ParameterExpression row, ParameterExpression context);
 }

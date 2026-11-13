@@ -64,7 +64,7 @@ public sealed class ParquetDataReader : DbDataReader
                 var type = FileColumnTypes.Choose(node)
                     ?? throw new NotSupportedException($"Column '{node.Name}' is stored as {ColumnProblems.Describe(node)}, which no .NET type fits; leave it out with {nameof(ParquetDataReaderOptions)}.{nameof(ParquetDataReaderOptions.Columns)}.");
                 _types[i] = type.ValueType;
-                _columns[i] = (ColumnData)Activator.CreateInstance(typeof(ColumnData<>).MakeGenericType(type.ValueType), node.Name, type)!;
+                _columns[i] = type.Accept(new ColumnDataFactory(node.Name));
                 _ordinals.TryAdd(node.Name, i);
             }
         }
@@ -139,6 +139,9 @@ public sealed class ParquetDataReader : DbDataReader
         throw new IndexOutOfRangeException($"The file has no column named '{name}'.");
     }
 
+    [return: DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties)]
+    [UnconditionalSuppressMessage("Trimming", "IL2063:Value returned from method can not be statically determined and may not meet DynamicallyAccessedMembers requirements",
+        Justification = "The types of the columns are the primitive types of the column types, whose members the caller of GetFieldType does not use by reflection.")]
     public override Type GetFieldType(int ordinal) => _types[ordinal];
 
     public override string GetDataTypeName(int ordinal) => _types[ordinal].Name;
@@ -223,6 +226,8 @@ public sealed class ParquetDataReader : DbDataReader
 
     public override IEnumerator GetEnumerator() => new DbEnumerator(this, closeReader: false);
 
+    [UnconditionalSuppressMessage("Trimming", "IL2111:Method with DynamicallyAccessedMembersAttribute is accessed via reflection",
+        Justification = "DataTable only stores the Type values it is given as data; it does not read their members.")]
     public override DataTable GetSchemaTable()
     {
         EnsureOpen();
@@ -311,4 +316,10 @@ public sealed class ParquetDataReader : DbDataReader
             : throw new InvalidCastException($"Column '{GetName(ordinal)}' is a {_types[ordinal].Name}, not a {typeof(TValue).Name}.");
 
     private void EnsureOpen() => ObjectDisposedException.ThrowIf(_closed, this);
+
+    /// <summary>Makes the data of a column type, with the .NET type of the column type as its type argument.</summary>
+    private sealed class ColumnDataFactory(string name) : IColumnTypeVisitor<ColumnData>
+    {
+        public ColumnData Visit<TValue>(ColumnType<TValue> type) => new ColumnData<TValue>(name, type);
+    }
 }

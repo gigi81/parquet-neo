@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Publishes ParquetNeo with Native AOT and runs it: the library must work with no JIT and with the code that nothing
+    references trimmed away. It is not a test project (no TUnit); CI publishes it and checks its exit code.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PublishAot>true</PublishAot>
+    <IsTestProject>false</IsTestProject>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Remove="TUnit" />
+    <ProjectReference Include="..\..\src\ParquetNeo\ParquetNeo.csproj" />
+  </ItemGroup>
+
+</Project>

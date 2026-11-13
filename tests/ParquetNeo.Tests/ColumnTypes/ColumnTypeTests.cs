@@ -58,6 +58,34 @@ public class ColumnTypeTests
     }
 
     [Test]
+    public async Task AnEnumRegisteredByName_IsTheOneTheRegistryFindsAfterwards()
+    {
+        ColumnTypeRegistry.RegisterEnum<StringComparison>();
+        var registered = ColumnTypeRegistry.Get<StringComparison>();
+
+        await Assert.That(ColumnTypeRegistry.TryGet(typeof(StringComparison))).IsSameReferenceAs(registered);
+        await Assert.That(registered.ValueType).IsEqualTo(typeof(StringComparison));
+
+        // Registering again keeps the first one, so what was handed out stays the one in use.
+        ColumnTypeRegistry.RegisterEnum<StringComparison>();
+        await Assert.That(ColumnTypeRegistry.Get<StringComparison>()).IsSameReferenceAs(registered);
+    }
+
+    [Test]
+    public async Task AColumnType_HandsItsValueTypeToAVisitorAsATypeArgument()
+    {
+        foreach (var type in new ColumnType[] { ColumnTypeRegistry.Get<long>(), ColumnTypeRegistry.Get<string>(), ColumnTypeRegistry.Get<DayOfWeek>(), ColumnTypeRegistry.Get<decimal>() })
+        {
+            await Assert.That(type.Accept(new TypeNameVisitor())).IsEqualTo(type.ValueType.Name);
+        }
+    }
+
+    private sealed class TypeNameVisitor : IColumnTypeVisitor<string>
+    {
+        public string Visit<TValue>(ColumnType<TValue> type) => typeof(TValue).Name;
+    }
+
+    [Test]
     public async Task EveryColumnTypeAcceptsTheColumnItCreates_AndNoOtherBuiltInOneAcceptsIt()
     {
         foreach (var type in BuiltIn.Where(t => !t.IsEnum))

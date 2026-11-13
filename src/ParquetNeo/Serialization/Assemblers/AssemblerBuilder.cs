@@ -19,6 +19,13 @@ namespace ParquetNeo.Serialization.Assemblers;
 /// properties that are not parameters are set afterwards when they can be. A property is a column when its type is one of the
 /// primitive types or an enum, an object (a group of columns), a collection (a list) or a dictionary (a map).
 /// </remarks>
+[UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with RequiresUnreferencedCodeAttribute", Justification = "The builder can only be made through its constructor, which is annotated: whoever calls it has accepted that it reads types by reflection and compiles code, so everything inside is covered by that.")]
+[UnconditionalSuppressMessage("Trimming", "IL2060:Call to MakeGenericMethod can not be statically analyzed", Justification = "The builder can only be made through its constructor, which is annotated: whoever calls it has accepted that it reads types by reflection and compiles code, so everything inside is covered by that.")]
+[UnconditionalSuppressMessage("Trimming", "IL2070:Argument does not satisfy DynamicallyAccessedMembers requirements", Justification = "The builder can only be made through its constructor, which is annotated: whoever calls it has accepted that it reads types by reflection and compiles code, so everything inside is covered by that.")]
+[UnconditionalSuppressMessage("Trimming", "IL2075:Return value does not satisfy DynamicallyAccessedMembers requirements", Justification = "The builder can only be made through its constructor, which is annotated: whoever calls it has accepted that it reads types by reflection and compiles code, so everything inside is covered by that.")]
+[UnconditionalSuppressMessage("Trimming", "IL2087:Argument does not satisfy DynamicallyAccessedMembers requirements", Justification = "The builder can only be made through its constructor, which is annotated: whoever calls it has accepted that it reads types by reflection and compiles code, so everything inside is covered by that.")]
+[UnconditionalSuppressMessage("Trimming", "IL2090:Argument does not satisfy DynamicallyAccessedMembers requirements", Justification = "The builder can only be made through its constructor, which is annotated: whoever calls it has accepted that it reads types by reflection and compiles code, so everything inside is covered by that.")]
+[UnconditionalSuppressMessage("AOT", "IL3050:Members annotated with RequiresDynamicCodeAttribute", Justification = "The builder can only be made through its constructor, which is annotated: whoever calls it has accepted that it reads types by reflection and compiles code, so everything inside is covered by that.")]
 internal sealed class AssemblerBuilder
 {
     private readonly NullabilityInfoContext _nullability = new();
@@ -26,6 +33,13 @@ internal sealed class AssemblerBuilder
     private int _slots;
     private int _nodes;
     private int _contexts;
+
+    /// <summary>Makes a builder, which reads types by reflection and compiles code at run time: neither works trimmed or with Native AOT.</summary>
+    [RequiresUnreferencedCode("Reads the properties and constructors of the row type by reflection, which trimming can remove.")]
+    [RequiresDynamicCode("Compiles the code that builds a row, and closes generic types over the types of the properties.")]
+    public AssemblerBuilder()
+    {
+    }
 
     /// <summary>The number of columns the row type reads.</summary>
     public int SlotCount => _slots;
@@ -84,12 +98,24 @@ internal sealed class AssemblerBuilder
             int context = direct ? -1 : _contexts++;
             var factory = direct ? null : CreateConstructorFactory<TValue>(constructor!, properties);
             var assemblers = properties.Select((property, index) => CreateProperty(property, index, repetition)).ToArray();
-            return new StructAssembler<TValue>(node, context, optional, first, _slots - first, description, assemblers, factory);
+            return new StructAssembler<TValue>(node, context, optional, first, _slots - first, description, assemblers, factory, direct ? CompileDirect<TValue>(assemblers) : null);
         }
         finally
         {
             _objects.Pop();
         }
+    }
+
+    /// <summary>The creation of an object with its parameterless constructor and the setting of every property in one function generated for the type, instead of a loop over the properties that each call into their column.</summary>
+    private static Func<ReadContext, TValue> CompileDirect<TValue>(IPropertyAssembler[] properties)
+    {
+        var context = Expression.Parameter(typeof(ReadContext), "context");
+        var row = Expression.Variable(typeof(TValue), "row");
+        Expression create = typeof(TValue).IsValueType ? Expression.Default(typeof(TValue)) : Expression.New(typeof(TValue));
+        var steps = new List<Expression> { Expression.Assign(row, create) };
+        steps.AddRange(properties.Select(property => property.EmitFlat(row, context)));
+        steps.Add(row);
+        return Expression.Lambda<Func<ReadContext, TValue>>(Expression.Block([row], steps), context).Compile();
     }
 
     private static string ColumnName(PropertyInfo property) => property.GetCustomAttribute<ParquetColumnAttribute>()?.Name ?? property.Name;

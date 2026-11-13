@@ -179,5 +179,11 @@ internal sealed class DataWriteSession : IDisposable
     }
 
     private static IColumnBuffer CreateBuffer(ColumnType columnType, int ordinal, string name, bool optional) =>
-        (IColumnBuffer)Activator.CreateInstance(typeof(ColumnBuffer<>).MakeGenericType(columnType.ValueType), ordinal, name, columnType, optional)!;
+        columnType.Accept(new BufferFactory(ordinal, name, optional));
+
+    /// <summary>Makes the buffer of a column type, with the .NET type of the column type as its type argument.</summary>
+    private sealed class BufferFactory(int ordinal, string name, bool optional) : IColumnTypeVisitor<IColumnBuffer>
+    {
+        public IColumnBuffer Visit<TValue>(ColumnType<TValue> type) => new ColumnBuffer<TValue>(ordinal, name, type, optional);
+    }
 }

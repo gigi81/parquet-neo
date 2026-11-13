@@ -15,6 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The mapping written by hand for the Native AOT smoke test: the tests check it against what the reflection path does. -->
+    <Compile Include="..\ParquetNeo.AotSmoke\Order.cs" Link="Serialization\HandWritten\Order.cs" />
+    <Compile Include="..\ParquetNeo.AotSmoke\OrderMapping.cs" Link="Serialization\HandWritten\OrderMapping.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Fixtures\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
