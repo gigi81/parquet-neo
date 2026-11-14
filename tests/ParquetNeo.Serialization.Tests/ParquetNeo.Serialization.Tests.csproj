@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ParquetNeo.Serialization\ParquetNeo.Serialization.csproj" />
+    <ProjectReference Include="..\..\src\ParquetNeo.Compression.Snappy\ParquetNeo.Compression.Snappy.csproj" />
+    <ProjectReference Include="..\..\src\ParquetNeo.Compression.Zstd\ParquetNeo.Compression.Zstd.csproj" />
+    <ProjectReference Include="..\..\src\ParquetNeo.Compression.Lz4\ParquetNeo.Compression.Lz4.csproj" />
+    <ProjectReference Include="..\ParquetNeo.Tests.Common\ParquetNeo.Tests.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The row of the Native AOT smoke test, with the mapping the generator writes for it: the tests check it against what the reflection path does. -->
+    <Compile Include="..\ParquetNeo.AotSmoke\Order.cs" Link="Generated\Order.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ParquetNeo.Generator\ParquetNeo.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The files the tests share with the tests of the file reader: the ones of other writers, and the serializer's own golden files. -->
+    <None Include="..\ParquetNeo.Tests\Fixtures\*.parquet" Link="Fixtures\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

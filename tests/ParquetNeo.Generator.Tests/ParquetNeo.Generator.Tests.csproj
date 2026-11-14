@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ParquetNeo.Generator\ParquetNeo.Generator.csproj" />
     <ProjectReference Include="..\..\src\ParquetNeo\ParquetNeo.csproj" />
+    <ProjectReference Include="..\..\src\ParquetNeo.Serialization\ParquetNeo.Serialization.csproj" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
   </ItemGroup>
 

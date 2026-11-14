@@ -8,7 +8,7 @@ namespace ParquetNeo.Data;
 /// Writes the rows of an <see cref="IDataReader"/> (a database query, a <see cref="DataTable"/> through
 /// <see cref="DataTable.CreateDataReader()"/>, or any other reader) as a Parquet file. Each column of the reader becomes a column
 /// of the file, typed by <see cref="IDataRecord.GetFieldType"/>: the types of <see cref="ColumnTypes.ColumnTypeRegistry"/>, which
-/// are the ones <see cref="Serialization.ParquetSerializer"/> writes. A column is optional unless the reader's schema table says
+/// are the ones <c>ParquetSerializer</c> writes. A column is optional unless the reader's schema table says
 /// <c>AllowDBNull</c> is false, and a decimal takes the precision and scale the schema table gives (38 and 18 otherwise).
 /// </summary>
 /// <remarks>

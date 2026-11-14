@@ -5,6 +5,7 @@
   <Folder Name="/src/">
     <Project Path="src/ParquetNeo/ParquetNeo.csproj" />
     <Project Path="src/ParquetNeo.Enums/ParquetNeo.Enums.csproj" />
+    <Project Path="src/ParquetNeo.Serialization/ParquetNeo.Serialization.csproj" />
     <Project Path="src/ParquetNeo.Generator/ParquetNeo.Generator.csproj" />
     <Project Path="src/ParquetNeo.Compression.Lz4/ParquetNeo.Compression.Lz4.csproj" />
     <Project Path="src/ParquetNeo.Compression.Snappy/ParquetNeo.Compression.Snappy.csproj" />
@@ -16,6 +17,7 @@
     <Project Path="tests/ParquetNeo.Compression.Zstd.Tests/ParquetNeo.Compression.Zstd.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Enums.Tests/ParquetNeo.Enums.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Generator.Tests/ParquetNeo.Generator.Tests.csproj" />
+    <Project Path="tests/ParquetNeo.Serialization.Tests/ParquetNeo.Serialization.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Tests/ParquetNeo.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Tests.Common/ParquetNeo.Tests.Common.csproj" />
   </Folder>
