@@ -2,7 +2,7 @@ using ParquetNeo.Schema;
 
 namespace ParquetNeo.Nested;
 
-/// <summary>Where the parts of a list are in the schema; see <see cref="NestedSchema.GetListLayout"/>.</summary>
+/// <summary>Where the parts of a list are in the schema; see <see cref="NestedSchema.GetListLayout(SchemaNode)"/>.</summary>
 /// <param name="Container">The LIST group, or the repeated field itself for an implicit list.</param>
 /// <param name="Repeated">The repeated node: its elements are the elements of the list.</param>
 /// <param name="Element">The node that describes an element: below <paramref name="Repeated"/> in a standard list, otherwise the repeated node itself.</param>

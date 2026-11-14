@@ -9,6 +9,7 @@ namespace ParquetNeo.Serialization.Assemblers;
 /// <typeparam name="TMap">The type of the property.</typeparam>
 /// <typeparam name="TKey">The type of the keys, which are never null.</typeparam>
 /// <typeparam name="TItem">The type of the values, which is <typeparamref name="TValue"/> or a <see cref="Nullable{T}"/> of it.</typeparam>
+/// <typeparam name="TValue">The type of the values, without the nullability of the item.</typeparam>
 internal sealed class MapAssembler<TMap, TKey, TItem, TValue>(
     int node,
     int firstColumn,

@@ -7,7 +7,7 @@ internal sealed class ReadContext(ILeafColumn[] columns, object[] objects, NodeB
 {
     public ILeafColumn[] Columns { get; } = columns;
 
-    /// <summary>One <see cref="RowContext{TRow}"/> for each type of object that is built.</summary>
+    /// <summary>One <c>RowContext</c> for each type of object that is built.</summary>
     public object[] Objects { get; } = objects;
 
     public NodeBinding[] Nodes { get; } = nodes;

@@ -2,7 +2,23 @@
 
 A high-performance .NET library for reading and writing [Apache Parquet](https://parquet.apache.org/) files.
 
-> **Status:** early development. The low-level reader and writer and the high-level serializer work, but the API may still change and there is no NuGet package yet — see the [implementation plan](docs/PLAN.md).
+> **Status:** early development: the API may still change before 1.0. See the [implementation plan](docs/PLAN.md).
+
+## Installing
+
+```bash
+dotnet add package ParquetNeo.All
+```
+
+installs everything. To take less, install the packages you need (each brings the ones it depends on):
+
+| Package | For |
+|---|---|
+| `ParquetNeo` | the low-level reader and writer, the ADO.NET reader and writer, filters |
+| `ParquetNeo.Serialization` | `ParquetSerializer` for your classes and records, with the source generator for trimming and Native AOT |
+| `ParquetNeo.Linq` | LINQ over files and directories (not trim or Native AOT safe) |
+| `ParquetNeo.Compression.Snappy`, `.Lz4`, `.Zstd` | the codecs, one package each so that you only get the libraries you use |
+| `ParquetNeo.All` | all of the above, in one package |
 
 ## Goals
 
@@ -198,6 +214,8 @@ while (reader.Read())
 | `src/ParquetNeo.Serialization` | `ParquetSerializer`, which maps your classes and records to Parquet files, with the attributes that adjust it and the code the source generator writes against (add it to use the high-level API; it brings `ParquetNeo`) |
 | `src/ParquetNeo.Linq` | `ParquetDataset<T>`: LINQ over a file or a directory of files, with skipping of files, row groups and columns (not trim or AOT safe) |
 | `src/ParquetNeo.Generator` | The source generator behind `[ParquetSerializable]` (a Roslyn component, not a reference of your code) |
+| `src/ParquetNeo.All` | The `ParquetNeo.All` package: no code, it depends on all the packages below |
+| `src/ParquetNeo.Compression.Snappy`, `.Lz4`, `.Zstd` | The codecs, one package each |
 | `src/ParquetNeo.Enums` | The enumerations (the types of the Parquet format, and the options that name a choice), all in the `ParquetNeo` namespace |
 | `tests/ParquetNeo.Tests` | Unit tests of `ParquetNeo` ([TUnit](https://tunit.dev/)) |
 | `tests/ParquetNeo.Linq.Tests` | Unit tests of `ParquetNeo.Linq`: results against LINQ to objects, random predicates, plans, directories |
@@ -210,7 +228,9 @@ while (reader.Read())
 
 ## Building and testing
 
-Requires the .NET 10 SDK.
+Requires the .NET 10 SDK. The version of the packages comes from the latest git tag `v1.2.3` (MinVer): push such a tag and the
+`Publish` workflow tests, packs, checks the packages in a new Native AOT program and publishes them (nuget.org Trusted Publishing,
+so no API key). `build/verify-packages.sh <folder> <version>` makes that check locally.
 
 ```bash
 dotnet build -c Release

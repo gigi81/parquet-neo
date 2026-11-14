@@ -26,7 +26,7 @@ namespace ParquetNeo;
 /// </para>
 /// <para>
 /// A nested column (a leaf below optional or repeated groups) has a definition level per entry that counts how many
-/// of its optional and repeated ancestors, and itself, are present, up to <see cref="PrimitiveNode.MaxDefinitionLevel"/>:
+/// of its optional and repeated ancestors, and itself, are present, up to <see cref="Schema.SchemaNode.MaxDefinitionLevel"/>:
 /// only entries at that level carry a value. A column inside a repeated group also takes a repetition level per entry,
 /// which says at which repeated ancestor the entry repeats: <c>0</c> starts a new row, and a higher level continues the
 /// row at that depth. Entries are the unit of a batch; a row can span several entries and even several batches (it ends

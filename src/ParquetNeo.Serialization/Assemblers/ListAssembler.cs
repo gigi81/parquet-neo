@@ -10,6 +10,7 @@ namespace ParquetNeo.Serialization.Assemblers;
 /// <summary>A collection: the elements of a LIST of the file, in the kind of collection the property has.</summary>
 /// <typeparam name="TCollection">The type of the property.</typeparam>
 /// <typeparam name="TItem">What the collection holds, which is <typeparamref name="TElement"/> or a <see cref="Nullable{T}"/> of it.</typeparam>
+/// <typeparam name="TElement">The type of the elements, without the nullability of the item.</typeparam>
 /// <param name="createSink">Creates the collection that the elements are added to; null when they are collected in a scratch (see <paramref name="scratchIndex"/>).</param>
 /// <param name="toArray">Whether the property is an array, which is made from the collection once it is full.</param>
 /// <param name="scratchIndex">

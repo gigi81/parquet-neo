@@ -5,10 +5,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsAotCompatible>true</IsAotCompatible>
+    <Description>Reads and writes Parquet files as objects: ParquetSerializer, with a source generator that makes it trim and Native AOT safe.</Description>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ParquetNeo\ParquetNeo.csproj" />
+  </ItemGroup>
+
+  <!-- The source generator is built first and goes into the package as an analyzer, so that it runs in the projects that use the package. -->
+  <ItemGroup>
+    <ProjectReference Include="..\ParquetNeo.Generator\ParquetNeo.Generator.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+    <None Include="..\ParquetNeo.Generator\bin\$(Configuration)\netstandard2.0\ParquetNeo.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
   <ItemGroup>
