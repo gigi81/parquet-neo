@@ -155,6 +155,48 @@ public class ReadStatisticsTests
     }
 
     [Test]
+    public async Task EveryWayToReadAFileOfADisk_IsCounted()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "parquet-neo-metered-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        try
+        {
+            File.WriteAllBytes(Path.Combine(root, "f.bin"), Enumerable.Range(0, 3000).Select(i => (byte)i).ToArray());
+            var metered = new MeteredStorage(new LocalFileStorage(root));
+
+            var stream = await metered.OpenReadAsync("f.bin");
+            var viaArray = new byte[10];
+            int a = stream.Read(viaArray, 0, 10);
+            Span<byte> viaSpan = stackalloc byte[20];
+            int b = stream.Read(viaSpan);
+            var viaAsyncArray = new byte[30];
+            int c = await stream.ReadAsync(viaAsyncArray, 0, 30);
+            int d = await stream.ReadAsync(new byte[40].AsMemory());
+            await Assert.That(stream.Seek(0, SeekOrigin.End)).IsEqualTo(3000);
+            int atEnd = await stream.ReadAsync(new byte[10].AsMemory());
+            stream.Flush();
+            await Assert.That(() => stream.SetLength(5)).Throws<NotSupportedException>();
+            await Assert.That(() => stream.Write(new byte[1], 0, 1)).Throws<NotSupportedException>();
+            await stream.DisposeAsync();
+
+            await Assert.That((a, b, c, d, atEnd)).IsEqualTo((10, 20, 30, 40, 0));
+            await Assert.That(viaArray[9]).IsEqualTo((byte)9);
+            await Assert.That(viaAsyncArray[0]).IsEqualTo((byte)30);
+
+            // The read at the end gave nothing, and is not a request.
+            await Assert.That(metered.Statistics.Requests).IsEqualTo(4);
+            await Assert.That(metered.Statistics.BytesRead).IsEqualTo(100);
+
+            var again = await metered.OpenReadAsync("f.bin");
+            again.Dispose();
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
     public async Task ThePieces_AreChecked()
     {
         await Assert.That(() => new MeteredStorage(null!)).Throws<ArgumentNullException>();

@@ -184,6 +184,7 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
     }
 
     /// <summary>The files of a disk, by their paths, to be counted like those of a storage.</summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage(Justification = "A stand-in for opening files; the dataset lists the files of a disk itself, so listing is never asked of it.")]
     private sealed class PathStorage : IParquetStorage
     {
         public IAsyncEnumerable<StorageObject> ListAsync(string prefix, CancellationToken cancellationToken = default) =>
