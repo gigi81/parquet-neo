@@ -1,0 +1,77 @@
+name: Publish
+
+# A tag such as v1.2.3 (or v1.2.3-preview.1) publishes the packages of that version to nuget.org and makes a GitHub release.
+# nuget.org trusts this workflow (Trusted Publishing), so there is no API key: the job asks GitHub for a token that nuget.org checks
+# against the policy of the packages (owner, repository and this file name).
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # the version of the packages comes from the tag
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Build
+        run: dotnet build ParquetNeo.slnx -c Release
+
+      - name: Test
+        run: dotnet test -c Release --no-build
+
+      - name: Pack
+        run: dotnet pack ParquetNeo.slnx -c Release --no-build -o packages
+
+      - name: Install the packages in a new program
+        run: |
+          version=${GITHUB_REF_NAME#v}
+          test -f "packages/ParquetNeo.All.$version.nupkg" || { echo "The packages are not version $version:"; ls packages; exit 1; }
+          build/verify-packages.sh packages "$version"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: packages
+          path: packages/*
+          if-no-files-found: error
+
+  publish:
+    needs: pack
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # to trade for a temporary nuget.org key
+      contents: write # for the release
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: packages
+          path: packages
+
+      - name: Log in to nuget.org
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }} # the name of the nuget.org profile that owns the packages
+
+      - name: Push
+        run: >
+          dotnet nuget push "packages/*.nupkg" --source https://api.nuget.org/v3/index.json
+          --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --skip-duplicate
+
+      - name: Push the symbols
+        run: >
+          dotnet nuget push "packages/*.snupkg" --source https://api.nuget.org/v3/index.json
+          --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --skip-duplicate
+
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          flags=""
+          case "$GITHUB_REF_NAME" in *-*) flags="--prerelease" ;; esac
+          gh release create "$GITHUB_REF_NAME" packages/*.nupkg --repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --generate-notes $flags

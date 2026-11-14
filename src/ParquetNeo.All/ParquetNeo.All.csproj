@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- A package with no code: installing it installs every other ParquetNeo package. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IncludeSymbols>false</IncludeSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <Description>Everything of ParquetNeo in one package: the reader and writer, the serializer with its source generator, LINQ over files, and the Snappy, LZ4 and Zstandard codecs. Install the packages one by one to take less.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ParquetNeo\ParquetNeo.csproj" />
+    <ProjectReference Include="..\ParquetNeo.Serialization\ParquetNeo.Serialization.csproj" />
+    <ProjectReference Include="..\ParquetNeo.Linq\ParquetNeo.Linq.csproj" />
+    <ProjectReference Include="..\ParquetNeo.Compression.Snappy\ParquetNeo.Compression.Snappy.csproj" />
+    <ProjectReference Include="..\ParquetNeo.Compression.Lz4\ParquetNeo.Compression.Lz4.csproj" />
+    <ProjectReference Include="..\ParquetNeo.Compression.Zstd\ParquetNeo.Compression.Zstd.csproj" />
+  </ItemGroup>
+
+</Project>

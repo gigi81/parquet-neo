@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsAotCompatible>true</IsAotCompatible>
+    <Description>A fast Parquet reader and writer: row groups and columns, ADO.NET, filters that skip row groups and pages, bloom filters, page checksums.</Description>
   </PropertyGroup>
 
   <ItemGroup>

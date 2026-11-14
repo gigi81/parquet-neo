@@ -11,6 +11,7 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <IsPackable>false</IsPackable>
     <IncludeSymbols>false</IncludeSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <RootNamespace>ParquetNeo.Generator</RootNamespace>
   </PropertyGroup>
 

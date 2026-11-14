@@ -13,9 +13,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
@@ -47,8 +47,35 @@ jobs:
 
       - name: Upload coverage report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-${{ matrix.os }}
           path: TestResults/*.cobertura.xml
           if-no-files-found: warn
+
+  packages:
+    # The packages as a user gets them: built, packed and installed into a new Native AOT program.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # the version of the packages comes from the tags
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Pack
+        run: dotnet pack ParquetNeo.slnx -c Release -o packages
+
+      - name: Install the packages in a new program
+        run: |
+          version=$(ls packages/ParquetNeo.All.*.nupkg | sed -E 's|.*/ParquetNeo\.All\.(.*)\.nupkg|\1|')
+          build/verify-packages.sh packages "$version"
+
+      - name: Upload the packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: packages
+          path: packages/*
+          if-no-files-found: error

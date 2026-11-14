@@ -8,6 +8,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>LINQ over Parquet files and directories of them, as an IQueryable that skips the files, row groups and columns a query does not need. Not trim or Native AOT safe.</Description>
   </PropertyGroup>
 
   <ItemGroup>

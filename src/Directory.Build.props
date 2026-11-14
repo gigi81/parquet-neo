@@ -5,7 +5,28 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Public members that are not documented yet, and documentation that names only some of the parameters, are not errors. -->
+    <NoWarn>$(NoWarn);CS1591;CS1573</NoWarn>
+    <!-- The version of every package comes from the latest tag "v1.2.3" (a build after it is a prerelease of the next version). -->
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+    <MinVerDefaultPreReleaseIdentifiers>preview.0</MinVerDefaultPreReleaseIdentifiers>
   </PropertyGroup>
+
+  <!-- A package that depends on another of ours passes on everything in it: without this, the source generator of ParquetNeo.Serialization would not reach the projects that use ParquetNeo.Linq or ParquetNeo.All. -->
+  <ItemDefinitionGroup>
+    <ProjectReference>
+      <PrivateAssets>none</PrivateAssets>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\README.md" Pack="true" PackagePath="\" Visible="false" />
+    <PackageReference Include="MinVer">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="SonarAnalyzer.CSharp">

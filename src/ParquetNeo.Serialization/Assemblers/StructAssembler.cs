@@ -22,7 +22,7 @@ internal sealed class StructAssembler<TValue>(
     /// Builds the object from the columns: for an object created with its parameterless constructor, one function generated for the
     /// type that creates it and sets every property, instead of a loop over the properties that each call into their column; for an
     /// object built by a constructor with parameters (a record, for example), the properties are read into slots, and the
-    /// constructor is called with them. The function of the first kind is <paramref name="build"/>, compiled for the type or written
+    /// constructor is called with them. The function of the first kind is <c>build</c>, compiled for the type or written
     /// for it by the source generator.
     /// </summary>
     private readonly Func<ReadContext, TValue> _build = constructor is { } slots

@@ -8,6 +8,7 @@ namespace ParquetNeo.Serialization.Shredders;
 /// <summary>A collection: a LIST group of repeated elements, optional when the collection may be null.</summary>
 /// <typeparam name="TCollection">The type of the property.</typeparam>
 /// <typeparam name="TItem">What it enumerates, which is <typeparamref name="TElement"/> or a <see cref="Nullable{T}"/> of it.</typeparam>
+/// <typeparam name="TElement">The type of the elements, without the nullability of the item.</typeparam>
 internal sealed class ListShredder<TCollection, TItem, TElement>(
     bool optional,
     int firstColumn,

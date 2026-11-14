@@ -6,11 +6,11 @@ namespace ParquetNeo.Serialization.Shredders;
 internal abstract class Shredder<TValue>(bool optional, int firstColumn, int columnCount, string description)
     : Shredder(optional, firstColumn, columnCount, description)
 {
+    public sealed override PropertyShredder CreateProperty(string name) => new PropertyShredder<TValue>(name, this, property: null, nullable: false);
+
     /// <summary>Adds the entries of a value to the columns below.</summary>
     /// <param name="present">False for a null: <paramref name="value"/> is then meaningless.</param>
     /// <param name="definition">The number of optional and repeated ancestors that are present.</param>
     /// <param name="repetition">The repetition level of the first entry: how deep the entry shares its ancestors with the one before.</param>
-    public sealed override PropertyShredder CreateProperty(string name) => new PropertyShredder<TValue>(name, this, property: null, nullable: false);
-
     public abstract void Shred(TValue value, bool present, int definition, int repetition, ILeafBuffer[] buffers);
 }
