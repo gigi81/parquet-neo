@@ -11,7 +11,7 @@ spec in [`specs/`](../specs) (`File Format _ Parquet.html` and `parquet.thrift`)
   - **Low level** (`ParquetNeo`): `ParquetFileReader` / `ParquetFileWriter` work on
     row groups and column chunks. Columns are read/written as `Span<T>` plus
     definition/repetition levels. Metadata and statistics are exposed.
-  - **High level** (`ParquetNeo`): `ParquetSerializer.SerializeAsync<T>(...)` and
+  - **High level** (`ParquetNeo.Serialization`, which builds on `ParquetNeo`): `ParquetSerializer.SerializeAsync<T>(...)` and
     `DeserializeAsync<T>(...)` / `IAsyncEnumerable<T>` over plain DTOs. Built on top of the
     low-level layer; users never touch columns.
 - **Minimal dependencies.** Core depends only on the BCL. Thrift compact protocol and all
@@ -121,7 +121,7 @@ deliver the DTO API. Steps 13–15 may be reordered based on benchmark results.
 ## Testing
 
 - Framework: **TUnit**. **Every library project has a test project of its own**
-  (`tests/<Project>.Tests`: `ParquetNeo.Tests`, `ParquetNeo.Enums.Tests`,
+  (`tests/<Project>.Tests`: `ParquetNeo.Tests`, `ParquetNeo.Serialization.Tests`, `ParquetNeo.Enums.Tests`,
   `ParquetNeo.Compression.Snappy.Tests`, ...), with the fixtures it needs in its own `Fixtures` folder.
   Test code that several of them share (the checks every codec must pass, the data they run on) is in
   `tests/ParquetNeo.Tests.Common`, a library with no tests. A test belongs to the project of the code it is about;

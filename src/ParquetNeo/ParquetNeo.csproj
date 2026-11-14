@@ -15,6 +15,9 @@
     <InternalsVisibleTo Include="ParquetNeo.Tests" />
     <InternalsVisibleTo Include="ParquetNeo.Benchmarks" />
     <InternalsVisibleTo Include="ParquetNeo.Generator.Tests" />
+    <InternalsVisibleTo Include="ParquetNeo.Serialization" />
+    <InternalsVisibleTo Include="ParquetNeo.Serialization.Tests" />
+    <InternalsVisibleTo Include="ParquetNeo.Tests.Common" />
   </ItemGroup>
 
 </Project>

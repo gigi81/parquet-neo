@@ -15,15 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- The row of the Native AOT smoke test, with the mapping the generator writes for it: the tests check it against what the reflection path does. -->
-    <Compile Include="..\ParquetNeo.AotSmoke\Order.cs" Link="Serialization\Generated\Order.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\ParquetNeo.Generator\ParquetNeo.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Fixtures\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

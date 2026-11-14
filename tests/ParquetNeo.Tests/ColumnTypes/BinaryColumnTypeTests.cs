@@ -1,7 +1,6 @@
 using ParquetNeo.ColumnTypes;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
-using ParquetNeo.Serialization;
 using ParquetNeo.Tests.Core;
 
 namespace ParquetNeo.Tests.ColumnTypes;
@@ -158,42 +157,5 @@ public class BinaryColumnTypeTests
                 await Assert.That(result[row]).IsEquivalentTo((byte[])expected[row]!);
             }
         }
-    }
-
-    public sealed class Hashed
-    {
-        public int Id { get; set; }
-
-        public byte[] Hash { get; set; } = [];
-
-        public byte[]? Optional { get; set; }
-    }
-
-    [Test]
-    public async Task TheSerializer_ReadsAFixedLengthColumnIntoAByteArrayProperty()
-    {
-        var schema = new ParquetSchema(
-        [
-            new PrimitiveNode("Id", PhysicalType.Int32, FieldRepetitionType.Required),
-            new PrimitiveNode("Hash", PhysicalType.FixedLenByteArray, FieldRepetitionType.Required, typeLength: 3),
-            new PrimitiveNode("Optional", PhysicalType.FixedLenByteArray, FieldRepetitionType.Optional, typeLength: 2),
-        ]);
-        var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, options: null, leaveOpen: true))
-        using (var group = writer.AppendRowGroup())
-        {
-            group.NextColumn().WriteBatch([1, 2]);
-            group.NextColumn().WriteBatch(Binary, [new byte[] { 1, 2, 3 }, new byte[] { 4, 5, 6 }]);
-            group.NextColumn().WriteBatch(Binary, [new byte[] { 9, 9 }], [0, 1]);
-        }
-
-        stream.Position = 0;
-        var rows = ParquetSerializer.Deserialize<Hashed>(stream);
-
-        await Assert.That(rows.Count).IsEqualTo(2);
-        await Assert.That(rows[0].Hash).IsEquivalentTo(new byte[] { 1, 2, 3 });
-        await Assert.That(rows[1].Hash).IsEquivalentTo(new byte[] { 4, 5, 6 });
-        await Assert.That(rows[0].Optional).IsNull();
-        await Assert.That(rows[1].Optional).IsEquivalentTo(new byte[] { 9, 9 });
     }
 }

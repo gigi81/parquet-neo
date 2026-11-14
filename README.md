@@ -112,10 +112,12 @@ while (reader.Read())
 
 | Path | Contents |
 |---|---|
-| `src/ParquetNeo` | The library |
+| `src/ParquetNeo` | The core library: the file reader and writer, the schema, the encodings and codecs, and the ADO.NET reader and writer |
+| `src/ParquetNeo.Serialization` | `ParquetSerializer`, which maps your classes and records to Parquet files, with the attributes that adjust it and the code the source generator writes against (add it to use the high-level API; it brings `ParquetNeo`) |
 | `src/ParquetNeo.Generator` | The source generator behind `[ParquetSerializable]` (a Roslyn component, not a reference of your code) |
 | `src/ParquetNeo.Enums` | The enumerations (the types of the Parquet format, and the options that name a choice), all in the `ParquetNeo` namespace |
 | `tests/ParquetNeo.Tests` | Unit tests of `ParquetNeo` ([TUnit](https://tunit.dev/)) |
+| `tests/ParquetNeo.Serialization.Tests` | Unit tests of `ParquetNeo.Serialization`, including the generated mappings against the reflection path |
 | `tests/ParquetNeo.AotSmoke` | A program published with Native AOT in CI: it uses the serializer with a generated mapping |
 | `tests/ParquetNeo.Enums.Tests`, `tests/ParquetNeo.Generator.Tests`, `tests/ParquetNeo.Compression.*.Tests` | Each project has a test project of its own; the add-on codec projects run the shared codec checks of `tests/ParquetNeo.Tests.Common` |
 | `benchmarks/ParquetNeo.Benchmarks` | [BenchmarkDotNet](https://benchmarkdotnet.org/) benchmarks |

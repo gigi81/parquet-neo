@@ -2,7 +2,6 @@ using ParquetNeo.ColumnTypes;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
-using ParquetNeo.Serialization;
 using ParquetNeo.Tests.Core;
 
 namespace ParquetNeo.Tests.ColumnTypes;
@@ -240,40 +239,6 @@ public class ColumnTypeTests
 
     // ---- an own column type ----
 
-    public readonly record struct Money(long Cents);
-
-    /// <summary>Money as a count of cents in an INT64 column, written the way a user of the library would.</summary>
-    private sealed class MoneyColumnType : ColumnType<Money>
-    {
-        public override PrimitiveNode CreateNode(string name, FieldRepetitionType repetition) => new(name, PhysicalType.Int64, repetition);
-
-        public override string? GetProblem(PrimitiveNode column) =>
-            column.Type == PhysicalType.Int64 && column.LogicalType is null ? null : "it is not a plain INT64";
-
-        protected override BatchRead ReadCore(ColumnReader reader, Span<Money> values, Span<int> definitionLevels, Span<int> repetitionLevels)
-        {
-            var cents = new long[values.Length];
-            var read = reader.ReadBatch(cents, definitionLevels, repetitionLevels);
-            for (int i = 0; i < read.Values; i++)
-            {
-                values[i] = new Money(cents[i]);
-            }
-
-            return read;
-        }
-
-        protected override void WriteCore(ColumnWriter writer, ReadOnlySpan<Money> values, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels)
-        {
-            var cents = new long[values.Length];
-            for (int i = 0; i < values.Length; i++)
-            {
-                cents[i] = values[i].Cents;
-            }
-
-            writer.WriteBatch(cents, definitionLevels, repetitionLevels);
-        }
-    }
-
     [Test]
     public async Task AnOwnColumnType_ReadsAndWritesLikeABuiltInOne()
     {
@@ -290,39 +255,4 @@ public class ColumnTypeTests
             .Throws<ArgumentException>();
     }
 
-    public sealed class Invoice
-    {
-        public string Number { get; set; } = "";
-
-        public Money Total { get; set; }
-
-        public Money? Discount { get; set; }
-
-        public List<Money> Lines { get; set; } = [];
-    }
-
-    [Test]
-    public async Task ARegisteredColumnType_TeachesTheSerializerANewType()
-    {
-        ColumnTypeRegistry.Register(new MoneyColumnType());
-        var invoices = new List<Invoice>
-        {
-            new() { Number = "A", Total = new Money(1000), Discount = new Money(50), Lines = [new Money(400), new Money(600)] },
-            new() { Number = "B", Total = new Money(7), Discount = null, Lines = [] },
-        };
-
-        var stream = new MemoryStream();
-        ParquetSerializer.Serialize(invoices, stream);
-        stream.Position = 0;
-        var back = ParquetSerializer.Deserialize<Invoice>(stream);
-
-        await Assert.That(back.Count).IsEqualTo(2);
-        await Assert.That(back[0].Total).IsEqualTo(new Money(1000));
-        await Assert.That(back[0].Discount).IsEqualTo(new Money(50));
-        await Assert.That(back[0].Lines).IsEquivalentTo(new[] { new Money(400), new Money(600) });
-        await Assert.That(back[1].Discount).IsNull();
-        await Assert.That(back[1].Lines).IsEmpty();
-        await Assert.That(ColumnTypeRegistry.IsSupported(typeof(Money))).IsTrue();
-        await Assert.That(() => ColumnTypeRegistry.Register<Money>(null!)).Throws<ArgumentNullException>();
-    }
 }
