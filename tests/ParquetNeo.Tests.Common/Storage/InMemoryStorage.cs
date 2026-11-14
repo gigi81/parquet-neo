@@ -7,12 +7,14 @@ namespace ParquetNeo.Tests.Storage;
 public sealed class InMemoryStorage : IParquetStorage
 {
     private readonly Dictionary<string, byte[]> _objects = new(StringComparer.Ordinal);
+    private readonly Lock _lock = new();
+    private int _listings;
 
-    /// <summary>The ranges that were read, in order.</summary>
+    /// <summary>The ranges that were read, in order. Read it when the reads are done: files are read on several threads, which add to it under a lock.</summary>
     public List<StorageRequest> Requests { get; } = [];
 
     /// <summary>How many times objects were listed.</summary>
-    public int Listings { get; private set; }
+    public int Listings => Volatile.Read(ref _listings);
 
     /// <summary>When set, a read gives at most this many bytes, as a network may, so that readers have to ask again.</summary>
     public int? MaxBytesPerRead { get; set; }
@@ -31,7 +33,7 @@ public sealed class InMemoryStorage : IParquetStorage
 
     public IAsyncEnumerable<StorageObject> ListAsync(string prefix, CancellationToken cancellationToken = default)
     {
-        Listings++;
+        Interlocked.Increment(ref _listings);
         return _objects.Where(pair => pair.Key.StartsWith(prefix, StringComparison.Ordinal))
             .Select(pair => new StorageObject(pair.Key, pair.Value.Length))
             .ToAsyncEnumerable();
@@ -47,7 +49,11 @@ public sealed class InMemoryStorage : IParquetStorage
         protected override ValueTask<int> ReadRangeAsync(long offset, Memory<byte> destination, CancellationToken cancellationToken)
         {
             int count = Math.Min(destination.Length, storage.MaxBytesPerRead ?? int.MaxValue);
-            storage.Requests.Add(new StorageRequest(key, offset, count));
+            lock (storage._lock)
+            {
+                storage.Requests.Add(new StorageRequest(key, offset, count));
+            }
+
             data.AsMemory((int)offset, count).CopyTo(destination);
             return ValueTask.FromResult(count);
         }

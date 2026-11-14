@@ -13,6 +13,7 @@ namespace ParquetNeo.Storage.S3.Tests;
 public class FakeS3 : DispatchProxy
 {
     private readonly Dictionary<string, (byte[] Data, string ETag)> _objects = new(StringComparer.Ordinal);
+    private readonly Lock _lock = new();
 
     /// <summary>How many objects a page of a listing has.</summary>
     public int PageSize { get; set; } = 1000;
@@ -43,7 +44,11 @@ public class FakeS3 : DispatchProxy
     {
         ArgumentNullException.ThrowIfNull(targetMethod);
         ArgumentNullException.ThrowIfNull(args);
-        Calls.Add(targetMethod.Name);
+        lock (_lock)
+        {
+            Calls.Add(targetMethod.Name);
+        }
+
         return targetMethod.Name switch
         {
             "ListObjectsV2Async" => Task.FromResult(List((ListObjectsV2Request)args[0]!)),
@@ -81,7 +86,11 @@ public class FakeS3 : DispatchProxy
         var (data, etag) = Find(request.Key);
         long start = request.ByteRange?.Start ?? 0;
         long end = request.ByteRange?.End ?? data.Length - 1;
-        Ranges.Add((request.Key, start, end, request.EtagToMatch));
+        lock (_lock)
+        {
+            Ranges.Add((request.Key, start, end, request.EtagToMatch));
+        }
+
         if (request.EtagToMatch is not null && request.EtagToMatch != etag)
         {
             throw new AmazonS3Exception("At least one of the pre-conditions you specified did not hold.", ErrorType.Sender, "PreconditionFailed", "request", HttpStatusCode.PreconditionFailed);
