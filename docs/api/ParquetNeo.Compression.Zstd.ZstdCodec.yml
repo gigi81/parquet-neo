@@ -1,0 +1,943 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Compression.Zstd.ZstdCodec
+  commentId: T:ParquetNeo.Compression.Zstd.ZstdCodec
+  id: ZstdCodec
+  parent: ParquetNeo.Compression.Zstd
+  children:
+  - ParquetNeo.Compression.Zstd.ZstdCodec.#ctor(System.Int32)
+  - ParquetNeo.Compression.Zstd.ZstdCodec.Compress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+  - ParquetNeo.Compression.Zstd.ZstdCodec.Decompress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+  - ParquetNeo.Compression.Zstd.ZstdCodec.Dispose
+  - ParquetNeo.Compression.Zstd.ZstdCodec.GetMaxCompressedLength(System.Int32)
+  - ParquetNeo.Compression.Zstd.ZstdCodec.Id
+  langs:
+  - csharp
+  - vb
+  name: ZstdCodec
+  nameWithType: ZstdCodec
+  fullName: ParquetNeo.Compression.Zstd.ZstdCodec
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo.Compression.Zstd/ZstdCodec.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ZstdCodec
+    path: ../src/ParquetNeo.Compression.Zstd/ZstdCodec.cs
+    startLine: 13
+  assemblies:
+  - ParquetNeo.Compression.Zstd
+  namespace: ParquetNeo.Compression.Zstd
+  summary: >-
+    ZSTD (RFC 8878) using the managed ZstdSharp.Port library. Register it with
+
+    <code>CodecRegistry.Default.AddZstd()</code>.
+  remarks: >-
+    Compression and decompression contexts are expensive to create and not thread safe, so each thread
+
+    keeps its own; dispose the codec to release them.
+  example: []
+  syntax:
+    content: 'public sealed class ZstdCodec : ICodec, IDisposable'
+    content.vb: Public NotInheritable Class ZstdCodec Implements ICodec, IDisposable
+  inheritance:
+  - System.Object
+  implements:
+  - ParquetNeo.Compression.ICodec
+  - System.IDisposable
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.Compression.Zstd.ZstdCodec.#ctor(System.Int32)
+  commentId: M:ParquetNeo.Compression.Zstd.ZstdCodec.#ctor(System.Int32)
+  id: '#ctor(System.Int32)'
+  parent: ParquetNeo.Compression.Zstd.ZstdCodec
+  langs:
+  - csharp
+  - vb
+  name: ZstdCodec(int)
+  nameWithType: ZstdCodec.ZstdCodec(int)
+  fullName: ParquetNeo.Compression.Zstd.ZstdCodec.ZstdCodec(int)
+  type: Constructor
+  source:
+    remote:
+      path: src/ParquetNeo.Compression.Zstd/ZstdCodec.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: .ctor
+    path: ../src/ParquetNeo.Compression.Zstd/ZstdCodec.cs
+    startLine: 19
+  assemblies:
+  - ParquetNeo.Compression.Zstd
+  namespace: ParquetNeo.Compression.Zstd
+  example: []
+  syntax:
+    content: public ZstdCodec(int level = 3)
+    parameters:
+    - id: level
+      type: System.Int32
+      description: 1 (fastest) to 22 (smallest); 3 is the zstd default.
+    content.vb: Public Sub New(level As Integer = 3)
+  overload: ParquetNeo.Compression.Zstd.ZstdCodec.#ctor*
+  nameWithType.vb: ZstdCodec.New(Integer)
+  fullName.vb: ParquetNeo.Compression.Zstd.ZstdCodec.New(Integer)
+  name.vb: New(Integer)
+- uid: ParquetNeo.Compression.Zstd.ZstdCodec.Id
+  commentId: P:ParquetNeo.Compression.Zstd.ZstdCodec.Id
+  id: Id
+  parent: ParquetNeo.Compression.Zstd.ZstdCodec
+  langs:
+  - csharp
+  - vb
+  name: Id
+  nameWithType: ZstdCodec.Id
+  fullName: ParquetNeo.Compression.Zstd.ZstdCodec.Id
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo.Compression.Zstd/ZstdCodec.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Id
+    path: ../src/ParquetNeo.Compression.Zstd/ZstdCodec.cs
+    startLine: 26
+  assemblies:
+  - ParquetNeo.Compression.Zstd
+  namespace: ParquetNeo.Compression.Zstd
+  summary: The Parquet codec this implementation handles.
+  example: []
+  syntax:
+    content: public CompressionCodec Id { get; }
+    parameters: []
+    return:
+      type: ParquetNeo.CompressionCodec
+    content.vb: Public ReadOnly Property Id As CompressionCodec
+  overload: ParquetNeo.Compression.Zstd.ZstdCodec.Id*
+  implements:
+  - ParquetNeo.Compression.ICodec.Id
+- uid: ParquetNeo.Compression.Zstd.ZstdCodec.GetMaxCompressedLength(System.Int32)
+  commentId: M:ParquetNeo.Compression.Zstd.ZstdCodec.GetMaxCompressedLength(System.Int32)
+  id: GetMaxCompressedLength(System.Int32)
+  parent: ParquetNeo.Compression.Zstd.ZstdCodec
+  langs:
+  - csharp
+  - vb
+  name: GetMaxCompressedLength(int)
+  nameWithType: ZstdCodec.GetMaxCompressedLength(int)
+  fullName: ParquetNeo.Compression.Zstd.ZstdCodec.GetMaxCompressedLength(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Compression.Zstd/ZstdCodec.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetMaxCompressedLength
+    path: ../src/ParquetNeo.Compression.Zstd/ZstdCodec.cs
+    startLine: 28
+  assemblies:
+  - ParquetNeo.Compression.Zstd
+  namespace: ParquetNeo.Compression.Zstd
+  summary: An upper bound on the compressed size of <code class="paramref">uncompressedLength</code> bytes.
+  example: []
+  syntax:
+    content: public int GetMaxCompressedLength(int uncompressedLength)
+    parameters:
+    - id: uncompressedLength
+      type: System.Int32
+    return:
+      type: System.Int32
+    content.vb: Public Function GetMaxCompressedLength(uncompressedLength As Integer) As Integer
+  overload: ParquetNeo.Compression.Zstd.ZstdCodec.GetMaxCompressedLength*
+  implements:
+  - ParquetNeo.Compression.ICodec.GetMaxCompressedLength(System.Int32)
+  nameWithType.vb: ZstdCodec.GetMaxCompressedLength(Integer)
+  fullName.vb: ParquetNeo.Compression.Zstd.ZstdCodec.GetMaxCompressedLength(Integer)
+  name.vb: GetMaxCompressedLength(Integer)
+- uid: ParquetNeo.Compression.Zstd.ZstdCodec.Compress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+  commentId: M:ParquetNeo.Compression.Zstd.ZstdCodec.Compress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+  id: Compress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+  parent: ParquetNeo.Compression.Zstd.ZstdCodec
+  langs:
+  - csharp
+  - vb
+  name: Compress(ReadOnlySpan<byte>, Span<byte>)
+  nameWithType: ZstdCodec.Compress(ReadOnlySpan<byte>, Span<byte>)
+  fullName: ParquetNeo.Compression.Zstd.ZstdCodec.Compress(System.ReadOnlySpan<byte>, System.Span<byte>)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Compression.Zstd/ZstdCodec.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Compress
+    path: ../src/ParquetNeo.Compression.Zstd/ZstdCodec.cs
+    startLine: 30
+  assemblies:
+  - ParquetNeo.Compression.Zstd
+  namespace: ParquetNeo.Compression.Zstd
+  summary: >-
+    Compresses <code class="paramref">source</code> into <code class="paramref">destination</code>, which must hold at least
+
+    <xref href="ParquetNeo.Compression.ICodec.GetMaxCompressedLength(System.Int32)" data-throw-if-not-resolved="false"></xref> bytes, and returns the number of bytes written.
+  example: []
+  syntax:
+    content: public int Compress(ReadOnlySpan<byte> source, Span<byte> destination)
+    parameters:
+    - id: source
+      type: System.ReadOnlySpan{System.Byte}
+    - id: destination
+      type: System.Span{System.Byte}
+    return:
+      type: System.Int32
+    content.vb: Public Function Compress(source As ReadOnlySpan(Of Byte), destination As Span(Of Byte)) As Integer
+  overload: ParquetNeo.Compression.Zstd.ZstdCodec.Compress*
+  implements:
+  - ParquetNeo.Compression.ICodec.Compress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+  nameWithType.vb: ZstdCodec.Compress(ReadOnlySpan(Of Byte), Span(Of Byte))
+  fullName.vb: ParquetNeo.Compression.Zstd.ZstdCodec.Compress(System.ReadOnlySpan(Of Byte), System.Span(Of Byte))
+  name.vb: Compress(ReadOnlySpan(Of Byte), Span(Of Byte))
+- uid: ParquetNeo.Compression.Zstd.ZstdCodec.Decompress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+  commentId: M:ParquetNeo.Compression.Zstd.ZstdCodec.Decompress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+  id: Decompress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+  parent: ParquetNeo.Compression.Zstd.ZstdCodec
+  langs:
+  - csharp
+  - vb
+  name: Decompress(ReadOnlySpan<byte>, Span<byte>)
+  nameWithType: ZstdCodec.Decompress(ReadOnlySpan<byte>, Span<byte>)
+  fullName: ParquetNeo.Compression.Zstd.ZstdCodec.Decompress(System.ReadOnlySpan<byte>, System.Span<byte>)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Compression.Zstd/ZstdCodec.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Decompress
+    path: ../src/ParquetNeo.Compression.Zstd/ZstdCodec.cs
+    startLine: 40
+  assemblies:
+  - ParquetNeo.Compression.Zstd
+  namespace: ParquetNeo.Compression.Zstd
+  summary: >-
+    Decompresses <code class="paramref">source</code> into <code class="paramref">destination</code>, whose length must be exactly
+
+    the uncompressed size recorded in the page header.
+  example: []
+  syntax:
+    content: public void Decompress(ReadOnlySpan<byte> source, Span<byte> destination)
+    parameters:
+    - id: source
+      type: System.ReadOnlySpan{System.Byte}
+    - id: destination
+      type: System.Span{System.Byte}
+    content.vb: Public Sub Decompress(source As ReadOnlySpan(Of Byte), destination As Span(Of Byte))
+  overload: ParquetNeo.Compression.Zstd.ZstdCodec.Decompress*
+  exceptions:
+  - type: ParquetNeo.Exceptions.CompressionException
+    commentId: T:ParquetNeo.Exceptions.CompressionException
+    description: The data is corrupt, or does not decompress to exactly <code>destination.Length</code> bytes.
+  implements:
+  - ParquetNeo.Compression.ICodec.Decompress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+  nameWithType.vb: ZstdCodec.Decompress(ReadOnlySpan(Of Byte), Span(Of Byte))
+  fullName.vb: ParquetNeo.Compression.Zstd.ZstdCodec.Decompress(System.ReadOnlySpan(Of Byte), System.Span(Of Byte))
+  name.vb: Decompress(ReadOnlySpan(Of Byte), Span(Of Byte))
+- uid: ParquetNeo.Compression.Zstd.ZstdCodec.Dispose
+  commentId: M:ParquetNeo.Compression.Zstd.ZstdCodec.Dispose
+  id: Dispose
+  parent: ParquetNeo.Compression.Zstd.ZstdCodec
+  langs:
+  - csharp
+  - vb
+  name: Dispose()
+  nameWithType: ZstdCodec.Dispose()
+  fullName: ParquetNeo.Compression.Zstd.ZstdCodec.Dispose()
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Compression.Zstd/ZstdCodec.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Dispose
+    path: ../src/ParquetNeo.Compression.Zstd/ZstdCodec.cs
+    startLine: 64
+  assemblies:
+  - ParquetNeo.Compression.Zstd
+  namespace: ParquetNeo.Compression.Zstd
+  summary: Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+  example: []
+  syntax:
+    content: public void Dispose()
+    content.vb: Public Sub Dispose()
+  overload: ParquetNeo.Compression.Zstd.ZstdCodec.Dispose*
+  implements:
+  - System.IDisposable.Dispose
+references:
+- uid: ParquetNeo.Compression.Zstd
+  commentId: N:ParquetNeo.Compression.Zstd
+  name: ParquetNeo.Compression.Zstd
+  nameWithType: ParquetNeo.Compression.Zstd
+  fullName: ParquetNeo.Compression.Zstd
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Compression
+    name: Compression
+  - name: .
+  - uid: ParquetNeo.Compression.Zstd
+    name: Zstd
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Compression
+    name: Compression
+  - name: .
+  - uid: ParquetNeo.Compression.Zstd
+    name: Zstd
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: ParquetNeo.Compression.ICodec
+  commentId: T:ParquetNeo.Compression.ICodec
+  parent: ParquetNeo.Compression
+  href: ParquetNeo.Compression.ICodec.html
+  name: ICodec
+  nameWithType: ICodec
+  fullName: ParquetNeo.Compression.ICodec
+- uid: System.IDisposable
+  commentId: T:System.IDisposable
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.idisposable
+  name: IDisposable
+  nameWithType: IDisposable
+  fullName: System.IDisposable
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: ParquetNeo.Compression
+  commentId: N:ParquetNeo.Compression
+  name: ParquetNeo.Compression
+  nameWithType: ParquetNeo.Compression
+  fullName: ParquetNeo.Compression
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Compression
+    name: Compression
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Compression
+    name: Compression
+- uid: ParquetNeo.Compression.Zstd.ZstdCodec.#ctor*
+  commentId: Overload:ParquetNeo.Compression.Zstd.ZstdCodec.#ctor
+  href: ParquetNeo.Compression.Zstd.ZstdCodec.html#ParquetNeo_Compression_Zstd_ZstdCodec__ctor_System_Int32_
+  name: ZstdCodec
+  nameWithType: ZstdCodec.ZstdCodec
+  fullName: ParquetNeo.Compression.Zstd.ZstdCodec.ZstdCodec
+  nameWithType.vb: ZstdCodec.New
+  fullName.vb: ParquetNeo.Compression.Zstd.ZstdCodec.New
+  name.vb: New
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: ParquetNeo.Compression.Zstd.ZstdCodec.Id*
+  commentId: Overload:ParquetNeo.Compression.Zstd.ZstdCodec.Id
+  href: ParquetNeo.Compression.Zstd.ZstdCodec.html#ParquetNeo_Compression_Zstd_ZstdCodec_Id
+  name: Id
+  nameWithType: ZstdCodec.Id
+  fullName: ParquetNeo.Compression.Zstd.ZstdCodec.Id
+- uid: ParquetNeo.Compression.ICodec.Id
+  commentId: P:ParquetNeo.Compression.ICodec.Id
+  parent: ParquetNeo.Compression.ICodec
+  href: ParquetNeo.Compression.ICodec.html#ParquetNeo_Compression_ICodec_Id
+  name: Id
+  nameWithType: ICodec.Id
+  fullName: ParquetNeo.Compression.ICodec.Id
+- uid: ParquetNeo.CompressionCodec
+  commentId: T:ParquetNeo.CompressionCodec
+  parent: ParquetNeo
+  href: ParquetNeo.CompressionCodec.html
+  name: CompressionCodec
+  nameWithType: CompressionCodec
+  fullName: ParquetNeo.CompressionCodec
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: ParquetNeo.Compression.Zstd.ZstdCodec.GetMaxCompressedLength*
+  commentId: Overload:ParquetNeo.Compression.Zstd.ZstdCodec.GetMaxCompressedLength
+  href: ParquetNeo.Compression.Zstd.ZstdCodec.html#ParquetNeo_Compression_Zstd_ZstdCodec_GetMaxCompressedLength_System_Int32_
+  name: GetMaxCompressedLength
+  nameWithType: ZstdCodec.GetMaxCompressedLength
+  fullName: ParquetNeo.Compression.Zstd.ZstdCodec.GetMaxCompressedLength
+- uid: ParquetNeo.Compression.ICodec.GetMaxCompressedLength(System.Int32)
+  commentId: M:ParquetNeo.Compression.ICodec.GetMaxCompressedLength(System.Int32)
+  parent: ParquetNeo.Compression.ICodec
+  isExternal: true
+  href: ParquetNeo.Compression.ICodec.html#ParquetNeo_Compression_ICodec_GetMaxCompressedLength_System_Int32_
+  name: GetMaxCompressedLength(int)
+  nameWithType: ICodec.GetMaxCompressedLength(int)
+  fullName: ParquetNeo.Compression.ICodec.GetMaxCompressedLength(int)
+  nameWithType.vb: ICodec.GetMaxCompressedLength(Integer)
+  fullName.vb: ParquetNeo.Compression.ICodec.GetMaxCompressedLength(Integer)
+  name.vb: GetMaxCompressedLength(Integer)
+  spec.csharp:
+  - uid: ParquetNeo.Compression.ICodec.GetMaxCompressedLength(System.Int32)
+    name: GetMaxCompressedLength
+    href: ParquetNeo.Compression.ICodec.html#ParquetNeo_Compression_ICodec_GetMaxCompressedLength_System_Int32_
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.Compression.ICodec.GetMaxCompressedLength(System.Int32)
+    name: GetMaxCompressedLength
+    href: ParquetNeo.Compression.ICodec.html#ParquetNeo_Compression_ICodec_GetMaxCompressedLength_System_Int32_
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Compression.Zstd.ZstdCodec.Compress*
+  commentId: Overload:ParquetNeo.Compression.Zstd.ZstdCodec.Compress
+  href: ParquetNeo.Compression.Zstd.ZstdCodec.html#ParquetNeo_Compression_Zstd_ZstdCodec_Compress_System_ReadOnlySpan_System_Byte__System_Span_System_Byte__
+  name: Compress
+  nameWithType: ZstdCodec.Compress
+  fullName: ParquetNeo.Compression.Zstd.ZstdCodec.Compress
+- uid: ParquetNeo.Compression.ICodec.Compress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+  commentId: M:ParquetNeo.Compression.ICodec.Compress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+  parent: ParquetNeo.Compression.ICodec
+  isExternal: true
+  href: ParquetNeo.Compression.ICodec.html#ParquetNeo_Compression_ICodec_Compress_System_ReadOnlySpan_System_Byte__System_Span_System_Byte__
+  name: Compress(ReadOnlySpan<byte>, Span<byte>)
+  nameWithType: ICodec.Compress(ReadOnlySpan<byte>, Span<byte>)
+  fullName: ParquetNeo.Compression.ICodec.Compress(System.ReadOnlySpan<byte>, System.Span<byte>)
+  nameWithType.vb: ICodec.Compress(ReadOnlySpan(Of Byte), Span(Of Byte))
+  fullName.vb: ParquetNeo.Compression.ICodec.Compress(System.ReadOnlySpan(Of Byte), System.Span(Of Byte))
+  name.vb: Compress(ReadOnlySpan(Of Byte), Span(Of Byte))
+  spec.csharp:
+  - uid: ParquetNeo.Compression.ICodec.Compress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+    name: Compress
+    href: ParquetNeo.Compression.ICodec.html#ParquetNeo_Compression_ICodec_Compress_System_ReadOnlySpan_System_Byte__System_Span_System_Byte__
+  - name: (
+  - uid: System.ReadOnlySpan`1
+    name: ReadOnlySpan
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  - name: <
+  - uid: System.Byte
+    name: byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: '>'
+  - name: ','
+  - name: " "
+  - uid: System.Span`1
+    name: Span
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.span-1
+  - name: <
+  - uid: System.Byte
+    name: byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: '>'
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.Compression.ICodec.Compress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+    name: Compress
+    href: ParquetNeo.Compression.ICodec.html#ParquetNeo_Compression_ICodec_Compress_System_ReadOnlySpan_System_Byte__System_Span_System_Byte__
+  - name: (
+  - uid: System.ReadOnlySpan`1
+    name: ReadOnlySpan
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Byte
+    name: Byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: )
+  - name: ','
+  - name: " "
+  - uid: System.Span`1
+    name: Span
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.span-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Byte
+    name: Byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: )
+  - name: )
+- uid: System.ReadOnlySpan{System.Byte}
+  commentId: T:System.ReadOnlySpan{System.Byte}
+  parent: System
+  definition: System.ReadOnlySpan`1
+  href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  name: ReadOnlySpan<byte>
+  nameWithType: ReadOnlySpan<byte>
+  fullName: System.ReadOnlySpan<byte>
+  nameWithType.vb: ReadOnlySpan(Of Byte)
+  fullName.vb: System.ReadOnlySpan(Of Byte)
+  name.vb: ReadOnlySpan(Of Byte)
+  spec.csharp:
+  - uid: System.ReadOnlySpan`1
+    name: ReadOnlySpan
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  - name: <
+  - uid: System.Byte
+    name: byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: '>'
+  spec.vb:
+  - uid: System.ReadOnlySpan`1
+    name: ReadOnlySpan
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Byte
+    name: Byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: )
+- uid: System.Span{System.Byte}
+  commentId: T:System.Span{System.Byte}
+  parent: System
+  definition: System.Span`1
+  href: https://learn.microsoft.com/dotnet/api/system.span-1
+  name: Span<byte>
+  nameWithType: Span<byte>
+  fullName: System.Span<byte>
+  nameWithType.vb: Span(Of Byte)
+  fullName.vb: System.Span(Of Byte)
+  name.vb: Span(Of Byte)
+  spec.csharp:
+  - uid: System.Span`1
+    name: Span
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.span-1
+  - name: <
+  - uid: System.Byte
+    name: byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: '>'
+  spec.vb:
+  - uid: System.Span`1
+    name: Span
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.span-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Byte
+    name: Byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: )
+- uid: System.ReadOnlySpan`1
+  commentId: T:System.ReadOnlySpan`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  name: ReadOnlySpan<T>
+  nameWithType: ReadOnlySpan<T>
+  fullName: System.ReadOnlySpan<T>
+  nameWithType.vb: ReadOnlySpan(Of T)
+  fullName.vb: System.ReadOnlySpan(Of T)
+  name.vb: ReadOnlySpan(Of T)
+  spec.csharp:
+  - uid: System.ReadOnlySpan`1
+    name: ReadOnlySpan
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.ReadOnlySpan`1
+    name: ReadOnlySpan
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Span`1
+  commentId: T:System.Span`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.span-1
+  name: Span<T>
+  nameWithType: Span<T>
+  fullName: System.Span<T>
+  nameWithType.vb: Span(Of T)
+  fullName.vb: System.Span(Of T)
+  name.vb: Span(Of T)
+  spec.csharp:
+  - uid: System.Span`1
+    name: Span
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.span-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Span`1
+    name: Span
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.span-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.Exceptions.CompressionException
+  commentId: T:ParquetNeo.Exceptions.CompressionException
+  href: ParquetNeo.Exceptions.CompressionException.html
+  name: CompressionException
+  nameWithType: CompressionException
+  fullName: ParquetNeo.Exceptions.CompressionException
+- uid: ParquetNeo.Compression.Zstd.ZstdCodec.Decompress*
+  commentId: Overload:ParquetNeo.Compression.Zstd.ZstdCodec.Decompress
+  href: ParquetNeo.Compression.Zstd.ZstdCodec.html#ParquetNeo_Compression_Zstd_ZstdCodec_Decompress_System_ReadOnlySpan_System_Byte__System_Span_System_Byte__
+  name: Decompress
+  nameWithType: ZstdCodec.Decompress
+  fullName: ParquetNeo.Compression.Zstd.ZstdCodec.Decompress
+- uid: ParquetNeo.Compression.ICodec.Decompress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+  commentId: M:ParquetNeo.Compression.ICodec.Decompress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+  parent: ParquetNeo.Compression.ICodec
+  isExternal: true
+  href: ParquetNeo.Compression.ICodec.html#ParquetNeo_Compression_ICodec_Decompress_System_ReadOnlySpan_System_Byte__System_Span_System_Byte__
+  name: Decompress(ReadOnlySpan<byte>, Span<byte>)
+  nameWithType: ICodec.Decompress(ReadOnlySpan<byte>, Span<byte>)
+  fullName: ParquetNeo.Compression.ICodec.Decompress(System.ReadOnlySpan<byte>, System.Span<byte>)
+  nameWithType.vb: ICodec.Decompress(ReadOnlySpan(Of Byte), Span(Of Byte))
+  fullName.vb: ParquetNeo.Compression.ICodec.Decompress(System.ReadOnlySpan(Of Byte), System.Span(Of Byte))
+  name.vb: Decompress(ReadOnlySpan(Of Byte), Span(Of Byte))
+  spec.csharp:
+  - uid: ParquetNeo.Compression.ICodec.Decompress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+    name: Decompress
+    href: ParquetNeo.Compression.ICodec.html#ParquetNeo_Compression_ICodec_Decompress_System_ReadOnlySpan_System_Byte__System_Span_System_Byte__
+  - name: (
+  - uid: System.ReadOnlySpan`1
+    name: ReadOnlySpan
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  - name: <
+  - uid: System.Byte
+    name: byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: '>'
+  - name: ','
+  - name: " "
+  - uid: System.Span`1
+    name: Span
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.span-1
+  - name: <
+  - uid: System.Byte
+    name: byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: '>'
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.Compression.ICodec.Decompress(System.ReadOnlySpan{System.Byte},System.Span{System.Byte})
+    name: Decompress
+    href: ParquetNeo.Compression.ICodec.html#ParquetNeo_Compression_ICodec_Decompress_System_ReadOnlySpan_System_Byte__System_Span_System_Byte__
+  - name: (
+  - uid: System.ReadOnlySpan`1
+    name: ReadOnlySpan
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Byte
+    name: Byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: )
+  - name: ','
+  - name: " "
+  - uid: System.Span`1
+    name: Span
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.span-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Byte
+    name: Byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: )
+  - name: )
+- uid: ParquetNeo.Compression.Zstd.ZstdCodec.Dispose*
+  commentId: Overload:ParquetNeo.Compression.Zstd.ZstdCodec.Dispose
+  href: ParquetNeo.Compression.Zstd.ZstdCodec.html#ParquetNeo_Compression_Zstd_ZstdCodec_Dispose
+  name: Dispose
+  nameWithType: ZstdCodec.Dispose
+  fullName: ParquetNeo.Compression.Zstd.ZstdCodec.Dispose
+- uid: System.IDisposable.Dispose
+  commentId: M:System.IDisposable.Dispose
+  parent: System.IDisposable
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.idisposable.dispose
+  name: Dispose()
+  nameWithType: IDisposable.Dispose()
+  fullName: System.IDisposable.Dispose()
+  spec.csharp:
+  - uid: System.IDisposable.Dispose
+    name: Dispose
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.idisposable.dispose
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.IDisposable.Dispose
+    name: Dispose
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.idisposable.dispose
+  - name: (
+  - name: )

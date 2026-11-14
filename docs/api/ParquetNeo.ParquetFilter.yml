@@ -1,0 +1,1051 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.ParquetFilter
+  commentId: T:ParquetNeo.ParquetFilter
+  id: ParquetFilter
+  parent: ParquetNeo
+  children:
+  - ParquetNeo.ParquetFilter.AllOf(ParquetNeo.ParquetFilter[])
+  - ParquetNeo.ParquetFilter.And(ParquetNeo.ParquetFilter)
+  - ParquetNeo.ParquetFilter.AnyOf(ParquetNeo.ParquetFilter[])
+  - ParquetNeo.ParquetFilter.Column(System.String[])
+  - ParquetNeo.ParquetFilter.Columns
+  - ParquetNeo.ParquetFilter.Not
+  - ParquetNeo.ParquetFilter.Or(ParquetNeo.ParquetFilter)
+  - ParquetNeo.ParquetFilter.op_BitwiseAnd(ParquetNeo.ParquetFilter,ParquetNeo.ParquetFilter)
+  - ParquetNeo.ParquetFilter.op_BitwiseOr(ParquetNeo.ParquetFilter,ParquetNeo.ParquetFilter)
+  - ParquetNeo.ParquetFilter.op_LogicalNot(ParquetNeo.ParquetFilter)
+  langs:
+  - csharp
+  - vb
+  name: ParquetFilter
+  nameWithType: ParquetFilter
+  fullName: ParquetNeo.ParquetFilter
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetFilter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ParquetFilter
+    path: ../src/ParquetNeo/ParquetFilter.cs
+    startLine: 25
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    A condition on the values of columns, which a reader checks against the statistics of each row group (the smallest and largest
+
+    value, and how many are null) to skip the row groups that cannot hold a row that satisfies it. Build one with
+
+    <xref href="ParquetNeo.ParquetFilter.Column(System.String%5b%5d)" data-throw-if-not-resolved="false"></xref> and combine with <xref href="ParquetNeo.ParquetFilter.And(ParquetNeo.ParquetFilter)" data-throw-if-not-resolved="false"></xref>, <xref href="ParquetNeo.ParquetFilter.Or(ParquetNeo.ParquetFilter)" data-throw-if-not-resolved="false"></xref> and <xref href="ParquetNeo.ParquetFilter.Not" data-throw-if-not-resolved="false"></xref>.
+  remarks: >-
+    <p>
+
+    A filter only prunes: a row group is skipped when its statistics prove that no row satisfies the filter, and kept when they say
+
+    that one may or cannot tell (no statistics, a column of the file the filter names but the file does not have, a column in a
+
+    collection). The rows of a kept row group are not filtered, so apply the condition to them as well when it must hold exactly.
+
+    </p>
+
+    <p>
+
+    A comparison with a null is false, and <xref href="ParquetNeo.ParquetFilter.Not" data-throw-if-not-resolved="false"></xref> negates, so <code>Not(Equal(5))</code> is true for a null, as
+
+    <code>x != 5</code> is in C#. Values are compared as the column type defines: numbers, dates, times and decimals by value, text and
+
+    binary by their bytes (UTF-8 for text). Enums (stored by name) and <xref href="System.Guid" data-throw-if-not-resolved="false"></xref>s can only be compared for equality;
+
+    a comparison for order with them keeps every row group.
+
+    </p>
+  example: []
+  syntax:
+    content: public abstract class ParquetFilter
+    content.vb: Public MustInherit Class ParquetFilter
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.ParquetFilter.Column(System.String[])
+  commentId: M:ParquetNeo.ParquetFilter.Column(System.String[])
+  id: Column(System.String[])
+  parent: ParquetNeo.ParquetFilter
+  langs:
+  - csharp
+  - vb
+  name: Column(params string[])
+  nameWithType: ParquetFilter.Column(params string[])
+  fullName: ParquetNeo.ParquetFilter.Column(params string[])
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetFilter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Column
+    path: ../src/ParquetNeo/ParquetFilter.cs
+    startLine: 33
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: 'Starts a condition on a column, named by its path from just below the root: one name for a top-level column.'
+  example: []
+  syntax:
+    content: public static FilterColumn Column(params string[] path)
+    parameters:
+    - id: path
+      type: System.String[]
+    return:
+      type: ParquetNeo.FilterColumn
+    content.vb: Public Shared Function Column(ParamArray path As String()) As FilterColumn
+  overload: ParquetNeo.ParquetFilter.Column*
+  exceptions:
+  - type: System.ArgumentException
+    commentId: T:System.ArgumentException
+    description: The path is empty or has an empty name.
+  nameWithType.vb: ParquetFilter.Column(ParamArray String())
+  fullName.vb: ParquetNeo.ParquetFilter.Column(ParamArray String())
+  name.vb: Column(ParamArray String())
+- uid: ParquetNeo.ParquetFilter.AllOf(ParquetNeo.ParquetFilter[])
+  commentId: M:ParquetNeo.ParquetFilter.AllOf(ParquetNeo.ParquetFilter[])
+  id: AllOf(ParquetNeo.ParquetFilter[])
+  parent: ParquetNeo.ParquetFilter
+  langs:
+  - csharp
+  - vb
+  name: AllOf(params ParquetFilter[])
+  nameWithType: ParquetFilter.AllOf(params ParquetFilter[])
+  fullName: ParquetNeo.ParquetFilter.AllOf(params ParquetNeo.ParquetFilter[])
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetFilter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: AllOf
+    path: ../src/ParquetNeo/ParquetFilter.cs
+    startLine: 37
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: A condition that holds when all of the filters do.
+  example: []
+  syntax:
+    content: public static ParquetFilter AllOf(params ParquetFilter[] filters)
+    parameters:
+    - id: filters
+      type: ParquetNeo.ParquetFilter[]
+    return:
+      type: ParquetNeo.ParquetFilter
+    content.vb: Public Shared Function AllOf(ParamArray filters As ParquetFilter()) As ParquetFilter
+  overload: ParquetNeo.ParquetFilter.AllOf*
+  exceptions:
+  - type: System.ArgumentException
+    commentId: T:System.ArgumentException
+    description: There are no filters.
+  nameWithType.vb: ParquetFilter.AllOf(ParamArray ParquetFilter())
+  fullName.vb: ParquetNeo.ParquetFilter.AllOf(ParamArray ParquetNeo.ParquetFilter())
+  name.vb: AllOf(ParamArray ParquetFilter())
+- uid: ParquetNeo.ParquetFilter.AnyOf(ParquetNeo.ParquetFilter[])
+  commentId: M:ParquetNeo.ParquetFilter.AnyOf(ParquetNeo.ParquetFilter[])
+  id: AnyOf(ParquetNeo.ParquetFilter[])
+  parent: ParquetNeo.ParquetFilter
+  langs:
+  - csharp
+  - vb
+  name: AnyOf(params ParquetFilter[])
+  nameWithType: ParquetFilter.AnyOf(params ParquetFilter[])
+  fullName: ParquetNeo.ParquetFilter.AnyOf(params ParquetNeo.ParquetFilter[])
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetFilter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: AnyOf
+    path: ../src/ParquetNeo/ParquetFilter.cs
+    startLine: 41
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: A condition that holds when any of the filters does.
+  example: []
+  syntax:
+    content: public static ParquetFilter AnyOf(params ParquetFilter[] filters)
+    parameters:
+    - id: filters
+      type: ParquetNeo.ParquetFilter[]
+    return:
+      type: ParquetNeo.ParquetFilter
+    content.vb: Public Shared Function AnyOf(ParamArray filters As ParquetFilter()) As ParquetFilter
+  overload: ParquetNeo.ParquetFilter.AnyOf*
+  exceptions:
+  - type: System.ArgumentException
+    commentId: T:System.ArgumentException
+    description: There are no filters.
+  nameWithType.vb: ParquetFilter.AnyOf(ParamArray ParquetFilter())
+  fullName.vb: ParquetNeo.ParquetFilter.AnyOf(ParamArray ParquetNeo.ParquetFilter())
+  name.vb: AnyOf(ParamArray ParquetFilter())
+- uid: ParquetNeo.ParquetFilter.op_BitwiseAnd(ParquetNeo.ParquetFilter,ParquetNeo.ParquetFilter)
+  commentId: M:ParquetNeo.ParquetFilter.op_BitwiseAnd(ParquetNeo.ParquetFilter,ParquetNeo.ParquetFilter)
+  id: op_BitwiseAnd(ParquetNeo.ParquetFilter,ParquetNeo.ParquetFilter)
+  parent: ParquetNeo.ParquetFilter
+  langs:
+  - csharp
+  - vb
+  name: operator &(ParquetFilter, ParquetFilter)
+  nameWithType: ParquetFilter.operator &(ParquetFilter, ParquetFilter)
+  fullName: ParquetNeo.ParquetFilter.operator &(ParquetNeo.ParquetFilter, ParquetNeo.ParquetFilter)
+  type: Operator
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetFilter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: op_BitwiseAnd
+    path: ../src/ParquetNeo/ParquetFilter.cs
+    startLine: 43
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  syntax:
+    content: public static ParquetFilter operator &(ParquetFilter left, ParquetFilter right)
+    parameters:
+    - id: left
+      type: ParquetNeo.ParquetFilter
+    - id: right
+      type: ParquetNeo.ParquetFilter
+    return:
+      type: ParquetNeo.ParquetFilter
+    content.vb: Public Shared Operator And(left As ParquetFilter, right As ParquetFilter) As ParquetFilter
+  overload: ParquetNeo.ParquetFilter.op_BitwiseAnd*
+  nameWithType.vb: ParquetFilter.And(ParquetFilter, ParquetFilter)
+  fullName.vb: ParquetNeo.ParquetFilter.And(ParquetNeo.ParquetFilter, ParquetNeo.ParquetFilter)
+  name.vb: And(ParquetFilter, ParquetFilter)
+- uid: ParquetNeo.ParquetFilter.op_BitwiseOr(ParquetNeo.ParquetFilter,ParquetNeo.ParquetFilter)
+  commentId: M:ParquetNeo.ParquetFilter.op_BitwiseOr(ParquetNeo.ParquetFilter,ParquetNeo.ParquetFilter)
+  id: op_BitwiseOr(ParquetNeo.ParquetFilter,ParquetNeo.ParquetFilter)
+  parent: ParquetNeo.ParquetFilter
+  langs:
+  - csharp
+  - vb
+  name: operator |(ParquetFilter, ParquetFilter)
+  nameWithType: ParquetFilter.operator |(ParquetFilter, ParquetFilter)
+  fullName: ParquetNeo.ParquetFilter.operator |(ParquetNeo.ParquetFilter, ParquetNeo.ParquetFilter)
+  type: Operator
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetFilter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: op_BitwiseOr
+    path: ../src/ParquetNeo/ParquetFilter.cs
+    startLine: 45
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  syntax:
+    content: public static ParquetFilter operator |(ParquetFilter left, ParquetFilter right)
+    parameters:
+    - id: left
+      type: ParquetNeo.ParquetFilter
+    - id: right
+      type: ParquetNeo.ParquetFilter
+    return:
+      type: ParquetNeo.ParquetFilter
+    content.vb: Public Shared Operator Or(left As ParquetFilter, right As ParquetFilter) As ParquetFilter
+  overload: ParquetNeo.ParquetFilter.op_BitwiseOr*
+  nameWithType.vb: ParquetFilter.Or(ParquetFilter, ParquetFilter)
+  fullName.vb: ParquetNeo.ParquetFilter.Or(ParquetNeo.ParquetFilter, ParquetNeo.ParquetFilter)
+  name.vb: Or(ParquetFilter, ParquetFilter)
+- uid: ParquetNeo.ParquetFilter.op_LogicalNot(ParquetNeo.ParquetFilter)
+  commentId: M:ParquetNeo.ParquetFilter.op_LogicalNot(ParquetNeo.ParquetFilter)
+  id: op_LogicalNot(ParquetNeo.ParquetFilter)
+  parent: ParquetNeo.ParquetFilter
+  langs:
+  - csharp
+  - vb
+  name: operator !(ParquetFilter)
+  nameWithType: ParquetFilter.operator !(ParquetFilter)
+  fullName: ParquetNeo.ParquetFilter.operator !(ParquetNeo.ParquetFilter)
+  type: Operator
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetFilter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: op_LogicalNot
+    path: ../src/ParquetNeo/ParquetFilter.cs
+    startLine: 47
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  syntax:
+    content: public static ParquetFilter operator !(ParquetFilter filter)
+    parameters:
+    - id: filter
+      type: ParquetNeo.ParquetFilter
+    return:
+      type: ParquetNeo.ParquetFilter
+    content.vb: Public Shared Operator Not(filter As ParquetFilter) As ParquetFilter
+  overload: ParquetNeo.ParquetFilter.op_LogicalNot*
+  nameWithType.vb: ParquetFilter.Not(ParquetFilter)
+  fullName.vb: ParquetNeo.ParquetFilter.Not(ParquetNeo.ParquetFilter)
+  name.vb: Not(ParquetFilter)
+- uid: ParquetNeo.ParquetFilter.Columns
+  commentId: P:ParquetNeo.ParquetFilter.Columns
+  id: Columns
+  parent: ParquetNeo.ParquetFilter
+  langs:
+  - csharp
+  - vb
+  name: Columns
+  nameWithType: ParquetFilter.Columns
+  fullName: ParquetNeo.ParquetFilter.Columns
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetFilter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Columns
+    path: ../src/ParquetNeo/ParquetFilter.cs
+    startLine: 50
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: The columns the filter names, each as its path.
+  example: []
+  syntax:
+    content: public IReadOnlyList<IReadOnlyList<string>> Columns { get; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IReadOnlyList{System.Collections.Generic.IReadOnlyList{System.String}}
+    content.vb: Public ReadOnly Property Columns As IReadOnlyList(Of IReadOnlyList(Of String))
+  overload: ParquetNeo.ParquetFilter.Columns*
+- uid: ParquetNeo.ParquetFilter.And(ParquetNeo.ParquetFilter)
+  commentId: M:ParquetNeo.ParquetFilter.And(ParquetNeo.ParquetFilter)
+  id: And(ParquetNeo.ParquetFilter)
+  parent: ParquetNeo.ParquetFilter
+  langs:
+  - csharp
+  - vb
+  name: And(ParquetFilter)
+  nameWithType: ParquetFilter.And(ParquetFilter)
+  fullName: ParquetNeo.ParquetFilter.And(ParquetNeo.ParquetFilter)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetFilter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: And
+    path: ../src/ParquetNeo/ParquetFilter.cs
+    startLine: 61
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: A condition that holds when this one and <code class="paramref">other</code> do.
+  example: []
+  syntax:
+    content: public ParquetFilter And(ParquetFilter other)
+    parameters:
+    - id: other
+      type: ParquetNeo.ParquetFilter
+    return:
+      type: ParquetNeo.ParquetFilter
+    content.vb: Public Function [And](other As ParquetFilter) As ParquetFilter
+  overload: ParquetNeo.ParquetFilter.And*
+- uid: ParquetNeo.ParquetFilter.Or(ParquetNeo.ParquetFilter)
+  commentId: M:ParquetNeo.ParquetFilter.Or(ParquetNeo.ParquetFilter)
+  id: Or(ParquetNeo.ParquetFilter)
+  parent: ParquetNeo.ParquetFilter
+  langs:
+  - csharp
+  - vb
+  name: Or(ParquetFilter)
+  nameWithType: ParquetFilter.Or(ParquetFilter)
+  fullName: ParquetNeo.ParquetFilter.Or(ParquetNeo.ParquetFilter)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetFilter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Or
+    path: ../src/ParquetNeo/ParquetFilter.cs
+    startLine: 68
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: A condition that holds when this one or <code class="paramref">other</code> does.
+  example: []
+  syntax:
+    content: public ParquetFilter Or(ParquetFilter other)
+    parameters:
+    - id: other
+      type: ParquetNeo.ParquetFilter
+    return:
+      type: ParquetNeo.ParquetFilter
+    content.vb: Public Function [Or](other As ParquetFilter) As ParquetFilter
+  overload: ParquetNeo.ParquetFilter.Or*
+- uid: ParquetNeo.ParquetFilter.Not
+  commentId: M:ParquetNeo.ParquetFilter.Not
+  id: Not
+  parent: ParquetNeo.ParquetFilter
+  langs:
+  - csharp
+  - vb
+  name: Not()
+  nameWithType: ParquetFilter.Not()
+  fullName: ParquetNeo.ParquetFilter.Not()
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetFilter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Not
+    path: ../src/ParquetNeo/ParquetFilter.cs
+    startLine: 75
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: A condition that holds when this one does not.
+  example: []
+  syntax:
+    content: public ParquetFilter Not()
+    return:
+      type: ParquetNeo.ParquetFilter
+    content.vb: Public Function [Not]() As ParquetFilter
+  overload: ParquetNeo.ParquetFilter.Not*
+references:
+- uid: ParquetNeo.ParquetFilter.Column(System.String[])
+  commentId: M:ParquetNeo.ParquetFilter.Column(System.String[])
+  isExternal: true
+  href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_Column_System_String___
+  name: Column(params string[])
+  nameWithType: ParquetFilter.Column(params string[])
+  fullName: ParquetNeo.ParquetFilter.Column(params string[])
+  nameWithType.vb: ParquetFilter.Column(ParamArray String())
+  fullName.vb: ParquetNeo.ParquetFilter.Column(ParamArray String())
+  name.vb: Column(ParamArray String())
+  spec.csharp:
+  - uid: ParquetNeo.ParquetFilter.Column(System.String[])
+    name: Column
+    href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_Column_System_String___
+  - name: (
+  - name: params
+  - name: " "
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: '['
+  - name: ']'
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.ParquetFilter.Column(System.String[])
+    name: Column
+    href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_Column_System_String___
+  - name: (
+  - name: ParamArray
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: (
+  - name: )
+  - name: )
+- uid: ParquetNeo.ParquetFilter.And(ParquetNeo.ParquetFilter)
+  commentId: M:ParquetNeo.ParquetFilter.And(ParquetNeo.ParquetFilter)
+  href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_And_ParquetNeo_ParquetFilter_
+  name: And(ParquetFilter)
+  nameWithType: ParquetFilter.And(ParquetFilter)
+  fullName: ParquetNeo.ParquetFilter.And(ParquetNeo.ParquetFilter)
+  spec.csharp:
+  - uid: ParquetNeo.ParquetFilter.And(ParquetNeo.ParquetFilter)
+    name: And
+    href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_And_ParquetNeo_ParquetFilter_
+  - name: (
+  - uid: ParquetNeo.ParquetFilter
+    name: ParquetFilter
+    href: ParquetNeo.ParquetFilter.html
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.ParquetFilter.And(ParquetNeo.ParquetFilter)
+    name: And
+    href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_And_ParquetNeo_ParquetFilter_
+  - name: (
+  - uid: ParquetNeo.ParquetFilter
+    name: ParquetFilter
+    href: ParquetNeo.ParquetFilter.html
+  - name: )
+- uid: ParquetNeo.ParquetFilter.Or(ParquetNeo.ParquetFilter)
+  commentId: M:ParquetNeo.ParquetFilter.Or(ParquetNeo.ParquetFilter)
+  href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_Or_ParquetNeo_ParquetFilter_
+  name: Or(ParquetFilter)
+  nameWithType: ParquetFilter.Or(ParquetFilter)
+  fullName: ParquetNeo.ParquetFilter.Or(ParquetNeo.ParquetFilter)
+  spec.csharp:
+  - uid: ParquetNeo.ParquetFilter.Or(ParquetNeo.ParquetFilter)
+    name: Or
+    href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_Or_ParquetNeo_ParquetFilter_
+  - name: (
+  - uid: ParquetNeo.ParquetFilter
+    name: ParquetFilter
+    href: ParquetNeo.ParquetFilter.html
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.ParquetFilter.Or(ParquetNeo.ParquetFilter)
+    name: Or
+    href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_Or_ParquetNeo_ParquetFilter_
+  - name: (
+  - uid: ParquetNeo.ParquetFilter
+    name: ParquetFilter
+    href: ParquetNeo.ParquetFilter.html
+  - name: )
+- uid: ParquetNeo.ParquetFilter.Not
+  commentId: M:ParquetNeo.ParquetFilter.Not
+  href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_Not
+  name: Not()
+  nameWithType: ParquetFilter.Not()
+  fullName: ParquetNeo.ParquetFilter.Not()
+  spec.csharp:
+  - uid: ParquetNeo.ParquetFilter.Not
+    name: Not
+    href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_Not
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.ParquetFilter.Not
+    name: Not
+    href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_Not
+  - name: (
+  - name: )
+- uid: System.Guid
+  commentId: T:System.Guid
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.guid
+  name: Guid
+  nameWithType: Guid
+  fullName: System.Guid
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.ArgumentException
+  commentId: T:System.ArgumentException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.argumentexception
+  name: ArgumentException
+  nameWithType: ArgumentException
+  fullName: System.ArgumentException
+- uid: ParquetNeo.ParquetFilter.Column*
+  commentId: Overload:ParquetNeo.ParquetFilter.Column
+  href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_Column_System_String___
+  name: Column
+  nameWithType: ParquetFilter.Column
+  fullName: ParquetNeo.ParquetFilter.Column
+- uid: System.String[]
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string[]
+  nameWithType: string[]
+  fullName: string[]
+  nameWithType.vb: String()
+  fullName.vb: String()
+  name.vb: String()
+  spec.csharp:
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: '['
+  - name: ']'
+  spec.vb:
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: (
+  - name: )
+- uid: ParquetNeo.FilterColumn
+  commentId: T:ParquetNeo.FilterColumn
+  parent: ParquetNeo
+  href: ParquetNeo.FilterColumn.html
+  name: FilterColumn
+  nameWithType: FilterColumn
+  fullName: ParquetNeo.FilterColumn
+- uid: ParquetNeo.ParquetFilter.AllOf*
+  commentId: Overload:ParquetNeo.ParquetFilter.AllOf
+  href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_AllOf_ParquetNeo_ParquetFilter___
+  name: AllOf
+  nameWithType: ParquetFilter.AllOf
+  fullName: ParquetNeo.ParquetFilter.AllOf
+- uid: ParquetNeo.ParquetFilter[]
+  isExternal: true
+  href: ParquetNeo.ParquetFilter.html
+  name: ParquetFilter[]
+  nameWithType: ParquetFilter[]
+  fullName: ParquetNeo.ParquetFilter[]
+  nameWithType.vb: ParquetFilter()
+  fullName.vb: ParquetNeo.ParquetFilter()
+  name.vb: ParquetFilter()
+  spec.csharp:
+  - uid: ParquetNeo.ParquetFilter
+    name: ParquetFilter
+    href: ParquetNeo.ParquetFilter.html
+  - name: '['
+  - name: ']'
+  spec.vb:
+  - uid: ParquetNeo.ParquetFilter
+    name: ParquetFilter
+    href: ParquetNeo.ParquetFilter.html
+  - name: (
+  - name: )
+- uid: ParquetNeo.ParquetFilter
+  commentId: T:ParquetNeo.ParquetFilter
+  parent: ParquetNeo
+  href: ParquetNeo.ParquetFilter.html
+  name: ParquetFilter
+  nameWithType: ParquetFilter
+  fullName: ParquetNeo.ParquetFilter
+- uid: ParquetNeo.ParquetFilter.AnyOf*
+  commentId: Overload:ParquetNeo.ParquetFilter.AnyOf
+  href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_AnyOf_ParquetNeo_ParquetFilter___
+  name: AnyOf
+  nameWithType: ParquetFilter.AnyOf
+  fullName: ParquetNeo.ParquetFilter.AnyOf
+- uid: ParquetNeo.ParquetFilter.op_BitwiseAnd*
+  commentId: Overload:ParquetNeo.ParquetFilter.op_BitwiseAnd
+  href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_op_BitwiseAnd_ParquetNeo_ParquetFilter_ParquetNeo_ParquetFilter_
+  name: operator &
+  nameWithType: ParquetFilter.operator &
+  fullName: ParquetNeo.ParquetFilter.operator &
+  nameWithType.vb: ParquetFilter.And
+  fullName.vb: ParquetNeo.ParquetFilter.And
+  name.vb: And
+  spec.csharp:
+  - name: operator
+  - name: " "
+  - uid: ParquetNeo.ParquetFilter.op_BitwiseAnd*
+    name: '&'
+    href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_op_BitwiseAnd_ParquetNeo_ParquetFilter_ParquetNeo_ParquetFilter_
+- uid: ParquetNeo.ParquetFilter.op_BitwiseOr*
+  commentId: Overload:ParquetNeo.ParquetFilter.op_BitwiseOr
+  href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_op_BitwiseOr_ParquetNeo_ParquetFilter_ParquetNeo_ParquetFilter_
+  name: operator |
+  nameWithType: ParquetFilter.operator |
+  fullName: ParquetNeo.ParquetFilter.operator |
+  nameWithType.vb: ParquetFilter.Or
+  fullName.vb: ParquetNeo.ParquetFilter.Or
+  name.vb: Or
+  spec.csharp:
+  - name: operator
+  - name: " "
+  - uid: ParquetNeo.ParquetFilter.op_BitwiseOr*
+    name: '|'
+    href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_op_BitwiseOr_ParquetNeo_ParquetFilter_ParquetNeo_ParquetFilter_
+- uid: ParquetNeo.ParquetFilter.op_LogicalNot*
+  commentId: Overload:ParquetNeo.ParquetFilter.op_LogicalNot
+  href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_op_LogicalNot_ParquetNeo_ParquetFilter_
+  name: operator !
+  nameWithType: ParquetFilter.operator !
+  fullName: ParquetNeo.ParquetFilter.operator !
+  nameWithType.vb: ParquetFilter.Not
+  fullName.vb: ParquetNeo.ParquetFilter.Not
+  name.vb: Not
+  spec.csharp:
+  - name: operator
+  - name: " "
+  - uid: ParquetNeo.ParquetFilter.op_LogicalNot*
+    name: '!'
+    href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_op_LogicalNot_ParquetNeo_ParquetFilter_
+- uid: ParquetNeo.ParquetFilter.Columns*
+  commentId: Overload:ParquetNeo.ParquetFilter.Columns
+  href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_Columns
+  name: Columns
+  nameWithType: ParquetFilter.Columns
+  fullName: ParquetNeo.ParquetFilter.Columns
+- uid: System.Collections.Generic.IReadOnlyList{System.Collections.Generic.IReadOnlyList{System.String}}
+  commentId: T:System.Collections.Generic.IReadOnlyList{System.Collections.Generic.IReadOnlyList{System.String}}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyList`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<IReadOnlyList<string>>
+  nameWithType: IReadOnlyList<IReadOnlyList<string>>
+  fullName: System.Collections.Generic.IReadOnlyList<System.Collections.Generic.IReadOnlyList<string>>
+  nameWithType.vb: IReadOnlyList(Of IReadOnlyList(Of String))
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of System.Collections.Generic.IReadOnlyList(Of String))
+  name.vb: IReadOnlyList(Of IReadOnlyList(Of String))
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: '>'
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+  - name: )
+- uid: System.Collections.Generic.IReadOnlyList`1
+  commentId: T:System.Collections.Generic.IReadOnlyList`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<T>
+  nameWithType: IReadOnlyList<T>
+  fullName: System.Collections.Generic.IReadOnlyList<T>
+  nameWithType.vb: IReadOnlyList(Of T)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of T)
+  name.vb: IReadOnlyList(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: ParquetNeo.ParquetFilter.And*
+  commentId: Overload:ParquetNeo.ParquetFilter.And
+  href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_And_ParquetNeo_ParquetFilter_
+  name: And
+  nameWithType: ParquetFilter.And
+  fullName: ParquetNeo.ParquetFilter.And
+- uid: ParquetNeo.ParquetFilter.Or*
+  commentId: Overload:ParquetNeo.ParquetFilter.Or
+  href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_Or_ParquetNeo_ParquetFilter_
+  name: Or
+  nameWithType: ParquetFilter.Or
+  fullName: ParquetNeo.ParquetFilter.Or
+- uid: ParquetNeo.ParquetFilter.Not*
+  commentId: Overload:ParquetNeo.ParquetFilter.Not
+  href: ParquetNeo.ParquetFilter.html#ParquetNeo_ParquetFilter_Not
+  name: Not
+  nameWithType: ParquetFilter.Not
+  fullName: ParquetNeo.ParquetFilter.Not

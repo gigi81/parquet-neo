@@ -1,0 +1,575 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.DictionarySettings
+  commentId: T:ParquetNeo.DictionarySettings
+  id: DictionarySettings
+  parent: ParquetNeo
+  children:
+  - ParquetNeo.DictionarySettings.FromMode(ParquetNeo.DictionaryMode)
+  - ParquetNeo.DictionarySettings.Mode
+  - ParquetNeo.DictionarySettings.SizeLimit
+  - ParquetNeo.DictionarySettings.op_Implicit(ParquetNeo.DictionaryMode)~ParquetNeo.DictionarySettings
+  langs:
+  - csharp
+  - vb
+  name: DictionarySettings
+  nameWithType: DictionarySettings
+  fullName: ParquetNeo.DictionarySettings
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/DictionarySettings.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: DictionarySettings
+    path: ../src/ParquetNeo/DictionarySettings.cs
+    startLine: 4
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: How one column is dictionary encoded; see <xref href="ParquetNeo.ParquetWriterOptions.ColumnDictionaries" data-throw-if-not-resolved="false"></xref>.
+  remarks: A <xref href="ParquetNeo.DictionaryMode" data-throw-if-not-resolved="false"></xref> alone can be used where settings are expected, to choose the mode and keep the size limit.
+  example: []
+  syntax:
+    content: 'public sealed record DictionarySettings : IEquatable<DictionarySettings>'
+    content.vb: Public NotInheritable Class DictionarySettings Implements IEquatable(Of DictionarySettings)
+  inheritance:
+  - System.Object
+  implements:
+  - System.IEquatable{ParquetNeo.DictionarySettings}
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.DictionarySettings.Mode
+  commentId: P:ParquetNeo.DictionarySettings.Mode
+  id: Mode
+  parent: ParquetNeo.DictionarySettings
+  langs:
+  - csharp
+  - vb
+  name: Mode
+  nameWithType: DictionarySettings.Mode
+  fullName: ParquetNeo.DictionarySettings.Mode
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/DictionarySettings.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Mode
+    path: ../src/ParquetNeo/DictionarySettings.cs
+    startLine: 7
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: Whether and when the column has a dictionary. Defaults to <xref href="ParquetNeo.DictionaryMode.Standard" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: public DictionaryMode Mode { get; init; }
+    parameters: []
+    return:
+      type: ParquetNeo.DictionaryMode
+    content.vb: Public Property Mode As DictionaryMode
+  overload: ParquetNeo.DictionarySettings.Mode*
+- uid: ParquetNeo.DictionarySettings.SizeLimit
+  commentId: P:ParquetNeo.DictionarySettings.SizeLimit
+  id: SizeLimit
+  parent: ParquetNeo.DictionarySettings
+  langs:
+  - csharp
+  - vb
+  name: SizeLimit
+  nameWithType: DictionarySettings.SizeLimit
+  fullName: ParquetNeo.DictionarySettings.SizeLimit
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/DictionarySettings.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: SizeLimit
+    path: ../src/ParquetNeo/DictionarySettings.cs
+    startLine: 15
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    The size, in bytes, the dictionary of this column may reach before the writer stops adding to it and writes the rest of the
+
+    column plain; see <xref href="ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit" data-throw-if-not-resolved="false"></xref>, which is used when this is null. Raise it for a
+
+    column with few distinct values that are large (long texts, urls), whose dictionary would otherwise be dropped half way
+
+    through. Everything the dictionary and the pages that use it take is held in memory until the column is complete.
+  example: []
+  syntax:
+    content: public int? SizeLimit { get; init; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Int32}
+    content.vb: Public Property SizeLimit As Integer?
+  overload: ParquetNeo.DictionarySettings.SizeLimit*
+- uid: ParquetNeo.DictionarySettings.FromMode(ParquetNeo.DictionaryMode)
+  commentId: M:ParquetNeo.DictionarySettings.FromMode(ParquetNeo.DictionaryMode)
+  id: FromMode(ParquetNeo.DictionaryMode)
+  parent: ParquetNeo.DictionarySettings
+  langs:
+  - csharp
+  - vb
+  name: FromMode(DictionaryMode)
+  nameWithType: DictionarySettings.FromMode(DictionaryMode)
+  fullName: ParquetNeo.DictionarySettings.FromMode(ParquetNeo.DictionaryMode)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/DictionarySettings.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: FromMode
+    path: ../src/ParquetNeo/DictionarySettings.cs
+    startLine: 18
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: The settings that choose only a mode.
+  example: []
+  syntax:
+    content: public static DictionarySettings FromMode(DictionaryMode mode)
+    parameters:
+    - id: mode
+      type: ParquetNeo.DictionaryMode
+    return:
+      type: ParquetNeo.DictionarySettings
+    content.vb: Public Shared Function FromMode(mode As DictionaryMode) As DictionarySettings
+  overload: ParquetNeo.DictionarySettings.FromMode*
+- uid: ParquetNeo.DictionarySettings.op_Implicit(ParquetNeo.DictionaryMode)~ParquetNeo.DictionarySettings
+  commentId: M:ParquetNeo.DictionarySettings.op_Implicit(ParquetNeo.DictionaryMode)~ParquetNeo.DictionarySettings
+  id: op_Implicit(ParquetNeo.DictionaryMode)~ParquetNeo.DictionarySettings
+  parent: ParquetNeo.DictionarySettings
+  langs:
+  - csharp
+  - vb
+  name: implicit operator DictionarySettings(DictionaryMode)
+  nameWithType: DictionarySettings.implicit operator DictionarySettings(DictionaryMode)
+  fullName: ParquetNeo.DictionarySettings.implicit operator ParquetNeo.DictionarySettings(ParquetNeo.DictionaryMode)
+  type: Operator
+  source:
+    remote:
+      path: src/ParquetNeo/DictionarySettings.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: op_Implicit
+    path: ../src/ParquetNeo/DictionarySettings.cs
+    startLine: 20
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  syntax:
+    content: public static implicit operator DictionarySettings(DictionaryMode mode)
+    parameters:
+    - id: mode
+      type: ParquetNeo.DictionaryMode
+    return:
+      type: ParquetNeo.DictionarySettings
+    content.vb: Public Shared Widening Operator CType(mode As DictionaryMode) As DictionarySettings
+  overload: ParquetNeo.DictionarySettings.op_Implicit*
+  nameWithType.vb: DictionarySettings.CType(DictionaryMode)
+  fullName.vb: ParquetNeo.DictionarySettings.CType(ParquetNeo.DictionaryMode)
+  name.vb: CType(DictionaryMode)
+references:
+- uid: ParquetNeo.ParquetWriterOptions.ColumnDictionaries
+  commentId: P:ParquetNeo.ParquetWriterOptions.ColumnDictionaries
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_ColumnDictionaries
+  name: ColumnDictionaries
+  nameWithType: ParquetWriterOptions.ColumnDictionaries
+  fullName: ParquetNeo.ParquetWriterOptions.ColumnDictionaries
+- uid: ParquetNeo.DictionaryMode
+  commentId: T:ParquetNeo.DictionaryMode
+  parent: ParquetNeo
+  href: ParquetNeo.DictionaryMode.html
+  name: DictionaryMode
+  nameWithType: DictionaryMode
+  fullName: ParquetNeo.DictionaryMode
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.IEquatable{ParquetNeo.DictionarySettings}
+  commentId: T:System.IEquatable{ParquetNeo.DictionarySettings}
+  parent: System
+  definition: System.IEquatable`1
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<DictionarySettings>
+  nameWithType: IEquatable<DictionarySettings>
+  fullName: System.IEquatable<ParquetNeo.DictionarySettings>
+  nameWithType.vb: IEquatable(Of DictionarySettings)
+  fullName.vb: System.IEquatable(Of ParquetNeo.DictionarySettings)
+  name.vb: IEquatable(Of DictionarySettings)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - uid: ParquetNeo.DictionarySettings
+    name: DictionarySettings
+    href: ParquetNeo.DictionarySettings.html
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.DictionarySettings
+    name: DictionarySettings
+    href: ParquetNeo.DictionarySettings.html
+  - name: )
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.IEquatable`1
+  commentId: T:System.IEquatable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<T>
+  nameWithType: IEquatable<T>
+  fullName: System.IEquatable<T>
+  nameWithType.vb: IEquatable(Of T)
+  fullName.vb: System.IEquatable(Of T)
+  name.vb: IEquatable(Of T)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.DictionaryMode.Standard
+  commentId: F:ParquetNeo.DictionaryMode.Standard
+  href: ParquetNeo.DictionaryMode.html#ParquetNeo_DictionaryMode_Standard
+  name: Standard
+  nameWithType: DictionaryMode.Standard
+  fullName: ParquetNeo.DictionaryMode.Standard
+- uid: ParquetNeo.DictionarySettings.Mode*
+  commentId: Overload:ParquetNeo.DictionarySettings.Mode
+  href: ParquetNeo.DictionarySettings.html#ParquetNeo_DictionarySettings_Mode
+  name: Mode
+  nameWithType: DictionarySettings.Mode
+  fullName: ParquetNeo.DictionarySettings.Mode
+- uid: ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit
+  commentId: P:ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_DictionaryPageSizeLimit
+  name: DictionaryPageSizeLimit
+  nameWithType: ParquetWriterOptions.DictionaryPageSizeLimit
+  fullName: ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit
+- uid: ParquetNeo.DictionarySettings.SizeLimit*
+  commentId: Overload:ParquetNeo.DictionarySettings.SizeLimit
+  href: ParquetNeo.DictionarySettings.html#ParquetNeo_DictionarySettings_SizeLimit
+  name: SizeLimit
+  nameWithType: DictionarySettings.SizeLimit
+  fullName: ParquetNeo.DictionarySettings.SizeLimit
+- uid: System.Nullable{System.Int32}
+  commentId: T:System.Nullable{System.Int32}
+  parent: System
+  definition: System.Nullable`1
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int?
+  nameWithType: int?
+  fullName: int?
+  nameWithType.vb: Integer?
+  fullName.vb: Integer?
+  name.vb: Integer?
+  spec.csharp:
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: '?'
+  spec.vb:
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: '?'
+- uid: System.Nullable`1
+  commentId: T:System.Nullable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  name: Nullable<T>
+  nameWithType: Nullable<T>
+  fullName: System.Nullable<T>
+  nameWithType.vb: Nullable(Of T)
+  fullName.vb: System.Nullable(Of T)
+  name.vb: Nullable(Of T)
+  spec.csharp:
+  - uid: System.Nullable`1
+    name: Nullable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Nullable`1
+    name: Nullable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.DictionarySettings.FromMode*
+  commentId: Overload:ParquetNeo.DictionarySettings.FromMode
+  href: ParquetNeo.DictionarySettings.html#ParquetNeo_DictionarySettings_FromMode_ParquetNeo_DictionaryMode_
+  name: FromMode
+  nameWithType: DictionarySettings.FromMode
+  fullName: ParquetNeo.DictionarySettings.FromMode
+- uid: ParquetNeo.DictionarySettings
+  commentId: T:ParquetNeo.DictionarySettings
+  parent: ParquetNeo
+  href: ParquetNeo.DictionarySettings.html
+  name: DictionarySettings
+  nameWithType: DictionarySettings
+  fullName: ParquetNeo.DictionarySettings
+- uid: ParquetNeo.DictionarySettings.op_Implicit*
+  commentId: Overload:ParquetNeo.DictionarySettings.op_Implicit
+  name: implicit operator
+  nameWithType: DictionarySettings.implicit operator
+  fullName: ParquetNeo.DictionarySettings.implicit operator
+  nameWithType.vb: DictionarySettings.CType
+  fullName.vb: ParquetNeo.DictionarySettings.CType
+  name.vb: CType
+  spec.csharp:
+  - name: implicit
+  - name: " "
+  - name: operator

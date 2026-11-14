@@ -1,0 +1,261 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.PhysicalType
+  commentId: T:ParquetNeo.PhysicalType
+  id: PhysicalType
+  parent: ParquetNeo
+  children:
+  - ParquetNeo.PhysicalType.Boolean
+  - ParquetNeo.PhysicalType.ByteArray
+  - ParquetNeo.PhysicalType.Double
+  - ParquetNeo.PhysicalType.FixedLenByteArray
+  - ParquetNeo.PhysicalType.Float
+  - ParquetNeo.PhysicalType.Int32
+  - ParquetNeo.PhysicalType.Int64
+  - ParquetNeo.PhysicalType.Int96
+  langs:
+  - csharp
+  - vb
+  name: PhysicalType
+  nameWithType: PhysicalType
+  fullName: ParquetNeo.PhysicalType
+  type: Enum
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/PhysicalType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: PhysicalType
+    path: ../src/ParquetNeo.Enums/PhysicalType.cs
+    startLine: 5
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  summary: Physical (storage) type of a column (thrift <code>Type</code>).
+  example: []
+  syntax:
+    content: public enum PhysicalType
+    content.vb: Public Enum PhysicalType
+- uid: ParquetNeo.PhysicalType.Boolean
+  commentId: F:ParquetNeo.PhysicalType.Boolean
+  id: Boolean
+  parent: ParquetNeo.PhysicalType
+  langs:
+  - csharp
+  - vb
+  name: Boolean
+  nameWithType: PhysicalType.Boolean
+  fullName: ParquetNeo.PhysicalType.Boolean
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/PhysicalType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Boolean
+    path: ../src/ParquetNeo.Enums/PhysicalType.cs
+    startLine: 7
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Boolean = 0
+    return:
+      type: ParquetNeo.PhysicalType
+- uid: ParquetNeo.PhysicalType.Int32
+  commentId: F:ParquetNeo.PhysicalType.Int32
+  id: Int32
+  parent: ParquetNeo.PhysicalType
+  langs:
+  - csharp
+  - vb
+  name: Int32
+  nameWithType: PhysicalType.Int32
+  fullName: ParquetNeo.PhysicalType.Int32
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/PhysicalType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Int32
+    path: ../src/ParquetNeo.Enums/PhysicalType.cs
+    startLine: 8
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Int32 = 1
+    return:
+      type: ParquetNeo.PhysicalType
+- uid: ParquetNeo.PhysicalType.Int64
+  commentId: F:ParquetNeo.PhysicalType.Int64
+  id: Int64
+  parent: ParquetNeo.PhysicalType
+  langs:
+  - csharp
+  - vb
+  name: Int64
+  nameWithType: PhysicalType.Int64
+  fullName: ParquetNeo.PhysicalType.Int64
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/PhysicalType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Int64
+    path: ../src/ParquetNeo.Enums/PhysicalType.cs
+    startLine: 9
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Int64 = 2
+    return:
+      type: ParquetNeo.PhysicalType
+- uid: ParquetNeo.PhysicalType.Int96
+  commentId: F:ParquetNeo.PhysicalType.Int96
+  id: Int96
+  parent: ParquetNeo.PhysicalType
+  langs:
+  - csharp
+  - vb
+  name: Int96
+  nameWithType: PhysicalType.Int96
+  fullName: ParquetNeo.PhysicalType.Int96
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/PhysicalType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Int96
+    path: ../src/ParquetNeo.Enums/PhysicalType.cs
+    startLine: 11
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  summary: Deprecated, kept for reading legacy files.
+  example: []
+  syntax:
+    content: Int96 = 3
+    return:
+      type: ParquetNeo.PhysicalType
+- uid: ParquetNeo.PhysicalType.Float
+  commentId: F:ParquetNeo.PhysicalType.Float
+  id: Float
+  parent: ParquetNeo.PhysicalType
+  langs:
+  - csharp
+  - vb
+  name: Float
+  nameWithType: PhysicalType.Float
+  fullName: ParquetNeo.PhysicalType.Float
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/PhysicalType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Float
+    path: ../src/ParquetNeo.Enums/PhysicalType.cs
+    startLine: 12
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Float = 4
+    return:
+      type: ParquetNeo.PhysicalType
+- uid: ParquetNeo.PhysicalType.Double
+  commentId: F:ParquetNeo.PhysicalType.Double
+  id: Double
+  parent: ParquetNeo.PhysicalType
+  langs:
+  - csharp
+  - vb
+  name: Double
+  nameWithType: PhysicalType.Double
+  fullName: ParquetNeo.PhysicalType.Double
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/PhysicalType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Double
+    path: ../src/ParquetNeo.Enums/PhysicalType.cs
+    startLine: 13
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Double = 5
+    return:
+      type: ParquetNeo.PhysicalType
+- uid: ParquetNeo.PhysicalType.ByteArray
+  commentId: F:ParquetNeo.PhysicalType.ByteArray
+  id: ByteArray
+  parent: ParquetNeo.PhysicalType
+  langs:
+  - csharp
+  - vb
+  name: ByteArray
+  nameWithType: PhysicalType.ByteArray
+  fullName: ParquetNeo.PhysicalType.ByteArray
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/PhysicalType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ByteArray
+    path: ../src/ParquetNeo.Enums/PhysicalType.cs
+    startLine: 14
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: ByteArray = 6
+    return:
+      type: ParquetNeo.PhysicalType
+- uid: ParquetNeo.PhysicalType.FixedLenByteArray
+  commentId: F:ParquetNeo.PhysicalType.FixedLenByteArray
+  id: FixedLenByteArray
+  parent: ParquetNeo.PhysicalType
+  langs:
+  - csharp
+  - vb
+  name: FixedLenByteArray
+  nameWithType: PhysicalType.FixedLenByteArray
+  fullName: ParquetNeo.PhysicalType.FixedLenByteArray
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/PhysicalType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: FixedLenByteArray
+    path: ../src/ParquetNeo.Enums/PhysicalType.cs
+    startLine: 15
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: FixedLenByteArray = 7
+    return:
+      type: ParquetNeo.PhysicalType
+references:
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: ParquetNeo.PhysicalType
+  commentId: T:ParquetNeo.PhysicalType
+  parent: ParquetNeo
+  href: ParquetNeo.PhysicalType.html
+  name: PhysicalType
+  nameWithType: PhysicalType
+  fullName: ParquetNeo.PhysicalType

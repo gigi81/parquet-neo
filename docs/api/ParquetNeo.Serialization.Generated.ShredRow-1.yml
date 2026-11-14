@@ -1,0 +1,81 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Serialization.Generated.ShredRow`1
+  commentId: T:ParquetNeo.Serialization.Generated.ShredRow`1
+  id: ShredRow`1
+  parent: ParquetNeo.Serialization.Generated
+  children: []
+  langs:
+  - csharp
+  - vb
+  name: ShredRow<TRow>
+  nameWithType: ShredRow<TRow>
+  fullName: ParquetNeo.Serialization.Generated.ShredRow<TRow>
+  type: Delegate
+  source:
+    remote:
+      path: src/ParquetNeo.Serialization/Generated/ShredRow.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ShredRow
+    path: ../src/ParquetNeo.Serialization/Generated/ShredRow.cs
+    startLine: 3
+  assemblies:
+  - ParquetNeo.Serialization
+  namespace: ParquetNeo.Serialization.Generated
+  summary: Gives the values of a row to the columns, which is what the source generator writes for each type.
+  example: []
+  syntax:
+    content: public delegate void ShredRow<in TRow>(TRow row, RowSink sink)
+    parameters:
+    - id: row
+      type: '{TRow}'
+    - id: sink
+      type: ParquetNeo.Serialization.Generated.RowSink
+    typeParameters:
+    - id: TRow
+    content.vb: Public Delegate Sub ShredRow(Of In TRow)(row As TRow, sink As RowSink)
+  nameWithType.vb: ShredRow(Of TRow)
+  fullName.vb: ParquetNeo.Serialization.Generated.ShredRow(Of TRow)
+  name.vb: ShredRow(Of TRow)
+references:
+- uid: ParquetNeo.Serialization.Generated
+  commentId: N:ParquetNeo.Serialization.Generated
+  name: ParquetNeo.Serialization.Generated
+  nameWithType: ParquetNeo.Serialization.Generated
+  fullName: ParquetNeo.Serialization.Generated
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Serialization
+    name: Serialization
+  - name: .
+  - uid: ParquetNeo.Serialization.Generated
+    name: Generated
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Serialization
+    name: Serialization
+  - name: .
+  - uid: ParquetNeo.Serialization.Generated
+    name: Generated
+- uid: '{TRow}'
+  commentId: '!:TRow'
+  definition: TRow
+  name: TRow
+  nameWithType: TRow
+  fullName: TRow
+- uid: ParquetNeo.Serialization.Generated.RowSink
+  commentId: T:ParquetNeo.Serialization.Generated.RowSink
+  parent: ParquetNeo.Serialization.Generated
+  href: ParquetNeo.Serialization.Generated.RowSink.html
+  name: RowSink
+  nameWithType: RowSink
+  fullName: ParquetNeo.Serialization.Generated.RowSink
+- uid: TRow
+  name: TRow
+  nameWithType: TRow
+  fullName: TRow

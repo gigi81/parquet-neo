@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class ColumnStructure | ParquetNeo </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class ColumnStructure | ParquetNeo ">
+      
+      <meta name="description" content="The shape of the data in one column, as validity and offsets instead of definition and repetition levels: for each optional node on the way to the column whether its value is present, and for each repeated node where each list starts and ends. It is the columnar form of nested data (the same idea as the validity and offsets of an Arrow array), and it converts both ways with the levels the reader returns and the writer takes.">
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/gigi81/parquet-neo/new/main/apiSpec/new?filename=ParquetNeo_Nested_ColumnStructure.md&amp;value=---%0Auid%3A%20ParquetNeo.Nested.ColumnStructure%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="ParquetNeo">
+            ParquetNeo
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="ParquetNeo.Nested.ColumnStructure">
+
+
+
+  <h1 id="ParquetNeo_Nested_ColumnStructure" data-uid="ParquetNeo.Nested.ColumnStructure" class="text-break">
+Class ColumnStructure  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/Nested/ColumnStructure.cs/#L23"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="ParquetNeo.html">ParquetNeo</a>.<a class="xref" href="ParquetNeo.Nested.html">Nested</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>ParquetNeo.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>The shape of the data in one column, as validity and offsets instead of definition and repetition levels: for each
+optional node on the way to the column whether its value is present, and for each repeated node where each list
+starts and ends. It is the columnar form of nested data (the same idea as the validity and offsets of an Arrow
+array), and it converts both ways with the levels the reader returns and the writer takes.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class ColumnStructure</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">ColumnStructure</span></div>
+    </dd>
+  </dl>
+
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+  <h2 id="ParquetNeo_Nested_ColumnStructure_remarks">Remarks</h2>
+  <div class="markdown level0 remarks"><p>
+Only the nodes that can be missing or repeated take part; required nodes add nothing. The <a class="xref" href="ParquetNeo.Nested.ColumnStructure.html#ParquetNeo_Nested_ColumnStructure_Levels">Levels</a> come
+outermost first. Every level has one entry per <i>item</i> of its depth: depth 0 has one item per row, and the items
+of depth <code>d</code> are the elements of the <code>d</code>-th repeated level. Where an ancestor is missing, the entries of the
+optional levels below it (at the same depth) say <code>false</code> and a repeated level below it says an empty list.
+</p>
+<p>
+The values of the column are not part of the structure: they are the values of the entries whose every ancestor is
+present, in order, which is exactly what <a class="xref" href="ParquetNeo.ColumnWriter.html">ColumnWriter</a> takes and <a class="xref" href="ParquetNeo.ColumnReader.html">ColumnReader</a> returns.
+</p>
+</div>
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="ParquetNeo_Nested_ColumnStructure_Column_" data-uid="ParquetNeo.Nested.ColumnStructure.Column*"></a>
+
+  <h3 id="ParquetNeo_Nested_ColumnStructure_Column" data-uid="ParquetNeo.Nested.ColumnStructure.Column">
+  Column
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/Nested/ColumnStructure.cs/#L35"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PrimitiveNode Column { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.Schema.PrimitiveNode.html">PrimitiveNode</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_Nested_ColumnStructure_Levels_" data-uid="ParquetNeo.Nested.ColumnStructure.Levels*"></a>
+
+  <h3 id="ParquetNeo_Nested_ColumnStructure_Levels" data-uid="ParquetNeo.Nested.ColumnStructure.Levels">
+  Levels
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/Nested/ColumnStructure.cs/#L38"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>The optional and repeated nodes on the way to the column, outermost first.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IReadOnlyList&lt;StructureLevel&gt; Levels { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;<a class="xref" href="ParquetNeo.Nested.StructureLevel.html">StructureLevel</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_Nested_ColumnStructure_RowCount_" data-uid="ParquetNeo.Nested.ColumnStructure.RowCount*"></a>
+
+  <h3 id="ParquetNeo_Nested_ColumnStructure_RowCount" data-uid="ParquetNeo.Nested.ColumnStructure.RowCount">
+  RowCount
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/Nested/ColumnStructure.cs/#L40"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int RowCount { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="ParquetNeo_Nested_ColumnStructure_CountEntriesInCompleteRows_" data-uid="ParquetNeo.Nested.ColumnStructure.CountEntriesInCompleteRows*"></a>
+
+  <h3 id="ParquetNeo_Nested_ColumnStructure_CountEntriesInCompleteRows_System_ReadOnlySpan_System_Int32__" data-uid="ParquetNeo.Nested.ColumnStructure.CountEntriesInCompleteRows(System.ReadOnlySpan{System.Int32})">
+  CountEntriesInCompleteRows(ReadOnlySpan&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/Nested/ColumnStructure.cs/#L205"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Returns the number of leading entries of a batch of repetition levels that belong to rows known to be complete.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int CountEntriesInCompleteRows(ReadOnlySpan&lt;int&gt; repetitionLevels)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section" id="ParquetNeo_Nested_ColumnStructure_CountEntriesInCompleteRows_System_ReadOnlySpan_System_Int32___remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>A batch of a repeated column can end in the middle of a row. The entries from the last one with repetition level 0
+on may be the start of a row that goes on in the next batch, so assemble only the entries before them and carry the
+rest over. At the end of the column the whole batch is complete.</p>
+</div>
+
+
+
+
+  <a id="ParquetNeo_Nested_ColumnStructure_Create_" data-uid="ParquetNeo.Nested.ColumnStructure.Create*"></a>
+
+  <h3 id="ParquetNeo_Nested_ColumnStructure_Create_ParquetNeo_Schema_PrimitiveNode_System_Collections_Generic_IReadOnlyList_ParquetNeo_Nested_StructureLevel__" data-uid="ParquetNeo.Nested.ColumnStructure.Create(ParquetNeo.Schema.PrimitiveNode,System.Collections.Generic.IReadOnlyList{ParquetNeo.Nested.StructureLevel})">
+  Create(PrimitiveNode, IReadOnlyList&lt;StructureLevel&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/Nested/ColumnStructure.cs/#L44"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Builds a structure from its levels, checking that they fit the column and each other.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ColumnStructure Create(PrimitiveNode column, IReadOnlyList&lt;StructureLevel&gt; levels)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>column</code> <a class="xref" href="ParquetNeo.Schema.PrimitiveNode.html">PrimitiveNode</a></dt>
+    <dd></dd>
+    <dt><code>levels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;<a class="xref" href="ParquetNeo.Nested.StructureLevel.html">StructureLevel</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.Nested.ColumnStructure.html">ColumnStructure</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
+    <dd><p>The levels do not match the optional and repeated nodes of the column, or disagree on how many items there are.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="ParquetNeo_Nested_ColumnStructure_FromLevels_" data-uid="ParquetNeo.Nested.ColumnStructure.FromLevels*"></a>
+
+  <h3 id="ParquetNeo_Nested_ColumnStructure_FromLevels_ParquetNeo_Schema_PrimitiveNode_System_ReadOnlySpan_System_Int32__System_ReadOnlySpan_System_Int32__" data-uid="ParquetNeo.Nested.ColumnStructure.FromLevels(ParquetNeo.Schema.PrimitiveNode,System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32})">
+  FromLevels(PrimitiveNode, ReadOnlySpan&lt;int&gt;, ReadOnlySpan&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/Nested/ColumnStructure.cs/#L89"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Builds the structure from the definition and repetition levels of whole rows, as <a class="xref" href="ParquetNeo.ColumnReader.html">ColumnReader</a>
+returns them.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ColumnStructure FromLevels(PrimitiveNode column, ReadOnlySpan&lt;int&gt; definitionLevels, ReadOnlySpan&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>column</code> <a class="xref" href="ParquetNeo.Schema.PrimitiveNode.html">PrimitiveNode</a></dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd><p>Empty when the column is not repeated.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.Nested.ColumnStructure.html">ColumnStructure</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
+    <dd><p>The levels are out of range or inconsistent, or the column has no optional or repeated node.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="ParquetNeo_Nested_ColumnStructure_GetLevels_" data-uid="ParquetNeo.Nested.ColumnStructure.GetLevels*"></a>
+
+  <h3 id="ParquetNeo_Nested_ColumnStructure_GetLevels_System_Int32____System_Int32____" data-uid="ParquetNeo.Nested.ColumnStructure.GetLevels(System.Int32[]@,System.Int32[]@)">
+  GetLevels(out int[], out int[])
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/Nested/ColumnStructure.cs/#L213"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>The definition and repetition levels of the structure, ready for <a class="xref" href="ParquetNeo.ColumnWriter.html">ColumnWriter</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void GetLevels(out int[] definitionLevels, out int[] repetitionLevels)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>[]</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>[]</dt>
+    <dd><p>Empty when the column is not repeated.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/Nested/ColumnStructure.cs/#L23" class="edit-link">Edit this page</a>
+        </div>
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

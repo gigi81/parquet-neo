@@ -1,0 +1,406 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Metadata.PageLocation
+  commentId: T:ParquetNeo.Metadata.PageLocation
+  id: PageLocation
+  parent: ParquetNeo.Metadata
+  children:
+  - ParquetNeo.Metadata.PageLocation.CompressedPageSize
+  - ParquetNeo.Metadata.PageLocation.FirstRowIndex
+  - ParquetNeo.Metadata.PageLocation.Offset
+  langs:
+  - csharp
+  - vb
+  name: PageLocation
+  nameWithType: PageLocation
+  fullName: ParquetNeo.Metadata.PageLocation
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/PageLocation.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: PageLocation
+    path: ../src/ParquetNeo/Metadata/PageLocation.cs
+    startLine: 5
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  summary: Where a data page of a column chunk is, and which row it starts with (thrift <code>PageLocation</code>).
+  example: []
+  syntax:
+    content: public sealed class PageLocation
+    content.vb: Public NotInheritable Class PageLocation
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.Metadata.PageLocation.Offset
+  commentId: P:ParquetNeo.Metadata.PageLocation.Offset
+  id: Offset
+  parent: ParquetNeo.Metadata.PageLocation
+  langs:
+  - csharp
+  - vb
+  name: Offset
+  nameWithType: PageLocation.Offset
+  fullName: ParquetNeo.Metadata.PageLocation.Offset
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/PageLocation.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Offset
+    path: ../src/ParquetNeo/Metadata/PageLocation.cs
+    startLine: 8
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  summary: The position of the page header in the file.
+  example: []
+  syntax:
+    content: public long Offset { get; set; }
+    parameters: []
+    return:
+      type: System.Int64
+    content.vb: Public Property Offset As Long
+  overload: ParquetNeo.Metadata.PageLocation.Offset*
+- uid: ParquetNeo.Metadata.PageLocation.CompressedPageSize
+  commentId: P:ParquetNeo.Metadata.PageLocation.CompressedPageSize
+  id: CompressedPageSize
+  parent: ParquetNeo.Metadata.PageLocation
+  langs:
+  - csharp
+  - vb
+  name: CompressedPageSize
+  nameWithType: PageLocation.CompressedPageSize
+  fullName: ParquetNeo.Metadata.PageLocation.CompressedPageSize
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/PageLocation.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: CompressedPageSize
+    path: ../src/ParquetNeo/Metadata/PageLocation.cs
+    startLine: 11
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  summary: The size of the page with its header.
+  example: []
+  syntax:
+    content: public int CompressedPageSize { get; set; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property CompressedPageSize As Integer
+  overload: ParquetNeo.Metadata.PageLocation.CompressedPageSize*
+- uid: ParquetNeo.Metadata.PageLocation.FirstRowIndex
+  commentId: P:ParquetNeo.Metadata.PageLocation.FirstRowIndex
+  id: FirstRowIndex
+  parent: ParquetNeo.Metadata.PageLocation
+  langs:
+  - csharp
+  - vb
+  name: FirstRowIndex
+  nameWithType: PageLocation.FirstRowIndex
+  fullName: ParquetNeo.Metadata.PageLocation.FirstRowIndex
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/PageLocation.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: FirstRowIndex
+    path: ../src/ParquetNeo/Metadata/PageLocation.cs
+    startLine: 14
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  summary: The position in the row group of the first row of the page. A page starts with a row, never in the middle of one.
+  example: []
+  syntax:
+    content: public long FirstRowIndex { get; set; }
+    parameters: []
+    return:
+      type: System.Int64
+    content.vb: Public Property FirstRowIndex As Long
+  overload: ParquetNeo.Metadata.PageLocation.FirstRowIndex*
+references:
+- uid: ParquetNeo.Metadata
+  commentId: N:ParquetNeo.Metadata
+  name: ParquetNeo.Metadata
+  nameWithType: ParquetNeo.Metadata
+  fullName: ParquetNeo.Metadata
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: ParquetNeo.Metadata.PageLocation.Offset*
+  commentId: Overload:ParquetNeo.Metadata.PageLocation.Offset
+  href: ParquetNeo.Metadata.PageLocation.html#ParquetNeo_Metadata_PageLocation_Offset
+  name: Offset
+  nameWithType: PageLocation.Offset
+  fullName: ParquetNeo.Metadata.PageLocation.Offset
+- uid: System.Int64
+  commentId: T:System.Int64
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int64
+  name: long
+  nameWithType: long
+  fullName: long
+  nameWithType.vb: Long
+  fullName.vb: Long
+  name.vb: Long
+- uid: ParquetNeo.Metadata.PageLocation.CompressedPageSize*
+  commentId: Overload:ParquetNeo.Metadata.PageLocation.CompressedPageSize
+  href: ParquetNeo.Metadata.PageLocation.html#ParquetNeo_Metadata_PageLocation_CompressedPageSize
+  name: CompressedPageSize
+  nameWithType: PageLocation.CompressedPageSize
+  fullName: ParquetNeo.Metadata.PageLocation.CompressedPageSize
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: ParquetNeo.Metadata.PageLocation.FirstRowIndex*
+  commentId: Overload:ParquetNeo.Metadata.PageLocation.FirstRowIndex
+  href: ParquetNeo.Metadata.PageLocation.html#ParquetNeo_Metadata_PageLocation_FirstRowIndex
+  name: FirstRowIndex
+  nameWithType: PageLocation.FirstRowIndex
+  fullName: ParquetNeo.Metadata.PageLocation.FirstRowIndex

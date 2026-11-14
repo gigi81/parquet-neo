@@ -1,0 +1,139 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Metadata
+  commentId: N:ParquetNeo.Metadata
+  id: ParquetNeo.Metadata
+  children:
+  - ParquetNeo.Metadata.ColumnChunk
+  - ParquetNeo.Metadata.ColumnIndex
+  - ParquetNeo.Metadata.ColumnMetaData
+  - ParquetNeo.Metadata.FileMetaData
+  - ParquetNeo.Metadata.KeyValue
+  - ParquetNeo.Metadata.LogicalType
+  - ParquetNeo.Metadata.OffsetIndex
+  - ParquetNeo.Metadata.PageEncodingStats
+  - ParquetNeo.Metadata.PageLocation
+  - ParquetNeo.Metadata.RowGroup
+  - ParquetNeo.Metadata.SchemaElement
+  - ParquetNeo.Metadata.SizeStatistics
+  - ParquetNeo.Metadata.SortingColumn
+  - ParquetNeo.Metadata.Statistics
+  langs:
+  - csharp
+  - vb
+  name: ParquetNeo.Metadata
+  nameWithType: ParquetNeo.Metadata
+  fullName: ParquetNeo.Metadata
+  type: Namespace
+  assemblies:
+  - ParquetNeo
+references:
+- uid: ParquetNeo.Metadata.ColumnChunk
+  commentId: T:ParquetNeo.Metadata.ColumnChunk
+  href: ParquetNeo.Metadata.ColumnChunk.html
+  name: ColumnChunk
+  nameWithType: ColumnChunk
+  fullName: ParquetNeo.Metadata.ColumnChunk
+- uid: ParquetNeo.Metadata.ColumnIndex
+  commentId: T:ParquetNeo.Metadata.ColumnIndex
+  parent: ParquetNeo.Metadata
+  href: ParquetNeo.Metadata.ColumnIndex.html
+  name: ColumnIndex
+  nameWithType: ColumnIndex
+  fullName: ParquetNeo.Metadata.ColumnIndex
+- uid: ParquetNeo.Metadata.ColumnMetaData
+  commentId: T:ParquetNeo.Metadata.ColumnMetaData
+  parent: ParquetNeo.Metadata
+  href: ParquetNeo.Metadata.ColumnMetaData.html
+  name: ColumnMetaData
+  nameWithType: ColumnMetaData
+  fullName: ParquetNeo.Metadata.ColumnMetaData
+- uid: ParquetNeo.Metadata.FileMetaData
+  commentId: T:ParquetNeo.Metadata.FileMetaData
+  parent: ParquetNeo.Metadata
+  href: ParquetNeo.Metadata.FileMetaData.html
+  name: FileMetaData
+  nameWithType: FileMetaData
+  fullName: ParquetNeo.Metadata.FileMetaData
+- uid: ParquetNeo.Metadata.KeyValue
+  commentId: T:ParquetNeo.Metadata.KeyValue
+  href: ParquetNeo.Metadata.KeyValue.html
+  name: KeyValue
+  nameWithType: KeyValue
+  fullName: ParquetNeo.Metadata.KeyValue
+- uid: ParquetNeo.Metadata.LogicalType
+  commentId: T:ParquetNeo.Metadata.LogicalType
+  parent: ParquetNeo.Metadata
+  href: ParquetNeo.Metadata.LogicalType.html
+  name: LogicalType
+  nameWithType: LogicalType
+  fullName: ParquetNeo.Metadata.LogicalType
+- uid: ParquetNeo.Metadata.OffsetIndex
+  commentId: T:ParquetNeo.Metadata.OffsetIndex
+  parent: ParquetNeo.Metadata
+  href: ParquetNeo.Metadata.OffsetIndex.html
+  name: OffsetIndex
+  nameWithType: OffsetIndex
+  fullName: ParquetNeo.Metadata.OffsetIndex
+- uid: ParquetNeo.Metadata.PageEncodingStats
+  commentId: T:ParquetNeo.Metadata.PageEncodingStats
+  href: ParquetNeo.Metadata.PageEncodingStats.html
+  name: PageEncodingStats
+  nameWithType: PageEncodingStats
+  fullName: ParquetNeo.Metadata.PageEncodingStats
+- uid: ParquetNeo.Metadata.PageLocation
+  commentId: T:ParquetNeo.Metadata.PageLocation
+  href: ParquetNeo.Metadata.PageLocation.html
+  name: PageLocation
+  nameWithType: PageLocation
+  fullName: ParquetNeo.Metadata.PageLocation
+- uid: ParquetNeo.Metadata.RowGroup
+  commentId: T:ParquetNeo.Metadata.RowGroup
+  parent: ParquetNeo.Metadata
+  href: ParquetNeo.Metadata.RowGroup.html
+  name: RowGroup
+  nameWithType: RowGroup
+  fullName: ParquetNeo.Metadata.RowGroup
+- uid: ParquetNeo.Metadata.SchemaElement
+  commentId: T:ParquetNeo.Metadata.SchemaElement
+  href: ParquetNeo.Metadata.SchemaElement.html
+  name: SchemaElement
+  nameWithType: SchemaElement
+  fullName: ParquetNeo.Metadata.SchemaElement
+- uid: ParquetNeo.Metadata.SizeStatistics
+  commentId: T:ParquetNeo.Metadata.SizeStatistics
+  parent: ParquetNeo.Metadata
+  href: ParquetNeo.Metadata.SizeStatistics.html
+  name: SizeStatistics
+  nameWithType: SizeStatistics
+  fullName: ParquetNeo.Metadata.SizeStatistics
+- uid: ParquetNeo.Metadata.SortingColumn
+  commentId: T:ParquetNeo.Metadata.SortingColumn
+  href: ParquetNeo.Metadata.SortingColumn.html
+  name: SortingColumn
+  nameWithType: SortingColumn
+  fullName: ParquetNeo.Metadata.SortingColumn
+- uid: ParquetNeo.Metadata.Statistics
+  commentId: T:ParquetNeo.Metadata.Statistics
+  parent: ParquetNeo.Metadata
+  href: ParquetNeo.Metadata.Statistics.html
+  name: Statistics
+  nameWithType: Statistics
+  fullName: ParquetNeo.Metadata.Statistics
+- uid: ParquetNeo.Metadata
+  commentId: N:ParquetNeo.Metadata
+  name: ParquetNeo.Metadata
+  nameWithType: ParquetNeo.Metadata
+  fullName: ParquetNeo.Metadata
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata

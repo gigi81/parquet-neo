@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class ParquetSerializer | ParquetNeo </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class ParquetSerializer | ParquetNeo ">
+      
+      <meta name="description" content="Writes objects as rows of a Parquet file ( and ), and reads rows back (,  and their asynchronous forms; see the remarks below for what reading supports). Each public property becomes a column, named after the property and typed by the convention below, which attributes on the property adjust: , , , ,  and .">
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/gigi81/parquet-neo/new/main/apiSpec/new?filename=ParquetNeo_Serialization_ParquetSerializer.md&amp;value=---%0Auid%3A%20ParquetNeo.Serialization.ParquetSerializer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="ParquetNeo">
+            ParquetNeo
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="ParquetNeo.Serialization.ParquetSerializer">
+
+
+
+  <h1 id="ParquetNeo_Serialization_ParquetSerializer" data-uid="ParquetNeo.Serialization.ParquetSerializer" class="text-break">
+Class ParquetSerializer  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo.Serialization/ParquetSerializer.Deserialize.cs/#L6"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="ParquetNeo.html">ParquetNeo</a>.<a class="xref" href="ParquetNeo.Serialization.html">Serialization</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>ParquetNeo.Serialization.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Writes objects as rows of a Parquet file (<a class="xref" href="ParquetNeo.Serialization.ParquetSerializer.html#ParquetNeo_Serialization_ParquetSerializer_Serialize__1_System_Collections_Generic_IEnumerable___0__System_IO_Stream_ParquetNeo_Serialization_ParquetSerializerOptions_">Serialize&lt;TRow&gt;(IEnumerable&lt;TRow&gt;, Stream, ParquetSerializerOptions?)</a> and <a class="xref" href="ParquetNeo.Serialization.ParquetSerializer.html#ParquetNeo_Serialization_ParquetSerializer_SerializeAsync__1_System_Collections_Generic_IEnumerable___0__System_IO_Stream_ParquetNeo_Serialization_ParquetSerializerOptions_System_Threading_CancellationToken_">SerializeAsync&lt;TRow&gt;(IEnumerable&lt;TRow&gt;, Stream, ParquetSerializerOptions?, CancellationToken)</a>),
+and reads rows back (<a class="xref" href="ParquetNeo.Serialization.ParquetSerializer.html#ParquetNeo_Serialization_ParquetSerializer_Deserialize__1_System_IO_Stream_ParquetNeo_Serialization_ParquetDeserializerOptions_">Deserialize&lt;TRow&gt;(Stream, ParquetDeserializerOptions?)</a>, <a class="xref" href="ParquetNeo.Serialization.ParquetSerializer.html#ParquetNeo_Serialization_ParquetSerializer_DeserializeAll__1_System_IO_Stream_ParquetNeo_Serialization_ParquetDeserializerOptions_">DeserializeAll&lt;TRow&gt;(Stream, ParquetDeserializerOptions?)</a> and their asynchronous forms; see
+the remarks below for what reading supports). Each public property becomes a column, named after the property and typed by
+the convention below, which attributes on the property adjust: <a class="xref" href="ParquetNeo.DataModel.ParquetColumnAttribute.html">ParquetColumnAttribute</a>,
+<a class="xref" href="ParquetNeo.DataModel.ParquetIgnoreAttribute.html">ParquetIgnoreAttribute</a>, <a class="xref" href="ParquetNeo.DataModel.ParquetDecimalAttribute.html">ParquetDecimalAttribute</a>, <a class="xref" href="ParquetNeo.DataModel.ParquetTimestampAttribute.html">ParquetTimestampAttribute</a>,
+<a class="xref" href="ParquetNeo.DataModel.ParquetTimeAttribute.html">ParquetTimeAttribute</a> and <a class="xref" href="ParquetNeo.DataModel.ParquetEncodingAttribute.html">ParquetEncodingAttribute</a>.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class ParquetSerializer</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">ParquetSerializer</span></div>
+    </dd>
+  </dl>
+
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+  <h2 id="ParquetNeo_Serialization_ParquetSerializer_remarks">Remarks</h2>
+  <div class="markdown level0 remarks"><p>
+A column is optional (it can hold nulls) when the property is a <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.nullable-1">Nullable&lt;T&gt;</a>, or a reference type that is
+not declared non-nullable (nullable reference types decide, including for the elements of collections and the values of
+dictionaries). Writing a null where the column is required is an <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a> that names the property
+and the row.
+</p>
+<p>
+Supported types: <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>, the integers of every width, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.single">float</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">double</a>,
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.half">Half</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.decimal">decimal</a> (precision 38 and scale 18 unless set), <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>
+arrays, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid">Guid</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.datetime">DateTime</a> and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a> (UTC microseconds unless set),
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.dateonly">DateOnly</a> and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeonly">TimeOnly</a> (microseconds unless set), and enums (written by name, annotated ENUM).
+Beyond those:
+</p>
+<ul><li>an object (a class, record or struct with public properties) is a group of the columns of its own properties;</li><li>an array, a <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1">List&lt;T&gt;</a> or anything that is <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable&lt;T&gt;</a> is a LIST of its elements, which can be
+any of these types, including collections and objects;</li><li>a <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2">Dictionary&lt;TKey, TValue&gt;</a> or any <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.idictionary-2">IDictionary&lt;TKey, TValue&gt;</a> or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary&lt;TKey, TValue&gt;</a>
+is a MAP; its keys are never null.</li></ul>
+<p>
+The attributes of a property that is a collection or dictionary apply to what it holds: <a class="xref" href="ParquetNeo.DataModel.ParquetDecimalAttribute.html">ParquetDecimalAttribute</a>
+to its decimals, <a class="xref" href="ParquetNeo.DataModel.ParquetEncodingAttribute.html">ParquetEncodingAttribute</a> to all its columns. Types that merely implement a few interfaces
+are guessed at only when their elements are clear; a type that contains itself, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a> and the other
+types of the .NET libraries, multi-dimensional arrays and collections that are structs are a
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a> that names the property.
+</p>
+<p>
+Reading takes the columns of a file by the names of the properties (or of <a class="xref" href="ParquetNeo.DataModel.ParquetColumnAttribute.html">ParquetColumnAttribute</a>; a name that
+differs only by case also fits when there is just one such column) and reads nothing else, so a row type can be a projection
+of a wider file. A column the file lacks leaves a property that can hold null at null; for any other property it is a
+<a class="xref" href="ParquetNeo.Exceptions.SchemaMismatchException.html">SchemaMismatchException</a>, as is a column stored as a type the property cannot hold. A type with a
+constructor that takes nothing is created and its properties with a public setter (including init-only) are set; otherwise
+a public constructor whose parameters are properties is used, as for a record. The same goes for nested objects, and
+collections are created as the property asks (an array, a <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1">List&lt;T&gt;</a>, a <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.hashset-1">HashSet&lt;T&gt;</a>, or any
+type that has a public constructor without parameters and is an <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.icollection-1">ICollection&lt;T&gt;</a>; an interface they implement
+gets a list or a set) and so are dictionaries (a <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2">Dictionary&lt;TKey, TValue&gt;</a> or any type that is an
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.idictionary-2">IDictionary&lt;TKey, TValue&gt;</a> with such a constructor). The standard LIST and MAP layouts and the older layouts
+of lists are read.
+</p>
+<p>
+The rows go into row groups of <a class="xref" href="ParquetNeo.Serialization.ParquetSerializerOptions.html#ParquetNeo_Serialization_ParquetSerializerOptions_RowGroupSize">RowGroupSize</a> rows, each encoded and written to the
+stream when it is full. The stream is not closed, and holds a partial file if serializing fails.
+</p>
+</div>
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="ParquetNeo_Serialization_ParquetSerializer_DeserializeAllAsync_" data-uid="ParquetNeo.Serialization.ParquetSerializer.DeserializeAllAsync*"></a>
+
+  <h3 id="ParquetNeo_Serialization_ParquetSerializer_DeserializeAllAsync__1_System_IO_Stream_ParquetNeo_Serialization_ParquetDeserializerOptions_System_Threading_CancellationToken_" data-uid="ParquetNeo.Serialization.ParquetSerializer.DeserializeAllAsync``1(System.IO.Stream,ParquetNeo.Serialization.ParquetDeserializerOptions,System.Threading.CancellationToken)">
+  DeserializeAllAsync&lt;TRow&gt;(Stream, ParquetDeserializerOptions?, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo.Serialization/ParquetSerializer.Deserialize.cs/#L59"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads the rows of a Parquet file as they are asked for, one row group at a time, without blocking while the stream is read.
+Only the bytes of the footer and of the columns the row type needs are read from the stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IAsyncEnumerable&lt;TRow&gt; DeserializeAllAsync&lt;TRow&gt;(Stream source, ParquetDeserializerOptions? options = null, CancellationToken cancellationToken = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>source</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
+    <dd><p>A readable, seekable stream holding the whole file. It is not closed.</p>
+</dd>
+    <dt><code>options</code> <a class="xref" href="ParquetNeo.Serialization.ParquetDeserializerOptions.html">ParquetDeserializerOptions</a></dt>
+    <dd></dd>
+    <dt><code>cancellationToken</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1">IAsyncEnumerable</a>&lt;TRow&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TRow</code></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_Serialization_ParquetSerializer_DeserializeAll_" data-uid="ParquetNeo.Serialization.ParquetSerializer.DeserializeAll*"></a>
+
+  <h3 id="ParquetNeo_Serialization_ParquetSerializer_DeserializeAll__1_System_IO_Stream_ParquetNeo_Serialization_ParquetDeserializerOptions_" data-uid="ParquetNeo.Serialization.ParquetSerializer.DeserializeAll``1(System.IO.Stream,ParquetNeo.Serialization.ParquetDeserializerOptions)">
+  DeserializeAll&lt;TRow&gt;(Stream, ParquetDeserializerOptions?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo.Serialization/ParquetSerializer.Deserialize.cs/#L34"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads the rows of a Parquet file as they are asked for, one row group at a time.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IEnumerable&lt;TRow&gt; DeserializeAll&lt;TRow&gt;(Stream source, ParquetDeserializerOptions? options = null)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>source</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
+    <dd><p>A readable, seekable stream holding the whole file. It is not closed.</p>
+</dd>
+    <dt><code>options</code> <a class="xref" href="ParquetNeo.Serialization.ParquetDeserializerOptions.html">ParquetDeserializerOptions</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;TRow&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TRow</code></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+  <h4 class="section" id="ParquetNeo_Serialization_ParquetSerializer_DeserializeAll__1_System_IO_Stream_ParquetNeo_Serialization_ParquetDeserializerOptions__remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>The columns of a row group that the row type needs are read into memory when the first of its rows is asked for, so the
+memory is that of a row group, not of the file. The file is opened, and the rows can fail to match its schema, when the
+first row is asked for. Columns of the file that the row type has no property for are never read.</p>
+</div>
+
+
+
+
+  <a id="ParquetNeo_Serialization_ParquetSerializer_DeserializeAsync_" data-uid="ParquetNeo.Serialization.ParquetSerializer.DeserializeAsync*"></a>
+
+  <h3 id="ParquetNeo_Serialization_ParquetSerializer_DeserializeAsync__1_System_IO_Stream_ParquetNeo_Serialization_ParquetDeserializerOptions_System_Threading_CancellationToken_" data-uid="ParquetNeo.Serialization.ParquetSerializer.DeserializeAsync``1(System.IO.Stream,ParquetNeo.Serialization.ParquetDeserializerOptions,System.Threading.CancellationToken)">
+  DeserializeAsync&lt;TRow&gt;(Stream, ParquetDeserializerOptions?, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo.Serialization/ParquetSerializer.Deserialize.cs/#L43"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads all the rows of a Parquet file, without blocking while the stream is read.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Task&lt;List&lt;TRow&gt;&gt; DeserializeAsync&lt;TRow&gt;(Stream source, ParquetDeserializerOptions? options = null, CancellationToken cancellationToken = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>source</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
+    <dd><p>A readable, seekable stream holding the whole file. It is not closed.</p>
+</dd>
+    <dt><code>options</code> <a class="xref" href="ParquetNeo.Serialization.ParquetDeserializerOptions.html">ParquetDeserializerOptions</a></dt>
+    <dd></dd>
+    <dt><code>cancellationToken</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1">List</a>&lt;TRow&gt;&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TRow</code></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.Exceptions.SchemaMismatchException.html">SchemaMismatchException</a></dt>
+    <dd><p>The file does not have a column for a property that cannot be null, or has it as a type the property cannot hold.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="ParquetNeo_Serialization_ParquetSerializer_Deserialize_" data-uid="ParquetNeo.Serialization.ParquetSerializer.Deserialize*"></a>
+
+  <h3 id="ParquetNeo_Serialization_ParquetSerializer_Deserialize__1_System_IO_Stream_ParquetNeo_Serialization_ParquetDeserializerOptions_" data-uid="ParquetNeo.Serialization.ParquetSerializer.Deserialize``1(System.IO.Stream,ParquetNeo.Serialization.ParquetDeserializerOptions)">
+  Deserialize&lt;TRow&gt;(Stream, ParquetDeserializerOptions?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo.Serialization/ParquetSerializer.Deserialize.cs/#L12"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads all the rows of a Parquet file.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static List&lt;TRow&gt; Deserialize&lt;TRow&gt;(Stream source, ParquetDeserializerOptions? options = null)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>source</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
+    <dd><p>A readable, seekable stream holding the whole file. It is not closed.</p>
+</dd>
+    <dt><code>options</code> <a class="xref" href="ParquetNeo.Serialization.ParquetDeserializerOptions.html">ParquetDeserializerOptions</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1">List</a>&lt;TRow&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TRow</code></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.Exceptions.SchemaMismatchException.html">SchemaMismatchException</a></dt>
+    <dd><p>The file does not have a column for a property that cannot be null, or has it as a type the property cannot hold.</p>
+</dd>
+    <dt><a class="xref" href="ParquetNeo.Exceptions.ParquetException.html">ParquetException</a></dt>
+    <dd><p>The file is malformed.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="ParquetNeo_Serialization_ParquetSerializer_GetSchema_" data-uid="ParquetNeo.Serialization.ParquetSerializer.GetSchema*"></a>
+
+  <h3 id="ParquetNeo_Serialization_ParquetSerializer_GetSchema__1" data-uid="ParquetNeo.Serialization.ParquetSerializer.GetSchema``1">
+  GetSchema&lt;TRow&gt;()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo.Serialization/ParquetSerializer.cs/#L66"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>The schema that rows of <code class="typeparamref">TRow</code> are written with.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ParquetSchema GetSchema&lt;TRow&gt;()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.Schema.ParquetSchema.html">ParquetSchema</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TRow</code></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></dt>
+    <dd><p>A property has a type that cannot be written as a column.</p>
+</dd>
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></dt>
+    <dd><p>The type has no properties to write, two share a column name, or an attribute does not suit its property.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="ParquetNeo_Serialization_ParquetSerializer_SerializeAsync_" data-uid="ParquetNeo.Serialization.ParquetSerializer.SerializeAsync*"></a>
+
+  <h3 id="ParquetNeo_Serialization_ParquetSerializer_SerializeAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_IO_Stream_ParquetNeo_Serialization_ParquetSerializerOptions_System_Threading_CancellationToken_" data-uid="ParquetNeo.Serialization.ParquetSerializer.SerializeAsync``1(System.Collections.Generic.IAsyncEnumerable{``0},System.IO.Stream,ParquetNeo.Serialization.ParquetSerializerOptions,System.Threading.CancellationToken)">
+  SerializeAsync&lt;TRow&gt;(IAsyncEnumerable&lt;TRow&gt;, Stream, ParquetSerializerOptions?, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo.Serialization/ParquetSerializer.cs/#L121"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Writes the rows to the stream as a Parquet file as they arrive, holding one row group in memory at a time, plus the one that
+is being written while the next is collected.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Task SerializeAsync&lt;TRow&gt;(IAsyncEnumerable&lt;TRow&gt; rows, Stream destination, ParquetSerializerOptions? options = null, CancellationToken cancellationToken = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>rows</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1">IAsyncEnumerable</a>&lt;TRow&gt;</dt>
+    <dd></dd>
+    <dt><code>destination</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
+    <dd></dd>
+    <dt><code>options</code> <a class="xref" href="ParquetNeo.Serialization.ParquetSerializerOptions.html">ParquetSerializerOptions</a></dt>
+    <dd></dd>
+    <dt><code>cancellationToken</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TRow</code></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
+    <dd><p>A row is null, or a null is written to a required column.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="ParquetNeo_Serialization_ParquetSerializer_SerializeAsync_" data-uid="ParquetNeo.Serialization.ParquetSerializer.SerializeAsync*"></a>
+
+  <h3 id="ParquetNeo_Serialization_ParquetSerializer_SerializeAsync__1_System_Collections_Generic_IEnumerable___0__System_IO_Stream_ParquetNeo_Serialization_ParquetSerializerOptions_System_Threading_CancellationToken_" data-uid="ParquetNeo.Serialization.ParquetSerializer.SerializeAsync``1(System.Collections.Generic.IEnumerable{``0},System.IO.Stream,ParquetNeo.Serialization.ParquetSerializerOptions,System.Threading.CancellationToken)">
+  SerializeAsync&lt;TRow&gt;(IEnumerable&lt;TRow&gt;, Stream, ParquetSerializerOptions?, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo.Serialization/ParquetSerializer.cs/#L94"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Writes the rows to the stream as a Parquet file, without blocking while the stream is written. A row group is encoded while the
+one before is being written, so the time is that of the slower of the two instead of both, and no more than two row groups
+are held in memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Task SerializeAsync&lt;TRow&gt;(IEnumerable&lt;TRow&gt; rows, Stream destination, ParquetSerializerOptions? options = null, CancellationToken cancellationToken = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>rows</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;TRow&gt;</dt>
+    <dd></dd>
+    <dt><code>destination</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
+    <dd></dd>
+    <dt><code>options</code> <a class="xref" href="ParquetNeo.Serialization.ParquetSerializerOptions.html">ParquetSerializerOptions</a></dt>
+    <dd></dd>
+    <dt><code>cancellationToken</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TRow</code></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
+    <dd><p>A row is null, or a null is written to a required column.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="ParquetNeo_Serialization_ParquetSerializer_Serialize_" data-uid="ParquetNeo.Serialization.ParquetSerializer.Serialize*"></a>
+
+  <h3 id="ParquetNeo_Serialization_ParquetSerializer_Serialize__1_System_Collections_Generic_IEnumerable___0__System_IO_Stream_ParquetNeo_Serialization_ParquetSerializerOptions_" data-uid="ParquetNeo.Serialization.ParquetSerializer.Serialize``1(System.Collections.Generic.IEnumerable{``0},System.IO.Stream,ParquetNeo.Serialization.ParquetSerializerOptions)">
+  Serialize&lt;TRow&gt;(IEnumerable&lt;TRow&gt;, Stream, ParquetSerializerOptions?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo.Serialization/ParquetSerializer.cs/#L70"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Writes the rows to the stream as a Parquet file.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Serialize&lt;TRow&gt;(IEnumerable&lt;TRow&gt; rows, Stream destination, ParquetSerializerOptions? options = null)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>rows</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;TRow&gt;</dt>
+    <dd></dd>
+    <dt><code>destination</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
+    <dd></dd>
+    <dt><code>options</code> <a class="xref" href="ParquetNeo.Serialization.ParquetSerializerOptions.html">ParquetSerializerOptions</a></dt>
+    <dd></dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TRow</code></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
+    <dd><p>A row is null, or a null is written to a required column.</p>
+</dd>
+  </dl>
+
+
+
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo.Serialization/ParquetSerializer.Deserialize.cs/#L6" class="edit-link">Edit this page</a>
+        </div>
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

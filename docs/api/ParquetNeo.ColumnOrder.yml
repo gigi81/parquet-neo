@@ -1,0 +1,153 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.ColumnOrder
+  commentId: T:ParquetNeo.ColumnOrder
+  id: ColumnOrder
+  parent: ParquetNeo
+  children:
+  - ParquetNeo.ColumnOrder.Ieee754TotalOrder
+  - ParquetNeo.ColumnOrder.Int96Timestamp
+  - ParquetNeo.ColumnOrder.TypeDefined
+  - ParquetNeo.ColumnOrder.Unrecognized
+  langs:
+  - csharp
+  - vb
+  name: ColumnOrder
+  nameWithType: ColumnOrder
+  fullName: ParquetNeo.ColumnOrder
+  type: Enum
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ColumnOrder.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ColumnOrder
+    path: ../src/ParquetNeo.Enums/ColumnOrder.cs
+    startLine: 3
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  summary: Order of a column's type-defined sort (thrift <code>ColumnOrder</code> union).
+  example: []
+  syntax:
+    content: public enum ColumnOrder
+    content.vb: Public Enum ColumnOrder
+- uid: ParquetNeo.ColumnOrder.Unrecognized
+  commentId: F:ParquetNeo.ColumnOrder.Unrecognized
+  id: Unrecognized
+  parent: ParquetNeo.ColumnOrder
+  langs:
+  - csharp
+  - vb
+  name: Unrecognized
+  nameWithType: ColumnOrder.Unrecognized
+  fullName: ParquetNeo.ColumnOrder.Unrecognized
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ColumnOrder.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Unrecognized
+    path: ../src/ParquetNeo.Enums/ColumnOrder.cs
+    startLine: 6
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  summary: A union member this library does not know.
+  example: []
+  syntax:
+    content: Unrecognized = 0
+    return:
+      type: ParquetNeo.ColumnOrder
+- uid: ParquetNeo.ColumnOrder.TypeDefined
+  commentId: F:ParquetNeo.ColumnOrder.TypeDefined
+  id: TypeDefined
+  parent: ParquetNeo.ColumnOrder
+  langs:
+  - csharp
+  - vb
+  name: TypeDefined
+  nameWithType: ColumnOrder.TypeDefined
+  fullName: ParquetNeo.ColumnOrder.TypeDefined
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ColumnOrder.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: TypeDefined
+    path: ../src/ParquetNeo.Enums/ColumnOrder.cs
+    startLine: 7
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: TypeDefined = 1
+    return:
+      type: ParquetNeo.ColumnOrder
+- uid: ParquetNeo.ColumnOrder.Ieee754TotalOrder
+  commentId: F:ParquetNeo.ColumnOrder.Ieee754TotalOrder
+  id: Ieee754TotalOrder
+  parent: ParquetNeo.ColumnOrder
+  langs:
+  - csharp
+  - vb
+  name: Ieee754TotalOrder
+  nameWithType: ColumnOrder.Ieee754TotalOrder
+  fullName: ParquetNeo.ColumnOrder.Ieee754TotalOrder
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ColumnOrder.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Ieee754TotalOrder
+    path: ../src/ParquetNeo.Enums/ColumnOrder.cs
+    startLine: 8
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Ieee754TotalOrder = 2
+    return:
+      type: ParquetNeo.ColumnOrder
+- uid: ParquetNeo.ColumnOrder.Int96Timestamp
+  commentId: F:ParquetNeo.ColumnOrder.Int96Timestamp
+  id: Int96Timestamp
+  parent: ParquetNeo.ColumnOrder
+  langs:
+  - csharp
+  - vb
+  name: Int96Timestamp
+  nameWithType: ColumnOrder.Int96Timestamp
+  fullName: ParquetNeo.ColumnOrder.Int96Timestamp
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ColumnOrder.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Int96Timestamp
+    path: ../src/ParquetNeo.Enums/ColumnOrder.cs
+    startLine: 9
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Int96Timestamp = 3
+    return:
+      type: ParquetNeo.ColumnOrder
+references:
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: ParquetNeo.ColumnOrder
+  commentId: T:ParquetNeo.ColumnOrder
+  parent: ParquetNeo
+  href: ParquetNeo.ColumnOrder.html
+  name: ColumnOrder
+  nameWithType: ColumnOrder
+  fullName: ParquetNeo.ColumnOrder

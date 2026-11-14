@@ -1,0 +1,864 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Schema.ParquetSchema
+  commentId: T:ParquetNeo.Schema.ParquetSchema
+  id: ParquetSchema
+  parent: ParquetNeo.Schema
+  children:
+  - ParquetNeo.Schema.ParquetSchema.#ctor(System.Collections.Generic.IEnumerable{ParquetNeo.Schema.SchemaNode},System.String)
+  - ParquetNeo.Schema.ParquetSchema.Columns
+  - ParquetNeo.Schema.ParquetSchema.FindColumn(System.Collections.Generic.IReadOnlyList{System.String})
+  - ParquetNeo.Schema.ParquetSchema.FromElements(System.Collections.Generic.IReadOnlyList{ParquetNeo.Metadata.SchemaElement})
+  - ParquetNeo.Schema.ParquetSchema.Root
+  - ParquetNeo.Schema.ParquetSchema.ToElements
+  langs:
+  - csharp
+  - vb
+  name: ParquetSchema
+  nameWithType: ParquetSchema
+  fullName: ParquetNeo.Schema.ParquetSchema
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/Schema/ParquetSchema.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ParquetSchema
+    path: ../src/ParquetNeo/Schema/ParquetSchema.cs
+    startLine: 9
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Schema
+  summary: >-
+    The schema of a Parquet file as a tree, with the definition and repetition levels of every node
+
+    and the leaf <xref href="ParquetNeo.Schema.ParquetSchema.Columns" data-throw-if-not-resolved="false"></xref> in the order their chunks are stored.
+  example: []
+  syntax:
+    content: public sealed class ParquetSchema
+    content.vb: Public NotInheritable Class ParquetSchema
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.Schema.ParquetSchema.#ctor(System.Collections.Generic.IEnumerable{ParquetNeo.Schema.SchemaNode},System.String)
+  commentId: M:ParquetNeo.Schema.ParquetSchema.#ctor(System.Collections.Generic.IEnumerable{ParquetNeo.Schema.SchemaNode},System.String)
+  id: '#ctor(System.Collections.Generic.IEnumerable{ParquetNeo.Schema.SchemaNode},System.String)'
+  parent: ParquetNeo.Schema.ParquetSchema
+  langs:
+  - csharp
+  - vb
+  name: ParquetSchema(IEnumerable<SchemaNode>, string)
+  nameWithType: ParquetSchema.ParquetSchema(IEnumerable<SchemaNode>, string)
+  fullName: ParquetNeo.Schema.ParquetSchema.ParquetSchema(System.Collections.Generic.IEnumerable<ParquetNeo.Schema.SchemaNode>, string)
+  type: Constructor
+  source:
+    remote:
+      path: src/ParquetNeo/Schema/ParquetSchema.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: .ctor
+    path: ../src/ParquetNeo/Schema/ParquetSchema.cs
+    startLine: 17
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Schema
+  summary: Creates a schema whose top-level fields are <code class="paramref">fields</code>.
+  example: []
+  syntax:
+    content: public ParquetSchema(IEnumerable<SchemaNode> fields, string name = "schema")
+    parameters:
+    - id: fields
+      type: System.Collections.Generic.IEnumerable{ParquetNeo.Schema.SchemaNode}
+      description: Nodes that do not yet belong to another schema.
+    - id: name
+      type: System.String
+      description: Name of the root group; it is not part of any column path.
+    content.vb: Public Sub New(fields As IEnumerable(Of SchemaNode), name As String = "schema")
+  overload: ParquetNeo.Schema.ParquetSchema.#ctor*
+  nameWithType.vb: ParquetSchema.New(IEnumerable(Of SchemaNode), String)
+  fullName.vb: ParquetNeo.Schema.ParquetSchema.New(System.Collections.Generic.IEnumerable(Of ParquetNeo.Schema.SchemaNode), String)
+  name.vb: New(IEnumerable(Of SchemaNode), String)
+- uid: ParquetNeo.Schema.ParquetSchema.Root
+  commentId: P:ParquetNeo.Schema.ParquetSchema.Root
+  id: Root
+  parent: ParquetNeo.Schema.ParquetSchema
+  langs:
+  - csharp
+  - vb
+  name: Root
+  nameWithType: ParquetSchema.Root
+  fullName: ParquetNeo.Schema.ParquetSchema.Root
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Schema/ParquetSchema.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Root
+    path: ../src/ParquetNeo/Schema/ParquetSchema.cs
+    startLine: 54
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Schema
+  syntax:
+    content: public GroupNode Root { get; }
+    parameters: []
+    return:
+      type: ParquetNeo.Schema.GroupNode
+    content.vb: Public ReadOnly Property Root As GroupNode
+  overload: ParquetNeo.Schema.ParquetSchema.Root*
+- uid: ParquetNeo.Schema.ParquetSchema.Columns
+  commentId: P:ParquetNeo.Schema.ParquetSchema.Columns
+  id: Columns
+  parent: ParquetNeo.Schema.ParquetSchema
+  langs:
+  - csharp
+  - vb
+  name: Columns
+  nameWithType: ParquetSchema.Columns
+  fullName: ParquetNeo.Schema.ParquetSchema.Columns
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Schema/ParquetSchema.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Columns
+    path: ../src/ParquetNeo/Schema/ParquetSchema.cs
+    startLine: 57
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Schema
+  summary: The leaf columns, in depth-first order.
+  example: []
+  syntax:
+    content: public IReadOnlyList<PrimitiveNode> Columns { get; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IReadOnlyList{ParquetNeo.Schema.PrimitiveNode}
+    content.vb: Public ReadOnly Property Columns As IReadOnlyList(Of PrimitiveNode)
+  overload: ParquetNeo.Schema.ParquetSchema.Columns*
+- uid: ParquetNeo.Schema.ParquetSchema.FindColumn(System.Collections.Generic.IReadOnlyList{System.String})
+  commentId: M:ParquetNeo.Schema.ParquetSchema.FindColumn(System.Collections.Generic.IReadOnlyList{System.String})
+  id: FindColumn(System.Collections.Generic.IReadOnlyList{System.String})
+  parent: ParquetNeo.Schema.ParquetSchema
+  langs:
+  - csharp
+  - vb
+  name: FindColumn(IReadOnlyList<string>)
+  nameWithType: ParquetSchema.FindColumn(IReadOnlyList<string>)
+  fullName: ParquetNeo.Schema.ParquetSchema.FindColumn(System.Collections.Generic.IReadOnlyList<string>)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Schema/ParquetSchema.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: FindColumn
+    path: ../src/ParquetNeo/Schema/ParquetSchema.cs
+    startLine: 60
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Schema
+  summary: Finds a column by its path from just below the root, e.g. <code>["address", "city"]</code>.
+  example: []
+  syntax:
+    content: public PrimitiveNode? FindColumn(IReadOnlyList<string> path)
+    parameters:
+    - id: path
+      type: System.Collections.Generic.IReadOnlyList{System.String}
+    return:
+      type: ParquetNeo.Schema.PrimitiveNode
+    content.vb: Public Function FindColumn(path As IReadOnlyList(Of String)) As PrimitiveNode
+  overload: ParquetNeo.Schema.ParquetSchema.FindColumn*
+  nameWithType.vb: ParquetSchema.FindColumn(IReadOnlyList(Of String))
+  fullName.vb: ParquetNeo.Schema.ParquetSchema.FindColumn(System.Collections.Generic.IReadOnlyList(Of String))
+  name.vb: FindColumn(IReadOnlyList(Of String))
+- uid: ParquetNeo.Schema.ParquetSchema.ToElements
+  commentId: M:ParquetNeo.Schema.ParquetSchema.ToElements
+  id: ToElements
+  parent: ParquetNeo.Schema.ParquetSchema
+  langs:
+  - csharp
+  - vb
+  name: ToElements()
+  nameWithType: ParquetSchema.ToElements()
+  fullName: ParquetNeo.Schema.ParquetSchema.ToElements()
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Schema/ParquetSchema.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ToElements
+    path: ../src/ParquetNeo/Schema/ParquetSchema.cs
+    startLine: 67
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Schema
+  summary: Flattens the tree into the depth-first <xref href="ParquetNeo.Metadata.SchemaElement" data-throw-if-not-resolved="false"></xref> list stored in the footer.
+  example: []
+  syntax:
+    content: public List<SchemaElement> ToElements()
+    return:
+      type: System.Collections.Generic.List{ParquetNeo.Metadata.SchemaElement}
+    content.vb: Public Function ToElements() As List(Of SchemaElement)
+  overload: ParquetNeo.Schema.ParquetSchema.ToElements*
+- uid: ParquetNeo.Schema.ParquetSchema.FromElements(System.Collections.Generic.IReadOnlyList{ParquetNeo.Metadata.SchemaElement})
+  commentId: M:ParquetNeo.Schema.ParquetSchema.FromElements(System.Collections.Generic.IReadOnlyList{ParquetNeo.Metadata.SchemaElement})
+  id: FromElements(System.Collections.Generic.IReadOnlyList{ParquetNeo.Metadata.SchemaElement})
+  parent: ParquetNeo.Schema.ParquetSchema
+  langs:
+  - csharp
+  - vb
+  name: FromElements(IReadOnlyList<SchemaElement>)
+  nameWithType: ParquetSchema.FromElements(IReadOnlyList<SchemaElement>)
+  fullName: ParquetNeo.Schema.ParquetSchema.FromElements(System.Collections.Generic.IReadOnlyList<ParquetNeo.Metadata.SchemaElement>)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Schema/ParquetSchema.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: FromElements
+    path: ../src/ParquetNeo/Schema/ParquetSchema.cs
+    startLine: 94
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Schema
+  summary: Builds the tree from the footer's flattened schema.
+  remarks: >-
+    A logical type that does not suit its column (or that this library does not know) is ignored,
+
+    as the spec requires, leaving the physical type to describe the data.
+  example: []
+  syntax:
+    content: public static ParquetSchema FromElements(IReadOnlyList<SchemaElement> elements)
+    parameters:
+    - id: elements
+      type: System.Collections.Generic.IReadOnlyList{ParquetNeo.Metadata.SchemaElement}
+    return:
+      type: ParquetNeo.Schema.ParquetSchema
+    content.vb: Public Shared Function FromElements(elements As IReadOnlyList(Of SchemaElement)) As ParquetSchema
+  overload: ParquetNeo.Schema.ParquetSchema.FromElements*
+  exceptions:
+  - type: ParquetNeo.Exceptions.InvalidSchemaException
+    commentId: T:ParquetNeo.Exceptions.InvalidSchemaException
+    description: The element list is not a well-formed depth-first tree.
+  nameWithType.vb: ParquetSchema.FromElements(IReadOnlyList(Of SchemaElement))
+  fullName.vb: ParquetNeo.Schema.ParquetSchema.FromElements(System.Collections.Generic.IReadOnlyList(Of ParquetNeo.Metadata.SchemaElement))
+  name.vb: FromElements(IReadOnlyList(Of SchemaElement))
+references:
+- uid: ParquetNeo.Schema.ParquetSchema.Columns
+  commentId: P:ParquetNeo.Schema.ParquetSchema.Columns
+  href: ParquetNeo.Schema.ParquetSchema.html#ParquetNeo_Schema_ParquetSchema_Columns
+  name: Columns
+  nameWithType: ParquetSchema.Columns
+  fullName: ParquetNeo.Schema.ParquetSchema.Columns
+- uid: ParquetNeo.Schema
+  commentId: N:ParquetNeo.Schema
+  name: ParquetNeo.Schema
+  nameWithType: ParquetNeo.Schema
+  fullName: ParquetNeo.Schema
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Schema
+    name: Schema
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Schema
+    name: Schema
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: ParquetNeo.Schema.ParquetSchema.#ctor*
+  commentId: Overload:ParquetNeo.Schema.ParquetSchema.#ctor
+  href: ParquetNeo.Schema.ParquetSchema.html#ParquetNeo_Schema_ParquetSchema__ctor_System_Collections_Generic_IEnumerable_ParquetNeo_Schema_SchemaNode__System_String_
+  name: ParquetSchema
+  nameWithType: ParquetSchema.ParquetSchema
+  fullName: ParquetNeo.Schema.ParquetSchema.ParquetSchema
+  nameWithType.vb: ParquetSchema.New
+  fullName.vb: ParquetNeo.Schema.ParquetSchema.New
+  name.vb: New
+- uid: System.Collections.Generic.IEnumerable{ParquetNeo.Schema.SchemaNode}
+  commentId: T:System.Collections.Generic.IEnumerable{ParquetNeo.Schema.SchemaNode}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IEnumerable`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  name: IEnumerable<SchemaNode>
+  nameWithType: IEnumerable<SchemaNode>
+  fullName: System.Collections.Generic.IEnumerable<ParquetNeo.Schema.SchemaNode>
+  nameWithType.vb: IEnumerable(Of SchemaNode)
+  fullName.vb: System.Collections.Generic.IEnumerable(Of ParquetNeo.Schema.SchemaNode)
+  name.vb: IEnumerable(Of SchemaNode)
+  spec.csharp:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  - name: <
+  - uid: ParquetNeo.Schema.SchemaNode
+    name: SchemaNode
+    href: ParquetNeo.Schema.SchemaNode.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.Schema.SchemaNode
+    name: SchemaNode
+    href: ParquetNeo.Schema.SchemaNode.html
+  - name: )
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: System.Collections.Generic.IEnumerable`1
+  commentId: T:System.Collections.Generic.IEnumerable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  name: IEnumerable<T>
+  nameWithType: IEnumerable<T>
+  fullName: System.Collections.Generic.IEnumerable<T>
+  nameWithType.vb: IEnumerable(Of T)
+  fullName.vb: System.Collections.Generic.IEnumerable(Of T)
+  name.vb: IEnumerable(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: ParquetNeo.Schema.ParquetSchema.Root*
+  commentId: Overload:ParquetNeo.Schema.ParquetSchema.Root
+  href: ParquetNeo.Schema.ParquetSchema.html#ParquetNeo_Schema_ParquetSchema_Root
+  name: Root
+  nameWithType: ParquetSchema.Root
+  fullName: ParquetNeo.Schema.ParquetSchema.Root
+- uid: ParquetNeo.Schema.GroupNode
+  commentId: T:ParquetNeo.Schema.GroupNode
+  parent: ParquetNeo.Schema
+  href: ParquetNeo.Schema.GroupNode.html
+  name: GroupNode
+  nameWithType: GroupNode
+  fullName: ParquetNeo.Schema.GroupNode
+- uid: ParquetNeo.Schema.ParquetSchema.Columns*
+  commentId: Overload:ParquetNeo.Schema.ParquetSchema.Columns
+  href: ParquetNeo.Schema.ParquetSchema.html#ParquetNeo_Schema_ParquetSchema_Columns
+  name: Columns
+  nameWithType: ParquetSchema.Columns
+  fullName: ParquetNeo.Schema.ParquetSchema.Columns
+- uid: System.Collections.Generic.IReadOnlyList{ParquetNeo.Schema.PrimitiveNode}
+  commentId: T:System.Collections.Generic.IReadOnlyList{ParquetNeo.Schema.PrimitiveNode}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyList`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<PrimitiveNode>
+  nameWithType: IReadOnlyList<PrimitiveNode>
+  fullName: System.Collections.Generic.IReadOnlyList<ParquetNeo.Schema.PrimitiveNode>
+  nameWithType.vb: IReadOnlyList(Of PrimitiveNode)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of ParquetNeo.Schema.PrimitiveNode)
+  name.vb: IReadOnlyList(Of PrimitiveNode)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - uid: ParquetNeo.Schema.PrimitiveNode
+    name: PrimitiveNode
+    href: ParquetNeo.Schema.PrimitiveNode.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.Schema.PrimitiveNode
+    name: PrimitiveNode
+    href: ParquetNeo.Schema.PrimitiveNode.html
+  - name: )
+- uid: System.Collections.Generic.IReadOnlyList`1
+  commentId: T:System.Collections.Generic.IReadOnlyList`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<T>
+  nameWithType: IReadOnlyList<T>
+  fullName: System.Collections.Generic.IReadOnlyList<T>
+  nameWithType.vb: IReadOnlyList(Of T)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of T)
+  name.vb: IReadOnlyList(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.Schema.ParquetSchema.FindColumn*
+  commentId: Overload:ParquetNeo.Schema.ParquetSchema.FindColumn
+  href: ParquetNeo.Schema.ParquetSchema.html#ParquetNeo_Schema_ParquetSchema_FindColumn_System_Collections_Generic_IReadOnlyList_System_String__
+  name: FindColumn
+  nameWithType: ParquetSchema.FindColumn
+  fullName: ParquetNeo.Schema.ParquetSchema.FindColumn
+- uid: System.Collections.Generic.IReadOnlyList{System.String}
+  commentId: T:System.Collections.Generic.IReadOnlyList{System.String}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyList`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<string>
+  nameWithType: IReadOnlyList<string>
+  fullName: System.Collections.Generic.IReadOnlyList<string>
+  nameWithType.vb: IReadOnlyList(Of String)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of String)
+  name.vb: IReadOnlyList(Of String)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: ParquetNeo.Schema.PrimitiveNode
+  commentId: T:ParquetNeo.Schema.PrimitiveNode
+  parent: ParquetNeo.Schema
+  href: ParquetNeo.Schema.PrimitiveNode.html
+  name: PrimitiveNode
+  nameWithType: PrimitiveNode
+  fullName: ParquetNeo.Schema.PrimitiveNode
+- uid: ParquetNeo.Metadata.SchemaElement
+  commentId: T:ParquetNeo.Metadata.SchemaElement
+  href: ParquetNeo.Metadata.SchemaElement.html
+  name: SchemaElement
+  nameWithType: SchemaElement
+  fullName: ParquetNeo.Metadata.SchemaElement
+- uid: ParquetNeo.Schema.ParquetSchema.ToElements*
+  commentId: Overload:ParquetNeo.Schema.ParquetSchema.ToElements
+  href: ParquetNeo.Schema.ParquetSchema.html#ParquetNeo_Schema_ParquetSchema_ToElements
+  name: ToElements
+  nameWithType: ParquetSchema.ToElements
+  fullName: ParquetNeo.Schema.ParquetSchema.ToElements
+- uid: System.Collections.Generic.List{ParquetNeo.Metadata.SchemaElement}
+  commentId: T:System.Collections.Generic.List{ParquetNeo.Metadata.SchemaElement}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<SchemaElement>
+  nameWithType: List<SchemaElement>
+  fullName: System.Collections.Generic.List<ParquetNeo.Metadata.SchemaElement>
+  nameWithType.vb: List(Of SchemaElement)
+  fullName.vb: System.Collections.Generic.List(Of ParquetNeo.Metadata.SchemaElement)
+  name.vb: List(Of SchemaElement)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - uid: ParquetNeo.Metadata.SchemaElement
+    name: SchemaElement
+    href: ParquetNeo.Metadata.SchemaElement.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.Metadata.SchemaElement
+    name: SchemaElement
+    href: ParquetNeo.Metadata.SchemaElement.html
+  - name: )
+- uid: System.Collections.Generic.List`1
+  commentId: T:System.Collections.Generic.List`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<T>
+  nameWithType: List<T>
+  fullName: System.Collections.Generic.List<T>
+  nameWithType.vb: List(Of T)
+  fullName.vb: System.Collections.Generic.List(Of T)
+  name.vb: List(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.Exceptions.InvalidSchemaException
+  commentId: T:ParquetNeo.Exceptions.InvalidSchemaException
+  href: ParquetNeo.Exceptions.InvalidSchemaException.html
+  name: InvalidSchemaException
+  nameWithType: InvalidSchemaException
+  fullName: ParquetNeo.Exceptions.InvalidSchemaException
+- uid: ParquetNeo.Schema.ParquetSchema.FromElements*
+  commentId: Overload:ParquetNeo.Schema.ParquetSchema.FromElements
+  href: ParquetNeo.Schema.ParquetSchema.html#ParquetNeo_Schema_ParquetSchema_FromElements_System_Collections_Generic_IReadOnlyList_ParquetNeo_Metadata_SchemaElement__
+  name: FromElements
+  nameWithType: ParquetSchema.FromElements
+  fullName: ParquetNeo.Schema.ParquetSchema.FromElements
+- uid: System.Collections.Generic.IReadOnlyList{ParquetNeo.Metadata.SchemaElement}
+  commentId: T:System.Collections.Generic.IReadOnlyList{ParquetNeo.Metadata.SchemaElement}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyList`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<SchemaElement>
+  nameWithType: IReadOnlyList<SchemaElement>
+  fullName: System.Collections.Generic.IReadOnlyList<ParquetNeo.Metadata.SchemaElement>
+  nameWithType.vb: IReadOnlyList(Of SchemaElement)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of ParquetNeo.Metadata.SchemaElement)
+  name.vb: IReadOnlyList(Of SchemaElement)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - uid: ParquetNeo.Metadata.SchemaElement
+    name: SchemaElement
+    href: ParquetNeo.Metadata.SchemaElement.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.Metadata.SchemaElement
+    name: SchemaElement
+    href: ParquetNeo.Metadata.SchemaElement.html
+  - name: )
+- uid: ParquetNeo.Schema.ParquetSchema
+  commentId: T:ParquetNeo.Schema.ParquetSchema
+  parent: ParquetNeo.Schema
+  href: ParquetNeo.Schema.ParquetSchema.html
+  name: ParquetSchema
+  nameWithType: ParquetSchema
+  fullName: ParquetNeo.Schema.ParquetSchema

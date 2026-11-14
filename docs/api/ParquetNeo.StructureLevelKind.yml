@@ -1,0 +1,101 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.StructureLevelKind
+  commentId: T:ParquetNeo.StructureLevelKind
+  id: StructureLevelKind
+  parent: ParquetNeo
+  children:
+  - ParquetNeo.StructureLevelKind.Optional
+  - ParquetNeo.StructureLevelKind.Repeated
+  langs:
+  - csharp
+  - vb
+  name: StructureLevelKind
+  nameWithType: StructureLevelKind
+  fullName: ParquetNeo.StructureLevelKind
+  type: Enum
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/StructureLevelKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: StructureLevelKind
+    path: ../src/ParquetNeo.Enums/StructureLevelKind.cs
+    startLine: 3
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  summary: What a <code>StructureLevel</code> records about its schema node.
+  example: []
+  syntax:
+    content: public enum StructureLevelKind
+    content.vb: Public Enum StructureLevelKind
+- uid: ParquetNeo.StructureLevelKind.Optional
+  commentId: F:ParquetNeo.StructureLevelKind.Optional
+  id: Optional
+  parent: ParquetNeo.StructureLevelKind
+  langs:
+  - csharp
+  - vb
+  name: Optional
+  nameWithType: StructureLevelKind.Optional
+  fullName: ParquetNeo.StructureLevelKind.Optional
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/StructureLevelKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Optional
+    path: ../src/ParquetNeo.Enums/StructureLevelKind.cs
+    startLine: 6
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  summary: 'An optional node: for each item, whether the value is present.'
+  example: []
+  syntax:
+    content: Optional = 0
+    return:
+      type: ParquetNeo.StructureLevelKind
+- uid: ParquetNeo.StructureLevelKind.Repeated
+  commentId: F:ParquetNeo.StructureLevelKind.Repeated
+  id: Repeated
+  parent: ParquetNeo.StructureLevelKind
+  langs:
+  - csharp
+  - vb
+  name: Repeated
+  nameWithType: StructureLevelKind.Repeated
+  fullName: ParquetNeo.StructureLevelKind.Repeated
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/StructureLevelKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Repeated
+    path: ../src/ParquetNeo.Enums/StructureLevelKind.cs
+    startLine: 9
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  summary: 'A repeated node: for each item of the enclosing level, where its elements start and end.'
+  example: []
+  syntax:
+    content: Repeated = 1
+    return:
+      type: ParquetNeo.StructureLevelKind
+references:
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: ParquetNeo.StructureLevelKind
+  commentId: T:ParquetNeo.StructureLevelKind
+  parent: ParquetNeo
+  href: ParquetNeo.StructureLevelKind.html
+  name: StructureLevelKind
+  nameWithType: StructureLevelKind
+  fullName: ParquetNeo.StructureLevelKind

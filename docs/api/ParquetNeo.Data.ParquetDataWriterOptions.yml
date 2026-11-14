@@ -1,0 +1,648 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Data.ParquetDataWriterOptions
+  commentId: T:ParquetNeo.Data.ParquetDataWriterOptions
+  id: ParquetDataWriterOptions
+  parent: ParquetNeo.Data
+  children:
+  - ParquetNeo.Data.ParquetDataWriterOptions.ColumnSettings
+  - ParquetNeo.Data.ParquetDataWriterOptions.MaxDegreeOfParallelism
+  - ParquetNeo.Data.ParquetDataWriterOptions.RowGroupSize
+  - ParquetNeo.Data.ParquetDataWriterOptions.Writer
+  langs:
+  - csharp
+  - vb
+  name: ParquetDataWriterOptions
+  nameWithType: ParquetDataWriterOptions
+  fullName: ParquetNeo.Data.ParquetDataWriterOptions
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ParquetDataWriterOptions
+    path: ../src/ParquetNeo/Data/ParquetDataWriterOptions.cs
+    startLine: 5
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: Settings for <xref href="ParquetNeo.Data.ParquetDataWriter" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: 'public sealed record ParquetDataWriterOptions : IEquatable<ParquetDataWriterOptions>'
+    content.vb: Public NotInheritable Class ParquetDataWriterOptions Implements IEquatable(Of ParquetDataWriterOptions)
+  inheritance:
+  - System.Object
+  implements:
+  - System.IEquatable{ParquetNeo.Data.ParquetDataWriterOptions}
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.Data.ParquetDataWriterOptions.Writer
+  commentId: P:ParquetNeo.Data.ParquetDataWriterOptions.Writer
+  id: Writer
+  parent: ParquetNeo.Data.ParquetDataWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: Writer
+  nameWithType: ParquetDataWriterOptions.Writer
+  fullName: ParquetNeo.Data.ParquetDataWriterOptions.Writer
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Writer
+    path: ../src/ParquetNeo/Data/ParquetDataWriterOptions.cs
+    startLine: 8
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: Compression, page size, encodings and the footer; the defaults when not set.
+  example: []
+  syntax:
+    content: public ParquetWriterOptions Writer { get; init; }
+    parameters: []
+    return:
+      type: ParquetNeo.ParquetWriterOptions
+    content.vb: Public Property Writer As ParquetWriterOptions
+  overload: ParquetNeo.Data.ParquetDataWriterOptions.Writer*
+- uid: ParquetNeo.Data.ParquetDataWriterOptions.RowGroupSize
+  commentId: P:ParquetNeo.Data.ParquetDataWriterOptions.RowGroupSize
+  id: RowGroupSize
+  parent: ParquetNeo.Data.ParquetDataWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: RowGroupSize
+  nameWithType: ParquetDataWriterOptions.RowGroupSize
+  fullName: ParquetNeo.Data.ParquetDataWriterOptions.RowGroupSize
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: RowGroupSize
+    path: ../src/ParquetNeo/Data/ParquetDataWriterOptions.cs
+    startLine: 14
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: >-
+    The number of rows in a row group. A group is encoded and written when it is full, so this is also how many rows are held
+
+    in memory (as column values) at a time. Defaults to 100,000.
+  example: []
+  syntax:
+    content: public int RowGroupSize { get; init; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property RowGroupSize As Integer
+  overload: ParquetNeo.Data.ParquetDataWriterOptions.RowGroupSize*
+- uid: ParquetNeo.Data.ParquetDataWriterOptions.MaxDegreeOfParallelism
+  commentId: P:ParquetNeo.Data.ParquetDataWriterOptions.MaxDegreeOfParallelism
+  id: MaxDegreeOfParallelism
+  parent: ParquetNeo.Data.ParquetDataWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: MaxDegreeOfParallelism
+  nameWithType: ParquetDataWriterOptions.MaxDegreeOfParallelism
+  fullName: ParquetNeo.Data.ParquetDataWriterOptions.MaxDegreeOfParallelism
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: MaxDegreeOfParallelism
+    path: ../src/ParquetNeo/Data/ParquetDataWriterOptions.cs
+    startLine: 21
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: >-
+    How many columns of a row group are encoded at the same time. The columns are independent, so encoding them on several
+
+    threads makes a wide or compressed table faster, and the file is the same either way. Defaults to 1, which encodes on the
+
+    calling thread; <xref href="System.Environment.ProcessorCount" data-throw-if-not-resolved="false"></xref> is a good value for a throughput-bound job.
+  example: []
+  syntax:
+    content: public int MaxDegreeOfParallelism { get; init; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property MaxDegreeOfParallelism As Integer
+  overload: ParquetNeo.Data.ParquetDataWriterOptions.MaxDegreeOfParallelism*
+- uid: ParquetNeo.Data.ParquetDataWriterOptions.ColumnSettings
+  commentId: P:ParquetNeo.Data.ParquetDataWriterOptions.ColumnSettings
+  id: ColumnSettings
+  parent: ParquetNeo.Data.ParquetDataWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: ColumnSettings
+  nameWithType: ParquetDataWriterOptions.ColumnSettings
+  fullName: ParquetNeo.Data.ParquetDataWriterOptions.ColumnSettings
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ColumnSettings
+    path: ../src/ParquetNeo/Data/ParquetDataWriterOptions.cs
+    startLine: 27
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: >-
+    Adjusts the column written for a column of the reader, by its name: the precision and scale of a decimal, the unit of a
+
+    time or timestamp. They override what the reader says about the column itself.
+  example: []
+  syntax:
+    content: public IReadOnlyDictionary<string, ColumnSettings>? ColumnSettings { get; init; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IReadOnlyDictionary{System.String,ParquetNeo.ColumnTypes.ColumnSettings}
+    content.vb: Public Property ColumnSettings As IReadOnlyDictionary(Of String, ColumnSettings)
+  overload: ParquetNeo.Data.ParquetDataWriterOptions.ColumnSettings*
+references:
+- uid: ParquetNeo.Data.ParquetDataWriter
+  commentId: T:ParquetNeo.Data.ParquetDataWriter
+  href: ParquetNeo.Data.ParquetDataWriter.html
+  name: ParquetDataWriter
+  nameWithType: ParquetDataWriter
+  fullName: ParquetNeo.Data.ParquetDataWriter
+- uid: ParquetNeo.Data
+  commentId: N:ParquetNeo.Data
+  name: ParquetNeo.Data
+  nameWithType: ParquetNeo.Data
+  fullName: ParquetNeo.Data
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Data
+    name: Data
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Data
+    name: Data
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.IEquatable{ParquetNeo.Data.ParquetDataWriterOptions}
+  commentId: T:System.IEquatable{ParquetNeo.Data.ParquetDataWriterOptions}
+  parent: System
+  definition: System.IEquatable`1
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<ParquetDataWriterOptions>
+  nameWithType: IEquatable<ParquetDataWriterOptions>
+  fullName: System.IEquatable<ParquetNeo.Data.ParquetDataWriterOptions>
+  nameWithType.vb: IEquatable(Of ParquetDataWriterOptions)
+  fullName.vb: System.IEquatable(Of ParquetNeo.Data.ParquetDataWriterOptions)
+  name.vb: IEquatable(Of ParquetDataWriterOptions)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - uid: ParquetNeo.Data.ParquetDataWriterOptions
+    name: ParquetDataWriterOptions
+    href: ParquetNeo.Data.ParquetDataWriterOptions.html
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.Data.ParquetDataWriterOptions
+    name: ParquetDataWriterOptions
+    href: ParquetNeo.Data.ParquetDataWriterOptions.html
+  - name: )
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.IEquatable`1
+  commentId: T:System.IEquatable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<T>
+  nameWithType: IEquatable<T>
+  fullName: System.IEquatable<T>
+  nameWithType.vb: IEquatable(Of T)
+  fullName.vb: System.IEquatable(Of T)
+  name.vb: IEquatable(Of T)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataWriterOptions.Writer*
+  commentId: Overload:ParquetNeo.Data.ParquetDataWriterOptions.Writer
+  href: ParquetNeo.Data.ParquetDataWriterOptions.html#ParquetNeo_Data_ParquetDataWriterOptions_Writer
+  name: Writer
+  nameWithType: ParquetDataWriterOptions.Writer
+  fullName: ParquetNeo.Data.ParquetDataWriterOptions.Writer
+- uid: ParquetNeo.ParquetWriterOptions
+  commentId: T:ParquetNeo.ParquetWriterOptions
+  parent: ParquetNeo
+  href: ParquetNeo.ParquetWriterOptions.html
+  name: ParquetWriterOptions
+  nameWithType: ParquetWriterOptions
+  fullName: ParquetNeo.ParquetWriterOptions
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: ParquetNeo.Data.ParquetDataWriterOptions.RowGroupSize*
+  commentId: Overload:ParquetNeo.Data.ParquetDataWriterOptions.RowGroupSize
+  href: ParquetNeo.Data.ParquetDataWriterOptions.html#ParquetNeo_Data_ParquetDataWriterOptions_RowGroupSize
+  name: RowGroupSize
+  nameWithType: ParquetDataWriterOptions.RowGroupSize
+  fullName: ParquetNeo.Data.ParquetDataWriterOptions.RowGroupSize
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: System.Environment.ProcessorCount
+  commentId: P:System.Environment.ProcessorCount
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.environment.processorcount
+  name: ProcessorCount
+  nameWithType: Environment.ProcessorCount
+  fullName: System.Environment.ProcessorCount
+- uid: ParquetNeo.Data.ParquetDataWriterOptions.MaxDegreeOfParallelism*
+  commentId: Overload:ParquetNeo.Data.ParquetDataWriterOptions.MaxDegreeOfParallelism
+  href: ParquetNeo.Data.ParquetDataWriterOptions.html#ParquetNeo_Data_ParquetDataWriterOptions_MaxDegreeOfParallelism
+  name: MaxDegreeOfParallelism
+  nameWithType: ParquetDataWriterOptions.MaxDegreeOfParallelism
+  fullName: ParquetNeo.Data.ParquetDataWriterOptions.MaxDegreeOfParallelism
+- uid: ParquetNeo.Data.ParquetDataWriterOptions.ColumnSettings*
+  commentId: Overload:ParquetNeo.Data.ParquetDataWriterOptions.ColumnSettings
+  href: ParquetNeo.Data.ParquetDataWriterOptions.html#ParquetNeo_Data_ParquetDataWriterOptions_ColumnSettings
+  name: ColumnSettings
+  nameWithType: ParquetDataWriterOptions.ColumnSettings
+  fullName: ParquetNeo.Data.ParquetDataWriterOptions.ColumnSettings
+- uid: System.Collections.Generic.IReadOnlyDictionary{System.String,ParquetNeo.ColumnTypes.ColumnSettings}
+  commentId: T:System.Collections.Generic.IReadOnlyDictionary{System.String,ParquetNeo.ColumnTypes.ColumnSettings}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyDictionary`2
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  name: IReadOnlyDictionary<string, ColumnSettings>
+  nameWithType: IReadOnlyDictionary<string, ColumnSettings>
+  fullName: System.Collections.Generic.IReadOnlyDictionary<string, ParquetNeo.ColumnTypes.ColumnSettings>
+  nameWithType.vb: IReadOnlyDictionary(Of String, ColumnSettings)
+  fullName.vb: System.Collections.Generic.IReadOnlyDictionary(Of String, ParquetNeo.ColumnTypes.ColumnSettings)
+  name.vb: IReadOnlyDictionary(Of String, ColumnSettings)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: ParquetNeo.ColumnTypes.ColumnSettings
+    name: ColumnSettings
+    href: ParquetNeo.ColumnTypes.ColumnSettings.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: ParquetNeo.ColumnTypes.ColumnSettings
+    name: ColumnSettings
+    href: ParquetNeo.ColumnTypes.ColumnSettings.html
+  - name: )
+- uid: System.Collections.Generic.IReadOnlyDictionary`2
+  commentId: T:System.Collections.Generic.IReadOnlyDictionary`2
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  name: IReadOnlyDictionary<TKey, TValue>
+  nameWithType: IReadOnlyDictionary<TKey, TValue>
+  fullName: System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>
+  nameWithType.vb: IReadOnlyDictionary(Of TKey, TValue)
+  fullName.vb: System.Collections.Generic.IReadOnlyDictionary(Of TKey, TValue)
+  name.vb: IReadOnlyDictionary(Of TKey, TValue)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: <
+  - name: TKey
+  - name: ','
+  - name: " "
+  - name: TValue
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: (
+  - name: Of
+  - name: " "
+  - name: TKey
+  - name: ','
+  - name: " "
+  - name: TValue
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic

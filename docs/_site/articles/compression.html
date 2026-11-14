@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Compression | ParquetNeo </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Compression | ParquetNeo ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/gigi81/parquet-neo/blob/main/docs/articles/compression.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="ParquetNeo">
+            ParquetNeo
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="compression">Compression</h1>
+
+<p>Gzip and Brotli are built in. Snappy, LZ4_RAW and Zstandard are in separate packages so that you only get the libraries you use.
+A codec is registered in the <code>CodecRegistry</code> that the options use, and chosen by <code>ParquetWriterOptions.Compression</code>:</p>
+<pre><code class="lang-csharp">using ParquetNeo.Compression;
+using ParquetNeo.Compression.Zstd;
+using ParquetNeo.Serialization;
+
+var codecs = new CodecRegistry().AddZstd(level: 3);
+
+ParquetSerializer.Serialize(rows, stream, new ParquetSerializerOptions
+{
+    Writer = new ParquetWriterOptions { Compression = CompressionCodec.Zstd, Codecs = codecs },
+});
+
+var back = ParquetSerializer.Deserialize&lt;Row&gt;(stream, new ParquetDeserializerOptions
+{
+    Reader = new ParquetReaderOptions { Codecs = codecs },
+});
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Codec</th>
+<th>Package</th>
+<th>Register with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gzip, Brotli</td>
+<td><code>ParquetNeo</code></td>
+<td>already registered</td>
+</tr>
+<tr>
+<td>Snappy</td>
+<td><code>ParquetNeo.Compression.Snappy</code></td>
+<td><code>AddSnappy()</code></td>
+</tr>
+<tr>
+<td>LZ4_RAW</td>
+<td><code>ParquetNeo.Compression.Lz4</code></td>
+<td><code>AddLz4Raw()</code></td>
+</tr>
+<tr>
+<td>Zstandard</td>
+<td><code>ParquetNeo.Compression.Zstd</code></td>
+<td><code>AddZstd(level)</code></td>
+</tr>
+</tbody>
+</table>
+<p>LZ4 with the Hadoop framing and LZO are not supported. LZ4_RAW is.</p>
+<p>Pages are compressed one by one, so a reader can skip the pages and the row groups it does not need without decompressing them.</p>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/gigi81/parquet-neo/blob/main/docs/articles/compression.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

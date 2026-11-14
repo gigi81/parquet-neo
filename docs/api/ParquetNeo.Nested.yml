@@ -1,0 +1,72 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Nested
+  commentId: N:ParquetNeo.Nested
+  id: ParquetNeo.Nested
+  children:
+  - ParquetNeo.Nested.ColumnStructure
+  - ParquetNeo.Nested.ListLayout
+  - ParquetNeo.Nested.MapLayout
+  - ParquetNeo.Nested.NestedSchema
+  - ParquetNeo.Nested.StructureLevel
+  langs:
+  - csharp
+  - vb
+  name: ParquetNeo.Nested
+  nameWithType: ParquetNeo.Nested
+  fullName: ParquetNeo.Nested
+  type: Namespace
+  assemblies:
+  - ParquetNeo
+references:
+- uid: ParquetNeo.Nested.ColumnStructure
+  commentId: T:ParquetNeo.Nested.ColumnStructure
+  parent: ParquetNeo.Nested
+  href: ParquetNeo.Nested.ColumnStructure.html
+  name: ColumnStructure
+  nameWithType: ColumnStructure
+  fullName: ParquetNeo.Nested.ColumnStructure
+- uid: ParquetNeo.Nested.ListLayout
+  commentId: T:ParquetNeo.Nested.ListLayout
+  parent: ParquetNeo.Nested
+  href: ParquetNeo.Nested.ListLayout.html
+  name: ListLayout
+  nameWithType: ListLayout
+  fullName: ParquetNeo.Nested.ListLayout
+- uid: ParquetNeo.Nested.MapLayout
+  commentId: T:ParquetNeo.Nested.MapLayout
+  parent: ParquetNeo.Nested
+  href: ParquetNeo.Nested.MapLayout.html
+  name: MapLayout
+  nameWithType: MapLayout
+  fullName: ParquetNeo.Nested.MapLayout
+- uid: ParquetNeo.Nested.NestedSchema
+  commentId: T:ParquetNeo.Nested.NestedSchema
+  href: ParquetNeo.Nested.NestedSchema.html
+  name: NestedSchema
+  nameWithType: NestedSchema
+  fullName: ParquetNeo.Nested.NestedSchema
+- uid: ParquetNeo.Nested.StructureLevel
+  commentId: T:ParquetNeo.Nested.StructureLevel
+  parent: ParquetNeo.Nested
+  href: ParquetNeo.Nested.StructureLevel.html
+  name: StructureLevel
+  nameWithType: StructureLevel
+  fullName: ParquetNeo.Nested.StructureLevel
+- uid: ParquetNeo.Nested
+  commentId: N:ParquetNeo.Nested
+  name: ParquetNeo.Nested
+  nameWithType: ParquetNeo.Nested
+  fullName: ParquetNeo.Nested
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Nested
+    name: Nested
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Nested
+    name: Nested

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>LINQ over files | ParquetNeo </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="LINQ over files | ParquetNeo ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/gigi81/parquet-neo/blob/main/docs/articles/linq.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="ParquetNeo">
+            ParquetNeo
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="linq-over-files">LINQ over files</h1>
+
+<p><code>ParquetNeo.Linq</code> queries a file, or all the files of a directory (and the folders below it), with LINQ. It is not trim or Native
+AOT safe: it reads expression trees and builds types at run time.</p>
+<pre><code class="lang-csharp">using ParquetNeo.Linq;
+
+var people = ParquetDataset.Open&lt;Person&gt;(&quot;people/&quot;);
+var names = people.Where(p =&gt; p.Born &gt;= new DateOnly(1900, 1, 1) &amp;&amp; p.Name != null)
+                  .OrderBy(p =&gt; p.Born)
+                  .Select(p =&gt; new { p.Name, p.Born })
+                  .Take(100)
+                  .ToList();
+</code></pre>
+<p><code>ParquetDataset&lt;T&gt;</code> is an <code>IQueryable&lt;T&gt;</code>. Every operator of LINQ to objects works on the rows that are read, and what is added is
+what lets it read less:</p>
+<ul>
+<li><strong>Files, row groups and pages are skipped.</strong> The <code>Where</code>s at the start of the query are turned into a <code>ParquetFilter</code> (see
+<a href="filtering.html">Skipping what is not needed</a>): comparisons with constants and captured values, null tests, boolean properties,
+<code>Contains</code> on a list, nested properties, <code>&amp;&amp;</code>, <code>||</code> and <code>!</code>. The whole predicate is still applied to the rows that are read, so
+the result is exact.</li>
+<li><strong>Only the columns a query uses are read</strong>, when it ends in a <code>Select</code> after only <code>Where</code>s, ordering and paging.</li>
+<li><strong><code>Count()</code>, <code>LongCount()</code> and <code>Any()</code> are answered from the footers</strong> of the files when they can be.</li>
+<li><strong>Files are read in parallel</strong>, so without an <code>OrderBy</code> the rows come in no particular order.</li>
+</ul>
+<pre><code class="lang-csharp">var plan = people.Where(p =&gt; p.Id &gt; 5000).Explain();   // which files and row groups are skipped, which columns are read
+int count = people.Count();                            // from the footers: no data is read
+await foreach (var row in people.Where(p =&gt; p.Id &gt; 5000).AsAsyncEnumerable()) { }
+</code></pre>
+<p><code>AsAsyncEnumerable</code>, <code>ToListAsync</code>, <code>ToArrayAsync</code>, <code>FirstAsync</code>, <code>FirstOrDefaultAsync</code>, <code>CountAsync</code> and <code>AnyAsync</code> run the query on
+another thread and do not block the caller.</p>
+<p>Datasets are local files for now.</p>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/gigi81/parquet-neo/blob/main/docs/articles/linq.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

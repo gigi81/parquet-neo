@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class RowGroupReader | ParquetNeo </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class RowGroupReader | ParquetNeo ">
+      
+      <meta name="description" content="Gives access to the columns of one row group.">
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/gigi81/parquet-neo/new/main/apiSpec/new?filename=ParquetNeo_RowGroupReader.md&amp;value=---%0Auid%3A%20ParquetNeo.RowGroupReader%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="ParquetNeo">
+            ParquetNeo
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="ParquetNeo.RowGroupReader">
+
+
+
+  <h1 id="ParquetNeo_RowGroupReader" data-uid="ParquetNeo.RowGroupReader" class="text-break">
+Class RowGroupReader  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/RowGroupReader.cs/#L10"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="ParquetNeo.html">ParquetNeo</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>ParquetNeo.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Gives access to the columns of one row group.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class RowGroupReader</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">RowGroupReader</span></div>
+    </dd>
+  </dl>
+
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="ParquetNeo_RowGroupReader_ColumnCount_" data-uid="ParquetNeo.RowGroupReader.ColumnCount*"></a>
+
+  <h3 id="ParquetNeo_RowGroupReader_ColumnCount" data-uid="ParquetNeo.RowGroupReader.ColumnCount">
+  ColumnCount
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/RowGroupReader.cs/#L28"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int ColumnCount { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_RowGroupReader_Index_" data-uid="ParquetNeo.RowGroupReader.Index*"></a>
+
+  <h3 id="ParquetNeo_RowGroupReader_Index" data-uid="ParquetNeo.RowGroupReader.Index">
+  Index
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/RowGroupReader.cs/#L22"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Index { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_RowGroupReader_Metadata_" data-uid="ParquetNeo.RowGroupReader.Metadata*"></a>
+
+  <h3 id="ParquetNeo_RowGroupReader_Metadata" data-uid="ParquetNeo.RowGroupReader.Metadata">
+  Metadata
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/RowGroupReader.cs/#L24"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RowGroup Metadata { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.Metadata.RowGroup.html">RowGroup</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_RowGroupReader_RowCount_" data-uid="ParquetNeo.RowGroupReader.RowCount*"></a>
+
+  <h3 id="ParquetNeo_RowGroupReader_RowCount" data-uid="ParquetNeo.RowGroupReader.RowCount">
+  RowCount
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/RowGroupReader.cs/#L26"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long RowCount { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="ParquetNeo_RowGroupReader_GetStatistics_" data-uid="ParquetNeo.RowGroupReader.GetStatistics*"></a>
+
+  <h3 id="ParquetNeo_RowGroupReader_GetStatistics_System_Int32_" data-uid="ParquetNeo.RowGroupReader.GetStatistics(System.Int32)">
+  GetStatistics(int)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/RowGroupReader.cs/#L116"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Returns the statistics recorded for a column in this row group, or <code>null</code> when the writer recorded none.
+Works for every column.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ColumnStatistics? GetStatistics(int index)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>index</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.Statistics.ColumnStatistics.html">ColumnStatistics</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.Exceptions.MetadataException.html">MetadataException</a></dt>
+    <dd><p>The recorded minimum or maximum has the wrong size for the column's type.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="ParquetNeo_RowGroupReader_GetStatistics_" data-uid="ParquetNeo.RowGroupReader.GetStatistics*"></a>
+
+  <h3 id="ParquetNeo_RowGroupReader_GetStatistics_System_String_" data-uid="ParquetNeo.RowGroupReader.GetStatistics(System.String)">
+  GetStatistics(string)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/RowGroupReader.cs/#L125"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Returns the statistics of a top-level column by name; see <a class="xref" href="ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_GetStatistics_System_Int32_">GetStatistics(int)</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ColumnStatistics? GetStatistics(string name)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>name</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.Statistics.ColumnStatistics.html">ColumnStatistics</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_RowGroupReader_MayMatch_" data-uid="ParquetNeo.RowGroupReader.MayMatch*"></a>
+
+  <h3 id="ParquetNeo_RowGroupReader_MayMatch_ParquetNeo_ParquetFilter_" data-uid="ParquetNeo.RowGroupReader.MayMatch(ParquetNeo.ParquetFilter)">
+  MayMatch(ParquetFilter)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/RowGroupReader.cs/#L137"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Whether the row group can hold a row that satisfies the filter: false when the statistics of its columns show that none does.
+See <a class="xref" href="ParquetNeo.ParquetFilter.html">ParquetFilter</a> for what that means for the rows.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool MayMatch(ParquetFilter filter)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>filter</code> <a class="xref" href="ParquetNeo.ParquetFilter.html">ParquetFilter</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
+    <dd><p>The filter compares a column with a value of a type that does not suit the column.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="ParquetNeo_RowGroupReader_OpenColumn_" data-uid="ParquetNeo.RowGroupReader.OpenColumn*"></a>
+
+  <h3 id="ParquetNeo_RowGroupReader_OpenColumn_System_Int32_" data-uid="ParquetNeo.RowGroupReader.OpenColumn(System.Int32)">
+  OpenColumn(int)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/RowGroupReader.cs/#L32"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Opens a column by its position in the schema (depth-first order).</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ColumnReader OpenColumn(int index)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>index</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.ColumnReader.html">ColumnReader</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></dt>
+    <dd><p>The column uses an unsupported encoding or lives in another file.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="ParquetNeo_RowGroupReader_OpenColumn_" data-uid="ParquetNeo.RowGroupReader.OpenColumn*"></a>
+
+  <h3 id="ParquetNeo_RowGroupReader_OpenColumn_System_Int32_ParquetNeo_RowSelection_" data-uid="ParquetNeo.RowGroupReader.OpenColumn(System.Int32,ParquetNeo.RowSelection)">
+  OpenColumn(int, RowSelection)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/RowGroupReader.cs/#L53"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Opens a column to read only the rows of <code class="paramref">selection</code>: the pages that hold none of them are not read, and what
+is read is those rows one after the other, as if the others were not there. Needs the offset index of the column.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ColumnReader OpenColumn(int index, RowSelection selection)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>index</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+    <dt><code>selection</code> <a class="xref" href="ParquetNeo.RowSelection.html">RowSelection</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.ColumnReader.html">ColumnReader</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></dt>
+    <dd><p>The file has no usable offset index for the column, or the selection has rows past the end of the group.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="ParquetNeo_RowGroupReader_OpenColumn_" data-uid="ParquetNeo.RowGroupReader.OpenColumn*"></a>
+
+  <h3 id="ParquetNeo_RowGroupReader_OpenColumn_System_String_" data-uid="ParquetNeo.RowGroupReader.OpenColumn(System.String)">
+  OpenColumn(string)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/RowGroupReader.cs/#L41"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Opens a top-level column by name.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ColumnReader OpenColumn(string name)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>name</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.ColumnReader.html">ColumnReader</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_RowGroupReader_SelectRows_" data-uid="ParquetNeo.RowGroupReader.SelectRows*"></a>
+
+  <h3 id="ParquetNeo_RowGroupReader_SelectRows_ParquetNeo_ParquetFilter_System_Collections_Generic_IEnumerable_System_Int32__" data-uid="ParquetNeo.RowGroupReader.SelectRows(ParquetNeo.ParquetFilter,System.Collections.Generic.IEnumerable{System.Int32})">
+  SelectRows(ParquetFilter, IEnumerable&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/RowGroupReader.cs/#L82"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>The rows of this group that the filter may match by the page index of its columns, to be given to <a class="xref" href="ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_OpenColumn_System_Int32_ParquetNeo_RowSelection_">OpenColumn(int, RowSelection)</a>
+for each of <code class="paramref">columns</code>; <code>null</code> when there is nothing to gain: the filter cannot rule out a page, or one of
+the columns has no offset index. The rows of the pages kept that do not satisfy the filter are in it, so check them as well when
+the result must hold exactly.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RowSelection? SelectRows(ParquetFilter filter, IEnumerable&lt;int&gt; columns)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>filter</code> <a class="xref" href="ParquetNeo.ParquetFilter.html">ParquetFilter</a></dt>
+    <dd></dd>
+    <dt><code>columns</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd><p>The positions in the schema of the columns that are going to be read.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.RowSelection.html">RowSelection</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/RowGroupReader.cs/#L10" class="edit-link">Edit this page</a>
+        </div>
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
