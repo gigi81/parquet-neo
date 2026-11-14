@@ -1,0 +1,1981 @@
+{
+  "docfx_version": "2.81.0+ba844df625370a6bd7c1ecab0d0ec4d1d9128ac4",
+  "source_base_path": "/home/user/parquet-neo/docs",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      }
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "PERFORMANCE.md",
+      "output": {
+        ".html": {
+          "relative_path": "PERFORMANCE.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "PLAN.md",
+      "output": {
+        ".html": {
+          "relative_path": "PLAN.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.BatchRead.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.BatchRead.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.BatchRead",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.BatchRead.yml\" sourcestartlinenumber=\"1\">The outcome of a <xref href=\"ParquetNeo.ColumnReader\" data-throw-if-not-resolved=\"false\"></xref> batch read.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.BloomFilterSettings.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.BloomFilterSettings.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.BloomFilterSettings",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.BloomFilterSettings.yml\" sourcestartlinenumber=\"1\">A bloom filter for a column, see <xref href=\"ParquetNeo.ParquetWriterOptions.ColumnBloomFilters\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ColumnOrder.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ColumnOrder.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ColumnOrder",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ColumnOrder.yml\" sourcestartlinenumber=\"1\">Order of a column's type-defined sort (thrift <code>ColumnOrder</code> union).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ColumnReader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ColumnReader.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ColumnReader",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ColumnReader.yml\" sourcestartlinenumber=\"1\">Reads the values of one column chunk, a batch at a time. Obtain it from <xref href=\"ParquetNeo.RowGroupReader.OpenColumn(System.Int32)\" data-throw-if-not-resolved=\"false\"></xref>\nand dispose it when done, which returns its buffers to the pool.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ColumnSettingKinds.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ColumnSettingKinds.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ColumnSettingKinds",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ColumnSettingKinds.yml\" sourcestartlinenumber=\"1\">The kinds of <code>ColumnSettings</code> a column type can take.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ColumnTypes.ColumnSettings.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ColumnTypes.ColumnSettings.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ColumnTypes.ColumnSettings",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ColumnTypes.ColumnSettings.yml\" sourcestartlinenumber=\"1\">What can be adjusted about the column a type is written to. A type takes the settings that suit it (see\n<xref href=\"ParquetNeo.ColumnTypes.ColumnType%601.SupportedSettings\" data-throw-if-not-resolved=\"false\"></xref>) and ignores the others.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ColumnTypes.ColumnType-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ColumnTypes.ColumnType-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ColumnTypes.ColumnType<TValue>",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ColumnTypes.ColumnType-1.yml\" sourcestartlinenumber=\"1\">Everything about storing one .NET type in a Parquet column: the column it gets by default, which columns of a file it can be\nread from or written to, and how a batch of values is converted to and from the physical type and passed to the column\nreader or writer. The built-in types are found with <xref href=\"ParquetNeo.ColumnTypes.ColumnTypeRegistry\" data-throw-if-not-resolved=\"false\"></xref>; an own type derives from this class.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ColumnTypes.ColumnType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ColumnTypes.ColumnType.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ColumnTypes.ColumnType",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ColumnTypes.ColumnType.yml\" sourcestartlinenumber=\"1\">What every column type says without knowing its .NET type: which one it is, the column it creates, and whether a column fits it.\nDerive from <xref href=\"ParquetNeo.ColumnTypes.ColumnType%601\" data-throw-if-not-resolved=\"false\"></xref>, which adds reading and writing, to add a type of your own.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ColumnTypes.ColumnTypeRegistry.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ColumnTypes.ColumnTypeRegistry.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ColumnTypes.ColumnTypeRegistry",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ColumnTypes.ColumnTypeRegistry.yml\" sourcestartlinenumber=\"1\">Finds the <xref href=\"ParquetNeo.ColumnTypes.ColumnType%601\" data-throw-if-not-resolved=\"false\"></xref> that reads and writes values of a .NET type: the built-in ones, any enum (as the\nname of its value), and the ones added with <xref href=\"ParquetNeo.ColumnTypes.ColumnTypeRegistry.Register%60%601(ParquetNeo.ColumnTypes.ColumnType%7b%60%600%7d)\" data-throw-if-not-resolved=\"false\"></xref>. The serializer uses it to decide how a property is\nstored, so registering a column type teaches it a new type for its properties.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ColumnTypes.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ColumnTypes.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ColumnTypes",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ColumnWriter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ColumnWriter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ColumnWriter",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ColumnWriter.yml\" sourcestartlinenumber=\"1\">Writes the values of one column of a row group. Obtain it from <xref href=\"ParquetNeo.RowGroupWriter.NextColumn\" data-throw-if-not-resolved=\"false\"></xref>, call\none of the <code>Write…</code> methods one or more times, then move on to the next column.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Compression.BrotliCodec.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Compression.BrotliCodec.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Compression.BrotliCodec",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Compression.BrotliCodec.yml\" sourcestartlinenumber=\"1\">Brotli (RFC 7932), via the span-based <xref href=\"System.IO.Compression.BrotliEncoder\" data-throw-if-not-resolved=\"false\"></xref> and <xref href=\"System.IO.Compression.BrotliDecoder\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Compression.CodecRegistry.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Compression.CodecRegistry.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Compression.CodecRegistry",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Compression.CodecRegistry.yml\" sourcestartlinenumber=\"1\">The codecs available to readers and writers. A new registry holds the built-in ones (uncompressed, Gzip,\nBrotli); codecs from add-on packages (ParquetNeo.Compression.Snappy, .Zstd and .Lz4) are registered explicitly.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Compression.GzipCodec.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Compression.GzipCodec.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Compression.GzipCodec",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Compression.GzipCodec.yml\" sourcestartlinenumber=\"1\">GZIP (RFC 1952), via <xref href=\"System.IO.Compression.GZipStream\" data-throw-if-not-resolved=\"false\"></xref>. Decompression accepts several members back to back, as the\nspec asks of readers.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Compression.ICodec.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Compression.ICodec.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Compression.ICodec",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Compression.ICodec.yml\" sourcestartlinenumber=\"1\">A page compression codec. Parquet stores the uncompressed and compressed size of every page, so both\ndirections work on buffers of known size and never need to grow or stream.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Compression.Lz4.Lz4RawCodec.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Compression.Lz4.Lz4RawCodec.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Compression.Lz4.Lz4RawCodec",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Compression.Lz4.Lz4RawCodec.yml\" sourcestartlinenumber=\"1\">LZ4_RAW: the plain LZ4 block format, using the managed K4os.Compression.LZ4 library. This is not the\ndeprecated, Hadoop-framed <code>LZ4</code> codec. Register it with <code>CodecRegistry.Default.AddLz4Raw()</code>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Compression.Lz4.Lz4RawCodecRegistryExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Compression.Lz4.Lz4RawCodecRegistryExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Compression.Lz4.Lz4RawCodecRegistryExtensions",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Compression.Lz4.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Compression.Lz4.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Compression.Lz4",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Compression.Snappy.SnappyCodec.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Compression.Snappy.SnappyCodec.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Compression.Snappy.SnappyCodec",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Compression.Snappy.SnappyCodec.yml\" sourcestartlinenumber=\"1\">Snappy in its raw block format (no framing), which is what Parquet pages use, using the managed Snappier\nlibrary. Register it with <code>CodecRegistry.Default.AddSnappy()</code>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Compression.Snappy.SnappyCodecRegistryExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Compression.Snappy.SnappyCodecRegistryExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Compression.Snappy.SnappyCodecRegistryExtensions",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Compression.Snappy.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Compression.Snappy.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Compression.Snappy",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Compression.UncompressedCodec.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Compression.UncompressedCodec.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Compression.UncompressedCodec",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Compression.UncompressedCodec.yml\" sourcestartlinenumber=\"1\">The &quot;no compression&quot; codec: data is copied as it is.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Compression.Zstd.ZstdCodec.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Compression.Zstd.ZstdCodec.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Compression.Zstd.ZstdCodec",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Compression.Zstd.ZstdCodec.yml\" sourcestartlinenumber=\"1\">ZSTD (RFC 8878) using the managed ZstdSharp.Port library. Register it with\n<code>CodecRegistry.Default.AddZstd()</code>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Compression.Zstd.ZstdCodecRegistryExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Compression.Zstd.ZstdCodecRegistryExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Compression.Zstd.ZstdCodecRegistryExtensions",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Compression.Zstd.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Compression.Zstd.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Compression.Zstd",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Compression.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Compression.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Compression",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.CompressionCodec.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.CompressionCodec.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.CompressionCodec",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ConvertedType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ConvertedType.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ConvertedType",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ConvertedType.yml\" sourcestartlinenumber=\"1\">Legacy type annotations, superseded by <code>LogicalType</code>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Data.ParquetDataReader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Data.ParquetDataReader.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Data.ParquetDataReader",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Data.ParquetDataReader.yml\" sourcestartlinenumber=\"1\">Reads a Parquet file as a <xref href=\"System.Data.Common.DbDataReader\" data-throw-if-not-resolved=\"false\"></xref>, so that it can go wherever a query result can: <code>SqlBulkCopy</code>,\n<xref href=\"System.Data.DataTable.Load(System.Data.IDataReader)\" data-throw-if-not-resolved=\"false\"></xref>, Dapper and the like.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Data.ParquetDataReaderOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Data.ParquetDataReaderOptions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Data.ParquetDataReaderOptions",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Data.ParquetDataReaderOptions.yml\" sourcestartlinenumber=\"1\">Settings for <xref href=\"ParquetNeo.Data.ParquetDataReader\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Data.ParquetDataWriter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Data.ParquetDataWriter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Data.ParquetDataWriter",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Data.ParquetDataWriter.yml\" sourcestartlinenumber=\"1\">Writes the rows of an <xref href=\"System.Data.IDataReader\" data-throw-if-not-resolved=\"false\"></xref> (a database query, a <xref href=\"System.Data.DataTable\" data-throw-if-not-resolved=\"false\"></xref> through\n<xref href=\"System.Data.DataTable.CreateDataReader\" data-throw-if-not-resolved=\"false\"></xref>, or any other reader) as a Parquet file. Each column of the reader becomes a column\nof the file, typed by <xref href=\"System.Data.IDataRecord.GetFieldType(System.Int32)\" data-throw-if-not-resolved=\"false\"></xref>: the types of <xref href=\"ParquetNeo.ColumnTypes.ColumnTypeRegistry\" data-throw-if-not-resolved=\"false\"></xref>, which\nare the ones <code>ParquetSerializer</code> writes. A column is optional unless the reader's schema table says\n<code>AllowDBNull</code> is false, and a decimal takes the precision and scale the schema table gives (38 and 18 otherwise).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Data.ParquetDataWriterOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Data.ParquetDataWriterOptions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Data.ParquetDataWriterOptions",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Data.ParquetDataWriterOptions.yml\" sourcestartlinenumber=\"1\">Settings for <xref href=\"ParquetNeo.Data.ParquetDataWriter\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Data.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Data.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Data",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.DataModel.ParquetColumnAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.DataModel.ParquetColumnAttribute.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.DataModel.ParquetColumnAttribute",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.DataModel.ParquetColumnAttribute.yml\" sourcestartlinenumber=\"1\">Names the column a property is written to, or its position among the columns. Without it the column has the property's name.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.DataModel.ParquetDecimalAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.DataModel.ParquetDecimalAttribute.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.DataModel.ParquetDecimalAttribute",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.DataModel.ParquetDecimalAttribute.yml\" sourcestartlinenumber=\"1\">The precision and scale of a <xref href=\"System.Decimal\" data-throw-if-not-resolved=\"false\"></xref> property's column. Without it a decimal is written with a precision of 38\nand a scale of 18. A value with more decimals than the scale, or more digits than the precision, cannot be written.\nThe column is INT32 up to a precision of 9, INT64 up to 18, and a fixed-length byte array above that.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.DataModel.ParquetDictionaryAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.DataModel.ParquetDictionaryAttribute.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.DataModel.ParquetDictionaryAttribute",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.DataModel.ParquetDictionaryAttribute.yml\" sourcestartlinenumber=\"1\">How the column of a property is dictionary encoded (every column of a collection or dictionary, but not of the properties of an\nobject inside it, which have their own attributes), instead of <xref href=\"ParquetNeo.DictionaryMode.Standard\" data-throw-if-not-resolved=\"false\"></xref>. A dictionary stores each\ndistinct value once and the rows refer to it, which pays off when values repeat and is wasted work when they do not.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.DataModel.ParquetEncodingAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.DataModel.ParquetEncodingAttribute.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.DataModel.ParquetEncodingAttribute",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.DataModel.ParquetEncodingAttribute.yml\" sourcestartlinenumber=\"1\">The encoding of the values of a property's column (every column of a collection or dictionary, but not of the properties of an\nobject inside it, which have their own attributes), instead of PLAIN; see\n<xref href=\"ParquetNeo.ParquetWriterOptions.ColumnEncodings\" data-throw-if-not-resolved=\"false\"></xref> for what suits which data. An encoding the column's type cannot\nuse is an <xref href=\"System.ArgumentException\" data-throw-if-not-resolved=\"false\"></xref> when serializing. Encodings set in the options win over this one.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.DataModel.ParquetIgnoreAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.DataModel.ParquetIgnoreAttribute.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.DataModel.ParquetIgnoreAttribute",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.DataModel.ParquetIgnoreAttribute.yml\" sourcestartlinenumber=\"1\">Leaves a property out of the file.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.DataModel.ParquetSerializableAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.DataModel.ParquetSerializableAttribute.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.DataModel.ParquetSerializableAttribute",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.DataModel.ParquetSerializableAttribute.yml\" sourcestartlinenumber=\"1\">Asks the source generator for the mapping of a type, so that the serializer never looks at the type by reflection: it works with\ntrimming and Native AOT, and does not compile code when it is first used. Put it on the type, or, for a type you do not own, on the\nassembly: <code>[assembly: ParquetSerializable(typeof(TheirType))]</code>. The mapping is registered when the assembly is loaded, so\n<xref href=\"ParquetNeo.Serialization.ParquetSerializer\" data-throw-if-not-resolved=\"false\"></xref> is used as before. A type without it keeps working by reflection, which is not\nsafe with trimming or Native AOT.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.DataModel.ParquetTimeAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.DataModel.ParquetTimeAttribute.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.DataModel.ParquetTimeAttribute",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.DataModel.ParquetTimeAttribute.yml\" sourcestartlinenumber=\"1\">The unit and meaning of the column of a <xref href=\"System.TimeOnly\" data-throw-if-not-resolved=\"false\"></xref> property. Without it times are written in microseconds, as wall-clock readings.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.DataModel.ParquetTimestampAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.DataModel.ParquetTimestampAttribute.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.DataModel.ParquetTimestampAttribute",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.DataModel.ParquetTimestampAttribute.yml\" sourcestartlinenumber=\"1\">The unit and meaning of the column of a <xref href=\"System.DateTime\" data-throw-if-not-resolved=\"false\"></xref> or <xref href=\"System.DateTimeOffset\" data-throw-if-not-resolved=\"false\"></xref> property. Without it\ntimestamps are written in microseconds, as moments in UTC.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.DataModel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.DataModel.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.DataModel",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.DataPageVersion.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.DataPageVersion.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.DataPageVersion",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.DataPageVersion.yml\" sourcestartlinenumber=\"1\">The layout of the data pages a writer produces.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.DictionaryMode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.DictionaryMode.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.DictionaryMode",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.DictionaryMode.yml\" sourcestartlinenumber=\"1\">How a column is dictionary encoded; see <code>DictionarySettings</code> and <code>ParquetWriterOptions.ColumnDictionaries</code>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.DictionarySettings.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.DictionarySettings.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.DictionarySettings",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.DictionarySettings.yml\" sourcestartlinenumber=\"1\">How one column is dictionary encoded; see <xref href=\"ParquetNeo.ParquetWriterOptions.ColumnDictionaries\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Exceptions.CompressionException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Exceptions.CompressionException.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Exceptions.CompressionException",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Exceptions.CompressionException.yml\" sourcestartlinenumber=\"1\">Thrown when the compressed data of a page is invalid, or does not decompress to the size its page header declares.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Exceptions.CorruptColumnException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Exceptions.CorruptColumnException.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Exceptions.CorruptColumnException",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Exceptions.CorruptColumnException.yml\" sourcestartlinenumber=\"1\">Thrown when the pages of a column chunk contradict each other or the metadata: counts that do not add up, dictionary or level problems, or an encoding the column's type cannot use.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Exceptions.EncodingException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Exceptions.EncodingException.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Exceptions.EncodingException",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Exceptions.EncodingException.yml\" sourcestartlinenumber=\"1\">Thrown when encoded values or levels cannot be decoded: the data is too short, or is not valid for its encoding (PLAIN, RLE, delta, byte-stream-split).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Exceptions.InvalidSchemaException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Exceptions.InvalidSchemaException.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Exceptions.InvalidSchemaException",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Exceptions.InvalidSchemaException.yml\" sourcestartlinenumber=\"1\">Thrown when the schema of a file is not a well-formed tree of groups and columns.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Exceptions.MetadataException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Exceptions.MetadataException.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Exceptions.MetadataException",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Exceptions.MetadataException.yml\" sourcestartlinenumber=\"1\">Thrown when metadata cannot be decoded: the Thrift data of the footer or of a page header is malformed, or recorded statistics have the wrong size.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Exceptions.ParquetException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Exceptions.ParquetException.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Exceptions.ParquetException",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Exceptions.ParquetException.yml\" sourcestartlinenumber=\"1\">The base of the exceptions this library throws for a file it cannot read, so that one <code>catch</code> handles them all.\nMisuse of the API itself is reported with the standard exceptions instead, such as <xref href=\"System.ArgumentException\" data-throw-if-not-resolved=\"false\"></xref>\nand <xref href=\"System.InvalidOperationException\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Exceptions.ParquetFormatException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Exceptions.ParquetFormatException.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Exceptions.ParquetFormatException",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Exceptions.ParquetFormatException.yml\" sourcestartlinenumber=\"1\">Thrown when the layout of a Parquet file is wrong: it is truncated, lacks the PAR1 markers, or its footer and row groups do not fit in it.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Exceptions.SchemaMismatchException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Exceptions.SchemaMismatchException.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Exceptions.SchemaMismatchException",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Exceptions.SchemaMismatchException.yml\" sourcestartlinenumber=\"1\">Thrown when the schema of a file does not fit the type it is read into: a column that is missing, or stored as a type the property cannot hold.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Exceptions.ValueConversionException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Exceptions.ValueConversionException.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Exceptions.ValueConversionException",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Exceptions.ValueConversionException.yml\" sourcestartlinenumber=\"1\">Thrown when a stored value is valid Parquet but cannot be represented by the .NET type it is read as, such as a date before year 1 or a time beyond a day.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Exceptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Exceptions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Exceptions",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.FieldRepetitionType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.FieldRepetitionType.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.FieldRepetitionType",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.FilterColumn.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.FilterColumn.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.FilterColumn",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.FilterColumn.yml\" sourcestartlinenumber=\"1\">A column a condition is put on; see <xref href=\"ParquetNeo.ParquetFilter.Column(System.String%5b%5d)\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Linq.ParquetDataset-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Linq.ParquetDataset-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Linq.ParquetDataset<T>",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Linq.ParquetDataset-1.yml\" sourcestartlinenumber=\"1\">The rows of a file or of the files of a directory, as an <xref href=\"System.Linq.IQueryable%601\" data-throw-if-not-resolved=\"false\"></xref>; see <xref href=\"ParquetNeo.Linq.ParquetDataset.Open%60%601(System.String%2cParquetNeo.Linq.ParquetDatasetOptions)\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Linq.ParquetDataset.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Linq.ParquetDataset.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Linq.ParquetDataset",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Linq.ParquetDataset.yml\" sourcestartlinenumber=\"1\">Opens datasets: files of rows of one type, to be queried with LINQ.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Linq.ParquetDatasetOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Linq.ParquetDatasetOptions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Linq.ParquetDatasetOptions",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Linq.ParquetDatasetOptions.yml\" sourcestartlinenumber=\"1\">Settings for a <xref href=\"ParquetNeo.Linq.ParquetDataset%601\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Linq.ParquetQueryPlan.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Linq.ParquetQueryPlan.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Linq.ParquetQueryPlan",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Linq.ParquetQueryPlan.yml\" sourcestartlinenumber=\"1\">What a query reads of a dataset, from the footers of its files; see <xref href=\"ParquetNeo.Linq.ParquetQueryableExtensions.Explain%60%601(System.Linq.IQueryable%7b%60%600%7d)\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Linq.ParquetQueryableExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Linq.ParquetQueryableExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Linq.ParquetQueryableExtensions",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Linq.ParquetQueryableExtensions.yml\" sourcestartlinenumber=\"1\">Operations on the queries of a <xref href=\"ParquetNeo.Linq.ParquetDataset%601\" data-throw-if-not-resolved=\"false\"></xref> that LINQ does not have.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Linq.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Linq.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Linq",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ListStyle.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ListStyle.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ListStyle",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ListStyle.yml\" sourcestartlinenumber=\"1\">How a list is laid out in the schema. Writers have used several; readers must accept them all.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.LogicalTypeKind.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.LogicalTypeKind.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.LogicalTypeKind",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.LogicalTypeKind.yml\" sourcestartlinenumber=\"1\">Kind of a <code>LogicalType</code>. Values are the field ids of the thrift union.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.ColumnChunk.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.ColumnChunk.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.ColumnChunk",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Metadata.ColumnChunk.yml\" sourcestartlinenumber=\"1\">Location and metadata of one column chunk (thrift <code>ColumnChunk</code>). Encryption fields are skipped.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.ColumnIndex.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.ColumnIndex.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.ColumnIndex",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Metadata.ColumnIndex.yml\" sourcestartlinenumber=\"1\">The smallest and largest value of every data page of a column chunk, and how many are null (thrift <code>ColumnIndex</code>); entry <code>i</code> of\neach list is for the page at <code>i</code> in the <xref href=\"ParquetNeo.Metadata.OffsetIndex\" data-throw-if-not-resolved=\"false\"></xref>. The bounds are encoded as the statistics of the column are.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.ColumnMetaData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.ColumnMetaData.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.ColumnMetaData",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Metadata.ColumnMetaData.yml\" sourcestartlinenumber=\"1\">Metadata of one column chunk (thrift <code>ColumnMetaData</code>). Geospatial statistics are not read yet.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.FileMetaData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.FileMetaData.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.FileMetaData",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Metadata.FileMetaData.yml\" sourcestartlinenumber=\"1\">The Parquet footer (thrift <code>FileMetaData</code>). Unknown fields, including the extension field 32767,\nare skipped when reading; encryption fields are not supported yet.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.Headers.BloomFilterHeader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.Headers.BloomFilterHeader.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.Headers.BloomFilterHeader",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Metadata.Headers.BloomFilterHeader.yml\" sourcestartlinenumber=\"1\">The header in front of the bits of a bloom filter (thrift <code>BloomFilterHeader</code>). The only filter the format defines is split block, hashed with xxHash64 and not compressed.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.Headers.DataPageHeader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.Headers.DataPageHeader.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.Headers.DataPageHeader",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.Headers.DataPageV2Header.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.Headers.DataPageV2Header.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.Headers.DataPageV2Header",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.Headers.DictionaryPageHeader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.Headers.DictionaryPageHeader.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.Headers.DictionaryPageHeader",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.Headers.PageHeader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.Headers.PageHeader.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.Headers.PageHeader",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Metadata.Headers.PageHeader.yml\" sourcestartlinenumber=\"1\">Header preceding every page in a column chunk (thrift <code>PageHeader</code>).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.Headers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.Headers.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.Headers",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.KeyValue.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.KeyValue.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.KeyValue",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.LogicalType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.LogicalType.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.LogicalType",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Metadata.LogicalType.yml\" sourcestartlinenumber=\"1\">A logical type annotation (thrift <code>LogicalType</code> union). Only the parameters relevant to\n<xref href=\"ParquetNeo.Metadata.LogicalType.Kind\" data-throw-if-not-resolved=\"false\"></xref> are meaningful.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.OffsetIndex.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.OffsetIndex.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.OffsetIndex",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Metadata.OffsetIndex.yml\" sourcestartlinenumber=\"1\">The positions of the data pages of a column chunk (thrift <code>OffsetIndex</code>), so that a reader can go to a page without reading the ones before it.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.PageEncodingStats.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.PageEncodingStats.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.PageEncodingStats",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Metadata.PageEncodingStats.yml\" sourcestartlinenumber=\"1\">How many pages of a type used an encoding (thrift <code>PageEncodingStats</code>).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.PageLocation.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.PageLocation.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.PageLocation",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Metadata.PageLocation.yml\" sourcestartlinenumber=\"1\">Where a data page of a column chunk is, and which row it starts with (thrift <code>PageLocation</code>).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.RowGroup.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.RowGroup.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.RowGroup",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.SchemaElement.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.SchemaElement.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.SchemaElement",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Metadata.SchemaElement.yml\" sourcestartlinenumber=\"1\">One node of the flattened, depth-first schema tree (thrift <code>SchemaElement</code>).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.SizeStatistics.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.SizeStatistics.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.SizeStatistics",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Metadata.SizeStatistics.yml\" sourcestartlinenumber=\"1\">Size statistics of a column chunk (thrift <code>SizeStatistics</code>).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.SortingColumn.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.SortingColumn.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.SortingColumn",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Metadata.SortingColumn.yml\" sourcestartlinenumber=\"1\">A column a row group is sorted by (thrift <code>SortingColumn</code>).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.Statistics.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.Statistics.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata.Statistics",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Metadata.Statistics.yml\" sourcestartlinenumber=\"1\">Column statistics for a page or column chunk (thrift <code>Statistics</code>).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Metadata.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Metadata.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Metadata",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Nested.ColumnStructure.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Nested.ColumnStructure.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Nested.ColumnStructure",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Nested.ColumnStructure.yml\" sourcestartlinenumber=\"1\">The shape of the data in one column, as validity and offsets instead of definition and repetition levels: for each\noptional node on the way to the column whether its value is present, and for each repeated node where each list\nstarts and ends. It is the columnar form of nested data (the same idea as the validity and offsets of an Arrow\narray), and it converts both ways with the levels the reader returns and the writer takes.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Nested.ListLayout.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Nested.ListLayout.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Nested.ListLayout",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Nested.ListLayout.yml\" sourcestartlinenumber=\"1\">Where the parts of a list are in the schema; see <xref href=\"ParquetNeo.Nested.NestedSchema.GetListLayout(ParquetNeo.Schema.SchemaNode)\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Nested.MapLayout.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Nested.MapLayout.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Nested.MapLayout",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Nested.MapLayout.yml\" sourcestartlinenumber=\"1\">Where the parts of a map are in the schema; see <xref href=\"ParquetNeo.Nested.NestedSchema.GetMapLayout(ParquetNeo.Schema.SchemaNode)\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Nested.NestedSchema.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Nested.NestedSchema.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Nested.NestedSchema",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Nested.NestedSchema.yml\" sourcestartlinenumber=\"1\">Builds the standard LIST and MAP layouts and recognizes the layouts found in files, including the legacy ones.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Nested.StructureLevel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Nested.StructureLevel.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Nested.StructureLevel",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Nested.StructureLevel.yml\" sourcestartlinenumber=\"1\">The structure one optional or repeated schema node adds to a column: validity for an optional node, offsets for a\nrepeated one. Create it with <xref href=\"ParquetNeo.Nested.StructureLevel.ForOptional(ParquetNeo.Schema.SchemaNode%2cSystem.Boolean%5b%5d)\" data-throw-if-not-resolved=\"false\"></xref> or <xref href=\"ParquetNeo.Nested.StructureLevel.ForRepeated(ParquetNeo.Schema.SchemaNode%2cSystem.Int32%5b%5d)\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Nested.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Nested.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Nested",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.PageType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.PageType.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.PageType",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ParquetEncoding.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ParquetEncoding.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ParquetEncoding",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ParquetEncoding.yml\" sourcestartlinenumber=\"1\">Value encodings (thrift <code>Encoding</code>).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ParquetFileReader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ParquetFileReader.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ParquetFileReader",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ParquetFileReader.yml\" sourcestartlinenumber=\"1\">Reads a Parquet file one row group and one leaf column at a time, with the definition and repetition levels of\nnested columns. The stream must be readable and seekable, because the metadata sits at the end of the file.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ParquetFileWriter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ParquetFileWriter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ParquetFileWriter",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ParquetFileWriter.yml\" sourcestartlinenumber=\"1\">Writes a Parquet file, one row group at a time. Columns are written one leaf column at a time, with the definition and\nrepetition levels for nested ones. The stream only needs to be\nwritable: offsets are counted rather than read from the stream, so it need not be seekable.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ParquetFilter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ParquetFilter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ParquetFilter",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ParquetFilter.yml\" sourcestartlinenumber=\"1\">A condition on the values of columns, which a reader checks against the statistics of each row group (the smallest and largest\nvalue, and how many are null) to skip the row groups that cannot hold a row that satisfies it. Build one with\n<xref href=\"ParquetNeo.ParquetFilter.Column(System.String%5b%5d)\" data-throw-if-not-resolved=\"false\"></xref> and combine with <xref href=\"ParquetNeo.ParquetFilter.And(ParquetNeo.ParquetFilter)\" data-throw-if-not-resolved=\"false\"></xref>, <xref href=\"ParquetNeo.ParquetFilter.Or(ParquetNeo.ParquetFilter)\" data-throw-if-not-resolved=\"false\"></xref> and <xref href=\"ParquetNeo.ParquetFilter.Not\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ParquetReaderOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ParquetReaderOptions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ParquetReaderOptions",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ParquetReaderOptions.yml\" sourcestartlinenumber=\"1\">Settings for a <xref href=\"ParquetNeo.ParquetFileReader\" data-throw-if-not-resolved=\"false\"></xref>. The limits protect against corrupt or hostile files.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.ParquetWriterOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.ParquetWriterOptions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.ParquetWriterOptions",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.ParquetWriterOptions.yml\" sourcestartlinenumber=\"1\">Settings for a <xref href=\"ParquetNeo.ParquetFileWriter\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.PhysicalType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.PhysicalType.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.PhysicalType",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.PhysicalType.yml\" sourcestartlinenumber=\"1\">Physical (storage) type of a column (thrift <code>Type</code>).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.RowGroupReader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.RowGroupReader.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.RowGroupReader",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.RowGroupReader.yml\" sourcestartlinenumber=\"1\">Gives access to the columns of one row group.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.RowGroupWriter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.RowGroupWriter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.RowGroupWriter",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.RowGroupWriter.yml\" sourcestartlinenumber=\"1\">Writes one row group: every column of the schema, in schema order, each with the same number of rows.\nCreate it with <xref href=\"ParquetNeo.ParquetFileWriter.AppendRowGroup\" data-throw-if-not-resolved=\"false\"></xref>, call <xref href=\"ParquetNeo.RowGroupWriter.NextColumn\" data-throw-if-not-resolved=\"false\"></xref> once per column,\nand dispose it (or call <xref href=\"ParquetNeo.RowGroupWriter.Close\" data-throw-if-not-resolved=\"false\"></xref>) to finish the group.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.RowRange.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.RowRange.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.RowRange",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.RowRange.yml\" sourcestartlinenumber=\"1\">A run of rows of a row group: the position of the first and how many.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.RowSelection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.RowSelection.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.RowSelection",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.RowSelection.yml\" sourcestartlinenumber=\"1\">Some rows of a row group, as ascending runs that do not touch. Given to <xref href=\"ParquetNeo.RowGroupReader.OpenColumn(System.Int32%2cParquetNeo.RowSelection)\" data-throw-if-not-resolved=\"false\"></xref>\nso that the column is read for only those rows; the pages that hold none of them are not read. Rows count from the first of the\ngroup, and a row of a repeated column is a whole record (a list), however many values it has.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Schema.GroupNode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Schema.GroupNode.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Schema.GroupNode",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Schema.GroupNode.yml\" sourcestartlinenumber=\"1\">An inner node holding other nodes (a struct, or part of a list or map).</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Schema.ParquetSchema.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Schema.ParquetSchema.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Schema.ParquetSchema",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Schema.ParquetSchema.yml\" sourcestartlinenumber=\"1\">The schema of a Parquet file as a tree, with the definition and repetition levels of every node\nand the leaf <xref href=\"ParquetNeo.Schema.ParquetSchema.Columns\" data-throw-if-not-resolved=\"false\"></xref> in the order their chunks are stored.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Schema.PrimitiveNode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Schema.PrimitiveNode.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Schema.PrimitiveNode",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Schema.PrimitiveNode.yml\" sourcestartlinenumber=\"1\">A leaf of the schema: one stored column.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Schema.SchemaNode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Schema.SchemaNode.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Schema.SchemaNode",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Schema.SchemaNode.yml\" sourcestartlinenumber=\"1\">A node of the schema tree: either a <xref href=\"ParquetNeo.Schema.GroupNode\" data-throw-if-not-resolved=\"false\"></xref> or a <xref href=\"ParquetNeo.Schema.PrimitiveNode\" data-throw-if-not-resolved=\"false\"></xref> column.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Schema.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Schema.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Schema",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Serialization.Generated.AssembleRow-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Serialization.Generated.AssembleRow-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Serialization.Generated.AssembleRow<TRow>",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Serialization.Generated.AssembleRow-1.yml\" sourcestartlinenumber=\"1\">Creates a row from the values of the columns, which is what the source generator writes for each type.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Serialization.Generated.MappingRegistry.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Serialization.Generated.MappingRegistry.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Serialization.Generated.MappingRegistry",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Serialization.Generated.MappingRegistry.yml\" sourcestartlinenumber=\"1\">Where the source generator registers the mapping of each type marked <xref href=\"ParquetNeo.DataModel.ParquetSerializableAttribute\" data-throw-if-not-resolved=\"false\"></xref>, when the\nassembly is loaded. The mapping is made the first time the serializer needs it. Not for use in code you write yourself.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Serialization.Generated.ReadMapping-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Serialization.Generated.ReadMapping-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Serialization.Generated.ReadMapping<TRow>",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Serialization.Generated.ReadMapping-1.yml\" sourcestartlinenumber=\"1\">How rows of a type are read, made by a <xref href=\"ParquetNeo.Serialization.Generated.ReadMappingBuilder%601\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Serialization.Generated.ReadMappingBuilder-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Serialization.Generated.ReadMappingBuilder-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Serialization.Generated.ReadMappingBuilder<TRow>",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Serialization.Generated.ReadMappingBuilder-1.yml\" sourcestartlinenumber=\"1\">Describes how a row type is read from columns, and gets the code that creates each object from their values. What the source\ngenerator writes for a type uses it, and nothing at run time looks at the type: no reflection, and no code is compiled. Not for use in\ncode you write yourself.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Serialization.Generated.RowSink.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Serialization.Generated.RowSink.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Serialization.Generated.RowSink",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Serialization.Generated.RowSink.yml\" sourcestartlinenumber=\"1\">Where the code written by the source generator puts the values of an object: a property that is a column of its own goes to the\ncolumn with its number, counted from the first column of the object, and a property that is an object, a collection or a dictionary\ngoes to its place among the properties, counted from zero. Not for use in code you write yourself.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Serialization.Generated.RowSource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Serialization.Generated.RowSource.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Serialization.Generated.RowSource",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Serialization.Generated.RowSource.yml\" sourcestartlinenumber=\"1\">Where the code written by the source generator takes the values of an object from: a property that is a column of its own is\nread from the column with its number, counted from the first column of the object, and a property that is an object, a\ncollection or a dictionary from its place among the properties, counted from zero. Not for use in code you write yourself.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Serialization.Generated.ShredRow-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Serialization.Generated.ShredRow-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Serialization.Generated.ShredRow<TRow>",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Serialization.Generated.ShredRow-1.yml\" sourcestartlinenumber=\"1\">Gives the values of a row to the columns, which is what the source generator writes for each type.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Serialization.Generated.WriteMapping-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Serialization.Generated.WriteMapping-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Serialization.Generated.WriteMapping<TRow>",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Serialization.Generated.WriteMapping-1.yml\" sourcestartlinenumber=\"1\">How rows of a type are written, made by a <xref href=\"ParquetNeo.Serialization.Generated.WriteMappingBuilder%601\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Serialization.Generated.WriteMappingBuilder-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Serialization.Generated.WriteMappingBuilder-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Serialization.Generated.WriteMappingBuilder<TRow>",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Serialization.Generated.WriteMappingBuilder-1.yml\" sourcestartlinenumber=\"1\">Describes how a row type is written as columns, and gets the code that gives the values of each object to them. What the source\ngenerator writes for a type uses it, and nothing at run time looks at the type: no reflection, and no code is compiled. Not for use in\ncode you write yourself.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Serialization.Generated.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Serialization.Generated.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Serialization.Generated",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Serialization.ParquetDeserializerOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Serialization.ParquetDeserializerOptions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Serialization.ParquetDeserializerOptions",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Serialization.ParquetDeserializerOptions.yml\" sourcestartlinenumber=\"1\">Settings for reading rows with <xref href=\"ParquetNeo.Serialization.ParquetSerializer\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Serialization.ParquetSerializer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Serialization.ParquetSerializer.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Serialization.ParquetSerializer",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Serialization.ParquetSerializer.yml\" sourcestartlinenumber=\"1\">Writes objects as rows of a Parquet file (<xref href=\"ParquetNeo.Serialization.ParquetSerializer.Serialize%60%601(System.Collections.Generic.IEnumerable%7b%60%600%7d%2cSystem.IO.Stream%2cParquetNeo.Serialization.ParquetSerializerOptions)\" data-throw-if-not-resolved=\"false\"></xref> and <xref href=\"ParquetNeo.Serialization.ParquetSerializer.SerializeAsync%60%601(System.Collections.Generic.IEnumerable%7b%60%600%7d%2cSystem.IO.Stream%2cParquetNeo.Serialization.ParquetSerializerOptions%2cSystem.Threading.CancellationToken)\" data-throw-if-not-resolved=\"false\"></xref>),\nand reads rows back (<xref href=\"ParquetNeo.Serialization.ParquetSerializer.Deserialize%60%601(System.IO.Stream%2cParquetNeo.Serialization.ParquetDeserializerOptions)\" data-throw-if-not-resolved=\"false\"></xref>, <xref href=\"ParquetNeo.Serialization.ParquetSerializer.DeserializeAll%60%601(System.IO.Stream%2cParquetNeo.Serialization.ParquetDeserializerOptions)\" data-throw-if-not-resolved=\"false\"></xref> and their asynchronous forms; see\nthe remarks below for what reading supports). Each public property becomes a column, named after the property and typed by\nthe convention below, which attributes on the property adjust: <xref href=\"ParquetNeo.DataModel.ParquetColumnAttribute\" data-throw-if-not-resolved=\"false\"></xref>,\n<xref href=\"ParquetNeo.DataModel.ParquetIgnoreAttribute\" data-throw-if-not-resolved=\"false\"></xref>, <xref href=\"ParquetNeo.DataModel.ParquetDecimalAttribute\" data-throw-if-not-resolved=\"false\"></xref>, <xref href=\"ParquetNeo.DataModel.ParquetTimestampAttribute\" data-throw-if-not-resolved=\"false\"></xref>,\n<xref href=\"ParquetNeo.DataModel.ParquetTimeAttribute\" data-throw-if-not-resolved=\"false\"></xref> and <xref href=\"ParquetNeo.DataModel.ParquetEncodingAttribute\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Serialization.ParquetSerializerOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Serialization.ParquetSerializerOptions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Serialization.ParquetSerializerOptions",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Serialization.ParquetSerializerOptions.yml\" sourcestartlinenumber=\"1\">Settings for <xref href=\"ParquetNeo.Serialization.ParquetSerializer\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Serialization.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Serialization.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Serialization",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Statistics.ColumnStatistics.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Statistics.ColumnStatistics.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Statistics.ColumnStatistics",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.Statistics.ColumnStatistics.yml\" sourcestartlinenumber=\"1\">The statistics of one column chunk, decoded to .NET values. Obtain it from\n<xref href=\"ParquetNeo.RowGroupReader.GetStatistics(System.Int32)\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.Statistics.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.Statistics.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.Statistics",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.StructureLevelKind.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.StructureLevelKind.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.StructureLevelKind",
+      "Summary": "<p sourcefile=\"api/ParquetNeo.StructureLevelKind.yml\" sourcestartlinenumber=\"1\">What a <code>StructureLevel</code> records about its schema node.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.TimeUnit.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.TimeUnit.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo.TimeUnit",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/ParquetNeo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/ParquetNeo.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "ParquetNeo",
+      "Summary": null
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html"
+        },
+        ".json": {
+          "relative_path": "api/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/ado-net.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/ado-net.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/aot.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/aot.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/compression.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/compression.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/filtering.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/filtering.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/getting-started.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/getting-started.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/linq.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/linq.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/low-level.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/low-level.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/packages.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/packages.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/serializer.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/serializer.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "articles/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "articles/toc.html"
+        },
+        ".json": {
+          "relative_path": "articles/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html"
+        },
+        ".json": {
+          "relative_path": "toc.json"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class ColumnType&lt;TValue&gt; | ParquetNeo </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class ColumnType&lt;TValue&gt; | ParquetNeo ">
+      
+      <meta name="description" content="Everything about storing one .NET type in a Parquet column: the column it gets by default, which columns of a file it can be read from or written to, and how a batch of values is converted to and from the physical type and passed to the column reader or writer. The built-in types are found with ; an own type derives from this class.">
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/gigi81/parquet-neo/new/main/apiSpec/new?filename=ParquetNeo_ColumnTypes_ColumnType_1.md&amp;value=---%0Auid%3A%20ParquetNeo.ColumnTypes.ColumnType%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="ParquetNeo">
+            ParquetNeo
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="ParquetNeo.ColumnTypes.ColumnType`1">
+
+
+
+  <h1 id="ParquetNeo_ColumnTypes_ColumnType_1" data-uid="ParquetNeo.ColumnTypes.ColumnType`1" class="text-break">
+Class ColumnType&lt;TValue&gt;  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnTypes/ColumnTypeOfValue.cs/#L15"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="ParquetNeo.html">ParquetNeo</a>.<a class="xref" href="ParquetNeo.ColumnTypes.html">ColumnTypes</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>ParquetNeo.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Everything about storing one .NET type in a Parquet column: the column it gets by default, which columns of a file it can be
+read from or written to, and how a batch of values is converted to and from the physical type and passed to the column
+reader or writer. The built-in types are found with <a class="xref" href="ParquetNeo.ColumnTypes.ColumnTypeRegistry.html">ColumnTypeRegistry</a>; an own type derives from this class.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract class ColumnType&lt;TValue&gt; : ColumnType</code></pre>
+  </div>
+
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TValue</code></dt>
+    <dd><p>The .NET type.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><a class="xref" href="ParquetNeo.ColumnTypes.ColumnType.html">ColumnType</a></div>
+      <div><span class="xref">ColumnType&lt;TValue&gt;</span></div>
+    </dd>
+  </dl>
+
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="ParquetNeo.ColumnTypes.ColumnType.html#ParquetNeo_ColumnTypes_ColumnType_CreateNode_System_String_ParquetNeo_FieldRepetitionType_">ColumnType.CreateNode(string, FieldRepetitionType)</a>
+    </div>
+    <div>
+      <a class="xref" href="ParquetNeo.ColumnTypes.ColumnType.html#ParquetNeo_ColumnTypes_ColumnType_GetProblem_ParquetNeo_Schema_PrimitiveNode_">ColumnType.GetProblem(PrimitiveNode)</a>
+    </div>
+    <div>
+      <a class="xref" href="ParquetNeo.ColumnTypes.ColumnType.html#ParquetNeo_ColumnTypes_ColumnType_Require_ParquetNeo_Schema_PrimitiveNode_">ColumnType.Require(PrimitiveNode)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+  <h2 id="ParquetNeo_ColumnTypes_ColumnType_1_remarks">Remarks</h2>
+  <div class="markdown level0 remarks"><p>A type works on batches: the cost of reaching it (a virtual call) is paid once per batch, and the per-value work is generic code
+that the JIT specializes. The type adapts to the column it is used with, so one instance serves any number of columns; the
+settings (<a class="xref" href="ParquetNeo.ColumnTypes.ColumnType-1.html#ParquetNeo_ColumnTypes_ColumnType_1_Configure_ParquetNeo_ColumnTypes_ColumnSettings_">Configure(ColumnSettings)</a>) only decide the column it creates.</p>
+</div>
+
+
+  <h2 class="section" id="constructors">Constructors
+</h2>
+
+
+  <a id="ParquetNeo_ColumnTypes_ColumnType_1__ctor_" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.#ctor*"></a>
+
+  <h3 id="ParquetNeo_ColumnTypes_ColumnType_1__ctor" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.#ctor">
+  ColumnType()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnTypes/ColumnTypeOfValue.cs/#L18"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Creates a column type; call it from the constructor of a type that derives from this class.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected ColumnType()</code></pre>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="ParquetNeo_ColumnTypes_ColumnType_1_Name_" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.Name*"></a>
+
+  <h3 id="ParquetNeo_ColumnTypes_ColumnType_1_Name" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.Name">
+  Name
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnTypes/ColumnTypeOfValue.cs/#L23"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>The name of the .NET type, as messages call it.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string Name { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnTypes_ColumnType_1_SupportedSettings_" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.SupportedSettings*"></a>
+
+  <h3 id="ParquetNeo_ColumnTypes_ColumnType_1_SupportedSettings" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.SupportedSettings">
+  SupportedSettings
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnTypes/ColumnTypeOfValue.cs/#L28"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>The kinds of <a class="xref" href="ParquetNeo.ColumnTypes.ColumnSettings.html">ColumnSettings</a> the type takes; none for most.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override ColumnSettingKinds SupportedSettings { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.ColumnSettingKinds.html">ColumnSettingKinds</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnTypes_ColumnType_1_ValueType_" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.ValueType*"></a>
+
+  <h3 id="ParquetNeo_ColumnTypes_ColumnType_1_ValueType" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.ValueType">
+  ValueType
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnTypes/ColumnTypeOfValue.cs/#L31"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>The .NET type the column type reads and writes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed Type ValueType { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="ParquetNeo_ColumnTypes_ColumnType_1_Configure_" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.Configure*"></a>
+
+  <h3 id="ParquetNeo_ColumnTypes_ColumnType_1_Configure_ParquetNeo_ColumnTypes_ColumnSettings_" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.Configure(ParquetNeo.ColumnTypes.ColumnSettings)">
+  Configure(ColumnSettings)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnTypes/ColumnTypeOfValue.cs/#L34"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>The type with the settings that suit it applied, or this type when there are none.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public virtual ColumnType&lt;TValue&gt; Configure(ColumnSettings settings)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>settings</code> <a class="xref" href="ParquetNeo.ColumnTypes.ColumnSettings.html">ColumnSettings</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.ColumnTypes.ColumnType-1.html">ColumnType</a>&lt;TValue&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnTypes_ColumnType_1_Read_" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.Read*"></a>
+
+  <h3 id="ParquetNeo_ColumnTypes_ColumnType_1_Read_ParquetNeo_ColumnReader_System_Span__0__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.Read(ParquetNeo.ColumnReader,System.Span{`0},System.Span{System.Int32},System.Span{System.Int32})">
+  Read(ColumnReader, Span&lt;TValue&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnTypes/ColumnTypeOfValue.cs/#L42"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads a batch of the column as values of this type; see <code>ColumnReader.ReadBatch</code> for what the arguments mean.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead Read(ColumnReader reader, Span&lt;TValue&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>reader</code> <a class="xref" href="ParquetNeo.ColumnReader.html">ColumnReader</a></dt>
+    <dd></dd>
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;TValue&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
+    <dd><p>The column cannot be read as this type.</p>
+</dd>
+    <dt><a class="xref" href="ParquetNeo.Exceptions.ValueConversionException.html">ValueConversionException</a></dt>
+    <dd><p>A stored value cannot be represented by the type.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="ParquetNeo_ColumnTypes_ColumnType_1_ReadCore_" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.ReadCore*"></a>
+
+  <h3 id="ParquetNeo_ColumnTypes_ColumnType_1_ReadCore_ParquetNeo_ColumnReader_System_Span__0__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.ReadCore(ParquetNeo.ColumnReader,System.Span{`0},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadCore(ColumnReader, Span&lt;TValue&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnTypes/ColumnTypeOfValue.cs/#L60"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Does <a class="xref" href="ParquetNeo.ColumnTypes.ColumnType-1.html#ParquetNeo_ColumnTypes_ColumnType_1_Read_ParquetNeo_ColumnReader_System_Span__0__System_Span_System_Int32__System_Span_System_Int32__">Read(ColumnReader, Span&lt;TValue&gt;, Span&lt;int&gt;, Span&lt;int&gt;)</a>, for a column that has been checked.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected abstract BatchRead ReadCore(ColumnReader reader, Span&lt;TValue&gt; values, Span&lt;int&gt; definitionLevels, Span&lt;int&gt; repetitionLevels)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>reader</code> <a class="xref" href="ParquetNeo.ColumnReader.html">ColumnReader</a></dt>
+    <dd></dd>
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;TValue&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnTypes_ColumnType_1_WithSettings_" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.WithSettings*"></a>
+
+  <h3 id="ParquetNeo_ColumnTypes_ColumnType_1_WithSettings_ParquetNeo_ColumnTypes_ColumnSettings_" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.WithSettings(ParquetNeo.ColumnTypes.ColumnSettings)">
+  WithSettings(ColumnSettings)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnTypes/ColumnTypeOfValue.cs/#L37"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>The type with the settings that suit it applied, or this type when there are none; the form of
+<a class="xref" href="ParquetNeo.ColumnTypes.ColumnType-1.html#ParquetNeo_ColumnTypes_ColumnType_1_Configure_ParquetNeo_ColumnTypes_ColumnSettings_">Configure(ColumnSettings)</a> for when the .NET type is only known at run time.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override sealed ColumnType WithSettings(ColumnSettings settings)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>settings</code> <a class="xref" href="ParquetNeo.ColumnTypes.ColumnSettings.html">ColumnSettings</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.ColumnTypes.ColumnType.html">ColumnType</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnTypes_ColumnType_1_Write_" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.Write*"></a>
+
+  <h3 id="ParquetNeo_ColumnTypes_ColumnType_1_Write_ParquetNeo_ColumnWriter_System_ReadOnlySpan__0__System_ReadOnlySpan_System_Int32__System_ReadOnlySpan_System_Int32__" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.Write(ParquetNeo.ColumnWriter,System.ReadOnlySpan{`0},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32})">
+  Write(ColumnWriter, ReadOnlySpan&lt;TValue&gt;, ReadOnlySpan&lt;int&gt;, ReadOnlySpan&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnTypes/ColumnTypeOfValue.cs/#L52"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Writes a batch of values of this type to the column; see <code>ColumnWriter.WriteBatch</code> for what the arguments mean.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Write(ColumnWriter writer, ReadOnlySpan&lt;TValue&gt; values, ReadOnlySpan&lt;int&gt; definitionLevels = default, ReadOnlySpan&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>writer</code> <a class="xref" href="ParquetNeo.ColumnWriter.html">ColumnWriter</a></dt>
+    <dd></dd>
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;TValue&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
+    <dd><p>The column cannot be written as this type.</p>
+</dd>
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></dt>
+    <dd><p>A value cannot be stored in the column.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="ParquetNeo_ColumnTypes_ColumnType_1_WriteCore_" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.WriteCore*"></a>
+
+  <h3 id="ParquetNeo_ColumnTypes_ColumnType_1_WriteCore_ParquetNeo_ColumnWriter_System_ReadOnlySpan__0__System_ReadOnlySpan_System_Int32__System_ReadOnlySpan_System_Int32__" data-uid="ParquetNeo.ColumnTypes.ColumnType`1.WriteCore(ParquetNeo.ColumnWriter,System.ReadOnlySpan{`0},System.ReadOnlySpan{System.Int32},System.ReadOnlySpan{System.Int32})">
+  WriteCore(ColumnWriter, ReadOnlySpan&lt;TValue&gt;, ReadOnlySpan&lt;int&gt;, ReadOnlySpan&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnTypes/ColumnTypeOfValue.cs/#L63"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Does <a class="xref" href="ParquetNeo.ColumnTypes.ColumnType-1.html#ParquetNeo_ColumnTypes_ColumnType_1_Write_ParquetNeo_ColumnWriter_System_ReadOnlySpan__0__System_ReadOnlySpan_System_Int32__System_ReadOnlySpan_System_Int32__">Write(ColumnWriter, ReadOnlySpan&lt;TValue&gt;, ReadOnlySpan&lt;int&gt;, ReadOnlySpan&lt;int&gt;)</a>, for a column that has been checked.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected abstract void WriteCore(ColumnWriter writer, ReadOnlySpan&lt;TValue&gt; values, ReadOnlySpan&lt;int&gt; definitionLevels, ReadOnlySpan&lt;int&gt; repetitionLevels)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>writer</code> <a class="xref" href="ParquetNeo.ColumnWriter.html">ColumnWriter</a></dt>
+    <dd></dd>
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;TValue&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnTypes/ColumnTypeOfValue.cs/#L15" class="edit-link">Edit this page</a>
+        </div>
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

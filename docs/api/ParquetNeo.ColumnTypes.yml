@@ -1,0 +1,83 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.ColumnTypes
+  commentId: N:ParquetNeo.ColumnTypes
+  id: ParquetNeo.ColumnTypes
+  children:
+  - ParquetNeo.ColumnTypes.ColumnSettings
+  - ParquetNeo.ColumnTypes.ColumnType
+  - ParquetNeo.ColumnTypes.ColumnTypeRegistry
+  - ParquetNeo.ColumnTypes.ColumnType`1
+  langs:
+  - csharp
+  - vb
+  name: ParquetNeo.ColumnTypes
+  nameWithType: ParquetNeo.ColumnTypes
+  fullName: ParquetNeo.ColumnTypes
+  type: Namespace
+  assemblies:
+  - ParquetNeo
+references:
+- uid: ParquetNeo.ColumnTypes.ColumnSettings
+  commentId: T:ParquetNeo.ColumnTypes.ColumnSettings
+  parent: ParquetNeo.ColumnTypes
+  href: ParquetNeo.ColumnTypes.ColumnSettings.html
+  name: ColumnSettings
+  nameWithType: ColumnSettings
+  fullName: ParquetNeo.ColumnTypes.ColumnSettings
+- uid: ParquetNeo.ColumnTypes.ColumnType
+  commentId: T:ParquetNeo.ColumnTypes.ColumnType
+  parent: ParquetNeo.ColumnTypes
+  href: ParquetNeo.ColumnTypes.ColumnType.html
+  name: ColumnType
+  nameWithType: ColumnType
+  fullName: ParquetNeo.ColumnTypes.ColumnType
+- uid: ParquetNeo.ColumnTypes.ColumnType`1
+  commentId: T:ParquetNeo.ColumnTypes.ColumnType`1
+  parent: ParquetNeo.ColumnTypes
+  href: ParquetNeo.ColumnTypes.ColumnType-1.html
+  name: ColumnType<TValue>
+  nameWithType: ColumnType<TValue>
+  fullName: ParquetNeo.ColumnTypes.ColumnType<TValue>
+  nameWithType.vb: ColumnType(Of TValue)
+  fullName.vb: ParquetNeo.ColumnTypes.ColumnType(Of TValue)
+  name.vb: ColumnType(Of TValue)
+  spec.csharp:
+  - uid: ParquetNeo.ColumnTypes.ColumnType`1
+    name: ColumnType
+    href: ParquetNeo.ColumnTypes.ColumnType-1.html
+  - name: <
+  - name: TValue
+  - name: '>'
+  spec.vb:
+  - uid: ParquetNeo.ColumnTypes.ColumnType`1
+    name: ColumnType
+    href: ParquetNeo.ColumnTypes.ColumnType-1.html
+  - name: (
+  - name: Of
+  - name: " "
+  - name: TValue
+  - name: )
+- uid: ParquetNeo.ColumnTypes.ColumnTypeRegistry
+  commentId: T:ParquetNeo.ColumnTypes.ColumnTypeRegistry
+  href: ParquetNeo.ColumnTypes.ColumnTypeRegistry.html
+  name: ColumnTypeRegistry
+  nameWithType: ColumnTypeRegistry
+  fullName: ParquetNeo.ColumnTypes.ColumnTypeRegistry
+- uid: ParquetNeo.ColumnTypes
+  commentId: N:ParquetNeo.ColumnTypes
+  name: ParquetNeo.ColumnTypes
+  nameWithType: ParquetNeo.ColumnTypes
+  fullName: ParquetNeo.ColumnTypes
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.ColumnTypes
+    name: ColumnTypes
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.ColumnTypes
+    name: ColumnTypes

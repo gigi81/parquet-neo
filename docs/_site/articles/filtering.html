@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Skipping what is not needed | ParquetNeo </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Skipping what is not needed | ParquetNeo ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/gigi81/parquet-neo/blob/main/docs/articles/filtering.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="ParquetNeo">
+            ParquetNeo
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="skipping-what-is-not-needed">Skipping what is not needed</h1>
+
+<p>The fastest way to read a big file is to not read most of it. A file has several levels of information that tell a reader what a part
+of it holds, and a <code>ParquetFilter</code> is checked against them:</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>What it records</th>
+<th>Written by default</th>
+<th>Rules out</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Row group statistics</td>
+<td>the smallest and largest value of each column of the row group, and how many are null</td>
+<td>yes</td>
+<td>whole row groups</td>
+</tr>
+<tr>
+<td>Page index</td>
+<td>the same for every page of a column, and where the page is</td>
+<td>no (<code>WritePageIndex</code>)</td>
+<td>pages inside a row group</td>
+</tr>
+<tr>
+<td>Bloom filters</td>
+<td>whether a value is <em>certainly not</em> in the column of a row group</td>
+<td>no (<code>ColumnBloomFilters</code>)</td>
+<td>row groups, for equality conditions</td>
+</tr>
+<tr>
+<td>Page checksums</td>
+<td>a CRC-32 of every page</td>
+<td>no (<code>WritePageChecksums</code>)</td>
+<td>nothing: they detect damaged pages</td>
+</tr>
+</tbody>
+</table>
+<h2 id="filters">Filters</h2>
+<pre><code class="lang-csharp">using ParquetNeo;
+
+var recent = ParquetFilter.Column(&quot;Born&quot;).GreaterThanOrEqual(new DateOnly(1900, 1, 1))
+           &amp; ParquetFilter.Column(&quot;Name&quot;).IsNotNull();
+</code></pre>
+<p>A filter is made of comparisons (<code>Equal</code>, <code>NotEqual</code>, <code>GreaterThan</code>, ..., <code>Between</code>, <code>In</code>), null tests, and <code>And</code> (<code>&amp;</code>), <code>Or</code>
+(<code>|</code>) and <code>Not</code> (<code>!</code>).</p>
+<div class="IMPORTANT">
+<h5>Important</h5>
+<p>A filter only <strong>prunes</strong>. It rules out what cannot match, and the rows of what it keeps are all returned, including rows that do
+not satisfy it. Apply the condition to the rows as well when the result must be exact. (<code>ParquetNeo.Linq</code> does that for you.)</p>
+</div>
+<h2 id="using-them">Using them</h2>
+<pre><code class="lang-csharp">var rows = ParquetSerializer.Deserialize&lt;Person&gt;(stream, new ParquetDeserializerOptions { RowGroupFilter = recent });
+</code></pre>
+<p><code>ParquetDataReaderOptions.RowGroupFilter</code> is the same for the ADO.NET reader, and <code>ParquetFileReader.GetMatchingRowGroups(filter)</code>
+tells you which row groups of a file may match.</p>
+<p>The row groups that are ruled out are not read. The asynchronous methods of <code>ParquetSerializer</code> do not even fetch their bytes, but
+they only use the statistics: they do not fetch the page index or the bloom filters.</p>
+<h2 id="the-page-index">The page index</h2>
+<p>A row group is made of many pages, and its statistics say nothing of which of them hold a value. With a page index, a filter skips
+pages as well as row groups:</p>
+<pre><code class="lang-csharp">var options = new ParquetSerializerOptions { Writer = new ParquetWriterOptions { WritePageIndex = true } };
+</code></pre>
+<p>It pays when the values of a column are in some order (a time, an id that grows), which makes the bounds of a page tight. Reading
+100 ids out of 2 million in one row group took 313 ms with the statistics of the row group only and 39 ms with the page index
+(158 and 48 ms with gzip). The index took 2.5 KB of a 63 MB file, and writing took 8 to 10% longer.</p>
+<p>At the low level, <code>RowGroupReader.SelectRows(filter, columns)</code> returns the rows to read as a <code>RowSelection</code>, and
+<code>OpenColumn(index, selection)</code> reads only those rows: the pages with none of them are not read.</p>
+<h2 id="bloom-filters">Bloom filters</h2>
+<p>Statistics rule out little when values are spread widely (ids, names, e-mail addresses): every row group has a smallest and a
+largest value that bracket what you look for. A bloom filter says that a value is certainly not in a row group, or that it may be
+(with a small chance of a wrong &quot;may be&quot;, the false positive rate).</p>
+<pre><code class="lang-csharp">var written = new ParquetSerializerOptions
+{
+    Writer = new ParquetWriterOptions
+    {
+        ColumnBloomFilters = new Dictionary&lt;string, BloomFilterSettings&gt; { [&quot;Email&quot;] = new() { FalsePositiveRate = 0.01 } },
+    },
+};
+
+var found = ParquetSerializer.Deserialize&lt;Person&gt;(stream, new ParquetDeserializerOptions
+{
+    RowGroupFilter = ParquetFilter.Column(&quot;Email&quot;).Equal(&quot;ada@example.com&quot;),
+});
+</code></pre>
+<p>A filter takes room in the file: about a byte for every few different values. Writing the column takes several times as long when
+its pages are not compressed, and a little longer when they are. Bloom filters in files written by other tools are read too.</p>
+<h2 id="page-checksums">Page checksums</h2>
+<pre><code class="lang-csharp">var written = new ParquetWriterOptions { WritePageChecksums = true };
+var read = new ParquetReaderOptions { VerifyPageChecksums = true };   // a damaged page throws CorruptColumnException
+</code></pre>
+<p>Computing the checksum costs about a second per GB of page bytes.</p>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/gigi81/parquet-neo/blob/main/docs/articles/filtering.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,63 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Data
+  commentId: N:ParquetNeo.Data
+  id: ParquetNeo.Data
+  children:
+  - ParquetNeo.Data.ParquetDataReader
+  - ParquetNeo.Data.ParquetDataReaderOptions
+  - ParquetNeo.Data.ParquetDataWriter
+  - ParquetNeo.Data.ParquetDataWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: ParquetNeo.Data
+  nameWithType: ParquetNeo.Data
+  fullName: ParquetNeo.Data
+  type: Namespace
+  assemblies:
+  - ParquetNeo
+references:
+- uid: ParquetNeo.Data.ParquetDataReader
+  commentId: T:ParquetNeo.Data.ParquetDataReader
+  href: ParquetNeo.Data.ParquetDataReader.html
+  name: ParquetDataReader
+  nameWithType: ParquetDataReader
+  fullName: ParquetNeo.Data.ParquetDataReader
+- uid: ParquetNeo.Data.ParquetDataReaderOptions
+  commentId: T:ParquetNeo.Data.ParquetDataReaderOptions
+  parent: ParquetNeo.Data
+  href: ParquetNeo.Data.ParquetDataReaderOptions.html
+  name: ParquetDataReaderOptions
+  nameWithType: ParquetDataReaderOptions
+  fullName: ParquetNeo.Data.ParquetDataReaderOptions
+- uid: ParquetNeo.Data.ParquetDataWriter
+  commentId: T:ParquetNeo.Data.ParquetDataWriter
+  href: ParquetNeo.Data.ParquetDataWriter.html
+  name: ParquetDataWriter
+  nameWithType: ParquetDataWriter
+  fullName: ParquetNeo.Data.ParquetDataWriter
+- uid: ParquetNeo.Data.ParquetDataWriterOptions
+  commentId: T:ParquetNeo.Data.ParquetDataWriterOptions
+  parent: ParquetNeo.Data
+  href: ParquetNeo.Data.ParquetDataWriterOptions.html
+  name: ParquetDataWriterOptions
+  nameWithType: ParquetDataWriterOptions
+  fullName: ParquetNeo.Data.ParquetDataWriterOptions
+- uid: ParquetNeo.Data
+  commentId: N:ParquetNeo.Data
+  name: ParquetNeo.Data
+  nameWithType: ParquetNeo.Data
+  fullName: ParquetNeo.Data
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Data
+    name: Data
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Data
+    name: Data

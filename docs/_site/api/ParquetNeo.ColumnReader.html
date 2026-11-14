@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class ColumnReader | ParquetNeo </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class ColumnReader | ParquetNeo ">
+      
+      <meta name="description" content="Reads the values of one column chunk, a batch at a time. Obtain it from  and dispose it when done, which returns its buffers to the pool.">
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/gigi81/parquet-neo/new/main/apiSpec/new?filename=ParquetNeo_ColumnReader.md&amp;value=---%0Auid%3A%20ParquetNeo.ColumnReader%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="ParquetNeo">
+            ParquetNeo
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="ParquetNeo.ColumnReader">
+
+
+
+  <h1 id="ParquetNeo_ColumnReader" data-uid="ParquetNeo.ColumnReader" class="text-break">
+Class ColumnReader  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.Selection.cs/#L8"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="ParquetNeo.html">ParquetNeo</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>ParquetNeo.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Reads the values of one column chunk, a batch at a time. Obtain it from <a class="xref" href="ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_OpenColumn_System_Int32_">OpenColumn(int)</a>
+and dispose it when done, which returns its buffers to the pool.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class ColumnReader : IDisposable</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">ColumnReader</span></div>
+    </dd>
+  </dl>
+
+  <dl class="typelist implements">
+    <dt>Implements</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    </dd>
+  </dl>
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+  <h2 id="ParquetNeo_ColumnReader_remarks">Remarks</h2>
+  <div class="markdown level0 remarks"><p>
+A required column fills <code>values</code> and reads <code>values.Length</code> rows. An optional column also takes a
+<code>definitionLevels</code> span, whose length is the number of entries requested: it receives <code>0</code> for a null and
+<code>1</code> for a value, and <code>values</code> receives only the non-null values, packed at the start. Because any
+row may hold a value, <code>values</code> needs room for as many entries as there are rows requested. The result says
+how many rows and values were read; 0 rows means the chunk is exhausted.
+</p>
+<p>Pages are read one at a time, so memory stays bounded by the largest page. Not thread safe.</p>
+</div>
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="ParquetNeo_ColumnReader_Column_" data-uid="ParquetNeo.ColumnReader.Column*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_Column" data-uid="ParquetNeo.ColumnReader.Column">
+  Column
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.cs/#L110"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PrimitiveNode Column { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.Schema.PrimitiveNode.html">PrimitiveNode</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_EntriesRead_" data-uid="ParquetNeo.ColumnReader.EntriesRead*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_EntriesRead" data-uid="ParquetNeo.ColumnReader.EntriesRead">
+  EntriesRead
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.cs/#L119"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>The number of level entries read so far.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long EntriesRead { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_EntryCount_" data-uid="ParquetNeo.ColumnReader.EntryCount*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_EntryCount" data-uid="ParquetNeo.ColumnReader.EntryCount">
+  EntryCount
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.cs/#L116"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>The number of level entries in this column chunk, as recorded in its metadata: one per value, null, empty list and
+so on. For a column that is not repeated this is the number of rows.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long EntryCount { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="ParquetNeo_ColumnReader_Dispose_" data-uid="ParquetNeo.ColumnReader.Dispose*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_Dispose" data-uid="ParquetNeo.ColumnReader.Dispose">
+  Dispose()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.cs/#L315"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_Boolean__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.Boolean},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;bool&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.cs/#L133"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;bool&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_Byte__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.Byte},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;byte&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.LogicalTypes.cs/#L29"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads a UINT_8 column.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;byte&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_DateOnly__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.DateOnly},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;DateOnly&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.LogicalTypes.cs/#L49"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads a DATE column.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;DateOnly&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.dateonly">DateOnly</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_DateTimeOffset__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.DateTimeOffset},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;DateTimeOffset&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.LogicalTypes.cs/#L65"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads a TIMESTAMP column in any unit as <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a> at offset zero. An INT96 column, the deprecated
+timestamp of Impala, Hive and older Spark, reads the same way, as the clock reading it holds.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;DateTimeOffset&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_DateTime__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.DateTime},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;DateTime&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.LogicalTypes.cs/#L60"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads a TIMESTAMP column in any unit as <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.datetime">DateTime</a>: UTC when the column is adjusted to UTC, otherwise
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.datetimekind#system-datetimekind-unspecified">Unspecified</a>. A moment outside the years 1 to 9999 is a <a class="xref" href="ParquetNeo.Exceptions.ValueConversionException.html">ValueConversionException</a>.
+An INT96 column, the deprecated timestamp of Impala, Hive and older Spark, is read too: it has no time zone, so its values
+are <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.datetimekind#system-datetimekind-unspecified">Unspecified</a>. INT96 columns can be read but not written.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;DateTime&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.datetime">DateTime</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_Decimal__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.Decimal},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;decimal&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.LogicalTypes.cs/#L80"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads a DECIMAL column of any physical type (INT32, INT64, FIXED_LEN_BYTE_ARRAY or BYTE_ARRAY) as <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.decimal">decimal</a>.
+A <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.decimal">decimal</a> holds 96 bits and a scale of up to 28, so a column with a larger scale is an
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a> and a larger stored value is a <a class="xref" href="ParquetNeo.Exceptions.ValueConversionException.html">ValueConversionException</a>. A column
+of BYTE_ARRAY values may return fewer values than requested, as <a class="xref" href="ParquetNeo.ColumnReader.html#ParquetNeo_ColumnReader_ReadByteArrays_System_Span_System_ReadOnlyMemory_System_Byte___System_Span_System_Int32__System_Span_System_Int32__">ReadByteArrays(Span&lt;ReadOnlyMemory&lt;byte&gt;&gt;, Span&lt;int&gt;, Span&lt;int&gt;)</a> does.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;decimal&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.decimal">decimal</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_Double__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.Double},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;double&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.cs/#L130"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;double&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">double</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_Guid__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.Guid},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;Guid&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.LogicalTypes.cs/#L69"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads a UUID column.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;Guid&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid">Guid</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_Half__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.Half},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;Half&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.LogicalTypes.cs/#L73"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads a FLOAT16 column.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;Half&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.half">Half</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_Int16__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.Int16},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;short&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.LogicalTypes.cs/#L33"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads an INT_16 column.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;short&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int16">short</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_Int32__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.Int32},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;int&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.cs/#L121"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;int&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_Int64__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.Int64},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;long&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.cs/#L124"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;long&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_SByte__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.SByte},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;sbyte&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.LogicalTypes.cs/#L25"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads an INT_8 column.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;sbyte&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.sbyte">sbyte</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_Single__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.Single},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;float&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.cs/#L127"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;float&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.single">float</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_TimeOnly__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.TimeOnly},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;TimeOnly&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.LogicalTypes.cs/#L53"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads a TIME column in any unit. <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeonly">TimeOnly</a> counts 100 ns ticks, so nanoseconds below that are dropped.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;TimeOnly&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeonly">TimeOnly</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_UInt16__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.UInt16},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;ushort&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.LogicalTypes.cs/#L37"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads a UINT_16 column.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;ushort&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint16">ushort</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_UInt32__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.UInt32},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;uint&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.LogicalTypes.cs/#L41"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads a UINT_32 column.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;uint&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch_System_Span_System_UInt64__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch(System.Span{System.UInt64},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch(Span&lt;ulong&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.LogicalTypes.cs/#L45"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads a UINT_64 column.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch(Span&lt;ulong&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint64">ulong</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadBatch_" data-uid="ParquetNeo.ColumnReader.ReadBatch*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadBatch__1_ParquetNeo_ColumnTypes_ColumnType___0__System_Span___0__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadBatch``1(ParquetNeo.ColumnTypes.ColumnType{``0},System.Span{``0},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadBatch&lt;TValue&gt;(ColumnType&lt;TValue&gt;, Span&lt;TValue&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.LogicalTypes.cs/#L18"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads a batch with <code class="paramref">type</code>, which converts the column's values to <code class="typeparamref">TValue</code>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadBatch&lt;TValue&gt;(ColumnType&lt;TValue&gt; type, Span&lt;TValue&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>type</code> <a class="xref" href="ParquetNeo.ColumnTypes.ColumnType-1.html">ColumnType</a>&lt;TValue&gt;</dt>
+    <dd></dd>
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;TValue&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TValue</code></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
+    <dd><p>The column does not fit the type.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadByteArrays_" data-uid="ParquetNeo.ColumnReader.ReadByteArrays*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadByteArrays_System_Span_System_ReadOnlyMemory_System_Byte___System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadByteArrays(System.Span{System.ReadOnlyMemory{System.Byte}},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadByteArrays(Span&lt;ReadOnlyMemory&lt;byte&gt;&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.cs/#L220"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadByteArrays(Span&lt;ReadOnlyMemory&lt;byte&gt;&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadFixedLengthByteArrays_" data-uid="ParquetNeo.ColumnReader.ReadFixedLengthByteArrays*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadFixedLengthByteArrays_System_Span_System_Byte__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadFixedLengthByteArrays(System.Span{System.Byte},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadFixedLengthByteArrays(Span&lt;byte&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.cs/#L272"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads FIXED_LEN_BYTE_ARRAY values, copied back to back; <code class="paramref">values</code> holds whole entries of the column's type length.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadFixedLengthByteArrays(Span&lt;byte&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="ParquetNeo_ColumnReader_ReadStrings_" data-uid="ParquetNeo.ColumnReader.ReadStrings*"></a>
+
+  <h3 id="ParquetNeo_ColumnReader_ReadStrings_System_Span_System_String__System_Span_System_Int32__System_Span_System_Int32__" data-uid="ParquetNeo.ColumnReader.ReadStrings(System.Span{System.String},System.Span{System.Int32},System.Span{System.Int32})">
+  ReadStrings(Span&lt;string&gt;, Span&lt;int&gt;, Span&lt;int&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.LogicalTypes.cs/#L88"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads a BYTE_ARRAY column that is annotated STRING, ENUM or JSON, or not annotated, as UTF-8 text. Bytes that are not
+valid UTF-8 are a <a class="xref" href="ParquetNeo.Exceptions.ValueConversionException.html">ValueConversionException</a>. Like <a class="xref" href="ParquetNeo.ColumnReader.html#ParquetNeo_ColumnReader_ReadByteArrays_System_Span_System_ReadOnlyMemory_System_Byte___System_Span_System_Int32__System_Span_System_Int32__">ReadByteArrays(Span&lt;ReadOnlyMemory&lt;byte&gt;&gt;, Span&lt;int&gt;, Span&lt;int&gt;)</a>, a batch ends at the end of a
+page and may return fewer values than requested.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BatchRead ReadStrings(Span&lt;string&gt; values, Span&lt;int&gt; definitionLevels = default, Span&lt;int&gt; repetitionLevels = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>values</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>definitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+    <dt><code>repetitionLevels</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="ParquetNeo.BatchRead.html">BatchRead</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/gigi81/parquet-neo/blob/docfx/src/ParquetNeo/ColumnReader.Selection.cs/#L8" class="edit-link">Edit this page</a>
+        </div>
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

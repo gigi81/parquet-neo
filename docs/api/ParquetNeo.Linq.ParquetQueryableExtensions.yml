@@ -1,0 +1,1490 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions
+  commentId: T:ParquetNeo.Linq.ParquetQueryableExtensions
+  id: ParquetQueryableExtensions
+  parent: ParquetNeo.Linq
+  children:
+  - ParquetNeo.Linq.ParquetQueryableExtensions.AnyAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  - ParquetNeo.Linq.ParquetQueryableExtensions.AnyAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  - ParquetNeo.Linq.ParquetQueryableExtensions.AsAsyncEnumerable``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  - ParquetNeo.Linq.ParquetQueryableExtensions.CountAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  - ParquetNeo.Linq.ParquetQueryableExtensions.CountAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  - ParquetNeo.Linq.ParquetQueryableExtensions.Explain``1(System.Linq.IQueryable{``0})
+  - ParquetNeo.Linq.ParquetQueryableExtensions.FirstAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  - ParquetNeo.Linq.ParquetQueryableExtensions.FirstAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  - ParquetNeo.Linq.ParquetQueryableExtensions.FirstOrDefaultAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  - ParquetNeo.Linq.ParquetQueryableExtensions.FirstOrDefaultAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  - ParquetNeo.Linq.ParquetQueryableExtensions.ToArrayAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  - ParquetNeo.Linq.ParquetQueryableExtensions.ToListAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  langs:
+  - csharp
+  - vb
+  name: ParquetQueryableExtensions
+  nameWithType: ParquetQueryableExtensions
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ParquetQueryableExtensions
+    path: ../src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+    startLine: 7
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: Operations on the queries of a <xref href="ParquetNeo.Linq.ParquetDataset%601" data-throw-if-not-resolved="false"></xref> that LINQ does not have.
+  example: []
+  syntax:
+    content: public static class ParquetQueryableExtensions
+    content.vb: Public Module ParquetQueryableExtensions
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.Explain``1(System.Linq.IQueryable{``0})
+  commentId: M:ParquetNeo.Linq.ParquetQueryableExtensions.Explain``1(System.Linq.IQueryable{``0})
+  id: Explain``1(System.Linq.IQueryable{``0})
+  isExtensionMethod: true
+  parent: ParquetNeo.Linq.ParquetQueryableExtensions
+  langs:
+  - csharp
+  - vb
+  name: Explain<T>(IQueryable<T>)
+  nameWithType: ParquetQueryableExtensions.Explain<T>(IQueryable<T>)
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.Explain<T>(System.Linq.IQueryable<T>)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Explain
+    path: ../src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+    startLine: 14
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: >-
+    What the query reads: how many files and row groups the statistics of their columns rule out, and which columns are read.
+
+    Only the footers are read to tell.
+  example: []
+  syntax:
+    content: public static ParquetQueryPlan Explain<T>(this IQueryable<T> query)
+    parameters:
+    - id: query
+      type: System.Linq.IQueryable{{T}}
+    typeParameters:
+    - id: T
+    return:
+      type: ParquetNeo.Linq.ParquetQueryPlan
+    content.vb: Public Shared Function Explain(Of T)(query As IQueryable(Of T)) As ParquetQueryPlan
+  overload: ParquetNeo.Linq.ParquetQueryableExtensions.Explain*
+  exceptions:
+  - type: System.ArgumentException
+    commentId: T:System.ArgumentException
+    description: The query is not one of a <xref href="ParquetNeo.Linq.ParquetDataset%601" data-throw-if-not-resolved="false"></xref>.
+  nameWithType.vb: ParquetQueryableExtensions.Explain(Of T)(IQueryable(Of T))
+  fullName.vb: ParquetNeo.Linq.ParquetQueryableExtensions.Explain(Of T)(System.Linq.IQueryable(Of T))
+  name.vb: Explain(Of T)(IQueryable(Of T))
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.AsAsyncEnumerable``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  commentId: M:ParquetNeo.Linq.ParquetQueryableExtensions.AsAsyncEnumerable``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  id: AsAsyncEnumerable``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  isExtensionMethod: true
+  parent: ParquetNeo.Linq.ParquetQueryableExtensions
+  langs:
+  - csharp
+  - vb
+  name: AsAsyncEnumerable<T>(IQueryable<T>, CancellationToken)
+  nameWithType: ParquetQueryableExtensions.AsAsyncEnumerable<T>(IQueryable<T>, CancellationToken)
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.AsAsyncEnumerable<T>(System.Linq.IQueryable<T>, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: AsAsyncEnumerable
+    path: ../src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+    startLine: 26
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: >-
+    The rows of the query, without blocking the caller: the query is run on another thread, which waits when the caller is slow to
+
+    take the rows, so that no more than a few are held back.
+  example: []
+  syntax:
+    content: public static IAsyncEnumerable<T> AsAsyncEnumerable<T>(this IQueryable<T> query, CancellationToken cancellationToken = default)
+    parameters:
+    - id: query
+      type: System.Linq.IQueryable{{T}}
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+    typeParameters:
+    - id: T
+    return:
+      type: System.Collections.Generic.IAsyncEnumerable{{T}}
+    content.vb: Public Shared Function AsAsyncEnumerable(Of T)(query As IQueryable(Of T), cancellationToken As CancellationToken = Nothing) As IAsyncEnumerable(Of T)
+  overload: ParquetNeo.Linq.ParquetQueryableExtensions.AsAsyncEnumerable*
+  nameWithType.vb: ParquetQueryableExtensions.AsAsyncEnumerable(Of T)(IQueryable(Of T), CancellationToken)
+  fullName.vb: ParquetNeo.Linq.ParquetQueryableExtensions.AsAsyncEnumerable(Of T)(System.Linq.IQueryable(Of T), System.Threading.CancellationToken)
+  name.vb: AsAsyncEnumerable(Of T)(IQueryable(Of T), CancellationToken)
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.ToListAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  commentId: M:ParquetNeo.Linq.ParquetQueryableExtensions.ToListAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  id: ToListAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  isExtensionMethod: true
+  parent: ParquetNeo.Linq.ParquetQueryableExtensions
+  langs:
+  - csharp
+  - vb
+  name: ToListAsync<T>(IQueryable<T>, CancellationToken)
+  nameWithType: ParquetQueryableExtensions.ToListAsync<T>(IQueryable<T>, CancellationToken)
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.ToListAsync<T>(System.Linq.IQueryable<T>, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ToListAsync
+    path: ../src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+    startLine: 70
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: The rows of the query in a list, without blocking the caller.
+  example: []
+  syntax:
+    content: public static Task<List<T>> ToListAsync<T>(this IQueryable<T> query, CancellationToken cancellationToken = default)
+    parameters:
+    - id: query
+      type: System.Linq.IQueryable{{T}}
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+    typeParameters:
+    - id: T
+    return:
+      type: System.Threading.Tasks.Task{System.Collections.Generic.List{{T}}}
+    content.vb: Public Shared Function ToListAsync(Of T)(query As IQueryable(Of T), cancellationToken As CancellationToken = Nothing) As Task(Of List(Of T))
+  overload: ParquetNeo.Linq.ParquetQueryableExtensions.ToListAsync*
+  nameWithType.vb: ParquetQueryableExtensions.ToListAsync(Of T)(IQueryable(Of T), CancellationToken)
+  fullName.vb: ParquetNeo.Linq.ParquetQueryableExtensions.ToListAsync(Of T)(System.Linq.IQueryable(Of T), System.Threading.CancellationToken)
+  name.vb: ToListAsync(Of T)(IQueryable(Of T), CancellationToken)
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.ToArrayAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  commentId: M:ParquetNeo.Linq.ParquetQueryableExtensions.ToArrayAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  id: ToArrayAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  isExtensionMethod: true
+  parent: ParquetNeo.Linq.ParquetQueryableExtensions
+  langs:
+  - csharp
+  - vb
+  name: ToArrayAsync<T>(IQueryable<T>, CancellationToken)
+  nameWithType: ParquetQueryableExtensions.ToArrayAsync<T>(IQueryable<T>, CancellationToken)
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.ToArrayAsync<T>(System.Linq.IQueryable<T>, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ToArrayAsync
+    path: ../src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+    startLine: 82
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: The rows of the query in an array, without blocking the caller.
+  example: []
+  syntax:
+    content: public static Task<T[]> ToArrayAsync<T>(this IQueryable<T> query, CancellationToken cancellationToken = default)
+    parameters:
+    - id: query
+      type: System.Linq.IQueryable{{T}}
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+    typeParameters:
+    - id: T
+    return:
+      type: System.Threading.Tasks.Task{{T}[]}
+    content.vb: Public Shared Function ToArrayAsync(Of T)(query As IQueryable(Of T), cancellationToken As CancellationToken = Nothing) As Task(Of T())
+  overload: ParquetNeo.Linq.ParquetQueryableExtensions.ToArrayAsync*
+  nameWithType.vb: ParquetQueryableExtensions.ToArrayAsync(Of T)(IQueryable(Of T), CancellationToken)
+  fullName.vb: ParquetNeo.Linq.ParquetQueryableExtensions.ToArrayAsync(Of T)(System.Linq.IQueryable(Of T), System.Threading.CancellationToken)
+  name.vb: ToArrayAsync(Of T)(IQueryable(Of T), CancellationToken)
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.FirstAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  commentId: M:ParquetNeo.Linq.ParquetQueryableExtensions.FirstAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  id: FirstAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  isExtensionMethod: true
+  parent: ParquetNeo.Linq.ParquetQueryableExtensions
+  langs:
+  - csharp
+  - vb
+  name: FirstAsync<T>(IQueryable<T>, CancellationToken)
+  nameWithType: ParquetQueryableExtensions.FirstAsync<T>(IQueryable<T>, CancellationToken)
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.FirstAsync<T>(System.Linq.IQueryable<T>, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: FirstAsync
+    path: ../src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+    startLine: 87
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: The first row of the query, without blocking the caller.
+  example: []
+  syntax:
+    content: public static Task<T> FirstAsync<T>(this IQueryable<T> query, CancellationToken cancellationToken = default)
+    parameters:
+    - id: query
+      type: System.Linq.IQueryable{{T}}
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+    typeParameters:
+    - id: T
+    return:
+      type: System.Threading.Tasks.Task{{T}}
+    content.vb: Public Shared Function FirstAsync(Of T)(query As IQueryable(Of T), cancellationToken As CancellationToken = Nothing) As Task(Of T)
+  overload: ParquetNeo.Linq.ParquetQueryableExtensions.FirstAsync*
+  exceptions:
+  - type: System.InvalidOperationException
+    commentId: T:System.InvalidOperationException
+    description: The query has no rows.
+  nameWithType.vb: ParquetQueryableExtensions.FirstAsync(Of T)(IQueryable(Of T), CancellationToken)
+  fullName.vb: ParquetNeo.Linq.ParquetQueryableExtensions.FirstAsync(Of T)(System.Linq.IQueryable(Of T), System.Threading.CancellationToken)
+  name.vb: FirstAsync(Of T)(IQueryable(Of T), CancellationToken)
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.FirstAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  commentId: M:ParquetNeo.Linq.ParquetQueryableExtensions.FirstAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  id: FirstAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  isExtensionMethod: true
+  parent: ParquetNeo.Linq.ParquetQueryableExtensions
+  langs:
+  - csharp
+  - vb
+  name: FirstAsync<T>(IQueryable<T>, Expression<Func<T, bool>>, CancellationToken)
+  nameWithType: ParquetQueryableExtensions.FirstAsync<T>(IQueryable<T>, Expression<Func<T, bool>>, CancellationToken)
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.FirstAsync<T>(System.Linq.IQueryable<T>, System.Linq.Expressions.Expression<System.Func<T, bool>>, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: FirstAsync
+    path: ../src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+    startLine: 91
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: The first row of the query that satisfies the predicate, without blocking the caller.
+  example: []
+  syntax:
+    content: public static Task<T> FirstAsync<T>(this IQueryable<T> query, Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    parameters:
+    - id: query
+      type: System.Linq.IQueryable{{T}}
+    - id: predicate
+      type: System.Linq.Expressions.Expression{System.Func{{T},System.Boolean}}
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+    typeParameters:
+    - id: T
+    return:
+      type: System.Threading.Tasks.Task{{T}}
+    content.vb: Public Shared Function FirstAsync(Of T)(query As IQueryable(Of T), predicate As Expression(Of Func(Of T, Boolean)), cancellationToken As CancellationToken = Nothing) As Task(Of T)
+  overload: ParquetNeo.Linq.ParquetQueryableExtensions.FirstAsync*
+  exceptions:
+  - type: System.InvalidOperationException
+    commentId: T:System.InvalidOperationException
+    description: No row does.
+  nameWithType.vb: ParquetQueryableExtensions.FirstAsync(Of T)(IQueryable(Of T), Expression(Of Func(Of T, Boolean)), CancellationToken)
+  fullName.vb: ParquetNeo.Linq.ParquetQueryableExtensions.FirstAsync(Of T)(System.Linq.IQueryable(Of T), System.Linq.Expressions.Expression(Of System.Func(Of T, Boolean)), System.Threading.CancellationToken)
+  name.vb: FirstAsync(Of T)(IQueryable(Of T), Expression(Of Func(Of T, Boolean)), CancellationToken)
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.FirstOrDefaultAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  commentId: M:ParquetNeo.Linq.ParquetQueryableExtensions.FirstOrDefaultAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  id: FirstOrDefaultAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  isExtensionMethod: true
+  parent: ParquetNeo.Linq.ParquetQueryableExtensions
+  langs:
+  - csharp
+  - vb
+  name: FirstOrDefaultAsync<T>(IQueryable<T>, CancellationToken)
+  nameWithType: ParquetQueryableExtensions.FirstOrDefaultAsync<T>(IQueryable<T>, CancellationToken)
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.FirstOrDefaultAsync<T>(System.Linq.IQueryable<T>, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: FirstOrDefaultAsync
+    path: ../src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+    startLine: 94
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: The first row of the query, or the default of the type when there is none, without blocking the caller.
+  example: []
+  syntax:
+    content: public static Task<T?> FirstOrDefaultAsync<T>(this IQueryable<T> query, CancellationToken cancellationToken = default)
+    parameters:
+    - id: query
+      type: System.Linq.IQueryable{{T}}
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+    typeParameters:
+    - id: T
+    return:
+      type: System.Threading.Tasks.Task{{T}}
+    content.vb: Public Shared Function FirstOrDefaultAsync(Of T)(query As IQueryable(Of T), cancellationToken As CancellationToken = Nothing) As Task(Of T)
+  overload: ParquetNeo.Linq.ParquetQueryableExtensions.FirstOrDefaultAsync*
+  nameWithType.vb: ParquetQueryableExtensions.FirstOrDefaultAsync(Of T)(IQueryable(Of T), CancellationToken)
+  fullName.vb: ParquetNeo.Linq.ParquetQueryableExtensions.FirstOrDefaultAsync(Of T)(System.Linq.IQueryable(Of T), System.Threading.CancellationToken)
+  name.vb: FirstOrDefaultAsync(Of T)(IQueryable(Of T), CancellationToken)
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.FirstOrDefaultAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  commentId: M:ParquetNeo.Linq.ParquetQueryableExtensions.FirstOrDefaultAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  id: FirstOrDefaultAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  isExtensionMethod: true
+  parent: ParquetNeo.Linq.ParquetQueryableExtensions
+  langs:
+  - csharp
+  - vb
+  name: FirstOrDefaultAsync<T>(IQueryable<T>, Expression<Func<T, bool>>, CancellationToken)
+  nameWithType: ParquetQueryableExtensions.FirstOrDefaultAsync<T>(IQueryable<T>, Expression<Func<T, bool>>, CancellationToken)
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.FirstOrDefaultAsync<T>(System.Linq.IQueryable<T>, System.Linq.Expressions.Expression<System.Func<T, bool>>, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: FirstOrDefaultAsync
+    path: ../src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+    startLine: 97
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: The first row of the query that satisfies the predicate, or the default of the type when none does, without blocking the caller.
+  example: []
+  syntax:
+    content: public static Task<T?> FirstOrDefaultAsync<T>(this IQueryable<T> query, Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    parameters:
+    - id: query
+      type: System.Linq.IQueryable{{T}}
+    - id: predicate
+      type: System.Linq.Expressions.Expression{System.Func{{T},System.Boolean}}
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+    typeParameters:
+    - id: T
+    return:
+      type: System.Threading.Tasks.Task{{T}}
+    content.vb: Public Shared Function FirstOrDefaultAsync(Of T)(query As IQueryable(Of T), predicate As Expression(Of Func(Of T, Boolean)), cancellationToken As CancellationToken = Nothing) As Task(Of T)
+  overload: ParquetNeo.Linq.ParquetQueryableExtensions.FirstOrDefaultAsync*
+  nameWithType.vb: ParquetQueryableExtensions.FirstOrDefaultAsync(Of T)(IQueryable(Of T), Expression(Of Func(Of T, Boolean)), CancellationToken)
+  fullName.vb: ParquetNeo.Linq.ParquetQueryableExtensions.FirstOrDefaultAsync(Of T)(System.Linq.IQueryable(Of T), System.Linq.Expressions.Expression(Of System.Func(Of T, Boolean)), System.Threading.CancellationToken)
+  name.vb: FirstOrDefaultAsync(Of T)(IQueryable(Of T), Expression(Of Func(Of T, Boolean)), CancellationToken)
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.CountAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  commentId: M:ParquetNeo.Linq.ParquetQueryableExtensions.CountAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  id: CountAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  isExtensionMethod: true
+  parent: ParquetNeo.Linq.ParquetQueryableExtensions
+  langs:
+  - csharp
+  - vb
+  name: CountAsync<T>(IQueryable<T>, CancellationToken)
+  nameWithType: ParquetQueryableExtensions.CountAsync<T>(IQueryable<T>, CancellationToken)
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.CountAsync<T>(System.Linq.IQueryable<T>, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: CountAsync
+    path: ../src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+    startLine: 100
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: The number of rows of the query, without blocking the caller.
+  example: []
+  syntax:
+    content: public static Task<int> CountAsync<T>(this IQueryable<T> query, CancellationToken cancellationToken = default)
+    parameters:
+    - id: query
+      type: System.Linq.IQueryable{{T}}
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+    typeParameters:
+    - id: T
+    return:
+      type: System.Threading.Tasks.Task{System.Int32}
+    content.vb: Public Shared Function CountAsync(Of T)(query As IQueryable(Of T), cancellationToken As CancellationToken = Nothing) As Task(Of Integer)
+  overload: ParquetNeo.Linq.ParquetQueryableExtensions.CountAsync*
+  nameWithType.vb: ParquetQueryableExtensions.CountAsync(Of T)(IQueryable(Of T), CancellationToken)
+  fullName.vb: ParquetNeo.Linq.ParquetQueryableExtensions.CountAsync(Of T)(System.Linq.IQueryable(Of T), System.Threading.CancellationToken)
+  name.vb: CountAsync(Of T)(IQueryable(Of T), CancellationToken)
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.CountAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  commentId: M:ParquetNeo.Linq.ParquetQueryableExtensions.CountAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  id: CountAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  isExtensionMethod: true
+  parent: ParquetNeo.Linq.ParquetQueryableExtensions
+  langs:
+  - csharp
+  - vb
+  name: CountAsync<T>(IQueryable<T>, Expression<Func<T, bool>>, CancellationToken)
+  nameWithType: ParquetQueryableExtensions.CountAsync<T>(IQueryable<T>, Expression<Func<T, bool>>, CancellationToken)
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.CountAsync<T>(System.Linq.IQueryable<T>, System.Linq.Expressions.Expression<System.Func<T, bool>>, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: CountAsync
+    path: ../src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+    startLine: 103
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: The number of rows of the query that satisfy the predicate, without blocking the caller.
+  example: []
+  syntax:
+    content: public static Task<int> CountAsync<T>(this IQueryable<T> query, Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    parameters:
+    - id: query
+      type: System.Linq.IQueryable{{T}}
+    - id: predicate
+      type: System.Linq.Expressions.Expression{System.Func{{T},System.Boolean}}
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+    typeParameters:
+    - id: T
+    return:
+      type: System.Threading.Tasks.Task{System.Int32}
+    content.vb: Public Shared Function CountAsync(Of T)(query As IQueryable(Of T), predicate As Expression(Of Func(Of T, Boolean)), cancellationToken As CancellationToken = Nothing) As Task(Of Integer)
+  overload: ParquetNeo.Linq.ParquetQueryableExtensions.CountAsync*
+  nameWithType.vb: ParquetQueryableExtensions.CountAsync(Of T)(IQueryable(Of T), Expression(Of Func(Of T, Boolean)), CancellationToken)
+  fullName.vb: ParquetNeo.Linq.ParquetQueryableExtensions.CountAsync(Of T)(System.Linq.IQueryable(Of T), System.Linq.Expressions.Expression(Of System.Func(Of T, Boolean)), System.Threading.CancellationToken)
+  name.vb: CountAsync(Of T)(IQueryable(Of T), Expression(Of Func(Of T, Boolean)), CancellationToken)
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.AnyAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  commentId: M:ParquetNeo.Linq.ParquetQueryableExtensions.AnyAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  id: AnyAsync``1(System.Linq.IQueryable{``0},System.Threading.CancellationToken)
+  isExtensionMethod: true
+  parent: ParquetNeo.Linq.ParquetQueryableExtensions
+  langs:
+  - csharp
+  - vb
+  name: AnyAsync<T>(IQueryable<T>, CancellationToken)
+  nameWithType: ParquetQueryableExtensions.AnyAsync<T>(IQueryable<T>, CancellationToken)
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.AnyAsync<T>(System.Linq.IQueryable<T>, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: AnyAsync
+    path: ../src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+    startLine: 106
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: Whether the query has any row, without blocking the caller.
+  example: []
+  syntax:
+    content: public static Task<bool> AnyAsync<T>(this IQueryable<T> query, CancellationToken cancellationToken = default)
+    parameters:
+    - id: query
+      type: System.Linq.IQueryable{{T}}
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+    typeParameters:
+    - id: T
+    return:
+      type: System.Threading.Tasks.Task{System.Boolean}
+    content.vb: Public Shared Function AnyAsync(Of T)(query As IQueryable(Of T), cancellationToken As CancellationToken = Nothing) As Task(Of Boolean)
+  overload: ParquetNeo.Linq.ParquetQueryableExtensions.AnyAsync*
+  nameWithType.vb: ParquetQueryableExtensions.AnyAsync(Of T)(IQueryable(Of T), CancellationToken)
+  fullName.vb: ParquetNeo.Linq.ParquetQueryableExtensions.AnyAsync(Of T)(System.Linq.IQueryable(Of T), System.Threading.CancellationToken)
+  name.vb: AnyAsync(Of T)(IQueryable(Of T), CancellationToken)
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.AnyAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  commentId: M:ParquetNeo.Linq.ParquetQueryableExtensions.AnyAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  id: AnyAsync``1(System.Linq.IQueryable{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)
+  isExtensionMethod: true
+  parent: ParquetNeo.Linq.ParquetQueryableExtensions
+  langs:
+  - csharp
+  - vb
+  name: AnyAsync<T>(IQueryable<T>, Expression<Func<T, bool>>, CancellationToken)
+  nameWithType: ParquetQueryableExtensions.AnyAsync<T>(IQueryable<T>, Expression<Func<T, bool>>, CancellationToken)
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.AnyAsync<T>(System.Linq.IQueryable<T>, System.Linq.Expressions.Expression<System.Func<T, bool>>, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: AnyAsync
+    path: ../src/ParquetNeo.Linq/ParquetQueryableExtensions.cs
+    startLine: 109
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: Whether any row of the query satisfies the predicate, without blocking the caller.
+  example: []
+  syntax:
+    content: public static Task<bool> AnyAsync<T>(this IQueryable<T> query, Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    parameters:
+    - id: query
+      type: System.Linq.IQueryable{{T}}
+    - id: predicate
+      type: System.Linq.Expressions.Expression{System.Func{{T},System.Boolean}}
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+    typeParameters:
+    - id: T
+    return:
+      type: System.Threading.Tasks.Task{System.Boolean}
+    content.vb: Public Shared Function AnyAsync(Of T)(query As IQueryable(Of T), predicate As Expression(Of Func(Of T, Boolean)), cancellationToken As CancellationToken = Nothing) As Task(Of Boolean)
+  overload: ParquetNeo.Linq.ParquetQueryableExtensions.AnyAsync*
+  nameWithType.vb: ParquetQueryableExtensions.AnyAsync(Of T)(IQueryable(Of T), Expression(Of Func(Of T, Boolean)), CancellationToken)
+  fullName.vb: ParquetNeo.Linq.ParquetQueryableExtensions.AnyAsync(Of T)(System.Linq.IQueryable(Of T), System.Linq.Expressions.Expression(Of System.Func(Of T, Boolean)), System.Threading.CancellationToken)
+  name.vb: AnyAsync(Of T)(IQueryable(Of T), Expression(Of Func(Of T, Boolean)), CancellationToken)
+references:
+- uid: ParquetNeo.Linq.ParquetDataset`1
+  commentId: T:ParquetNeo.Linq.ParquetDataset`1
+  href: ParquetNeo.Linq.ParquetDataset-1.html
+  name: ParquetDataset<T>
+  nameWithType: ParquetDataset<T>
+  fullName: ParquetNeo.Linq.ParquetDataset<T>
+  nameWithType.vb: ParquetDataset(Of T)
+  fullName.vb: ParquetNeo.Linq.ParquetDataset(Of T)
+  name.vb: ParquetDataset(Of T)
+  spec.csharp:
+  - uid: ParquetNeo.Linq.ParquetDataset`1
+    name: ParquetDataset
+    href: ParquetNeo.Linq.ParquetDataset-1.html
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: ParquetNeo.Linq.ParquetDataset`1
+    name: ParquetDataset
+    href: ParquetNeo.Linq.ParquetDataset-1.html
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.Linq
+  commentId: N:ParquetNeo.Linq
+  name: ParquetNeo.Linq
+  nameWithType: ParquetNeo.Linq
+  fullName: ParquetNeo.Linq
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Linq
+    name: Linq
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Linq
+    name: Linq
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.ArgumentException
+  commentId: T:System.ArgumentException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.argumentexception
+  name: ArgumentException
+  nameWithType: ArgumentException
+  fullName: System.ArgumentException
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.Explain*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryableExtensions.Explain
+  href: ParquetNeo.Linq.ParquetQueryableExtensions.html#ParquetNeo_Linq_ParquetQueryableExtensions_Explain__1_System_Linq_IQueryable___0__
+  name: Explain
+  nameWithType: ParquetQueryableExtensions.Explain
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.Explain
+- uid: System.Linq.IQueryable{{T}}
+  commentId: T:System.Linq.IQueryable{`0}
+  parent: System.Linq
+  definition: System.Linq.IQueryable`1
+  href: https://learn.microsoft.com/dotnet/api/system.linq.iqueryable-1
+  name: IQueryable<T>
+  nameWithType: IQueryable<T>
+  fullName: System.Linq.IQueryable<T>
+  nameWithType.vb: IQueryable(Of T)
+  fullName.vb: System.Linq.IQueryable(Of T)
+  name.vb: IQueryable(Of T)
+  spec.csharp:
+  - uid: System.Linq.IQueryable`1
+    name: IQueryable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq.iqueryable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Linq.IQueryable`1
+    name: IQueryable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq.iqueryable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.Linq.ParquetQueryPlan
+  commentId: T:ParquetNeo.Linq.ParquetQueryPlan
+  parent: ParquetNeo.Linq
+  href: ParquetNeo.Linq.ParquetQueryPlan.html
+  name: ParquetQueryPlan
+  nameWithType: ParquetQueryPlan
+  fullName: ParquetNeo.Linq.ParquetQueryPlan
+- uid: System.Linq.IQueryable`1
+  commentId: T:System.Linq.IQueryable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.linq.iqueryable-1
+  name: IQueryable<T>
+  nameWithType: IQueryable<T>
+  fullName: System.Linq.IQueryable<T>
+  nameWithType.vb: IQueryable(Of T)
+  fullName.vb: System.Linq.IQueryable(Of T)
+  name.vb: IQueryable(Of T)
+  spec.csharp:
+  - uid: System.Linq.IQueryable`1
+    name: IQueryable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq.iqueryable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Linq.IQueryable`1
+    name: IQueryable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq.iqueryable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Linq
+  commentId: N:System.Linq
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Linq
+  nameWithType: System.Linq
+  fullName: System.Linq
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Linq
+    name: Linq
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Linq
+    name: Linq
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.AsAsyncEnumerable*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryableExtensions.AsAsyncEnumerable
+  href: ParquetNeo.Linq.ParquetQueryableExtensions.html#ParquetNeo_Linq_ParquetQueryableExtensions_AsAsyncEnumerable__1_System_Linq_IQueryable___0__System_Threading_CancellationToken_
+  name: AsAsyncEnumerable
+  nameWithType: ParquetQueryableExtensions.AsAsyncEnumerable
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.AsAsyncEnumerable
+- uid: System.Threading.CancellationToken
+  commentId: T:System.Threading.CancellationToken
+  parent: System.Threading
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  name: CancellationToken
+  nameWithType: CancellationToken
+  fullName: System.Threading.CancellationToken
+- uid: System.Collections.Generic.IAsyncEnumerable{{T}}
+  commentId: T:System.Collections.Generic.IAsyncEnumerable{``0}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IAsyncEnumerable`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1
+  name: IAsyncEnumerable<T>
+  nameWithType: IAsyncEnumerable<T>
+  fullName: System.Collections.Generic.IAsyncEnumerable<T>
+  nameWithType.vb: IAsyncEnumerable(Of T)
+  fullName.vb: System.Collections.Generic.IAsyncEnumerable(Of T)
+  name.vb: IAsyncEnumerable(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IAsyncEnumerable`1
+    name: IAsyncEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IAsyncEnumerable`1
+    name: IAsyncEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Threading
+  commentId: N:System.Threading
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading
+  nameWithType: System.Threading
+  fullName: System.Threading
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+- uid: System.Collections.Generic.IAsyncEnumerable`1
+  commentId: T:System.Collections.Generic.IAsyncEnumerable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1
+  name: IAsyncEnumerable<T>
+  nameWithType: IAsyncEnumerable<T>
+  fullName: System.Collections.Generic.IAsyncEnumerable<T>
+  nameWithType.vb: IAsyncEnumerable(Of T)
+  fullName.vb: System.Collections.Generic.IAsyncEnumerable(Of T)
+  name.vb: IAsyncEnumerable(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IAsyncEnumerable`1
+    name: IAsyncEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IAsyncEnumerable`1
+    name: IAsyncEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.ToListAsync*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryableExtensions.ToListAsync
+  href: ParquetNeo.Linq.ParquetQueryableExtensions.html#ParquetNeo_Linq_ParquetQueryableExtensions_ToListAsync__1_System_Linq_IQueryable___0__System_Threading_CancellationToken_
+  name: ToListAsync
+  nameWithType: ParquetQueryableExtensions.ToListAsync
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.ToListAsync
+- uid: System.Threading.Tasks.Task{System.Collections.Generic.List{{T}}}
+  commentId: T:System.Threading.Tasks.Task{System.Collections.Generic.List{``0}}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<List<T>>
+  nameWithType: Task<List<T>>
+  fullName: System.Threading.Tasks.Task<System.Collections.Generic.List<T>>
+  nameWithType.vb: Task(Of List(Of T))
+  fullName.vb: System.Threading.Tasks.Task(Of System.Collections.Generic.List(Of T))
+  name.vb: Task(Of List(Of T))
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - name: T
+  - name: '>'
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+  - name: )
+- uid: System.Threading.Tasks.Task`1
+  commentId: T:System.Threading.Tasks.Task`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<TResult>
+  nameWithType: Task<TResult>
+  fullName: System.Threading.Tasks.Task<TResult>
+  nameWithType.vb: Task(Of TResult)
+  fullName.vb: System.Threading.Tasks.Task(Of TResult)
+  name.vb: Task(Of TResult)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - name: TResult
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: TResult
+  - name: )
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.ToArrayAsync*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryableExtensions.ToArrayAsync
+  href: ParquetNeo.Linq.ParquetQueryableExtensions.html#ParquetNeo_Linq_ParquetQueryableExtensions_ToArrayAsync__1_System_Linq_IQueryable___0__System_Threading_CancellationToken_
+  name: ToArrayAsync
+  nameWithType: ParquetQueryableExtensions.ToArrayAsync
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.ToArrayAsync
+- uid: System.Threading.Tasks.Task{{T}[]}
+  commentId: T:System.Threading.Tasks.Task{``0[]}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<T[]>
+  nameWithType: Task<T[]>
+  fullName: System.Threading.Tasks.Task<T[]>
+  nameWithType.vb: Task(Of T())
+  fullName.vb: System.Threading.Tasks.Task(Of T())
+  name.vb: Task(Of T())
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - name: T
+  - name: '['
+  - name: ']'
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: (
+  - name: )
+  - name: )
+- uid: System.InvalidOperationException
+  commentId: T:System.InvalidOperationException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.invalidoperationexception
+  name: InvalidOperationException
+  nameWithType: InvalidOperationException
+  fullName: System.InvalidOperationException
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.FirstAsync*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryableExtensions.FirstAsync
+  href: ParquetNeo.Linq.ParquetQueryableExtensions.html#ParquetNeo_Linq_ParquetQueryableExtensions_FirstAsync__1_System_Linq_IQueryable___0__System_Threading_CancellationToken_
+  name: FirstAsync
+  nameWithType: ParquetQueryableExtensions.FirstAsync
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.FirstAsync
+- uid: System.Threading.Tasks.Task{{T}}
+  commentId: T:System.Threading.Tasks.Task{``0}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<T>
+  nameWithType: Task<T>
+  fullName: System.Threading.Tasks.Task<T>
+  nameWithType.vb: Task(Of T)
+  fullName.vb: System.Threading.Tasks.Task(Of T)
+  name.vb: Task(Of T)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Linq.Expressions.Expression{System.Func{{T},System.Boolean}}
+  commentId: T:System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}}
+  parent: System.Linq.Expressions
+  definition: System.Linq.Expressions.Expression`1
+  href: https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression-1
+  name: Expression<Func<T, bool>>
+  nameWithType: Expression<Func<T, bool>>
+  fullName: System.Linq.Expressions.Expression<System.Func<T, bool>>
+  nameWithType.vb: Expression(Of Func(Of T, Boolean))
+  fullName.vb: System.Linq.Expressions.Expression(Of System.Func(Of T, Boolean))
+  name.vb: Expression(Of Func(Of T, Boolean))
+  spec.csharp:
+  - uid: System.Linq.Expressions.Expression`1
+    name: Expression
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression-1
+  - name: <
+  - uid: System.Func`2
+    name: Func
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.func-2
+  - name: <
+  - name: T
+  - name: ','
+  - name: " "
+  - uid: System.Boolean
+    name: bool
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: '>'
+  - name: '>'
+  spec.vb:
+  - uid: System.Linq.Expressions.Expression`1
+    name: Expression
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Func`2
+    name: Func
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.func-2
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: ','
+  - name: " "
+  - uid: System.Boolean
+    name: Boolean
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: )
+  - name: )
+- uid: System.Linq.Expressions.Expression`1
+  commentId: T:System.Linq.Expressions.Expression`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression-1
+  name: Expression<TDelegate>
+  nameWithType: Expression<TDelegate>
+  fullName: System.Linq.Expressions.Expression<TDelegate>
+  nameWithType.vb: Expression(Of TDelegate)
+  fullName.vb: System.Linq.Expressions.Expression(Of TDelegate)
+  name.vb: Expression(Of TDelegate)
+  spec.csharp:
+  - uid: System.Linq.Expressions.Expression`1
+    name: Expression
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression-1
+  - name: <
+  - name: TDelegate
+  - name: '>'
+  spec.vb:
+  - uid: System.Linq.Expressions.Expression`1
+    name: Expression
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: TDelegate
+  - name: )
+- uid: System.Linq.Expressions
+  commentId: N:System.Linq.Expressions
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Linq.Expressions
+  nameWithType: System.Linq.Expressions
+  fullName: System.Linq.Expressions
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Linq
+    name: Linq
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq
+  - name: .
+  - uid: System.Linq.Expressions
+    name: Expressions
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq.expressions
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Linq
+    name: Linq
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq
+  - name: .
+  - uid: System.Linq.Expressions
+    name: Expressions
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq.expressions
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.FirstOrDefaultAsync*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryableExtensions.FirstOrDefaultAsync
+  href: ParquetNeo.Linq.ParquetQueryableExtensions.html#ParquetNeo_Linq_ParquetQueryableExtensions_FirstOrDefaultAsync__1_System_Linq_IQueryable___0__System_Threading_CancellationToken_
+  name: FirstOrDefaultAsync
+  nameWithType: ParquetQueryableExtensions.FirstOrDefaultAsync
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.FirstOrDefaultAsync
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.CountAsync*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryableExtensions.CountAsync
+  href: ParquetNeo.Linq.ParquetQueryableExtensions.html#ParquetNeo_Linq_ParquetQueryableExtensions_CountAsync__1_System_Linq_IQueryable___0__System_Threading_CancellationToken_
+  name: CountAsync
+  nameWithType: ParquetQueryableExtensions.CountAsync
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.CountAsync
+- uid: System.Threading.Tasks.Task{System.Int32}
+  commentId: T:System.Threading.Tasks.Task{System.Int32}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<int>
+  nameWithType: Task<int>
+  fullName: System.Threading.Tasks.Task<int>
+  nameWithType.vb: Task(Of Integer)
+  fullName.vb: System.Threading.Tasks.Task(Of Integer)
+  name.vb: Task(Of Integer)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.AnyAsync*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryableExtensions.AnyAsync
+  href: ParquetNeo.Linq.ParquetQueryableExtensions.html#ParquetNeo_Linq_ParquetQueryableExtensions_AnyAsync__1_System_Linq_IQueryable___0__System_Threading_CancellationToken_
+  name: AnyAsync
+  nameWithType: ParquetQueryableExtensions.AnyAsync
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.AnyAsync
+- uid: System.Threading.Tasks.Task{System.Boolean}
+  commentId: T:System.Threading.Tasks.Task{System.Boolean}
+  parent: System.Threading.Tasks
+  definition: System.Threading.Tasks.Task`1
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  name: Task<bool>
+  nameWithType: Task<bool>
+  fullName: System.Threading.Tasks.Task<bool>
+  nameWithType.vb: Task(Of Boolean)
+  fullName.vb: System.Threading.Tasks.Task(Of Boolean)
+  name.vb: Task(Of Boolean)
+  spec.csharp:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: <
+  - uid: System.Boolean
+    name: bool
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: '>'
+  spec.vb:
+  - uid: System.Threading.Tasks.Task`1
+    name: Task
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Boolean
+    name: Boolean
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: )

@@ -1,0 +1,588 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.ColumnTypes.ColumnSettings
+  commentId: T:ParquetNeo.ColumnTypes.ColumnSettings
+  id: ColumnSettings
+  parent: ParquetNeo.ColumnTypes
+  children:
+  - ParquetNeo.ColumnTypes.ColumnSettings.IsAdjustedToUtc
+  - ParquetNeo.ColumnTypes.ColumnSettings.Precision
+  - ParquetNeo.ColumnTypes.ColumnSettings.Scale
+  - ParquetNeo.ColumnTypes.ColumnSettings.Unit
+  langs:
+  - csharp
+  - vb
+  name: ColumnSettings
+  nameWithType: ColumnSettings
+  fullName: ParquetNeo.ColumnTypes.ColumnSettings
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/ColumnTypes/ColumnSettings.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ColumnSettings
+    path: ../src/ParquetNeo/ColumnTypes/ColumnSettings.cs
+    startLine: 7
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.ColumnTypes
+  summary: >-
+    What can be adjusted about the column a type is written to. A type takes the settings that suit it (see
+
+    <xref href="ParquetNeo.ColumnTypes.ColumnType%601.SupportedSettings" data-throw-if-not-resolved="false"></xref>) and ignores the others.
+  example: []
+  syntax:
+    content: 'public sealed record ColumnSettings : IEquatable<ColumnSettings>'
+    content.vb: Public NotInheritable Class ColumnSettings Implements IEquatable(Of ColumnSettings)
+  inheritance:
+  - System.Object
+  implements:
+  - System.IEquatable{ParquetNeo.ColumnTypes.ColumnSettings}
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.ColumnTypes.ColumnSettings.Precision
+  commentId: P:ParquetNeo.ColumnTypes.ColumnSettings.Precision
+  id: Precision
+  parent: ParquetNeo.ColumnTypes.ColumnSettings
+  langs:
+  - csharp
+  - vb
+  name: Precision
+  nameWithType: ColumnSettings.Precision
+  fullName: ParquetNeo.ColumnTypes.ColumnSettings.Precision
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ColumnTypes/ColumnSettings.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Precision
+    path: ../src/ParquetNeo/ColumnTypes/ColumnSettings.cs
+    startLine: 10
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.ColumnTypes
+  summary: The number of digits of a decimal.
+  example: []
+  syntax:
+    content: public int? Precision { get; init; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Int32}
+    content.vb: Public Property Precision As Integer?
+  overload: ParquetNeo.ColumnTypes.ColumnSettings.Precision*
+- uid: ParquetNeo.ColumnTypes.ColumnSettings.Scale
+  commentId: P:ParquetNeo.ColumnTypes.ColumnSettings.Scale
+  id: Scale
+  parent: ParquetNeo.ColumnTypes.ColumnSettings
+  langs:
+  - csharp
+  - vb
+  name: Scale
+  nameWithType: ColumnSettings.Scale
+  fullName: ParquetNeo.ColumnTypes.ColumnSettings.Scale
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ColumnTypes/ColumnSettings.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Scale
+    path: ../src/ParquetNeo/ColumnTypes/ColumnSettings.cs
+    startLine: 13
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.ColumnTypes
+  summary: The number of digits of a decimal after the decimal point.
+  example: []
+  syntax:
+    content: public int? Scale { get; init; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Int32}
+    content.vb: Public Property Scale As Integer?
+  overload: ParquetNeo.ColumnTypes.ColumnSettings.Scale*
+- uid: ParquetNeo.ColumnTypes.ColumnSettings.Unit
+  commentId: P:ParquetNeo.ColumnTypes.ColumnSettings.Unit
+  id: Unit
+  parent: ParquetNeo.ColumnTypes.ColumnSettings
+  langs:
+  - csharp
+  - vb
+  name: Unit
+  nameWithType: ColumnSettings.Unit
+  fullName: ParquetNeo.ColumnTypes.ColumnSettings.Unit
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ColumnTypes/ColumnSettings.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Unit
+    path: ../src/ParquetNeo/ColumnTypes/ColumnSettings.cs
+    startLine: 16
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.ColumnTypes
+  summary: The resolution of a time or timestamp.
+  example: []
+  syntax:
+    content: public TimeUnit? Unit { get; init; }
+    parameters: []
+    return:
+      type: System.Nullable{ParquetNeo.TimeUnit}
+    content.vb: Public Property Unit As TimeUnit?
+  overload: ParquetNeo.ColumnTypes.ColumnSettings.Unit*
+- uid: ParquetNeo.ColumnTypes.ColumnSettings.IsAdjustedToUtc
+  commentId: P:ParquetNeo.ColumnTypes.ColumnSettings.IsAdjustedToUtc
+  id: IsAdjustedToUtc
+  parent: ParquetNeo.ColumnTypes.ColumnSettings
+  langs:
+  - csharp
+  - vb
+  name: IsAdjustedToUtc
+  nameWithType: ColumnSettings.IsAdjustedToUtc
+  fullName: ParquetNeo.ColumnTypes.ColumnSettings.IsAdjustedToUtc
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ColumnTypes/ColumnSettings.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: IsAdjustedToUtc
+    path: ../src/ParquetNeo/ColumnTypes/ColumnSettings.cs
+    startLine: 19
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.ColumnTypes
+  summary: Whether a time or timestamp is in UTC, as opposed to a reading of the clock on the wall.
+  example: []
+  syntax:
+    content: public bool? IsAdjustedToUtc { get; init; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Boolean}
+    content.vb: Public Property IsAdjustedToUtc As Boolean?
+  overload: ParquetNeo.ColumnTypes.ColumnSettings.IsAdjustedToUtc*
+references:
+- uid: ParquetNeo.ColumnTypes.ColumnType`1.SupportedSettings
+  commentId: P:ParquetNeo.ColumnTypes.ColumnType`1.SupportedSettings
+  href: ParquetNeo.ColumnTypes.ColumnType-1.html#ParquetNeo_ColumnTypes_ColumnType_1_SupportedSettings
+  name: SupportedSettings
+  nameWithType: ColumnType<TValue>.SupportedSettings
+  fullName: ParquetNeo.ColumnTypes.ColumnType<TValue>.SupportedSettings
+  nameWithType.vb: ColumnType(Of TValue).SupportedSettings
+  fullName.vb: ParquetNeo.ColumnTypes.ColumnType(Of TValue).SupportedSettings
+- uid: ParquetNeo.ColumnTypes
+  commentId: N:ParquetNeo.ColumnTypes
+  name: ParquetNeo.ColumnTypes
+  nameWithType: ParquetNeo.ColumnTypes
+  fullName: ParquetNeo.ColumnTypes
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.ColumnTypes
+    name: ColumnTypes
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.ColumnTypes
+    name: ColumnTypes
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.IEquatable{ParquetNeo.ColumnTypes.ColumnSettings}
+  commentId: T:System.IEquatable{ParquetNeo.ColumnTypes.ColumnSettings}
+  parent: System
+  definition: System.IEquatable`1
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<ColumnSettings>
+  nameWithType: IEquatable<ColumnSettings>
+  fullName: System.IEquatable<ParquetNeo.ColumnTypes.ColumnSettings>
+  nameWithType.vb: IEquatable(Of ColumnSettings)
+  fullName.vb: System.IEquatable(Of ParquetNeo.ColumnTypes.ColumnSettings)
+  name.vb: IEquatable(Of ColumnSettings)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - uid: ParquetNeo.ColumnTypes.ColumnSettings
+    name: ColumnSettings
+    href: ParquetNeo.ColumnTypes.ColumnSettings.html
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.ColumnTypes.ColumnSettings
+    name: ColumnSettings
+    href: ParquetNeo.ColumnTypes.ColumnSettings.html
+  - name: )
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.IEquatable`1
+  commentId: T:System.IEquatable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<T>
+  nameWithType: IEquatable<T>
+  fullName: System.IEquatable<T>
+  nameWithType.vb: IEquatable(Of T)
+  fullName.vb: System.IEquatable(Of T)
+  name.vb: IEquatable(Of T)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.ColumnTypes.ColumnSettings.Precision*
+  commentId: Overload:ParquetNeo.ColumnTypes.ColumnSettings.Precision
+  href: ParquetNeo.ColumnTypes.ColumnSettings.html#ParquetNeo_ColumnTypes_ColumnSettings_Precision
+  name: Precision
+  nameWithType: ColumnSettings.Precision
+  fullName: ParquetNeo.ColumnTypes.ColumnSettings.Precision
+- uid: System.Nullable{System.Int32}
+  commentId: T:System.Nullable{System.Int32}
+  parent: System
+  definition: System.Nullable`1
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int?
+  nameWithType: int?
+  fullName: int?
+  nameWithType.vb: Integer?
+  fullName.vb: Integer?
+  name.vb: Integer?
+  spec.csharp:
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: '?'
+  spec.vb:
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: '?'
+- uid: System.Nullable`1
+  commentId: T:System.Nullable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  name: Nullable<T>
+  nameWithType: Nullable<T>
+  fullName: System.Nullable<T>
+  nameWithType.vb: Nullable(Of T)
+  fullName.vb: System.Nullable(Of T)
+  name.vb: Nullable(Of T)
+  spec.csharp:
+  - uid: System.Nullable`1
+    name: Nullable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Nullable`1
+    name: Nullable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.ColumnTypes.ColumnSettings.Scale*
+  commentId: Overload:ParquetNeo.ColumnTypes.ColumnSettings.Scale
+  href: ParquetNeo.ColumnTypes.ColumnSettings.html#ParquetNeo_ColumnTypes_ColumnSettings_Scale
+  name: Scale
+  nameWithType: ColumnSettings.Scale
+  fullName: ParquetNeo.ColumnTypes.ColumnSettings.Scale
+- uid: ParquetNeo.ColumnTypes.ColumnSettings.Unit*
+  commentId: Overload:ParquetNeo.ColumnTypes.ColumnSettings.Unit
+  href: ParquetNeo.ColumnTypes.ColumnSettings.html#ParquetNeo_ColumnTypes_ColumnSettings_Unit
+  name: Unit
+  nameWithType: ColumnSettings.Unit
+  fullName: ParquetNeo.ColumnTypes.ColumnSettings.Unit
+- uid: System.Nullable{ParquetNeo.TimeUnit}
+  commentId: T:System.Nullable{ParquetNeo.TimeUnit}
+  parent: System
+  definition: System.Nullable`1
+  href: ParquetNeo.TimeUnit.html
+  name: TimeUnit?
+  nameWithType: TimeUnit?
+  fullName: ParquetNeo.TimeUnit?
+  spec.csharp:
+  - uid: ParquetNeo.TimeUnit
+    name: TimeUnit
+    href: ParquetNeo.TimeUnit.html
+  - name: '?'
+  spec.vb:
+  - uid: ParquetNeo.TimeUnit
+    name: TimeUnit
+    href: ParquetNeo.TimeUnit.html
+  - name: '?'
+- uid: ParquetNeo.ColumnTypes.ColumnSettings.IsAdjustedToUtc*
+  commentId: Overload:ParquetNeo.ColumnTypes.ColumnSettings.IsAdjustedToUtc
+  href: ParquetNeo.ColumnTypes.ColumnSettings.html#ParquetNeo_ColumnTypes_ColumnSettings_IsAdjustedToUtc
+  name: IsAdjustedToUtc
+  nameWithType: ColumnSettings.IsAdjustedToUtc
+  fullName: ParquetNeo.ColumnTypes.ColumnSettings.IsAdjustedToUtc
+- uid: System.Nullable{System.Boolean}
+  commentId: T:System.Nullable{System.Boolean}
+  parent: System
+  definition: System.Nullable`1
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool?
+  nameWithType: bool?
+  fullName: bool?
+  nameWithType.vb: Boolean?
+  fullName.vb: Boolean?
+  name.vb: Boolean?
+  spec.csharp:
+  - uid: System.Boolean
+    name: bool
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: '?'
+  spec.vb:
+  - uid: System.Boolean
+    name: Boolean
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: '?'

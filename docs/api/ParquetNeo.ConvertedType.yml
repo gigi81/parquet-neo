@@ -1,0 +1,637 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.ConvertedType
+  commentId: T:ParquetNeo.ConvertedType
+  id: ConvertedType
+  parent: ParquetNeo
+  children:
+  - ParquetNeo.ConvertedType.Bson
+  - ParquetNeo.ConvertedType.Date
+  - ParquetNeo.ConvertedType.Decimal
+  - ParquetNeo.ConvertedType.Enum
+  - ParquetNeo.ConvertedType.Int16
+  - ParquetNeo.ConvertedType.Int32
+  - ParquetNeo.ConvertedType.Int64
+  - ParquetNeo.ConvertedType.Int8
+  - ParquetNeo.ConvertedType.Interval
+  - ParquetNeo.ConvertedType.Json
+  - ParquetNeo.ConvertedType.List
+  - ParquetNeo.ConvertedType.Map
+  - ParquetNeo.ConvertedType.MapKeyValue
+  - ParquetNeo.ConvertedType.TimeMicros
+  - ParquetNeo.ConvertedType.TimeMillis
+  - ParquetNeo.ConvertedType.TimestampMicros
+  - ParquetNeo.ConvertedType.TimestampMillis
+  - ParquetNeo.ConvertedType.UInt16
+  - ParquetNeo.ConvertedType.UInt32
+  - ParquetNeo.ConvertedType.UInt64
+  - ParquetNeo.ConvertedType.UInt8
+  - ParquetNeo.ConvertedType.Utf8
+  langs:
+  - csharp
+  - vb
+  name: ConvertedType
+  nameWithType: ConvertedType
+  fullName: ParquetNeo.ConvertedType
+  type: Enum
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ConvertedType
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 3
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  summary: Legacy type annotations, superseded by <code>LogicalType</code>.
+  example: []
+  syntax:
+    content: public enum ConvertedType
+    content.vb: Public Enum ConvertedType
+- uid: ParquetNeo.ConvertedType.Utf8
+  commentId: F:ParquetNeo.ConvertedType.Utf8
+  id: Utf8
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: Utf8
+  nameWithType: ConvertedType.Utf8
+  fullName: ParquetNeo.ConvertedType.Utf8
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Utf8
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 5
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Utf8 = 0
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.Map
+  commentId: F:ParquetNeo.ConvertedType.Map
+  id: Map
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: Map
+  nameWithType: ConvertedType.Map
+  fullName: ParquetNeo.ConvertedType.Map
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Map
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 6
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Map = 1
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.MapKeyValue
+  commentId: F:ParquetNeo.ConvertedType.MapKeyValue
+  id: MapKeyValue
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: MapKeyValue
+  nameWithType: ConvertedType.MapKeyValue
+  fullName: ParquetNeo.ConvertedType.MapKeyValue
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: MapKeyValue
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 7
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: MapKeyValue = 2
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.List
+  commentId: F:ParquetNeo.ConvertedType.List
+  id: List
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: List
+  nameWithType: ConvertedType.List
+  fullName: ParquetNeo.ConvertedType.List
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: List
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 8
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: List = 3
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.Enum
+  commentId: F:ParquetNeo.ConvertedType.Enum
+  id: Enum
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: Enum
+  nameWithType: ConvertedType.Enum
+  fullName: ParquetNeo.ConvertedType.Enum
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Enum
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 9
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Enum = 4
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.Decimal
+  commentId: F:ParquetNeo.ConvertedType.Decimal
+  id: Decimal
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: Decimal
+  nameWithType: ConvertedType.Decimal
+  fullName: ParquetNeo.ConvertedType.Decimal
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Decimal
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 10
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Decimal = 5
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.Date
+  commentId: F:ParquetNeo.ConvertedType.Date
+  id: Date
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: Date
+  nameWithType: ConvertedType.Date
+  fullName: ParquetNeo.ConvertedType.Date
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Date
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 11
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Date = 6
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.TimeMillis
+  commentId: F:ParquetNeo.ConvertedType.TimeMillis
+  id: TimeMillis
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: TimeMillis
+  nameWithType: ConvertedType.TimeMillis
+  fullName: ParquetNeo.ConvertedType.TimeMillis
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: TimeMillis
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 12
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: TimeMillis = 7
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.TimeMicros
+  commentId: F:ParquetNeo.ConvertedType.TimeMicros
+  id: TimeMicros
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: TimeMicros
+  nameWithType: ConvertedType.TimeMicros
+  fullName: ParquetNeo.ConvertedType.TimeMicros
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: TimeMicros
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 13
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: TimeMicros = 8
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.TimestampMillis
+  commentId: F:ParquetNeo.ConvertedType.TimestampMillis
+  id: TimestampMillis
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: TimestampMillis
+  nameWithType: ConvertedType.TimestampMillis
+  fullName: ParquetNeo.ConvertedType.TimestampMillis
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: TimestampMillis
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 14
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: TimestampMillis = 9
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.TimestampMicros
+  commentId: F:ParquetNeo.ConvertedType.TimestampMicros
+  id: TimestampMicros
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: TimestampMicros
+  nameWithType: ConvertedType.TimestampMicros
+  fullName: ParquetNeo.ConvertedType.TimestampMicros
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: TimestampMicros
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 15
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: TimestampMicros = 10
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.UInt8
+  commentId: F:ParquetNeo.ConvertedType.UInt8
+  id: UInt8
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: UInt8
+  nameWithType: ConvertedType.UInt8
+  fullName: ParquetNeo.ConvertedType.UInt8
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: UInt8
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 16
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: UInt8 = 11
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.UInt16
+  commentId: F:ParquetNeo.ConvertedType.UInt16
+  id: UInt16
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: UInt16
+  nameWithType: ConvertedType.UInt16
+  fullName: ParquetNeo.ConvertedType.UInt16
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: UInt16
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 17
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: UInt16 = 12
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.UInt32
+  commentId: F:ParquetNeo.ConvertedType.UInt32
+  id: UInt32
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: UInt32
+  nameWithType: ConvertedType.UInt32
+  fullName: ParquetNeo.ConvertedType.UInt32
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: UInt32
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 18
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: UInt32 = 13
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.UInt64
+  commentId: F:ParquetNeo.ConvertedType.UInt64
+  id: UInt64
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: UInt64
+  nameWithType: ConvertedType.UInt64
+  fullName: ParquetNeo.ConvertedType.UInt64
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: UInt64
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 19
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: UInt64 = 14
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.Int8
+  commentId: F:ParquetNeo.ConvertedType.Int8
+  id: Int8
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: Int8
+  nameWithType: ConvertedType.Int8
+  fullName: ParquetNeo.ConvertedType.Int8
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Int8
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 20
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Int8 = 15
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.Int16
+  commentId: F:ParquetNeo.ConvertedType.Int16
+  id: Int16
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: Int16
+  nameWithType: ConvertedType.Int16
+  fullName: ParquetNeo.ConvertedType.Int16
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Int16
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 21
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Int16 = 16
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.Int32
+  commentId: F:ParquetNeo.ConvertedType.Int32
+  id: Int32
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: Int32
+  nameWithType: ConvertedType.Int32
+  fullName: ParquetNeo.ConvertedType.Int32
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Int32
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 22
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Int32 = 17
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.Int64
+  commentId: F:ParquetNeo.ConvertedType.Int64
+  id: Int64
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: Int64
+  nameWithType: ConvertedType.Int64
+  fullName: ParquetNeo.ConvertedType.Int64
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Int64
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 23
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Int64 = 18
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.Json
+  commentId: F:ParquetNeo.ConvertedType.Json
+  id: Json
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: Json
+  nameWithType: ConvertedType.Json
+  fullName: ParquetNeo.ConvertedType.Json
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Json
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 24
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Json = 19
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.Bson
+  commentId: F:ParquetNeo.ConvertedType.Bson
+  id: Bson
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: Bson
+  nameWithType: ConvertedType.Bson
+  fullName: ParquetNeo.ConvertedType.Bson
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Bson
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 25
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Bson = 20
+    return:
+      type: ParquetNeo.ConvertedType
+- uid: ParquetNeo.ConvertedType.Interval
+  commentId: F:ParquetNeo.ConvertedType.Interval
+  id: Interval
+  parent: ParquetNeo.ConvertedType
+  langs:
+  - csharp
+  - vb
+  name: Interval
+  nameWithType: ConvertedType.Interval
+  fullName: ParquetNeo.ConvertedType.Interval
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/ConvertedType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Interval
+    path: ../src/ParquetNeo.Enums/ConvertedType.cs
+    startLine: 26
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Interval = 21
+    return:
+      type: ParquetNeo.ConvertedType
+references:
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: ParquetNeo.ConvertedType
+  commentId: T:ParquetNeo.ConvertedType
+  parent: ParquetNeo
+  href: ParquetNeo.ConvertedType.html
+  name: ConvertedType
+  nameWithType: ConvertedType
+  fullName: ParquetNeo.ConvertedType

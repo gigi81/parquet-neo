@@ -1,0 +1,1163 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Metadata.ColumnMetaData
+  commentId: T:ParquetNeo.Metadata.ColumnMetaData
+  id: ColumnMetaData
+  parent: ParquetNeo.Metadata
+  children:
+  - ParquetNeo.Metadata.ColumnMetaData.BloomFilterLength
+  - ParquetNeo.Metadata.ColumnMetaData.BloomFilterOffset
+  - ParquetNeo.Metadata.ColumnMetaData.Codec
+  - ParquetNeo.Metadata.ColumnMetaData.DataPageOffset
+  - ParquetNeo.Metadata.ColumnMetaData.DictionaryPageOffset
+  - ParquetNeo.Metadata.ColumnMetaData.EncodingStats
+  - ParquetNeo.Metadata.ColumnMetaData.Encodings
+  - ParquetNeo.Metadata.ColumnMetaData.IndexPageOffset
+  - ParquetNeo.Metadata.ColumnMetaData.KeyValueMetadata
+  - ParquetNeo.Metadata.ColumnMetaData.NumValues
+  - ParquetNeo.Metadata.ColumnMetaData.PathInSchema
+  - ParquetNeo.Metadata.ColumnMetaData.SizeStatistics
+  - ParquetNeo.Metadata.ColumnMetaData.Statistics
+  - ParquetNeo.Metadata.ColumnMetaData.TotalCompressedSize
+  - ParquetNeo.Metadata.ColumnMetaData.TotalUncompressedSize
+  - ParquetNeo.Metadata.ColumnMetaData.Type
+  langs:
+  - csharp
+  - vb
+  name: ColumnMetaData
+  nameWithType: ColumnMetaData
+  fullName: ParquetNeo.Metadata.ColumnMetaData
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ColumnMetaData
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 5
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  summary: Metadata of one column chunk (thrift <code>ColumnMetaData</code>). Geospatial statistics are not read yet.
+  example: []
+  syntax:
+    content: public sealed class ColumnMetaData
+    content.vb: Public NotInheritable Class ColumnMetaData
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.Metadata.ColumnMetaData.Type
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.Type
+  id: Type
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: Type
+  nameWithType: ColumnMetaData.Type
+  fullName: ParquetNeo.Metadata.ColumnMetaData.Type
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Type
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 7
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public PhysicalType Type { get; set; }
+    parameters: []
+    return:
+      type: ParquetNeo.PhysicalType
+    content.vb: Public Property Type As PhysicalType
+  overload: ParquetNeo.Metadata.ColumnMetaData.Type*
+- uid: ParquetNeo.Metadata.ColumnMetaData.Encodings
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.Encodings
+  id: Encodings
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: Encodings
+  nameWithType: ColumnMetaData.Encodings
+  fullName: ParquetNeo.Metadata.ColumnMetaData.Encodings
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Encodings
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 9
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public List<ParquetEncoding> Encodings { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.List{ParquetNeo.ParquetEncoding}
+    content.vb: Public Property Encodings As List(Of ParquetEncoding)
+  overload: ParquetNeo.Metadata.ColumnMetaData.Encodings*
+- uid: ParquetNeo.Metadata.ColumnMetaData.PathInSchema
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.PathInSchema
+  id: PathInSchema
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: PathInSchema
+  nameWithType: ColumnMetaData.PathInSchema
+  fullName: ParquetNeo.Metadata.ColumnMetaData.PathInSchema
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: PathInSchema
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 11
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public List<string> PathInSchema { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.List{System.String}
+    content.vb: Public Property PathInSchema As List(Of String)
+  overload: ParquetNeo.Metadata.ColumnMetaData.PathInSchema*
+- uid: ParquetNeo.Metadata.ColumnMetaData.Codec
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.Codec
+  id: Codec
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: Codec
+  nameWithType: ColumnMetaData.Codec
+  fullName: ParquetNeo.Metadata.ColumnMetaData.Codec
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Codec
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 13
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public CompressionCodec Codec { get; set; }
+    parameters: []
+    return:
+      type: ParquetNeo.CompressionCodec
+    content.vb: Public Property Codec As CompressionCodec
+  overload: ParquetNeo.Metadata.ColumnMetaData.Codec*
+- uid: ParquetNeo.Metadata.ColumnMetaData.NumValues
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.NumValues
+  id: NumValues
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: NumValues
+  nameWithType: ColumnMetaData.NumValues
+  fullName: ParquetNeo.Metadata.ColumnMetaData.NumValues
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: NumValues
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 15
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public long NumValues { get; set; }
+    parameters: []
+    return:
+      type: System.Int64
+    content.vb: Public Property NumValues As Long
+  overload: ParquetNeo.Metadata.ColumnMetaData.NumValues*
+- uid: ParquetNeo.Metadata.ColumnMetaData.TotalUncompressedSize
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.TotalUncompressedSize
+  id: TotalUncompressedSize
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: TotalUncompressedSize
+  nameWithType: ColumnMetaData.TotalUncompressedSize
+  fullName: ParquetNeo.Metadata.ColumnMetaData.TotalUncompressedSize
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: TotalUncompressedSize
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 17
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public long TotalUncompressedSize { get; set; }
+    parameters: []
+    return:
+      type: System.Int64
+    content.vb: Public Property TotalUncompressedSize As Long
+  overload: ParquetNeo.Metadata.ColumnMetaData.TotalUncompressedSize*
+- uid: ParquetNeo.Metadata.ColumnMetaData.TotalCompressedSize
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.TotalCompressedSize
+  id: TotalCompressedSize
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: TotalCompressedSize
+  nameWithType: ColumnMetaData.TotalCompressedSize
+  fullName: ParquetNeo.Metadata.ColumnMetaData.TotalCompressedSize
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: TotalCompressedSize
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 19
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public long TotalCompressedSize { get; set; }
+    parameters: []
+    return:
+      type: System.Int64
+    content.vb: Public Property TotalCompressedSize As Long
+  overload: ParquetNeo.Metadata.ColumnMetaData.TotalCompressedSize*
+- uid: ParquetNeo.Metadata.ColumnMetaData.KeyValueMetadata
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.KeyValueMetadata
+  id: KeyValueMetadata
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: KeyValueMetadata
+  nameWithType: ColumnMetaData.KeyValueMetadata
+  fullName: ParquetNeo.Metadata.ColumnMetaData.KeyValueMetadata
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: KeyValueMetadata
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 21
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public List<KeyValue>? KeyValueMetadata { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.List{ParquetNeo.Metadata.KeyValue}
+    content.vb: Public Property KeyValueMetadata As List(Of KeyValue)
+  overload: ParquetNeo.Metadata.ColumnMetaData.KeyValueMetadata*
+- uid: ParquetNeo.Metadata.ColumnMetaData.DataPageOffset
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.DataPageOffset
+  id: DataPageOffset
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: DataPageOffset
+  nameWithType: ColumnMetaData.DataPageOffset
+  fullName: ParquetNeo.Metadata.ColumnMetaData.DataPageOffset
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: DataPageOffset
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 23
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public long DataPageOffset { get; set; }
+    parameters: []
+    return:
+      type: System.Int64
+    content.vb: Public Property DataPageOffset As Long
+  overload: ParquetNeo.Metadata.ColumnMetaData.DataPageOffset*
+- uid: ParquetNeo.Metadata.ColumnMetaData.IndexPageOffset
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.IndexPageOffset
+  id: IndexPageOffset
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: IndexPageOffset
+  nameWithType: ColumnMetaData.IndexPageOffset
+  fullName: ParquetNeo.Metadata.ColumnMetaData.IndexPageOffset
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: IndexPageOffset
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 25
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public long? IndexPageOffset { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Int64}
+    content.vb: Public Property IndexPageOffset As Long?
+  overload: ParquetNeo.Metadata.ColumnMetaData.IndexPageOffset*
+- uid: ParquetNeo.Metadata.ColumnMetaData.DictionaryPageOffset
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.DictionaryPageOffset
+  id: DictionaryPageOffset
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: DictionaryPageOffset
+  nameWithType: ColumnMetaData.DictionaryPageOffset
+  fullName: ParquetNeo.Metadata.ColumnMetaData.DictionaryPageOffset
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: DictionaryPageOffset
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 27
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public long? DictionaryPageOffset { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Int64}
+    content.vb: Public Property DictionaryPageOffset As Long?
+  overload: ParquetNeo.Metadata.ColumnMetaData.DictionaryPageOffset*
+- uid: ParquetNeo.Metadata.ColumnMetaData.Statistics
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.Statistics
+  id: Statistics
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: Statistics
+  nameWithType: ColumnMetaData.Statistics
+  fullName: ParquetNeo.Metadata.ColumnMetaData.Statistics
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Statistics
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 29
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public Statistics? Statistics { get; set; }
+    parameters: []
+    return:
+      type: ParquetNeo.Metadata.Statistics
+    content.vb: Public Property Statistics As Statistics
+  overload: ParquetNeo.Metadata.ColumnMetaData.Statistics*
+- uid: ParquetNeo.Metadata.ColumnMetaData.EncodingStats
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.EncodingStats
+  id: EncodingStats
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: EncodingStats
+  nameWithType: ColumnMetaData.EncodingStats
+  fullName: ParquetNeo.Metadata.ColumnMetaData.EncodingStats
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: EncodingStats
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 31
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public List<PageEncodingStats>? EncodingStats { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.List{ParquetNeo.Metadata.PageEncodingStats}
+    content.vb: Public Property EncodingStats As List(Of PageEncodingStats)
+  overload: ParquetNeo.Metadata.ColumnMetaData.EncodingStats*
+- uid: ParquetNeo.Metadata.ColumnMetaData.BloomFilterOffset
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.BloomFilterOffset
+  id: BloomFilterOffset
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: BloomFilterOffset
+  nameWithType: ColumnMetaData.BloomFilterOffset
+  fullName: ParquetNeo.Metadata.ColumnMetaData.BloomFilterOffset
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: BloomFilterOffset
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 33
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public long? BloomFilterOffset { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Int64}
+    content.vb: Public Property BloomFilterOffset As Long?
+  overload: ParquetNeo.Metadata.ColumnMetaData.BloomFilterOffset*
+- uid: ParquetNeo.Metadata.ColumnMetaData.BloomFilterLength
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.BloomFilterLength
+  id: BloomFilterLength
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: BloomFilterLength
+  nameWithType: ColumnMetaData.BloomFilterLength
+  fullName: ParquetNeo.Metadata.ColumnMetaData.BloomFilterLength
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: BloomFilterLength
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 35
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public int? BloomFilterLength { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Int32}
+    content.vb: Public Property BloomFilterLength As Integer?
+  overload: ParquetNeo.Metadata.ColumnMetaData.BloomFilterLength*
+- uid: ParquetNeo.Metadata.ColumnMetaData.SizeStatistics
+  commentId: P:ParquetNeo.Metadata.ColumnMetaData.SizeStatistics
+  id: SizeStatistics
+  parent: ParquetNeo.Metadata.ColumnMetaData
+  langs:
+  - csharp
+  - vb
+  name: SizeStatistics
+  nameWithType: ColumnMetaData.SizeStatistics
+  fullName: ParquetNeo.Metadata.ColumnMetaData.SizeStatistics
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/ColumnMetaData.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: SizeStatistics
+    path: ../src/ParquetNeo/Metadata/ColumnMetaData.cs
+    startLine: 37
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public SizeStatistics? SizeStatistics { get; set; }
+    parameters: []
+    return:
+      type: ParquetNeo.Metadata.SizeStatistics
+    content.vb: Public Property SizeStatistics As SizeStatistics
+  overload: ParquetNeo.Metadata.ColumnMetaData.SizeStatistics*
+references:
+- uid: ParquetNeo.Metadata
+  commentId: N:ParquetNeo.Metadata
+  name: ParquetNeo.Metadata
+  nameWithType: ParquetNeo.Metadata
+  fullName: ParquetNeo.Metadata
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: ParquetNeo.Metadata.ColumnMetaData.Type*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.Type
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_Type
+  name: Type
+  nameWithType: ColumnMetaData.Type
+  fullName: ParquetNeo.Metadata.ColumnMetaData.Type
+- uid: ParquetNeo.PhysicalType
+  commentId: T:ParquetNeo.PhysicalType
+  parent: ParquetNeo
+  href: ParquetNeo.PhysicalType.html
+  name: PhysicalType
+  nameWithType: PhysicalType
+  fullName: ParquetNeo.PhysicalType
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: ParquetNeo.Metadata.ColumnMetaData.Encodings*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.Encodings
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_Encodings
+  name: Encodings
+  nameWithType: ColumnMetaData.Encodings
+  fullName: ParquetNeo.Metadata.ColumnMetaData.Encodings
+- uid: System.Collections.Generic.List{ParquetNeo.ParquetEncoding}
+  commentId: T:System.Collections.Generic.List{ParquetNeo.ParquetEncoding}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<ParquetEncoding>
+  nameWithType: List<ParquetEncoding>
+  fullName: System.Collections.Generic.List<ParquetNeo.ParquetEncoding>
+  nameWithType.vb: List(Of ParquetEncoding)
+  fullName.vb: System.Collections.Generic.List(Of ParquetNeo.ParquetEncoding)
+  name.vb: List(Of ParquetEncoding)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - uid: ParquetNeo.ParquetEncoding
+    name: ParquetEncoding
+    href: ParquetNeo.ParquetEncoding.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.ParquetEncoding
+    name: ParquetEncoding
+    href: ParquetNeo.ParquetEncoding.html
+  - name: )
+- uid: System.Collections.Generic.List`1
+  commentId: T:System.Collections.Generic.List`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<T>
+  nameWithType: List<T>
+  fullName: System.Collections.Generic.List<T>
+  nameWithType.vb: List(Of T)
+  fullName.vb: System.Collections.Generic.List(Of T)
+  name.vb: List(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: ParquetNeo.Metadata.ColumnMetaData.PathInSchema*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.PathInSchema
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_PathInSchema
+  name: PathInSchema
+  nameWithType: ColumnMetaData.PathInSchema
+  fullName: ParquetNeo.Metadata.ColumnMetaData.PathInSchema
+- uid: System.Collections.Generic.List{System.String}
+  commentId: T:System.Collections.Generic.List{System.String}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<string>
+  nameWithType: List<string>
+  fullName: System.Collections.Generic.List<string>
+  nameWithType.vb: List(Of String)
+  fullName.vb: System.Collections.Generic.List(Of String)
+  name.vb: List(Of String)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: ParquetNeo.Metadata.ColumnMetaData.Codec*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.Codec
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_Codec
+  name: Codec
+  nameWithType: ColumnMetaData.Codec
+  fullName: ParquetNeo.Metadata.ColumnMetaData.Codec
+- uid: ParquetNeo.CompressionCodec
+  commentId: T:ParquetNeo.CompressionCodec
+  parent: ParquetNeo
+  href: ParquetNeo.CompressionCodec.html
+  name: CompressionCodec
+  nameWithType: CompressionCodec
+  fullName: ParquetNeo.CompressionCodec
+- uid: ParquetNeo.Metadata.ColumnMetaData.NumValues*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.NumValues
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_NumValues
+  name: NumValues
+  nameWithType: ColumnMetaData.NumValues
+  fullName: ParquetNeo.Metadata.ColumnMetaData.NumValues
+- uid: System.Int64
+  commentId: T:System.Int64
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int64
+  name: long
+  nameWithType: long
+  fullName: long
+  nameWithType.vb: Long
+  fullName.vb: Long
+  name.vb: Long
+- uid: ParquetNeo.Metadata.ColumnMetaData.TotalUncompressedSize*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.TotalUncompressedSize
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_TotalUncompressedSize
+  name: TotalUncompressedSize
+  nameWithType: ColumnMetaData.TotalUncompressedSize
+  fullName: ParquetNeo.Metadata.ColumnMetaData.TotalUncompressedSize
+- uid: ParquetNeo.Metadata.ColumnMetaData.TotalCompressedSize*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.TotalCompressedSize
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_TotalCompressedSize
+  name: TotalCompressedSize
+  nameWithType: ColumnMetaData.TotalCompressedSize
+  fullName: ParquetNeo.Metadata.ColumnMetaData.TotalCompressedSize
+- uid: ParquetNeo.Metadata.ColumnMetaData.KeyValueMetadata*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.KeyValueMetadata
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_KeyValueMetadata
+  name: KeyValueMetadata
+  nameWithType: ColumnMetaData.KeyValueMetadata
+  fullName: ParquetNeo.Metadata.ColumnMetaData.KeyValueMetadata
+- uid: System.Collections.Generic.List{ParquetNeo.Metadata.KeyValue}
+  commentId: T:System.Collections.Generic.List{ParquetNeo.Metadata.KeyValue}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<KeyValue>
+  nameWithType: List<KeyValue>
+  fullName: System.Collections.Generic.List<ParquetNeo.Metadata.KeyValue>
+  nameWithType.vb: List(Of KeyValue)
+  fullName.vb: System.Collections.Generic.List(Of ParquetNeo.Metadata.KeyValue)
+  name.vb: List(Of KeyValue)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - uid: ParquetNeo.Metadata.KeyValue
+    name: KeyValue
+    href: ParquetNeo.Metadata.KeyValue.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.Metadata.KeyValue
+    name: KeyValue
+    href: ParquetNeo.Metadata.KeyValue.html
+  - name: )
+- uid: ParquetNeo.Metadata.ColumnMetaData.DataPageOffset*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.DataPageOffset
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_DataPageOffset
+  name: DataPageOffset
+  nameWithType: ColumnMetaData.DataPageOffset
+  fullName: ParquetNeo.Metadata.ColumnMetaData.DataPageOffset
+- uid: ParquetNeo.Metadata.ColumnMetaData.IndexPageOffset*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.IndexPageOffset
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_IndexPageOffset
+  name: IndexPageOffset
+  nameWithType: ColumnMetaData.IndexPageOffset
+  fullName: ParquetNeo.Metadata.ColumnMetaData.IndexPageOffset
+- uid: System.Nullable{System.Int64}
+  commentId: T:System.Nullable{System.Int64}
+  parent: System
+  definition: System.Nullable`1
+  href: https://learn.microsoft.com/dotnet/api/system.int64
+  name: long?
+  nameWithType: long?
+  fullName: long?
+  nameWithType.vb: Long?
+  fullName.vb: Long?
+  name.vb: Long?
+  spec.csharp:
+  - uid: System.Int64
+    name: long
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int64
+  - name: '?'
+  spec.vb:
+  - uid: System.Int64
+    name: Long
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int64
+  - name: '?'
+- uid: System.Nullable`1
+  commentId: T:System.Nullable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  name: Nullable<T>
+  nameWithType: Nullable<T>
+  fullName: System.Nullable<T>
+  nameWithType.vb: Nullable(Of T)
+  fullName.vb: System.Nullable(Of T)
+  name.vb: Nullable(Of T)
+  spec.csharp:
+  - uid: System.Nullable`1
+    name: Nullable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Nullable`1
+    name: Nullable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.Metadata.ColumnMetaData.DictionaryPageOffset*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.DictionaryPageOffset
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_DictionaryPageOffset
+  name: DictionaryPageOffset
+  nameWithType: ColumnMetaData.DictionaryPageOffset
+  fullName: ParquetNeo.Metadata.ColumnMetaData.DictionaryPageOffset
+- uid: ParquetNeo.Metadata.ColumnMetaData.Statistics*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.Statistics
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_Statistics
+  name: Statistics
+  nameWithType: ColumnMetaData.Statistics
+  fullName: ParquetNeo.Metadata.ColumnMetaData.Statistics
+- uid: ParquetNeo.Metadata.Statistics
+  commentId: T:ParquetNeo.Metadata.Statistics
+  parent: ParquetNeo.Metadata
+  href: ParquetNeo.Metadata.Statistics.html
+  name: Statistics
+  nameWithType: Statistics
+  fullName: ParquetNeo.Metadata.Statistics
+- uid: ParquetNeo.Metadata.ColumnMetaData.EncodingStats*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.EncodingStats
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_EncodingStats
+  name: EncodingStats
+  nameWithType: ColumnMetaData.EncodingStats
+  fullName: ParquetNeo.Metadata.ColumnMetaData.EncodingStats
+- uid: System.Collections.Generic.List{ParquetNeo.Metadata.PageEncodingStats}
+  commentId: T:System.Collections.Generic.List{ParquetNeo.Metadata.PageEncodingStats}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<PageEncodingStats>
+  nameWithType: List<PageEncodingStats>
+  fullName: System.Collections.Generic.List<ParquetNeo.Metadata.PageEncodingStats>
+  nameWithType.vb: List(Of PageEncodingStats)
+  fullName.vb: System.Collections.Generic.List(Of ParquetNeo.Metadata.PageEncodingStats)
+  name.vb: List(Of PageEncodingStats)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - uid: ParquetNeo.Metadata.PageEncodingStats
+    name: PageEncodingStats
+    href: ParquetNeo.Metadata.PageEncodingStats.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.Metadata.PageEncodingStats
+    name: PageEncodingStats
+    href: ParquetNeo.Metadata.PageEncodingStats.html
+  - name: )
+- uid: ParquetNeo.Metadata.ColumnMetaData.BloomFilterOffset*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.BloomFilterOffset
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_BloomFilterOffset
+  name: BloomFilterOffset
+  nameWithType: ColumnMetaData.BloomFilterOffset
+  fullName: ParquetNeo.Metadata.ColumnMetaData.BloomFilterOffset
+- uid: ParquetNeo.Metadata.ColumnMetaData.BloomFilterLength*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.BloomFilterLength
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_BloomFilterLength
+  name: BloomFilterLength
+  nameWithType: ColumnMetaData.BloomFilterLength
+  fullName: ParquetNeo.Metadata.ColumnMetaData.BloomFilterLength
+- uid: System.Nullable{System.Int32}
+  commentId: T:System.Nullable{System.Int32}
+  parent: System
+  definition: System.Nullable`1
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int?
+  nameWithType: int?
+  fullName: int?
+  nameWithType.vb: Integer?
+  fullName.vb: Integer?
+  name.vb: Integer?
+  spec.csharp:
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: '?'
+  spec.vb:
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: '?'
+- uid: ParquetNeo.Metadata.ColumnMetaData.SizeStatistics*
+  commentId: Overload:ParquetNeo.Metadata.ColumnMetaData.SizeStatistics
+  href: ParquetNeo.Metadata.ColumnMetaData.html#ParquetNeo_Metadata_ColumnMetaData_SizeStatistics
+  name: SizeStatistics
+  nameWithType: ColumnMetaData.SizeStatistics
+  fullName: ParquetNeo.Metadata.ColumnMetaData.SizeStatistics
+- uid: ParquetNeo.Metadata.SizeStatistics
+  commentId: T:ParquetNeo.Metadata.SizeStatistics
+  parent: ParquetNeo.Metadata
+  href: ParquetNeo.Metadata.SizeStatistics.html
+  name: SizeStatistics
+  nameWithType: SizeStatistics
+  fullName: ParquetNeo.Metadata.SizeStatistics

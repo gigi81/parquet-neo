@@ -1,0 +1,471 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.BatchRead
+  commentId: T:ParquetNeo.BatchRead
+  id: BatchRead
+  parent: ParquetNeo
+  children:
+  - ParquetNeo.BatchRead.#ctor(System.Int32,System.Int32)
+  - ParquetNeo.BatchRead.Entries
+  - ParquetNeo.BatchRead.Values
+  langs:
+  - csharp
+  - vb
+  name: BatchRead
+  nameWithType: BatchRead
+  fullName: ParquetNeo.BatchRead
+  type: Struct
+  source:
+    remote:
+      path: src/ParquetNeo/BatchRead.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: BatchRead
+    path: ../src/ParquetNeo/BatchRead.cs
+    startLine: 8
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: The outcome of a <xref href="ParquetNeo.ColumnReader" data-throw-if-not-resolved="false"></xref> batch read.
+  example: []
+  syntax:
+    content: 'public readonly record struct BatchRead : IEquatable<BatchRead>'
+    content.vb: Public Structure BatchRead Implements IEquatable(Of BatchRead)
+  implements:
+  - System.IEquatable{ParquetNeo.BatchRead}
+  inheritedMembers:
+  - System.ValueType.Equals(System.Object)
+  - System.ValueType.GetHashCode
+  - System.ValueType.ToString
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+- uid: ParquetNeo.BatchRead.#ctor(System.Int32,System.Int32)
+  commentId: M:ParquetNeo.BatchRead.#ctor(System.Int32,System.Int32)
+  id: '#ctor(System.Int32,System.Int32)'
+  parent: ParquetNeo.BatchRead
+  langs:
+  - csharp
+  - vb
+  name: BatchRead(int, int)
+  nameWithType: BatchRead.BatchRead(int, int)
+  fullName: ParquetNeo.BatchRead.BatchRead(int, int)
+  type: Constructor
+  source:
+    remote:
+      path: src/ParquetNeo/BatchRead.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: .ctor
+    path: ../src/ParquetNeo/BatchRead.cs
+    startLine: 8
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: The outcome of a <xref href="ParquetNeo.ColumnReader" data-throw-if-not-resolved="false"></xref> batch read.
+  example: []
+  syntax:
+    content: public BatchRead(int Entries, int Values)
+    parameters:
+    - id: Entries
+      type: System.Int32
+      description: >-
+        The number of level entries read; 0 means the column chunk has no more. An entry is a row for a column that is not
+
+        repeated; in a repeated column it is one value, null or empty list, and a row can span several entries.
+    - id: Values
+      type: System.Int32
+      description: The number of non-null values among them (equal to <code class="paramref">Entries</code> for a required column).
+    content.vb: Public Sub New(Entries As Integer, Values As Integer)
+  overload: ParquetNeo.BatchRead.#ctor*
+  nameWithType.vb: BatchRead.New(Integer, Integer)
+  fullName.vb: ParquetNeo.BatchRead.New(Integer, Integer)
+  name.vb: New(Integer, Integer)
+- uid: ParquetNeo.BatchRead.Entries
+  commentId: P:ParquetNeo.BatchRead.Entries
+  id: Entries
+  parent: ParquetNeo.BatchRead
+  langs:
+  - csharp
+  - vb
+  name: Entries
+  nameWithType: BatchRead.Entries
+  fullName: ParquetNeo.BatchRead.Entries
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/BatchRead.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Entries
+    path: ../src/ParquetNeo/BatchRead.cs
+    startLine: 8
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    The number of level entries read; 0 means the column chunk has no more. An entry is a row for a column that is not
+
+    repeated; in a repeated column it is one value, null or empty list, and a row can span several entries.
+  example: []
+  syntax:
+    content: public int Entries { get; init; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property Entries As Integer
+  overload: ParquetNeo.BatchRead.Entries*
+- uid: ParquetNeo.BatchRead.Values
+  commentId: P:ParquetNeo.BatchRead.Values
+  id: Values
+  parent: ParquetNeo.BatchRead
+  langs:
+  - csharp
+  - vb
+  name: Values
+  nameWithType: BatchRead.Values
+  fullName: ParquetNeo.BatchRead.Values
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/BatchRead.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Values
+    path: ../src/ParquetNeo/BatchRead.cs
+    startLine: 8
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: The number of non-null values among them (equal to <code class="paramref">Entries</code> for a required column).
+  example: []
+  syntax:
+    content: public int Values { get; init; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property Values As Integer
+  overload: ParquetNeo.BatchRead.Values*
+references:
+- uid: ParquetNeo.ColumnReader
+  commentId: T:ParquetNeo.ColumnReader
+  parent: ParquetNeo
+  href: ParquetNeo.ColumnReader.html
+  name: ColumnReader
+  nameWithType: ColumnReader
+  fullName: ParquetNeo.ColumnReader
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: System.IEquatable{ParquetNeo.BatchRead}
+  commentId: T:System.IEquatable{ParquetNeo.BatchRead}
+  parent: System
+  definition: System.IEquatable`1
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<BatchRead>
+  nameWithType: IEquatable<BatchRead>
+  fullName: System.IEquatable<ParquetNeo.BatchRead>
+  nameWithType.vb: IEquatable(Of BatchRead)
+  fullName.vb: System.IEquatable(Of ParquetNeo.BatchRead)
+  name.vb: IEquatable(Of BatchRead)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - uid: ParquetNeo.BatchRead
+    name: BatchRead
+    href: ParquetNeo.BatchRead.html
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.BatchRead
+    name: BatchRead
+    href: ParquetNeo.BatchRead.html
+  - name: )
+- uid: System.ValueType.Equals(System.Object)
+  commentId: M:System.ValueType.Equals(System.Object)
+  parent: System.ValueType
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.valuetype.equals
+  name: Equals(object)
+  nameWithType: ValueType.Equals(object)
+  fullName: System.ValueType.Equals(object)
+  nameWithType.vb: ValueType.Equals(Object)
+  fullName.vb: System.ValueType.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.ValueType.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.valuetype.equals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.ValueType.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.valuetype.equals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.ValueType.GetHashCode
+  commentId: M:System.ValueType.GetHashCode
+  parent: System.ValueType
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode
+  name: GetHashCode()
+  nameWithType: ValueType.GetHashCode()
+  fullName: System.ValueType.GetHashCode()
+  spec.csharp:
+  - uid: System.ValueType.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.ValueType.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode
+  - name: (
+  - name: )
+- uid: System.ValueType.ToString
+  commentId: M:System.ValueType.ToString
+  parent: System.ValueType
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.valuetype.tostring
+  name: ToString()
+  nameWithType: ValueType.ToString()
+  fullName: System.ValueType.ToString()
+  spec.csharp:
+  - uid: System.ValueType.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.valuetype.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.ValueType.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.valuetype.tostring
+  - name: (
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.IEquatable`1
+  commentId: T:System.IEquatable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<T>
+  nameWithType: IEquatable<T>
+  fullName: System.IEquatable<T>
+  nameWithType.vb: IEquatable(Of T)
+  fullName.vb: System.IEquatable(Of T)
+  name.vb: IEquatable(Of T)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.ValueType
+  commentId: T:System.ValueType
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.valuetype
+  name: ValueType
+  nameWithType: ValueType
+  fullName: System.ValueType
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: ParquetNeo.BatchRead.#ctor*
+  commentId: Overload:ParquetNeo.BatchRead.#ctor
+  href: ParquetNeo.BatchRead.html#ParquetNeo_BatchRead__ctor_System_Int32_System_Int32_
+  name: BatchRead
+  nameWithType: BatchRead.BatchRead
+  fullName: ParquetNeo.BatchRead.BatchRead
+  nameWithType.vb: BatchRead.New
+  fullName.vb: ParquetNeo.BatchRead.New
+  name.vb: New
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: ParquetNeo.BatchRead.Entries*
+  commentId: Overload:ParquetNeo.BatchRead.Entries
+  href: ParquetNeo.BatchRead.html#ParquetNeo_BatchRead_Entries
+  name: Entries
+  nameWithType: BatchRead.Entries
+  fullName: ParquetNeo.BatchRead.Entries
+- uid: ParquetNeo.BatchRead.Values*
+  commentId: Overload:ParquetNeo.BatchRead.Values
+  href: ParquetNeo.BatchRead.html#ParquetNeo_BatchRead_Values
+  name: Values
+  nameWithType: BatchRead.Values
+  fullName: ParquetNeo.BatchRead.Values

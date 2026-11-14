@@ -1,0 +1,452 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.LogicalTypeKind
+  commentId: T:ParquetNeo.LogicalTypeKind
+  id: LogicalTypeKind
+  parent: ParquetNeo
+  children:
+  - ParquetNeo.LogicalTypeKind.Bson
+  - ParquetNeo.LogicalTypeKind.Date
+  - ParquetNeo.LogicalTypeKind.Decimal
+  - ParquetNeo.LogicalTypeKind.Enum
+  - ParquetNeo.LogicalTypeKind.Float16
+  - ParquetNeo.LogicalTypeKind.Integer
+  - ParquetNeo.LogicalTypeKind.Json
+  - ParquetNeo.LogicalTypeKind.List
+  - ParquetNeo.LogicalTypeKind.Map
+  - ParquetNeo.LogicalTypeKind.Null
+  - ParquetNeo.LogicalTypeKind.String
+  - ParquetNeo.LogicalTypeKind.Time
+  - ParquetNeo.LogicalTypeKind.Timestamp
+  - ParquetNeo.LogicalTypeKind.Unrecognized
+  - ParquetNeo.LogicalTypeKind.Uuid
+  langs:
+  - csharp
+  - vb
+  name: LogicalTypeKind
+  nameWithType: LogicalTypeKind
+  fullName: ParquetNeo.LogicalTypeKind
+  type: Enum
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: LogicalTypeKind
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 3
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  summary: Kind of a <code>LogicalType</code>. Values are the field ids of the thrift union.
+  example: []
+  syntax:
+    content: public enum LogicalTypeKind
+    content.vb: Public Enum LogicalTypeKind
+- uid: ParquetNeo.LogicalTypeKind.Unrecognized
+  commentId: F:ParquetNeo.LogicalTypeKind.Unrecognized
+  id: Unrecognized
+  parent: ParquetNeo.LogicalTypeKind
+  langs:
+  - csharp
+  - vb
+  name: Unrecognized
+  nameWithType: LogicalTypeKind.Unrecognized
+  fullName: ParquetNeo.LogicalTypeKind.Unrecognized
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Unrecognized
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 6
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  summary: A union member this library does not know; callers should fall back to the physical type.
+  example: []
+  syntax:
+    content: Unrecognized = 0
+    return:
+      type: ParquetNeo.LogicalTypeKind
+- uid: ParquetNeo.LogicalTypeKind.String
+  commentId: F:ParquetNeo.LogicalTypeKind.String
+  id: String
+  parent: ParquetNeo.LogicalTypeKind
+  langs:
+  - csharp
+  - vb
+  name: String
+  nameWithType: LogicalTypeKind.String
+  fullName: ParquetNeo.LogicalTypeKind.String
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: String
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 7
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: String = 1
+    return:
+      type: ParquetNeo.LogicalTypeKind
+- uid: ParquetNeo.LogicalTypeKind.Map
+  commentId: F:ParquetNeo.LogicalTypeKind.Map
+  id: Map
+  parent: ParquetNeo.LogicalTypeKind
+  langs:
+  - csharp
+  - vb
+  name: Map
+  nameWithType: LogicalTypeKind.Map
+  fullName: ParquetNeo.LogicalTypeKind.Map
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Map
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 8
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Map = 2
+    return:
+      type: ParquetNeo.LogicalTypeKind
+- uid: ParquetNeo.LogicalTypeKind.List
+  commentId: F:ParquetNeo.LogicalTypeKind.List
+  id: List
+  parent: ParquetNeo.LogicalTypeKind
+  langs:
+  - csharp
+  - vb
+  name: List
+  nameWithType: LogicalTypeKind.List
+  fullName: ParquetNeo.LogicalTypeKind.List
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: List
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 9
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: List = 3
+    return:
+      type: ParquetNeo.LogicalTypeKind
+- uid: ParquetNeo.LogicalTypeKind.Enum
+  commentId: F:ParquetNeo.LogicalTypeKind.Enum
+  id: Enum
+  parent: ParquetNeo.LogicalTypeKind
+  langs:
+  - csharp
+  - vb
+  name: Enum
+  nameWithType: LogicalTypeKind.Enum
+  fullName: ParquetNeo.LogicalTypeKind.Enum
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Enum
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 10
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Enum = 4
+    return:
+      type: ParquetNeo.LogicalTypeKind
+- uid: ParquetNeo.LogicalTypeKind.Decimal
+  commentId: F:ParquetNeo.LogicalTypeKind.Decimal
+  id: Decimal
+  parent: ParquetNeo.LogicalTypeKind
+  langs:
+  - csharp
+  - vb
+  name: Decimal
+  nameWithType: LogicalTypeKind.Decimal
+  fullName: ParquetNeo.LogicalTypeKind.Decimal
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Decimal
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 11
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Decimal = 5
+    return:
+      type: ParquetNeo.LogicalTypeKind
+- uid: ParquetNeo.LogicalTypeKind.Date
+  commentId: F:ParquetNeo.LogicalTypeKind.Date
+  id: Date
+  parent: ParquetNeo.LogicalTypeKind
+  langs:
+  - csharp
+  - vb
+  name: Date
+  nameWithType: LogicalTypeKind.Date
+  fullName: ParquetNeo.LogicalTypeKind.Date
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Date
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 12
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Date = 6
+    return:
+      type: ParquetNeo.LogicalTypeKind
+- uid: ParquetNeo.LogicalTypeKind.Time
+  commentId: F:ParquetNeo.LogicalTypeKind.Time
+  id: Time
+  parent: ParquetNeo.LogicalTypeKind
+  langs:
+  - csharp
+  - vb
+  name: Time
+  nameWithType: LogicalTypeKind.Time
+  fullName: ParquetNeo.LogicalTypeKind.Time
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Time
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 13
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Time = 7
+    return:
+      type: ParquetNeo.LogicalTypeKind
+- uid: ParquetNeo.LogicalTypeKind.Timestamp
+  commentId: F:ParquetNeo.LogicalTypeKind.Timestamp
+  id: Timestamp
+  parent: ParquetNeo.LogicalTypeKind
+  langs:
+  - csharp
+  - vb
+  name: Timestamp
+  nameWithType: LogicalTypeKind.Timestamp
+  fullName: ParquetNeo.LogicalTypeKind.Timestamp
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Timestamp
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 14
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Timestamp = 8
+    return:
+      type: ParquetNeo.LogicalTypeKind
+- uid: ParquetNeo.LogicalTypeKind.Integer
+  commentId: F:ParquetNeo.LogicalTypeKind.Integer
+  id: Integer
+  parent: ParquetNeo.LogicalTypeKind
+  langs:
+  - csharp
+  - vb
+  name: Integer
+  nameWithType: LogicalTypeKind.Integer
+  fullName: ParquetNeo.LogicalTypeKind.Integer
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Integer
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 15
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Integer = 10
+    return:
+      type: ParquetNeo.LogicalTypeKind
+- uid: ParquetNeo.LogicalTypeKind.Null
+  commentId: F:ParquetNeo.LogicalTypeKind.Null
+  id: "Null"
+  parent: ParquetNeo.LogicalTypeKind
+  langs:
+  - csharp
+  - vb
+  name: "Null"
+  nameWithType: LogicalTypeKind.Null
+  fullName: ParquetNeo.LogicalTypeKind.Null
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: "Null"
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 17
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  summary: A column that only contains nulls (thrift <code>UNKNOWN</code> / <code>NullType</code>).
+  example: []
+  syntax:
+    content: Null = 11
+    return:
+      type: ParquetNeo.LogicalTypeKind
+- uid: ParquetNeo.LogicalTypeKind.Json
+  commentId: F:ParquetNeo.LogicalTypeKind.Json
+  id: Json
+  parent: ParquetNeo.LogicalTypeKind
+  langs:
+  - csharp
+  - vb
+  name: Json
+  nameWithType: LogicalTypeKind.Json
+  fullName: ParquetNeo.LogicalTypeKind.Json
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Json
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 18
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Json = 12
+    return:
+      type: ParquetNeo.LogicalTypeKind
+- uid: ParquetNeo.LogicalTypeKind.Bson
+  commentId: F:ParquetNeo.LogicalTypeKind.Bson
+  id: Bson
+  parent: ParquetNeo.LogicalTypeKind
+  langs:
+  - csharp
+  - vb
+  name: Bson
+  nameWithType: LogicalTypeKind.Bson
+  fullName: ParquetNeo.LogicalTypeKind.Bson
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Bson
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 19
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Bson = 13
+    return:
+      type: ParquetNeo.LogicalTypeKind
+- uid: ParquetNeo.LogicalTypeKind.Uuid
+  commentId: F:ParquetNeo.LogicalTypeKind.Uuid
+  id: Uuid
+  parent: ParquetNeo.LogicalTypeKind
+  langs:
+  - csharp
+  - vb
+  name: Uuid
+  nameWithType: LogicalTypeKind.Uuid
+  fullName: ParquetNeo.LogicalTypeKind.Uuid
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Uuid
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 20
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Uuid = 14
+    return:
+      type: ParquetNeo.LogicalTypeKind
+- uid: ParquetNeo.LogicalTypeKind.Float16
+  commentId: F:ParquetNeo.LogicalTypeKind.Float16
+  id: Float16
+  parent: ParquetNeo.LogicalTypeKind
+  langs:
+  - csharp
+  - vb
+  name: Float16
+  nameWithType: LogicalTypeKind.Float16
+  fullName: ParquetNeo.LogicalTypeKind.Float16
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/LogicalTypeKind.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Float16
+    path: ../src/ParquetNeo.Enums/LogicalTypeKind.cs
+    startLine: 21
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  syntax:
+    content: Float16 = 15
+    return:
+      type: ParquetNeo.LogicalTypeKind
+references:
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: ParquetNeo.LogicalTypeKind
+  commentId: T:ParquetNeo.LogicalTypeKind
+  parent: ParquetNeo
+  href: ParquetNeo.LogicalTypeKind.html
+  name: LogicalTypeKind
+  nameWithType: LogicalTypeKind
+  fullName: ParquetNeo.LogicalTypeKind

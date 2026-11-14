@@ -1,0 +1,778 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Nested.StructureLevel
+  commentId: T:ParquetNeo.Nested.StructureLevel
+  id: StructureLevel
+  parent: ParquetNeo.Nested
+  children:
+  - ParquetNeo.Nested.StructureLevel.ElementCount
+  - ParquetNeo.Nested.StructureLevel.ForOptional(ParquetNeo.Schema.SchemaNode,System.Boolean[])
+  - ParquetNeo.Nested.StructureLevel.ForRepeated(ParquetNeo.Schema.SchemaNode,System.Int32[])
+  - ParquetNeo.Nested.StructureLevel.ItemCount
+  - ParquetNeo.Nested.StructureLevel.Kind
+  - ParquetNeo.Nested.StructureLevel.Node
+  - ParquetNeo.Nested.StructureLevel.Offsets
+  - ParquetNeo.Nested.StructureLevel.Validity
+  langs:
+  - csharp
+  - vb
+  name: StructureLevel
+  nameWithType: StructureLevel
+  fullName: ParquetNeo.Nested.StructureLevel
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/Nested/StructureLevel.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: StructureLevel
+    path: ../src/ParquetNeo/Nested/StructureLevel.cs
+    startLine: 8
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Nested
+  summary: >-
+    The structure one optional or repeated schema node adds to a column: validity for an optional node, offsets for a
+
+    repeated one. Create it with <xref href="ParquetNeo.Nested.StructureLevel.ForOptional(ParquetNeo.Schema.SchemaNode%2cSystem.Boolean%5b%5d)" data-throw-if-not-resolved="false"></xref> or <xref href="ParquetNeo.Nested.StructureLevel.ForRepeated(ParquetNeo.Schema.SchemaNode%2cSystem.Int32%5b%5d)" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: public sealed class StructureLevel
+    content.vb: Public NotInheritable Class StructureLevel
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.Nested.StructureLevel.Node
+  commentId: P:ParquetNeo.Nested.StructureLevel.Node
+  id: Node
+  parent: ParquetNeo.Nested.StructureLevel
+  langs:
+  - csharp
+  - vb
+  name: Node
+  nameWithType: StructureLevel.Node
+  fullName: ParquetNeo.Nested.StructureLevel.Node
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Nested/StructureLevel.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Node
+    path: ../src/ParquetNeo/Nested/StructureLevel.cs
+    startLine: 18
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Nested
+  syntax:
+    content: public SchemaNode Node { get; }
+    parameters: []
+    return:
+      type: ParquetNeo.Schema.SchemaNode
+    content.vb: Public ReadOnly Property Node As SchemaNode
+  overload: ParquetNeo.Nested.StructureLevel.Node*
+- uid: ParquetNeo.Nested.StructureLevel.Kind
+  commentId: P:ParquetNeo.Nested.StructureLevel.Kind
+  id: Kind
+  parent: ParquetNeo.Nested.StructureLevel
+  langs:
+  - csharp
+  - vb
+  name: Kind
+  nameWithType: StructureLevel.Kind
+  fullName: ParquetNeo.Nested.StructureLevel.Kind
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Nested/StructureLevel.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Kind
+    path: ../src/ParquetNeo/Nested/StructureLevel.cs
+    startLine: 20
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Nested
+  syntax:
+    content: public StructureLevelKind Kind { get; }
+    parameters: []
+    return:
+      type: ParquetNeo.StructureLevelKind
+    content.vb: Public ReadOnly Property Kind As StructureLevelKind
+  overload: ParquetNeo.Nested.StructureLevel.Kind*
+- uid: ParquetNeo.Nested.StructureLevel.Validity
+  commentId: P:ParquetNeo.Nested.StructureLevel.Validity
+  id: Validity
+  parent: ParquetNeo.Nested.StructureLevel
+  langs:
+  - csharp
+  - vb
+  name: Validity
+  nameWithType: StructureLevel.Validity
+  fullName: ParquetNeo.Nested.StructureLevel.Validity
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Nested/StructureLevel.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Validity
+    path: ../src/ParquetNeo/Nested/StructureLevel.cs
+    startLine: 23
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Nested
+  summary: 'For an optional node, one entry per item: <code>true</code> when the value is present.'
+  example: []
+  syntax:
+    content: public bool[]? Validity { get; }
+    parameters: []
+    return:
+      type: System.Boolean[]
+    content.vb: Public ReadOnly Property Validity As Boolean()
+  overload: ParquetNeo.Nested.StructureLevel.Validity*
+- uid: ParquetNeo.Nested.StructureLevel.Offsets
+  commentId: P:ParquetNeo.Nested.StructureLevel.Offsets
+  id: Offsets
+  parent: ParquetNeo.Nested.StructureLevel
+  langs:
+  - csharp
+  - vb
+  name: Offsets
+  nameWithType: StructureLevel.Offsets
+  fullName: ParquetNeo.Nested.StructureLevel.Offsets
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Nested/StructureLevel.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Offsets
+    path: ../src/ParquetNeo/Nested/StructureLevel.cs
+    startLine: 29
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Nested
+  summary: >-
+    For a repeated node, one entry more than the items of the enclosing level: the elements of item <code>i</code> are the
+
+    elements <code>Offsets[i]</code> up to (not including) <code>Offsets[i + 1]</code>. The first offset is 0.
+  example: []
+  syntax:
+    content: public int[]? Offsets { get; }
+    parameters: []
+    return:
+      type: System.Int32[]
+    content.vb: Public ReadOnly Property Offsets As Integer()
+  overload: ParquetNeo.Nested.StructureLevel.Offsets*
+- uid: ParquetNeo.Nested.StructureLevel.ItemCount
+  commentId: P:ParquetNeo.Nested.StructureLevel.ItemCount
+  id: ItemCount
+  parent: ParquetNeo.Nested.StructureLevel
+  langs:
+  - csharp
+  - vb
+  name: ItemCount
+  nameWithType: StructureLevel.ItemCount
+  fullName: ParquetNeo.Nested.StructureLevel.ItemCount
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Nested/StructureLevel.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ItemCount
+    path: ../src/ParquetNeo/Nested/StructureLevel.cs
+    startLine: 32
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Nested
+  summary: 'The number of items this level has an entry for: the length of the validity, or one less than the offsets.'
+  example: []
+  syntax:
+    content: public int ItemCount { get; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public ReadOnly Property ItemCount As Integer
+  overload: ParquetNeo.Nested.StructureLevel.ItemCount*
+- uid: ParquetNeo.Nested.StructureLevel.ElementCount
+  commentId: P:ParquetNeo.Nested.StructureLevel.ElementCount
+  id: ElementCount
+  parent: ParquetNeo.Nested.StructureLevel
+  langs:
+  - csharp
+  - vb
+  name: ElementCount
+  nameWithType: StructureLevel.ElementCount
+  fullName: ParquetNeo.Nested.StructureLevel.ElementCount
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Nested/StructureLevel.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ElementCount
+    path: ../src/ParquetNeo/Nested/StructureLevel.cs
+    startLine: 35
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Nested
+  summary: The number of elements of a repeated node, over all its items (0 for an optional node).
+  example: []
+  syntax:
+    content: public int ElementCount { get; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public ReadOnly Property ElementCount As Integer
+  overload: ParquetNeo.Nested.StructureLevel.ElementCount*
+- uid: ParquetNeo.Nested.StructureLevel.ForOptional(ParquetNeo.Schema.SchemaNode,System.Boolean[])
+  commentId: M:ParquetNeo.Nested.StructureLevel.ForOptional(ParquetNeo.Schema.SchemaNode,System.Boolean[])
+  id: ForOptional(ParquetNeo.Schema.SchemaNode,System.Boolean[])
+  parent: ParquetNeo.Nested.StructureLevel
+  langs:
+  - csharp
+  - vb
+  name: ForOptional(SchemaNode, bool[])
+  nameWithType: StructureLevel.ForOptional(SchemaNode, bool[])
+  fullName: ParquetNeo.Nested.StructureLevel.ForOptional(ParquetNeo.Schema.SchemaNode, bool[])
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Nested/StructureLevel.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ForOptional
+    path: ../src/ParquetNeo/Nested/StructureLevel.cs
+    startLine: 38
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Nested
+  summary: The arrays are used as they are, not copied.
+  example: []
+  syntax:
+    content: public static StructureLevel ForOptional(SchemaNode node, bool[] validity)
+    parameters:
+    - id: node
+      type: ParquetNeo.Schema.SchemaNode
+    - id: validity
+      type: System.Boolean[]
+    return:
+      type: ParquetNeo.Nested.StructureLevel
+    content.vb: Public Shared Function ForOptional(node As SchemaNode, validity As Boolean()) As StructureLevel
+  overload: ParquetNeo.Nested.StructureLevel.ForOptional*
+  nameWithType.vb: StructureLevel.ForOptional(SchemaNode, Boolean())
+  fullName.vb: ParquetNeo.Nested.StructureLevel.ForOptional(ParquetNeo.Schema.SchemaNode, Boolean())
+  name.vb: ForOptional(SchemaNode, Boolean())
+- uid: ParquetNeo.Nested.StructureLevel.ForRepeated(ParquetNeo.Schema.SchemaNode,System.Int32[])
+  commentId: M:ParquetNeo.Nested.StructureLevel.ForRepeated(ParquetNeo.Schema.SchemaNode,System.Int32[])
+  id: ForRepeated(ParquetNeo.Schema.SchemaNode,System.Int32[])
+  parent: ParquetNeo.Nested.StructureLevel
+  langs:
+  - csharp
+  - vb
+  name: ForRepeated(SchemaNode, int[])
+  nameWithType: StructureLevel.ForRepeated(SchemaNode, int[])
+  fullName: ParquetNeo.Nested.StructureLevel.ForRepeated(ParquetNeo.Schema.SchemaNode, int[])
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Nested/StructureLevel.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ForRepeated
+    path: ../src/ParquetNeo/Nested/StructureLevel.cs
+    startLine: 51
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Nested
+  summary: The arrays are used as they are, not copied.
+  example: []
+  syntax:
+    content: public static StructureLevel ForRepeated(SchemaNode node, int[] offsets)
+    parameters:
+    - id: node
+      type: ParquetNeo.Schema.SchemaNode
+    - id: offsets
+      type: System.Int32[]
+    return:
+      type: ParquetNeo.Nested.StructureLevel
+    content.vb: Public Shared Function ForRepeated(node As SchemaNode, offsets As Integer()) As StructureLevel
+  overload: ParquetNeo.Nested.StructureLevel.ForRepeated*
+  nameWithType.vb: StructureLevel.ForRepeated(SchemaNode, Integer())
+  fullName.vb: ParquetNeo.Nested.StructureLevel.ForRepeated(ParquetNeo.Schema.SchemaNode, Integer())
+  name.vb: ForRepeated(SchemaNode, Integer())
+references:
+- uid: ParquetNeo.Nested.StructureLevel.ForOptional(ParquetNeo.Schema.SchemaNode,System.Boolean[])
+  commentId: M:ParquetNeo.Nested.StructureLevel.ForOptional(ParquetNeo.Schema.SchemaNode,System.Boolean[])
+  isExternal: true
+  href: ParquetNeo.Nested.StructureLevel.html#ParquetNeo_Nested_StructureLevel_ForOptional_ParquetNeo_Schema_SchemaNode_System_Boolean___
+  name: ForOptional(SchemaNode, bool[])
+  nameWithType: StructureLevel.ForOptional(SchemaNode, bool[])
+  fullName: ParquetNeo.Nested.StructureLevel.ForOptional(ParquetNeo.Schema.SchemaNode, bool[])
+  nameWithType.vb: StructureLevel.ForOptional(SchemaNode, Boolean())
+  fullName.vb: ParquetNeo.Nested.StructureLevel.ForOptional(ParquetNeo.Schema.SchemaNode, Boolean())
+  name.vb: ForOptional(SchemaNode, Boolean())
+  spec.csharp:
+  - uid: ParquetNeo.Nested.StructureLevel.ForOptional(ParquetNeo.Schema.SchemaNode,System.Boolean[])
+    name: ForOptional
+    href: ParquetNeo.Nested.StructureLevel.html#ParquetNeo_Nested_StructureLevel_ForOptional_ParquetNeo_Schema_SchemaNode_System_Boolean___
+  - name: (
+  - uid: ParquetNeo.Schema.SchemaNode
+    name: SchemaNode
+    href: ParquetNeo.Schema.SchemaNode.html
+  - name: ','
+  - name: " "
+  - uid: System.Boolean
+    name: bool
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: '['
+  - name: ']'
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.Nested.StructureLevel.ForOptional(ParquetNeo.Schema.SchemaNode,System.Boolean[])
+    name: ForOptional
+    href: ParquetNeo.Nested.StructureLevel.html#ParquetNeo_Nested_StructureLevel_ForOptional_ParquetNeo_Schema_SchemaNode_System_Boolean___
+  - name: (
+  - uid: ParquetNeo.Schema.SchemaNode
+    name: SchemaNode
+    href: ParquetNeo.Schema.SchemaNode.html
+  - name: ','
+  - name: " "
+  - uid: System.Boolean
+    name: Boolean
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: (
+  - name: )
+  - name: )
+- uid: ParquetNeo.Nested.StructureLevel.ForRepeated(ParquetNeo.Schema.SchemaNode,System.Int32[])
+  commentId: M:ParquetNeo.Nested.StructureLevel.ForRepeated(ParquetNeo.Schema.SchemaNode,System.Int32[])
+  isExternal: true
+  href: ParquetNeo.Nested.StructureLevel.html#ParquetNeo_Nested_StructureLevel_ForRepeated_ParquetNeo_Schema_SchemaNode_System_Int32___
+  name: ForRepeated(SchemaNode, int[])
+  nameWithType: StructureLevel.ForRepeated(SchemaNode, int[])
+  fullName: ParquetNeo.Nested.StructureLevel.ForRepeated(ParquetNeo.Schema.SchemaNode, int[])
+  nameWithType.vb: StructureLevel.ForRepeated(SchemaNode, Integer())
+  fullName.vb: ParquetNeo.Nested.StructureLevel.ForRepeated(ParquetNeo.Schema.SchemaNode, Integer())
+  name.vb: ForRepeated(SchemaNode, Integer())
+  spec.csharp:
+  - uid: ParquetNeo.Nested.StructureLevel.ForRepeated(ParquetNeo.Schema.SchemaNode,System.Int32[])
+    name: ForRepeated
+    href: ParquetNeo.Nested.StructureLevel.html#ParquetNeo_Nested_StructureLevel_ForRepeated_ParquetNeo_Schema_SchemaNode_System_Int32___
+  - name: (
+  - uid: ParquetNeo.Schema.SchemaNode
+    name: SchemaNode
+    href: ParquetNeo.Schema.SchemaNode.html
+  - name: ','
+  - name: " "
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: '['
+  - name: ']'
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.Nested.StructureLevel.ForRepeated(ParquetNeo.Schema.SchemaNode,System.Int32[])
+    name: ForRepeated
+    href: ParquetNeo.Nested.StructureLevel.html#ParquetNeo_Nested_StructureLevel_ForRepeated_ParquetNeo_Schema_SchemaNode_System_Int32___
+  - name: (
+  - uid: ParquetNeo.Schema.SchemaNode
+    name: SchemaNode
+    href: ParquetNeo.Schema.SchemaNode.html
+  - name: ','
+  - name: " "
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: (
+  - name: )
+  - name: )
+- uid: ParquetNeo.Nested
+  commentId: N:ParquetNeo.Nested
+  name: ParquetNeo.Nested
+  nameWithType: ParquetNeo.Nested
+  fullName: ParquetNeo.Nested
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Nested
+    name: Nested
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Nested
+    name: Nested
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: ParquetNeo.Nested.StructureLevel.Node*
+  commentId: Overload:ParquetNeo.Nested.StructureLevel.Node
+  href: ParquetNeo.Nested.StructureLevel.html#ParquetNeo_Nested_StructureLevel_Node
+  name: Node
+  nameWithType: StructureLevel.Node
+  fullName: ParquetNeo.Nested.StructureLevel.Node
+- uid: ParquetNeo.Schema.SchemaNode
+  commentId: T:ParquetNeo.Schema.SchemaNode
+  parent: ParquetNeo.Schema
+  href: ParquetNeo.Schema.SchemaNode.html
+  name: SchemaNode
+  nameWithType: SchemaNode
+  fullName: ParquetNeo.Schema.SchemaNode
+- uid: ParquetNeo.Schema
+  commentId: N:ParquetNeo.Schema
+  name: ParquetNeo.Schema
+  nameWithType: ParquetNeo.Schema
+  fullName: ParquetNeo.Schema
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Schema
+    name: Schema
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Schema
+    name: Schema
+- uid: ParquetNeo.Nested.StructureLevel.Kind*
+  commentId: Overload:ParquetNeo.Nested.StructureLevel.Kind
+  href: ParquetNeo.Nested.StructureLevel.html#ParquetNeo_Nested_StructureLevel_Kind
+  name: Kind
+  nameWithType: StructureLevel.Kind
+  fullName: ParquetNeo.Nested.StructureLevel.Kind
+- uid: ParquetNeo.StructureLevelKind
+  commentId: T:ParquetNeo.StructureLevelKind
+  parent: ParquetNeo
+  href: ParquetNeo.StructureLevelKind.html
+  name: StructureLevelKind
+  nameWithType: StructureLevelKind
+  fullName: ParquetNeo.StructureLevelKind
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: ParquetNeo.Nested.StructureLevel.Validity*
+  commentId: Overload:ParquetNeo.Nested.StructureLevel.Validity
+  href: ParquetNeo.Nested.StructureLevel.html#ParquetNeo_Nested_StructureLevel_Validity
+  name: Validity
+  nameWithType: StructureLevel.Validity
+  fullName: ParquetNeo.Nested.StructureLevel.Validity
+- uid: System.Boolean[]
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool[]
+  nameWithType: bool[]
+  fullName: bool[]
+  nameWithType.vb: Boolean()
+  fullName.vb: Boolean()
+  name.vb: Boolean()
+  spec.csharp:
+  - uid: System.Boolean
+    name: bool
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: '['
+  - name: ']'
+  spec.vb:
+  - uid: System.Boolean
+    name: Boolean
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: (
+  - name: )
+- uid: ParquetNeo.Nested.StructureLevel.Offsets*
+  commentId: Overload:ParquetNeo.Nested.StructureLevel.Offsets
+  href: ParquetNeo.Nested.StructureLevel.html#ParquetNeo_Nested_StructureLevel_Offsets
+  name: Offsets
+  nameWithType: StructureLevel.Offsets
+  fullName: ParquetNeo.Nested.StructureLevel.Offsets
+- uid: System.Int32[]
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int[]
+  nameWithType: int[]
+  fullName: int[]
+  nameWithType.vb: Integer()
+  fullName.vb: Integer()
+  name.vb: Integer()
+  spec.csharp:
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: '['
+  - name: ']'
+  spec.vb:
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: (
+  - name: )
+- uid: ParquetNeo.Nested.StructureLevel.ItemCount*
+  commentId: Overload:ParquetNeo.Nested.StructureLevel.ItemCount
+  href: ParquetNeo.Nested.StructureLevel.html#ParquetNeo_Nested_StructureLevel_ItemCount
+  name: ItemCount
+  nameWithType: StructureLevel.ItemCount
+  fullName: ParquetNeo.Nested.StructureLevel.ItemCount
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: ParquetNeo.Nested.StructureLevel.ElementCount*
+  commentId: Overload:ParquetNeo.Nested.StructureLevel.ElementCount
+  href: ParquetNeo.Nested.StructureLevel.html#ParquetNeo_Nested_StructureLevel_ElementCount
+  name: ElementCount
+  nameWithType: StructureLevel.ElementCount
+  fullName: ParquetNeo.Nested.StructureLevel.ElementCount
+- uid: ParquetNeo.Nested.StructureLevel.ForOptional*
+  commentId: Overload:ParquetNeo.Nested.StructureLevel.ForOptional
+  href: ParquetNeo.Nested.StructureLevel.html#ParquetNeo_Nested_StructureLevel_ForOptional_ParquetNeo_Schema_SchemaNode_System_Boolean___
+  name: ForOptional
+  nameWithType: StructureLevel.ForOptional
+  fullName: ParquetNeo.Nested.StructureLevel.ForOptional
+- uid: ParquetNeo.Nested.StructureLevel
+  commentId: T:ParquetNeo.Nested.StructureLevel
+  parent: ParquetNeo.Nested
+  href: ParquetNeo.Nested.StructureLevel.html
+  name: StructureLevel
+  nameWithType: StructureLevel
+  fullName: ParquetNeo.Nested.StructureLevel
+- uid: ParquetNeo.Nested.StructureLevel.ForRepeated*
+  commentId: Overload:ParquetNeo.Nested.StructureLevel.ForRepeated
+  href: ParquetNeo.Nested.StructureLevel.html#ParquetNeo_Nested_StructureLevel_ForRepeated_ParquetNeo_Schema_SchemaNode_System_Int32___
+  name: ForRepeated
+  nameWithType: StructureLevel.ForRepeated
+  fullName: ParquetNeo.Nested.StructureLevel.ForRepeated

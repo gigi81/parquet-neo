@@ -1,0 +1,79 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Metadata.Headers
+  commentId: N:ParquetNeo.Metadata.Headers
+  id: ParquetNeo.Metadata.Headers
+  children:
+  - ParquetNeo.Metadata.Headers.BloomFilterHeader
+  - ParquetNeo.Metadata.Headers.DataPageHeader
+  - ParquetNeo.Metadata.Headers.DataPageV2Header
+  - ParquetNeo.Metadata.Headers.DictionaryPageHeader
+  - ParquetNeo.Metadata.Headers.PageHeader
+  langs:
+  - csharp
+  - vb
+  name: ParquetNeo.Metadata.Headers
+  nameWithType: ParquetNeo.Metadata.Headers
+  fullName: ParquetNeo.Metadata.Headers
+  type: Namespace
+  assemblies:
+  - ParquetNeo
+references:
+- uid: ParquetNeo.Metadata.Headers.BloomFilterHeader
+  commentId: T:ParquetNeo.Metadata.Headers.BloomFilterHeader
+  parent: ParquetNeo.Metadata.Headers
+  href: ParquetNeo.Metadata.Headers.BloomFilterHeader.html
+  name: BloomFilterHeader
+  nameWithType: BloomFilterHeader
+  fullName: ParquetNeo.Metadata.Headers.BloomFilterHeader
+- uid: ParquetNeo.Metadata.Headers.DataPageHeader
+  commentId: T:ParquetNeo.Metadata.Headers.DataPageHeader
+  parent: ParquetNeo.Metadata.Headers
+  href: ParquetNeo.Metadata.Headers.DataPageHeader.html
+  name: DataPageHeader
+  nameWithType: DataPageHeader
+  fullName: ParquetNeo.Metadata.Headers.DataPageHeader
+- uid: ParquetNeo.Metadata.Headers.DataPageV2Header
+  commentId: T:ParquetNeo.Metadata.Headers.DataPageV2Header
+  parent: ParquetNeo.Metadata.Headers
+  href: ParquetNeo.Metadata.Headers.DataPageV2Header.html
+  name: DataPageV2Header
+  nameWithType: DataPageV2Header
+  fullName: ParquetNeo.Metadata.Headers.DataPageV2Header
+- uid: ParquetNeo.Metadata.Headers.DictionaryPageHeader
+  commentId: T:ParquetNeo.Metadata.Headers.DictionaryPageHeader
+  parent: ParquetNeo.Metadata.Headers
+  href: ParquetNeo.Metadata.Headers.DictionaryPageHeader.html
+  name: DictionaryPageHeader
+  nameWithType: DictionaryPageHeader
+  fullName: ParquetNeo.Metadata.Headers.DictionaryPageHeader
+- uid: ParquetNeo.Metadata.Headers.PageHeader
+  commentId: T:ParquetNeo.Metadata.Headers.PageHeader
+  parent: ParquetNeo.Metadata.Headers
+  href: ParquetNeo.Metadata.Headers.PageHeader.html
+  name: PageHeader
+  nameWithType: PageHeader
+  fullName: ParquetNeo.Metadata.Headers.PageHeader
+- uid: ParquetNeo.Metadata.Headers
+  commentId: N:ParquetNeo.Metadata.Headers
+  name: ParquetNeo.Metadata.Headers
+  nameWithType: ParquetNeo.Metadata.Headers
+  fullName: ParquetNeo.Metadata.Headers
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+  - name: .
+  - uid: ParquetNeo.Metadata.Headers
+    name: Headers
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+  - name: .
+  - uid: ParquetNeo.Metadata.Headers
+    name: Headers

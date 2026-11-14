@@ -1,0 +1,404 @@
+### YamlMime:TableOfContent
+items:
+- uid: ParquetNeo
+  name: ParquetNeo
+  type: Namespace
+  items:
+  - uid: ParquetNeo.BatchRead
+    name: BatchRead
+    type: Struct
+  - uid: ParquetNeo.BloomFilterSettings
+    name: BloomFilterSettings
+    type: Class
+  - uid: ParquetNeo.ColumnOrder
+    name: ColumnOrder
+    type: Enum
+  - uid: ParquetNeo.ColumnReader
+    name: ColumnReader
+    type: Class
+  - uid: ParquetNeo.ColumnSettingKinds
+    name: ColumnSettingKinds
+    type: Enum
+  - uid: ParquetNeo.ColumnWriter
+    name: ColumnWriter
+    type: Class
+  - uid: ParquetNeo.CompressionCodec
+    name: CompressionCodec
+    type: Enum
+  - uid: ParquetNeo.ConvertedType
+    name: ConvertedType
+    type: Enum
+  - uid: ParquetNeo.DataPageVersion
+    name: DataPageVersion
+    type: Enum
+  - uid: ParquetNeo.DictionaryMode
+    name: DictionaryMode
+    type: Enum
+  - uid: ParquetNeo.DictionarySettings
+    name: DictionarySettings
+    type: Class
+  - uid: ParquetNeo.FieldRepetitionType
+    name: FieldRepetitionType
+    type: Enum
+  - uid: ParquetNeo.FilterColumn
+    name: FilterColumn
+    type: Class
+  - uid: ParquetNeo.ListStyle
+    name: ListStyle
+    type: Enum
+  - uid: ParquetNeo.LogicalTypeKind
+    name: LogicalTypeKind
+    type: Enum
+  - uid: ParquetNeo.PageType
+    name: PageType
+    type: Enum
+  - uid: ParquetNeo.ParquetEncoding
+    name: ParquetEncoding
+    type: Enum
+  - uid: ParquetNeo.ParquetFileReader
+    name: ParquetFileReader
+    type: Class
+  - uid: ParquetNeo.ParquetFileWriter
+    name: ParquetFileWriter
+    type: Class
+  - uid: ParquetNeo.ParquetFilter
+    name: ParquetFilter
+    type: Class
+  - uid: ParquetNeo.ParquetReaderOptions
+    name: ParquetReaderOptions
+    type: Class
+  - uid: ParquetNeo.ParquetWriterOptions
+    name: ParquetWriterOptions
+    type: Class
+  - uid: ParquetNeo.PhysicalType
+    name: PhysicalType
+    type: Enum
+  - uid: ParquetNeo.RowGroupReader
+    name: RowGroupReader
+    type: Class
+  - uid: ParquetNeo.RowGroupWriter
+    name: RowGroupWriter
+    type: Class
+  - uid: ParquetNeo.RowRange
+    name: RowRange
+    type: Struct
+  - uid: ParquetNeo.RowSelection
+    name: RowSelection
+    type: Class
+  - uid: ParquetNeo.StructureLevelKind
+    name: StructureLevelKind
+    type: Enum
+  - uid: ParquetNeo.TimeUnit
+    name: TimeUnit
+    type: Enum
+- uid: ParquetNeo.ColumnTypes
+  name: ParquetNeo.ColumnTypes
+  type: Namespace
+  items:
+  - uid: ParquetNeo.ColumnTypes.ColumnSettings
+    name: ColumnSettings
+    type: Class
+  - uid: ParquetNeo.ColumnTypes.ColumnType
+    name: ColumnType
+    type: Class
+  - uid: ParquetNeo.ColumnTypes.ColumnTypeRegistry
+    name: ColumnTypeRegistry
+    type: Class
+  - uid: ParquetNeo.ColumnTypes.ColumnType`1
+    name: ColumnType<TValue>
+    type: Class
+- uid: ParquetNeo.Compression
+  name: ParquetNeo.Compression
+  type: Namespace
+  items:
+  - uid: ParquetNeo.Compression.BrotliCodec
+    name: BrotliCodec
+    type: Class
+  - uid: ParquetNeo.Compression.CodecRegistry
+    name: CodecRegistry
+    type: Class
+  - uid: ParquetNeo.Compression.GzipCodec
+    name: GzipCodec
+    type: Class
+  - uid: ParquetNeo.Compression.ICodec
+    name: ICodec
+    type: Interface
+  - uid: ParquetNeo.Compression.UncompressedCodec
+    name: UncompressedCodec
+    type: Class
+- uid: ParquetNeo.Compression.Lz4
+  name: ParquetNeo.Compression.Lz4
+  type: Namespace
+  items:
+  - uid: ParquetNeo.Compression.Lz4.Lz4RawCodec
+    name: Lz4RawCodec
+    type: Class
+  - uid: ParquetNeo.Compression.Lz4.Lz4RawCodecRegistryExtensions
+    name: Lz4RawCodecRegistryExtensions
+    type: Class
+- uid: ParquetNeo.Compression.Snappy
+  name: ParquetNeo.Compression.Snappy
+  type: Namespace
+  items:
+  - uid: ParquetNeo.Compression.Snappy.SnappyCodec
+    name: SnappyCodec
+    type: Class
+  - uid: ParquetNeo.Compression.Snappy.SnappyCodecRegistryExtensions
+    name: SnappyCodecRegistryExtensions
+    type: Class
+- uid: ParquetNeo.Compression.Zstd
+  name: ParquetNeo.Compression.Zstd
+  type: Namespace
+  items:
+  - uid: ParquetNeo.Compression.Zstd.ZstdCodec
+    name: ZstdCodec
+    type: Class
+  - uid: ParquetNeo.Compression.Zstd.ZstdCodecRegistryExtensions
+    name: ZstdCodecRegistryExtensions
+    type: Class
+- uid: ParquetNeo.Data
+  name: ParquetNeo.Data
+  type: Namespace
+  items:
+  - uid: ParquetNeo.Data.ParquetDataReader
+    name: ParquetDataReader
+    type: Class
+  - uid: ParquetNeo.Data.ParquetDataReaderOptions
+    name: ParquetDataReaderOptions
+    type: Class
+  - uid: ParquetNeo.Data.ParquetDataWriter
+    name: ParquetDataWriter
+    type: Class
+  - uid: ParquetNeo.Data.ParquetDataWriterOptions
+    name: ParquetDataWriterOptions
+    type: Class
+- uid: ParquetNeo.DataModel
+  name: ParquetNeo.DataModel
+  type: Namespace
+  items:
+  - uid: ParquetNeo.DataModel.ParquetColumnAttribute
+    name: ParquetColumnAttribute
+    type: Class
+  - uid: ParquetNeo.DataModel.ParquetDecimalAttribute
+    name: ParquetDecimalAttribute
+    type: Class
+  - uid: ParquetNeo.DataModel.ParquetDictionaryAttribute
+    name: ParquetDictionaryAttribute
+    type: Class
+  - uid: ParquetNeo.DataModel.ParquetEncodingAttribute
+    name: ParquetEncodingAttribute
+    type: Class
+  - uid: ParquetNeo.DataModel.ParquetIgnoreAttribute
+    name: ParquetIgnoreAttribute
+    type: Class
+  - uid: ParquetNeo.DataModel.ParquetSerializableAttribute
+    name: ParquetSerializableAttribute
+    type: Class
+  - uid: ParquetNeo.DataModel.ParquetTimeAttribute
+    name: ParquetTimeAttribute
+    type: Class
+  - uid: ParquetNeo.DataModel.ParquetTimestampAttribute
+    name: ParquetTimestampAttribute
+    type: Class
+- uid: ParquetNeo.Exceptions
+  name: ParquetNeo.Exceptions
+  type: Namespace
+  items:
+  - uid: ParquetNeo.Exceptions.CompressionException
+    name: CompressionException
+    type: Class
+  - uid: ParquetNeo.Exceptions.CorruptColumnException
+    name: CorruptColumnException
+    type: Class
+  - uid: ParquetNeo.Exceptions.EncodingException
+    name: EncodingException
+    type: Class
+  - uid: ParquetNeo.Exceptions.InvalidSchemaException
+    name: InvalidSchemaException
+    type: Class
+  - uid: ParquetNeo.Exceptions.MetadataException
+    name: MetadataException
+    type: Class
+  - uid: ParquetNeo.Exceptions.ParquetException
+    name: ParquetException
+    type: Class
+  - uid: ParquetNeo.Exceptions.ParquetFormatException
+    name: ParquetFormatException
+    type: Class
+  - uid: ParquetNeo.Exceptions.SchemaMismatchException
+    name: SchemaMismatchException
+    type: Class
+  - uid: ParquetNeo.Exceptions.ValueConversionException
+    name: ValueConversionException
+    type: Class
+- uid: ParquetNeo.Linq
+  name: ParquetNeo.Linq
+  type: Namespace
+  items:
+  - uid: ParquetNeo.Linq.ParquetDataset
+    name: ParquetDataset
+    type: Class
+  - uid: ParquetNeo.Linq.ParquetDatasetOptions
+    name: ParquetDatasetOptions
+    type: Class
+  - uid: ParquetNeo.Linq.ParquetDataset`1
+    name: ParquetDataset<T>
+    type: Class
+  - uid: ParquetNeo.Linq.ParquetQueryPlan
+    name: ParquetQueryPlan
+    type: Class
+  - uid: ParquetNeo.Linq.ParquetQueryableExtensions
+    name: ParquetQueryableExtensions
+    type: Class
+- uid: ParquetNeo.Metadata
+  name: ParquetNeo.Metadata
+  type: Namespace
+  items:
+  - uid: ParquetNeo.Metadata.ColumnChunk
+    name: ColumnChunk
+    type: Class
+  - uid: ParquetNeo.Metadata.ColumnIndex
+    name: ColumnIndex
+    type: Class
+  - uid: ParquetNeo.Metadata.ColumnMetaData
+    name: ColumnMetaData
+    type: Class
+  - uid: ParquetNeo.Metadata.FileMetaData
+    name: FileMetaData
+    type: Class
+  - uid: ParquetNeo.Metadata.KeyValue
+    name: KeyValue
+    type: Class
+  - uid: ParquetNeo.Metadata.LogicalType
+    name: LogicalType
+    type: Class
+  - uid: ParquetNeo.Metadata.OffsetIndex
+    name: OffsetIndex
+    type: Class
+  - uid: ParquetNeo.Metadata.PageEncodingStats
+    name: PageEncodingStats
+    type: Class
+  - uid: ParquetNeo.Metadata.PageLocation
+    name: PageLocation
+    type: Class
+  - uid: ParquetNeo.Metadata.RowGroup
+    name: RowGroup
+    type: Class
+  - uid: ParquetNeo.Metadata.SchemaElement
+    name: SchemaElement
+    type: Class
+  - uid: ParquetNeo.Metadata.SizeStatistics
+    name: SizeStatistics
+    type: Class
+  - uid: ParquetNeo.Metadata.SortingColumn
+    name: SortingColumn
+    type: Class
+  - uid: ParquetNeo.Metadata.Statistics
+    name: Statistics
+    type: Class
+- uid: ParquetNeo.Metadata.Headers
+  name: ParquetNeo.Metadata.Headers
+  type: Namespace
+  items:
+  - uid: ParquetNeo.Metadata.Headers.BloomFilterHeader
+    name: BloomFilterHeader
+    type: Class
+  - uid: ParquetNeo.Metadata.Headers.DataPageHeader
+    name: DataPageHeader
+    type: Class
+  - uid: ParquetNeo.Metadata.Headers.DataPageV2Header
+    name: DataPageV2Header
+    type: Class
+  - uid: ParquetNeo.Metadata.Headers.DictionaryPageHeader
+    name: DictionaryPageHeader
+    type: Class
+  - uid: ParquetNeo.Metadata.Headers.PageHeader
+    name: PageHeader
+    type: Class
+- uid: ParquetNeo.Nested
+  name: ParquetNeo.Nested
+  type: Namespace
+  items:
+  - uid: ParquetNeo.Nested.ColumnStructure
+    name: ColumnStructure
+    type: Class
+  - uid: ParquetNeo.Nested.ListLayout
+    name: ListLayout
+    type: Class
+  - uid: ParquetNeo.Nested.MapLayout
+    name: MapLayout
+    type: Class
+  - uid: ParquetNeo.Nested.NestedSchema
+    name: NestedSchema
+    type: Class
+  - uid: ParquetNeo.Nested.StructureLevel
+    name: StructureLevel
+    type: Class
+- uid: ParquetNeo.Schema
+  name: ParquetNeo.Schema
+  type: Namespace
+  items:
+  - uid: ParquetNeo.Schema.GroupNode
+    name: GroupNode
+    type: Class
+  - uid: ParquetNeo.Schema.ParquetSchema
+    name: ParquetSchema
+    type: Class
+  - uid: ParquetNeo.Schema.PrimitiveNode
+    name: PrimitiveNode
+    type: Class
+  - uid: ParquetNeo.Schema.SchemaNode
+    name: SchemaNode
+    type: Class
+- uid: ParquetNeo.Serialization
+  name: ParquetNeo.Serialization
+  type: Namespace
+  items:
+  - uid: ParquetNeo.Serialization.ParquetDeserializerOptions
+    name: ParquetDeserializerOptions
+    type: Class
+  - uid: ParquetNeo.Serialization.ParquetSerializer
+    name: ParquetSerializer
+    type: Class
+  - uid: ParquetNeo.Serialization.ParquetSerializerOptions
+    name: ParquetSerializerOptions
+    type: Class
+- uid: ParquetNeo.Serialization.Generated
+  name: ParquetNeo.Serialization.Generated
+  type: Namespace
+  items:
+  - uid: ParquetNeo.Serialization.Generated.AssembleRow`1
+    name: AssembleRow<TRow>
+    type: Delegate
+  - uid: ParquetNeo.Serialization.Generated.MappingRegistry
+    name: MappingRegistry
+    type: Class
+  - uid: ParquetNeo.Serialization.Generated.ReadMappingBuilder`1
+    name: ReadMappingBuilder<TRow>
+    type: Class
+  - uid: ParquetNeo.Serialization.Generated.ReadMapping`1
+    name: ReadMapping<TRow>
+    type: Class
+  - uid: ParquetNeo.Serialization.Generated.RowSink
+    name: RowSink
+    type: Struct
+  - uid: ParquetNeo.Serialization.Generated.RowSource
+    name: RowSource
+    type: Struct
+  - uid: ParquetNeo.Serialization.Generated.ShredRow`1
+    name: ShredRow<TRow>
+    type: Delegate
+  - uid: ParquetNeo.Serialization.Generated.WriteMappingBuilder`1
+    name: WriteMappingBuilder<TRow>
+    type: Class
+  - uid: ParquetNeo.Serialization.Generated.WriteMapping`1
+    name: WriteMapping<TRow>
+    type: Class
+- uid: ParquetNeo.Statistics
+  name: ParquetNeo.Statistics
+  type: Namespace
+  items:
+  - uid: ParquetNeo.Statistics.ColumnStatistics
+    name: ColumnStatistics
+    type: Class
+memberLayout: SamePage

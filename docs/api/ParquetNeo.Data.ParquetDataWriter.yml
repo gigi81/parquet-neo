@@ -1,0 +1,720 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Data.ParquetDataWriter
+  commentId: T:ParquetNeo.Data.ParquetDataWriter
+  id: ParquetDataWriter
+  parent: ParquetNeo.Data
+  children:
+  - ParquetNeo.Data.ParquetDataWriter.Write(System.Data.IDataReader,System.IO.Stream,ParquetNeo.Data.ParquetDataWriterOptions)
+  - ParquetNeo.Data.ParquetDataWriter.WriteAsync(System.Data.Common.DbDataReader,System.IO.Stream,ParquetNeo.Data.ParquetDataWriterOptions,System.Threading.CancellationToken)
+  langs:
+  - csharp
+  - vb
+  name: ParquetDataWriter
+  nameWithType: ParquetDataWriter
+  fullName: ParquetNeo.Data.ParquetDataWriter
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataWriter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ParquetDataWriter
+    path: ../src/ParquetNeo/Data/ParquetDataWriter.cs
+    startLine: 18
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: >-
+    Writes the rows of an <xref href="System.Data.IDataReader" data-throw-if-not-resolved="false"></xref> (a database query, a <xref href="System.Data.DataTable" data-throw-if-not-resolved="false"></xref> through
+
+    <xref href="System.Data.DataTable.CreateDataReader" data-throw-if-not-resolved="false"></xref>, or any other reader) as a Parquet file. Each column of the reader becomes a column
+
+    of the file, typed by <xref href="System.Data.IDataRecord.GetFieldType(System.Int32)" data-throw-if-not-resolved="false"></xref>: the types of <xref href="ParquetNeo.ColumnTypes.ColumnTypeRegistry" data-throw-if-not-resolved="false"></xref>, which
+
+    are the ones <code>ParquetSerializer</code> writes. A column is optional unless the reader's schema table says
+
+    <code>AllowDBNull</code> is false, and a decimal takes the precision and scale the schema table gives (38 and 18 otherwise).
+  remarks: >-
+    The rows go into row groups of <xref href="ParquetNeo.Data.ParquetDataWriterOptions.RowGroupSize" data-throw-if-not-resolved="false"></xref> rows, each encoded and written to the stream
+
+    when it is full, so memory is bounded by one row group whatever the size of the result. Only the current result set is
+
+    written, and neither the reader nor the stream is closed.
+  example: []
+  syntax:
+    content: public static class ParquetDataWriter
+    content.vb: Public Module ParquetDataWriter
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.Data.ParquetDataWriter.Write(System.Data.IDataReader,System.IO.Stream,ParquetNeo.Data.ParquetDataWriterOptions)
+  commentId: M:ParquetNeo.Data.ParquetDataWriter.Write(System.Data.IDataReader,System.IO.Stream,ParquetNeo.Data.ParquetDataWriterOptions)
+  id: Write(System.Data.IDataReader,System.IO.Stream,ParquetNeo.Data.ParquetDataWriterOptions)
+  parent: ParquetNeo.Data.ParquetDataWriter
+  langs:
+  - csharp
+  - vb
+  name: Write(IDataReader, Stream, ParquetDataWriterOptions?)
+  nameWithType: ParquetDataWriter.Write(IDataReader, Stream, ParquetDataWriterOptions?)
+  fullName: ParquetNeo.Data.ParquetDataWriter.Write(System.Data.IDataReader, System.IO.Stream, ParquetNeo.Data.ParquetDataWriterOptions?)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataWriter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Write
+    path: ../src/ParquetNeo/Data/ParquetDataWriter.cs
+    startLine: 24
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: Writes the rest of the rows of the reader to the stream as a Parquet file.
+  example: []
+  syntax:
+    content: public static void Write(IDataReader source, Stream destination, ParquetDataWriterOptions? options = null)
+    parameters:
+    - id: source
+      type: System.Data.IDataReader
+    - id: destination
+      type: System.IO.Stream
+    - id: options
+      type: ParquetNeo.Data.ParquetDataWriterOptions
+    content.vb: Public Shared Sub Write(source As IDataReader, destination As Stream, options As ParquetDataWriterOptions = Nothing)
+  overload: ParquetNeo.Data.ParquetDataWriter.Write*
+  exceptions:
+  - type: System.ArgumentException
+    commentId: T:System.ArgumentException
+    description: The reader has no columns, or the stream is not writable.
+  - type: System.NotSupportedException
+    commentId: T:System.NotSupportedException
+    description: A column has a type that cannot be written.
+  - type: System.InvalidOperationException
+    commentId: T:System.InvalidOperationException
+    description: A column is declared not nullable by the reader, but holds a null.
+  nameWithType.vb: ParquetDataWriter.Write(IDataReader, Stream, ParquetDataWriterOptions)
+  fullName.vb: ParquetNeo.Data.ParquetDataWriter.Write(System.Data.IDataReader, System.IO.Stream, ParquetNeo.Data.ParquetDataWriterOptions)
+  name.vb: Write(IDataReader, Stream, ParquetDataWriterOptions)
+- uid: ParquetNeo.Data.ParquetDataWriter.WriteAsync(System.Data.Common.DbDataReader,System.IO.Stream,ParquetNeo.Data.ParquetDataWriterOptions,System.Threading.CancellationToken)
+  commentId: M:ParquetNeo.Data.ParquetDataWriter.WriteAsync(System.Data.Common.DbDataReader,System.IO.Stream,ParquetNeo.Data.ParquetDataWriterOptions,System.Threading.CancellationToken)
+  id: WriteAsync(System.Data.Common.DbDataReader,System.IO.Stream,ParquetNeo.Data.ParquetDataWriterOptions,System.Threading.CancellationToken)
+  parent: ParquetNeo.Data.ParquetDataWriter
+  langs:
+  - csharp
+  - vb
+  name: WriteAsync(DbDataReader, Stream, ParquetDataWriterOptions?, CancellationToken)
+  nameWithType: ParquetDataWriter.WriteAsync(DbDataReader, Stream, ParquetDataWriterOptions?, CancellationToken)
+  fullName: ParquetNeo.Data.ParquetDataWriter.WriteAsync(System.Data.Common.DbDataReader, System.IO.Stream, ParquetNeo.Data.ParquetDataWriterOptions?, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataWriter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: WriteAsync
+    path: ../src/ParquetNeo/Data/ParquetDataWriter.cs
+    startLine: 46
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: Writes the rest of the rows of the reader to the stream as a Parquet file, without blocking while the reader or the stream waits.
+  example: []
+  syntax:
+    content: public static Task WriteAsync(DbDataReader source, Stream destination, ParquetDataWriterOptions? options = null, CancellationToken cancellationToken = default)
+    parameters:
+    - id: source
+      type: System.Data.Common.DbDataReader
+    - id: destination
+      type: System.IO.Stream
+    - id: options
+      type: ParquetNeo.Data.ParquetDataWriterOptions
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+    return:
+      type: System.Threading.Tasks.Task
+    content.vb: Public Shared Function WriteAsync(source As DbDataReader, destination As Stream, options As ParquetDataWriterOptions = Nothing, cancellationToken As CancellationToken = Nothing) As Task
+  overload: ParquetNeo.Data.ParquetDataWriter.WriteAsync*
+  exceptions:
+  - type: System.ArgumentException
+    commentId: T:System.ArgumentException
+    description: The reader has no columns, or the stream is not writable.
+  - type: System.NotSupportedException
+    commentId: T:System.NotSupportedException
+    description: A column has a type that cannot be written.
+  - type: System.InvalidOperationException
+    commentId: T:System.InvalidOperationException
+    description: A column is declared not nullable by the reader, but holds a null.
+  nameWithType.vb: ParquetDataWriter.WriteAsync(DbDataReader, Stream, ParquetDataWriterOptions, CancellationToken)
+  fullName.vb: ParquetNeo.Data.ParquetDataWriter.WriteAsync(System.Data.Common.DbDataReader, System.IO.Stream, ParquetNeo.Data.ParquetDataWriterOptions, System.Threading.CancellationToken)
+  name.vb: WriteAsync(DbDataReader, Stream, ParquetDataWriterOptions, CancellationToken)
+references:
+- uid: System.Data.IDataReader
+  commentId: T:System.Data.IDataReader
+  parent: System.Data
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.idatareader
+  name: IDataReader
+  nameWithType: IDataReader
+  fullName: System.Data.IDataReader
+- uid: System.Data.DataTable
+  commentId: T:System.Data.DataTable
+  parent: System.Data
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.datatable
+  name: DataTable
+  nameWithType: DataTable
+  fullName: System.Data.DataTable
+- uid: System.Data.DataTable.CreateDataReader
+  commentId: M:System.Data.DataTable.CreateDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.datatable.createdatareader
+  name: CreateDataReader()
+  nameWithType: DataTable.CreateDataReader()
+  fullName: System.Data.DataTable.CreateDataReader()
+  spec.csharp:
+  - uid: System.Data.DataTable.CreateDataReader
+    name: CreateDataReader
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.datatable.createdatareader
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Data.DataTable.CreateDataReader
+    name: CreateDataReader
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.datatable.createdatareader
+  - name: (
+  - name: )
+- uid: System.Data.IDataRecord.GetFieldType(System.Int32)
+  commentId: M:System.Data.IDataRecord.GetFieldType(System.Int32)
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.idatarecord.getfieldtype
+  name: GetFieldType(int)
+  nameWithType: IDataRecord.GetFieldType(int)
+  fullName: System.Data.IDataRecord.GetFieldType(int)
+  nameWithType.vb: IDataRecord.GetFieldType(Integer)
+  fullName.vb: System.Data.IDataRecord.GetFieldType(Integer)
+  name.vb: GetFieldType(Integer)
+  spec.csharp:
+  - uid: System.Data.IDataRecord.GetFieldType(System.Int32)
+    name: GetFieldType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.idatarecord.getfieldtype
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.IDataRecord.GetFieldType(System.Int32)
+    name: GetFieldType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.idatarecord.getfieldtype
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.ColumnTypes.ColumnTypeRegistry
+  commentId: T:ParquetNeo.ColumnTypes.ColumnTypeRegistry
+  href: ParquetNeo.ColumnTypes.ColumnTypeRegistry.html
+  name: ColumnTypeRegistry
+  nameWithType: ColumnTypeRegistry
+  fullName: ParquetNeo.ColumnTypes.ColumnTypeRegistry
+- uid: ParquetNeo.Data.ParquetDataWriterOptions.RowGroupSize
+  commentId: P:ParquetNeo.Data.ParquetDataWriterOptions.RowGroupSize
+  href: ParquetNeo.Data.ParquetDataWriterOptions.html#ParquetNeo_Data_ParquetDataWriterOptions_RowGroupSize
+  name: RowGroupSize
+  nameWithType: ParquetDataWriterOptions.RowGroupSize
+  fullName: ParquetNeo.Data.ParquetDataWriterOptions.RowGroupSize
+- uid: ParquetNeo.Data
+  commentId: N:ParquetNeo.Data
+  name: ParquetNeo.Data
+  nameWithType: ParquetNeo.Data
+  fullName: ParquetNeo.Data
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Data
+    name: Data
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Data
+    name: Data
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System.Data
+  commentId: N:System.Data
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Data
+  nameWithType: System.Data
+  fullName: System.Data
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Data
+    name: Data
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Data
+    name: Data
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.ArgumentException
+  commentId: T:System.ArgumentException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.argumentexception
+  name: ArgumentException
+  nameWithType: ArgumentException
+  fullName: System.ArgumentException
+- uid: System.NotSupportedException
+  commentId: T:System.NotSupportedException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.notsupportedexception
+  name: NotSupportedException
+  nameWithType: NotSupportedException
+  fullName: System.NotSupportedException
+- uid: System.InvalidOperationException
+  commentId: T:System.InvalidOperationException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.invalidoperationexception
+  name: InvalidOperationException
+  nameWithType: InvalidOperationException
+  fullName: System.InvalidOperationException
+- uid: ParquetNeo.Data.ParquetDataWriter.Write*
+  commentId: Overload:ParquetNeo.Data.ParquetDataWriter.Write
+  href: ParquetNeo.Data.ParquetDataWriter.html#ParquetNeo_Data_ParquetDataWriter_Write_System_Data_IDataReader_System_IO_Stream_ParquetNeo_Data_ParquetDataWriterOptions_
+  name: Write
+  nameWithType: ParquetDataWriter.Write
+  fullName: ParquetNeo.Data.ParquetDataWriter.Write
+- uid: System.IO.Stream
+  commentId: T:System.IO.Stream
+  parent: System.IO
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.io.stream
+  name: Stream
+  nameWithType: Stream
+  fullName: System.IO.Stream
+- uid: ParquetNeo.Data.ParquetDataWriterOptions
+  commentId: T:ParquetNeo.Data.ParquetDataWriterOptions
+  parent: ParquetNeo.Data
+  href: ParquetNeo.Data.ParquetDataWriterOptions.html
+  name: ParquetDataWriterOptions
+  nameWithType: ParquetDataWriterOptions
+  fullName: ParquetNeo.Data.ParquetDataWriterOptions
+- uid: System.IO
+  commentId: N:System.IO
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.IO
+  nameWithType: System.IO
+  fullName: System.IO
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.IO
+    name: IO
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.io
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.IO
+    name: IO
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.io
+- uid: ParquetNeo.Data.ParquetDataWriter.WriteAsync*
+  commentId: Overload:ParquetNeo.Data.ParquetDataWriter.WriteAsync
+  href: ParquetNeo.Data.ParquetDataWriter.html#ParquetNeo_Data_ParquetDataWriter_WriteAsync_System_Data_Common_DbDataReader_System_IO_Stream_ParquetNeo_Data_ParquetDataWriterOptions_System_Threading_CancellationToken_
+  name: WriteAsync
+  nameWithType: ParquetDataWriter.WriteAsync
+  fullName: ParquetNeo.Data.ParquetDataWriter.WriteAsync
+- uid: System.Data.Common.DbDataReader
+  commentId: T:System.Data.Common.DbDataReader
+  parent: System.Data.Common
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader
+  name: DbDataReader
+  nameWithType: DbDataReader
+  fullName: System.Data.Common.DbDataReader
+- uid: System.Threading.CancellationToken
+  commentId: T:System.Threading.CancellationToken
+  parent: System.Threading
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  name: CancellationToken
+  nameWithType: CancellationToken
+  fullName: System.Threading.CancellationToken
+- uid: System.Threading.Tasks.Task
+  commentId: T:System.Threading.Tasks.Task
+  parent: System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.tasks.task
+  name: Task
+  nameWithType: Task
+  fullName: System.Threading.Tasks.Task
+- uid: System.Data.Common
+  commentId: N:System.Data.Common
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Data.Common
+  nameWithType: System.Data.Common
+  fullName: System.Data.Common
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Data
+    name: Data
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data
+  - name: .
+  - uid: System.Data.Common
+    name: Common
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Data
+    name: Data
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data
+  - name: .
+  - uid: System.Data.Common
+    name: Common
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common
+- uid: System.Threading
+  commentId: N:System.Threading
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading
+  nameWithType: System.Threading
+  fullName: System.Threading
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+- uid: System.Threading.Tasks
+  commentId: N:System.Threading.Tasks
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading.Tasks
+  nameWithType: System.Threading.Tasks
+  fullName: System.Threading.Tasks
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  - name: .
+  - uid: System.Threading.Tasks
+    name: Tasks
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.tasks

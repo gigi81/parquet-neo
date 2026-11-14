@@ -1,0 +1,949 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.RowGroupWriter
+  commentId: T:ParquetNeo.RowGroupWriter
+  id: RowGroupWriter
+  parent: ParquetNeo
+  children:
+  - ParquetNeo.RowGroupWriter.Close
+  - ParquetNeo.RowGroupWriter.ColumnsStarted
+  - ParquetNeo.RowGroupWriter.Dispose
+  - ParquetNeo.RowGroupWriter.NextColumn
+  - ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}},System.Int32,System.Threading.CancellationToken)
+  - ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}},System.Threading.CancellationToken)
+  langs:
+  - csharp
+  - vb
+  name: RowGroupWriter
+  nameWithType: RowGroupWriter
+  fullName: ParquetNeo.RowGroupWriter
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupWriter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: RowGroupWriter
+    path: ../src/ParquetNeo/RowGroupWriter.cs
+    startLine: 14
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    Writes one row group: every column of the schema, in schema order, each with the same number of rows.
+
+    Create it with <xref href="ParquetNeo.ParquetFileWriter.AppendRowGroup" data-throw-if-not-resolved="false"></xref>, call <xref href="ParquetNeo.RowGroupWriter.NextColumn" data-throw-if-not-resolved="false"></xref> once per column,
+
+    and dispose it (or call <xref href="ParquetNeo.RowGroupWriter.Close" data-throw-if-not-resolved="false"></xref>) to finish the group.
+  example: []
+  syntax:
+    content: 'public sealed class RowGroupWriter : IDisposable'
+    content.vb: Public NotInheritable Class RowGroupWriter Implements IDisposable
+  inheritance:
+  - System.Object
+  implements:
+  - System.IDisposable
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.RowGroupWriter.ColumnsStarted
+  commentId: P:ParquetNeo.RowGroupWriter.ColumnsStarted
+  id: ColumnsStarted
+  parent: ParquetNeo.RowGroupWriter
+  langs:
+  - csharp
+  - vb
+  name: ColumnsStarted
+  nameWithType: RowGroupWriter.ColumnsStarted
+  fullName: ParquetNeo.RowGroupWriter.ColumnsStarted
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupWriter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ColumnsStarted
+    path: ../src/ParquetNeo/RowGroupWriter.cs
+    startLine: 37
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: The number of columns that have been started so far.
+  example: []
+  syntax:
+    content: public int ColumnsStarted { get; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public ReadOnly Property ColumnsStarted As Integer
+  overload: ParquetNeo.RowGroupWriter.ColumnsStarted*
+- uid: ParquetNeo.RowGroupWriter.NextColumn
+  commentId: M:ParquetNeo.RowGroupWriter.NextColumn
+  id: NextColumn
+  parent: ParquetNeo.RowGroupWriter
+  langs:
+  - csharp
+  - vb
+  name: NextColumn()
+  nameWithType: RowGroupWriter.NextColumn()
+  fullName: ParquetNeo.RowGroupWriter.NextColumn()
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupWriter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: NextColumn
+    path: ../src/ParquetNeo/RowGroupWriter.cs
+    startLine: 41
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: Finishes the current column, if any, and returns a writer for the next one.
+  example: []
+  syntax:
+    content: public ColumnWriter NextColumn()
+    return:
+      type: ParquetNeo.ColumnWriter
+    content.vb: Public Function NextColumn() As ColumnWriter
+  overload: ParquetNeo.RowGroupWriter.NextColumn*
+  exceptions:
+  - type: System.InvalidOperationException
+    commentId: T:System.InvalidOperationException
+    description: All columns have been written, or the group is closed.
+- uid: ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}},System.Threading.CancellationToken)
+  commentId: M:ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}},System.Threading.CancellationToken)
+  id: WriteColumns(System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}},System.Threading.CancellationToken)
+  parent: ParquetNeo.RowGroupWriter
+  langs:
+  - csharp
+  - vb
+  name: WriteColumns(IReadOnlyList<Action<ColumnWriter>>, CancellationToken)
+  nameWithType: RowGroupWriter.WriteColumns(IReadOnlyList<Action<ColumnWriter>>, CancellationToken)
+  fullName: ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList<System.Action<ParquetNeo.ColumnWriter>>, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupWriter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: WriteColumns
+    path: ../src/ParquetNeo/RowGroupWriter.cs
+    startLine: 58
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    Writes every column of the group on as many threads as the machine has processors; see
+
+    <xref href="ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList%7bSystem.Action%7bParquetNeo.ColumnWriter%7d%7d%2cSystem.Int32%2cSystem.Threading.CancellationToken)" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: public void WriteColumns(IReadOnlyList<Action<ColumnWriter>> columns, CancellationToken cancellationToken = default)
+    parameters:
+    - id: columns
+      type: System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}}
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+    content.vb: Public Sub WriteColumns(columns As IReadOnlyList(Of Action(Of ColumnWriter)), cancellationToken As CancellationToken = Nothing)
+  overload: ParquetNeo.RowGroupWriter.WriteColumns*
+  nameWithType.vb: RowGroupWriter.WriteColumns(IReadOnlyList(Of Action(Of ColumnWriter)), CancellationToken)
+  fullName.vb: ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList(Of System.Action(Of ParquetNeo.ColumnWriter)), System.Threading.CancellationToken)
+  name.vb: WriteColumns(IReadOnlyList(Of Action(Of ColumnWriter)), CancellationToken)
+- uid: ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}},System.Int32,System.Threading.CancellationToken)
+  commentId: M:ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}},System.Int32,System.Threading.CancellationToken)
+  id: WriteColumns(System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}},System.Int32,System.Threading.CancellationToken)
+  parent: ParquetNeo.RowGroupWriter
+  langs:
+  - csharp
+  - vb
+  name: WriteColumns(IReadOnlyList<Action<ColumnWriter>>, int, CancellationToken)
+  nameWithType: RowGroupWriter.WriteColumns(IReadOnlyList<Action<ColumnWriter>>, int, CancellationToken)
+  fullName: ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList<System.Action<ParquetNeo.ColumnWriter>>, int, System.Threading.CancellationToken)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupWriter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: WriteColumns
+    path: ../src/ParquetNeo/RowGroupWriter.cs
+    startLine: 92
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    Writes every column of the group, encoding up to <code class="paramref">maxDegreeOfParallelism</code> of them at a time. Encoding
+
+    (the dictionary, the levels, compression, statistics) is most of the time of writing, so a group of several columns takes
+
+    about as long as its slowest column instead of the sum of them.
+  remarks: >-
+    <p>
+
+    The columns are encoded into buffers of their own, and then copied to the file in the order of the schema, so the file is
+
+    the same, byte for byte, as the one <xref href="ParquetNeo.RowGroupWriter.NextColumn" data-throw-if-not-resolved="false"></xref> makes whatever the degree of parallelism. The group must not
+
+    have started: this does all of its columns.
+
+    </p>
+
+    <p>
+
+    The actions run on different threads, one thread for each action, so they must not share anything that is not safe to share
+
+    (the arrays they read from are fine as long as nothing writes to them). The <xref href="ParquetNeo.ColumnWriter" data-throw-if-not-resolved="false"></xref> an action gets is for
+
+    that action alone and only until it returns: write the values of the column to it and do not keep it. The action does not
+
+    complete the column; the group does.
+
+    </p>
+
+    <p>
+
+    The encoded columns of the group are held in memory until all of them are done, so this takes about the size of the group
+
+    (compressed) more memory than <xref href="ParquetNeo.RowGroupWriter.NextColumn" data-throw-if-not-resolved="false"></xref>, which writes each column to the file as it goes. If an action throws,
+
+    that exception is thrown from here, nothing of the group is written, and disposing the group abandons the file. Use
+
+    <xref href="ParquetNeo.RowGroupWriter.NextColumn" data-throw-if-not-resolved="false"></xref> for a group that is too big to hold, or for a single column.
+
+    </p>
+  example: []
+  syntax:
+    content: public void WriteColumns(IReadOnlyList<Action<ColumnWriter>> columns, int maxDegreeOfParallelism, CancellationToken cancellationToken = default)
+    parameters:
+    - id: columns
+      type: System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}}
+      description: What to write to each column, in the order of the schema.
+    - id: maxDegreeOfParallelism
+      type: System.Int32
+      description: The most columns encoded at the same time; at least 1.
+    - id: cancellationToken
+      type: System.Threading.CancellationToken
+      description: Stops the columns that have not started; the exception is an <xref href="System.OperationCanceledException" data-throw-if-not-resolved="false"></xref>.
+    content.vb: Public Sub WriteColumns(columns As IReadOnlyList(Of Action(Of ColumnWriter)), maxDegreeOfParallelism As Integer, cancellationToken As CancellationToken = Nothing)
+  overload: ParquetNeo.RowGroupWriter.WriteColumns*
+  exceptions:
+  - type: System.ArgumentNullException
+    commentId: T:System.ArgumentNullException
+    description: <code class="paramref">columns</code> is null.
+  - type: System.ArgumentException
+    commentId: T:System.ArgumentException
+    description: An action is null.
+  - type: System.ArgumentOutOfRangeException
+    commentId: T:System.ArgumentOutOfRangeException
+    description: <code class="paramref">maxDegreeOfParallelism</code> is below 1.
+  - type: System.InvalidOperationException
+    commentId: T:System.InvalidOperationException
+    description: A column has been started already, there is not one action per column, or the columns have different row counts.
+  nameWithType.vb: RowGroupWriter.WriteColumns(IReadOnlyList(Of Action(Of ColumnWriter)), Integer, CancellationToken)
+  fullName.vb: ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList(Of System.Action(Of ParquetNeo.ColumnWriter)), Integer, System.Threading.CancellationToken)
+  name.vb: WriteColumns(IReadOnlyList(Of Action(Of ColumnWriter)), Integer, CancellationToken)
+- uid: ParquetNeo.RowGroupWriter.Close
+  commentId: M:ParquetNeo.RowGroupWriter.Close
+  id: Close
+  parent: ParquetNeo.RowGroupWriter
+  langs:
+  - csharp
+  - vb
+  name: Close()
+  nameWithType: RowGroupWriter.Close()
+  fullName: ParquetNeo.RowGroupWriter.Close()
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupWriter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Close
+    path: ../src/ParquetNeo/RowGroupWriter.cs
+    startLine: 177
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: Finishes the group and records it in the file.
+  example: []
+  syntax:
+    content: public void Close()
+    content.vb: Public Sub Close()
+  overload: ParquetNeo.RowGroupWriter.Close*
+  exceptions:
+  - type: System.InvalidOperationException
+    commentId: T:System.InvalidOperationException
+    description: Columns are missing, or the columns have different row counts.
+- uid: ParquetNeo.RowGroupWriter.Dispose
+  commentId: M:ParquetNeo.RowGroupWriter.Dispose
+  id: Dispose
+  parent: ParquetNeo.RowGroupWriter
+  langs:
+  - csharp
+  - vb
+  name: Dispose()
+  nameWithType: RowGroupWriter.Dispose()
+  fullName: ParquetNeo.RowGroupWriter.Dispose()
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupWriter.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Dispose
+    path: ../src/ParquetNeo/RowGroupWriter.cs
+    startLine: 212
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    Finishes the group if every column was written. Problems (a missing column, a column without values,
+
+    mismatched row counts) are not reported from here, so that disposing never hides an exception that is
+
+    already on its way: the file is abandoned instead and <xref href="ParquetNeo.ParquetFileWriter.Close" data-throw-if-not-resolved="false"></xref> then fails.
+
+    Call <xref href="ParquetNeo.RowGroupWriter.Close" data-throw-if-not-resolved="false"></xref> to get the error at the point where it happens.
+  example: []
+  syntax:
+    content: public void Dispose()
+    content.vb: Public Sub Dispose()
+  overload: ParquetNeo.RowGroupWriter.Dispose*
+  implements:
+  - System.IDisposable.Dispose
+references:
+- uid: ParquetNeo.ParquetFileWriter.AppendRowGroup
+  commentId: M:ParquetNeo.ParquetFileWriter.AppendRowGroup
+  href: ParquetNeo.ParquetFileWriter.html#ParquetNeo_ParquetFileWriter_AppendRowGroup
+  name: AppendRowGroup()
+  nameWithType: ParquetFileWriter.AppendRowGroup()
+  fullName: ParquetNeo.ParquetFileWriter.AppendRowGroup()
+  spec.csharp:
+  - uid: ParquetNeo.ParquetFileWriter.AppendRowGroup
+    name: AppendRowGroup
+    href: ParquetNeo.ParquetFileWriter.html#ParquetNeo_ParquetFileWriter_AppendRowGroup
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.ParquetFileWriter.AppendRowGroup
+    name: AppendRowGroup
+    href: ParquetNeo.ParquetFileWriter.html#ParquetNeo_ParquetFileWriter_AppendRowGroup
+  - name: (
+  - name: )
+- uid: ParquetNeo.RowGroupWriter.NextColumn
+  commentId: M:ParquetNeo.RowGroupWriter.NextColumn
+  href: ParquetNeo.RowGroupWriter.html#ParquetNeo_RowGroupWriter_NextColumn
+  name: NextColumn()
+  nameWithType: RowGroupWriter.NextColumn()
+  fullName: ParquetNeo.RowGroupWriter.NextColumn()
+  spec.csharp:
+  - uid: ParquetNeo.RowGroupWriter.NextColumn
+    name: NextColumn
+    href: ParquetNeo.RowGroupWriter.html#ParquetNeo_RowGroupWriter_NextColumn
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.RowGroupWriter.NextColumn
+    name: NextColumn
+    href: ParquetNeo.RowGroupWriter.html#ParquetNeo_RowGroupWriter_NextColumn
+  - name: (
+  - name: )
+- uid: ParquetNeo.RowGroupWriter.Close
+  commentId: M:ParquetNeo.RowGroupWriter.Close
+  href: ParquetNeo.RowGroupWriter.html#ParquetNeo_RowGroupWriter_Close
+  name: Close()
+  nameWithType: RowGroupWriter.Close()
+  fullName: ParquetNeo.RowGroupWriter.Close()
+  spec.csharp:
+  - uid: ParquetNeo.RowGroupWriter.Close
+    name: Close
+    href: ParquetNeo.RowGroupWriter.html#ParquetNeo_RowGroupWriter_Close
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.RowGroupWriter.Close
+    name: Close
+    href: ParquetNeo.RowGroupWriter.html#ParquetNeo_RowGroupWriter_Close
+  - name: (
+  - name: )
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.IDisposable
+  commentId: T:System.IDisposable
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.idisposable
+  name: IDisposable
+  nameWithType: IDisposable
+  fullName: System.IDisposable
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: ParquetNeo.RowGroupWriter.ColumnsStarted*
+  commentId: Overload:ParquetNeo.RowGroupWriter.ColumnsStarted
+  href: ParquetNeo.RowGroupWriter.html#ParquetNeo_RowGroupWriter_ColumnsStarted
+  name: ColumnsStarted
+  nameWithType: RowGroupWriter.ColumnsStarted
+  fullName: ParquetNeo.RowGroupWriter.ColumnsStarted
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: System.InvalidOperationException
+  commentId: T:System.InvalidOperationException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.invalidoperationexception
+  name: InvalidOperationException
+  nameWithType: InvalidOperationException
+  fullName: System.InvalidOperationException
+- uid: ParquetNeo.RowGroupWriter.NextColumn*
+  commentId: Overload:ParquetNeo.RowGroupWriter.NextColumn
+  href: ParquetNeo.RowGroupWriter.html#ParquetNeo_RowGroupWriter_NextColumn
+  name: NextColumn
+  nameWithType: RowGroupWriter.NextColumn
+  fullName: ParquetNeo.RowGroupWriter.NextColumn
+- uid: ParquetNeo.ColumnWriter
+  commentId: T:ParquetNeo.ColumnWriter
+  parent: ParquetNeo
+  href: ParquetNeo.ColumnWriter.html
+  name: ColumnWriter
+  nameWithType: ColumnWriter
+  fullName: ParquetNeo.ColumnWriter
+- uid: ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}},System.Int32,System.Threading.CancellationToken)
+  commentId: M:ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}},System.Int32,System.Threading.CancellationToken)
+  isExternal: true
+  href: ParquetNeo.RowGroupWriter.html#ParquetNeo_RowGroupWriter_WriteColumns_System_Collections_Generic_IReadOnlyList_System_Action_ParquetNeo_ColumnWriter___System_Int32_System_Threading_CancellationToken_
+  name: WriteColumns(IReadOnlyList<Action<ColumnWriter>>, int, CancellationToken)
+  nameWithType: RowGroupWriter.WriteColumns(IReadOnlyList<Action<ColumnWriter>>, int, CancellationToken)
+  fullName: ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList<System.Action<ParquetNeo.ColumnWriter>>, int, System.Threading.CancellationToken)
+  nameWithType.vb: RowGroupWriter.WriteColumns(IReadOnlyList(Of Action(Of ColumnWriter)), Integer, CancellationToken)
+  fullName.vb: ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList(Of System.Action(Of ParquetNeo.ColumnWriter)), Integer, System.Threading.CancellationToken)
+  name.vb: WriteColumns(IReadOnlyList(Of Action(Of ColumnWriter)), Integer, CancellationToken)
+  spec.csharp:
+  - uid: ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}},System.Int32,System.Threading.CancellationToken)
+    name: WriteColumns
+    href: ParquetNeo.RowGroupWriter.html#ParquetNeo_RowGroupWriter_WriteColumns_System_Collections_Generic_IReadOnlyList_System_Action_ParquetNeo_ColumnWriter___System_Int32_System_Threading_CancellationToken_
+  - name: (
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - uid: System.Action`1
+    name: Action
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.action-1
+  - name: <
+  - uid: ParquetNeo.ColumnWriter
+    name: ColumnWriter
+    href: ParquetNeo.ColumnWriter.html
+  - name: '>'
+  - name: '>'
+  - name: ','
+  - name: " "
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: System.Threading.CancellationToken
+    name: CancellationToken
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.RowGroupWriter.WriteColumns(System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}},System.Int32,System.Threading.CancellationToken)
+    name: WriteColumns
+    href: ParquetNeo.RowGroupWriter.html#ParquetNeo_RowGroupWriter_WriteColumns_System_Collections_Generic_IReadOnlyList_System_Action_ParquetNeo_ColumnWriter___System_Int32_System_Threading_CancellationToken_
+  - name: (
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Action`1
+    name: Action
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.action-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.ColumnWriter
+    name: ColumnWriter
+    href: ParquetNeo.ColumnWriter.html
+  - name: )
+  - name: )
+  - name: ','
+  - name: " "
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: System.Threading.CancellationToken
+    name: CancellationToken
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  - name: )
+- uid: ParquetNeo.RowGroupWriter.WriteColumns*
+  commentId: Overload:ParquetNeo.RowGroupWriter.WriteColumns
+  href: ParquetNeo.RowGroupWriter.html#ParquetNeo_RowGroupWriter_WriteColumns_System_Collections_Generic_IReadOnlyList_System_Action_ParquetNeo_ColumnWriter___System_Threading_CancellationToken_
+  name: WriteColumns
+  nameWithType: RowGroupWriter.WriteColumns
+  fullName: ParquetNeo.RowGroupWriter.WriteColumns
+- uid: System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}}
+  commentId: T:System.Collections.Generic.IReadOnlyList{System.Action{ParquetNeo.ColumnWriter}}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyList`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<Action<ColumnWriter>>
+  nameWithType: IReadOnlyList<Action<ColumnWriter>>
+  fullName: System.Collections.Generic.IReadOnlyList<System.Action<ParquetNeo.ColumnWriter>>
+  nameWithType.vb: IReadOnlyList(Of Action(Of ColumnWriter))
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of System.Action(Of ParquetNeo.ColumnWriter))
+  name.vb: IReadOnlyList(Of Action(Of ColumnWriter))
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - uid: System.Action`1
+    name: Action
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.action-1
+  - name: <
+  - uid: ParquetNeo.ColumnWriter
+    name: ColumnWriter
+    href: ParquetNeo.ColumnWriter.html
+  - name: '>'
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Action`1
+    name: Action
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.action-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.ColumnWriter
+    name: ColumnWriter
+    href: ParquetNeo.ColumnWriter.html
+  - name: )
+  - name: )
+- uid: System.Threading.CancellationToken
+  commentId: T:System.Threading.CancellationToken
+  parent: System.Threading
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  name: CancellationToken
+  nameWithType: CancellationToken
+  fullName: System.Threading.CancellationToken
+- uid: System.Collections.Generic.IReadOnlyList`1
+  commentId: T:System.Collections.Generic.IReadOnlyList`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<T>
+  nameWithType: IReadOnlyList<T>
+  fullName: System.Collections.Generic.IReadOnlyList<T>
+  nameWithType.vb: IReadOnlyList(Of T)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of T)
+  name.vb: IReadOnlyList(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: System.Threading
+  commentId: N:System.Threading
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Threading
+  nameWithType: System.Threading
+  fullName: System.Threading
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Threading
+    name: Threading
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading
+- uid: System.OperationCanceledException
+  commentId: T:System.OperationCanceledException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.operationcanceledexception
+  name: OperationCanceledException
+  nameWithType: OperationCanceledException
+  fullName: System.OperationCanceledException
+- uid: System.ArgumentNullException
+  commentId: T:System.ArgumentNullException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.argumentnullexception
+  name: ArgumentNullException
+  nameWithType: ArgumentNullException
+  fullName: System.ArgumentNullException
+- uid: System.ArgumentException
+  commentId: T:System.ArgumentException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.argumentexception
+  name: ArgumentException
+  nameWithType: ArgumentException
+  fullName: System.ArgumentException
+- uid: System.ArgumentOutOfRangeException
+  commentId: T:System.ArgumentOutOfRangeException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception
+  name: ArgumentOutOfRangeException
+  nameWithType: ArgumentOutOfRangeException
+  fullName: System.ArgumentOutOfRangeException
+- uid: ParquetNeo.RowGroupWriter.Close*
+  commentId: Overload:ParquetNeo.RowGroupWriter.Close
+  href: ParquetNeo.RowGroupWriter.html#ParquetNeo_RowGroupWriter_Close
+  name: Close
+  nameWithType: RowGroupWriter.Close
+  fullName: ParquetNeo.RowGroupWriter.Close
+- uid: ParquetNeo.ParquetFileWriter.Close
+  commentId: M:ParquetNeo.ParquetFileWriter.Close
+  href: ParquetNeo.ParquetFileWriter.html#ParquetNeo_ParquetFileWriter_Close
+  name: Close()
+  nameWithType: ParquetFileWriter.Close()
+  fullName: ParquetNeo.ParquetFileWriter.Close()
+  spec.csharp:
+  - uid: ParquetNeo.ParquetFileWriter.Close
+    name: Close
+    href: ParquetNeo.ParquetFileWriter.html#ParquetNeo_ParquetFileWriter_Close
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.ParquetFileWriter.Close
+    name: Close
+    href: ParquetNeo.ParquetFileWriter.html#ParquetNeo_ParquetFileWriter_Close
+  - name: (
+  - name: )
+- uid: ParquetNeo.RowGroupWriter.Dispose*
+  commentId: Overload:ParquetNeo.RowGroupWriter.Dispose
+  href: ParquetNeo.RowGroupWriter.html#ParquetNeo_RowGroupWriter_Dispose
+  name: Dispose
+  nameWithType: RowGroupWriter.Dispose
+  fullName: ParquetNeo.RowGroupWriter.Dispose
+- uid: System.IDisposable.Dispose
+  commentId: M:System.IDisposable.Dispose
+  parent: System.IDisposable
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.idisposable.dispose
+  name: Dispose()
+  nameWithType: IDisposable.Dispose()
+  fullName: System.IDisposable.Dispose()
+  spec.csharp:
+  - uid: System.IDisposable.Dispose
+    name: Dispose
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.idisposable.dispose
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.IDisposable.Dispose
+    name: Dispose
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.idisposable.dispose
+  - name: (
+  - name: )

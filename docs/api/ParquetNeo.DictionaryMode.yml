@@ -1,0 +1,146 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.DictionaryMode
+  commentId: T:ParquetNeo.DictionaryMode
+  id: DictionaryMode
+  parent: ParquetNeo
+  children:
+  - ParquetNeo.DictionaryMode.Adaptive
+  - ParquetNeo.DictionaryMode.Disabled
+  - ParquetNeo.DictionaryMode.Standard
+  langs:
+  - csharp
+  - vb
+  name: DictionaryMode
+  nameWithType: DictionaryMode
+  fullName: ParquetNeo.DictionaryMode
+  type: Enum
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/DictionaryMode.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: DictionaryMode
+    path: ../src/ParquetNeo.Enums/DictionaryMode.cs
+    startLine: 3
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  summary: How a column is dictionary encoded; see <code>DictionarySettings</code> and <code>ParquetWriterOptions.ColumnDictionaries</code>.
+  example: []
+  syntax:
+    content: public enum DictionaryMode
+    content.vb: Public Enum DictionaryMode
+- uid: ParquetNeo.DictionaryMode.Standard
+  commentId: F:ParquetNeo.DictionaryMode.Standard
+  id: Standard
+  parent: ParquetNeo.DictionaryMode
+  langs:
+  - csharp
+  - vb
+  name: Standard
+  nameWithType: DictionaryMode.Standard
+  fullName: ParquetNeo.DictionaryMode.Standard
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/DictionaryMode.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Standard
+    path: ../src/ParquetNeo.Enums/DictionaryMode.cs
+    startLine: 9
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  summary: >-
+    Every distinct value goes into a dictionary until the dictionary passes <code>ParquetWriterOptions.DictionaryPageSizeLimit</code>,
+
+    and then the rest of the column is written plain. The best choice for data that repeats; it is the default.
+  example: []
+  syntax:
+    content: Standard = 0
+    return:
+      type: ParquetNeo.DictionaryMode
+- uid: ParquetNeo.DictionaryMode.Adaptive
+  commentId: F:ParquetNeo.DictionaryMode.Adaptive
+  id: Adaptive
+  parent: ParquetNeo.DictionaryMode
+  langs:
+  - csharp
+  - vb
+  name: Adaptive
+  nameWithType: DictionaryMode.Adaptive
+  fullName: ParquetNeo.DictionaryMode.Adaptive
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/DictionaryMode.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Adaptive
+    path: ../src/ParquetNeo.Enums/DictionaryMode.cs
+    startLine: 17
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  summary: >-
+    As <xref href="ParquetNeo.DictionaryMode.Standard" data-throw-if-not-resolved="false"></xref>, but the writer looks at the first values of the column (the first 32 KiB of them) and, when
+
+    almost all of them (more than nine in ten) are different, such as identifiers, drops the dictionary and writes the rest of
+
+    the column plain. That saves filling a dictionary that would be dropped anyway, which is much of the time of such a column,
+
+    and the larger file. A column that repeats only after its first values has no dictionary.
+  example: []
+  syntax:
+    content: Adaptive = 1
+    return:
+      type: ParquetNeo.DictionaryMode
+- uid: ParquetNeo.DictionaryMode.Disabled
+  commentId: F:ParquetNeo.DictionaryMode.Disabled
+  id: Disabled
+  parent: ParquetNeo.DictionaryMode
+  langs:
+  - csharp
+  - vb
+  name: Disabled
+  nameWithType: DictionaryMode.Disabled
+  fullName: ParquetNeo.DictionaryMode.Disabled
+  type: Field
+  source:
+    remote:
+      path: src/ParquetNeo.Enums/DictionaryMode.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Disabled
+    path: ../src/ParquetNeo.Enums/DictionaryMode.cs
+    startLine: 20
+  assemblies:
+  - ParquetNeo.Enums
+  namespace: ParquetNeo
+  summary: The column is written plain, whatever its values. The choice for a column that is known to be unique.
+  example: []
+  syntax:
+    content: Disabled = 2
+    return:
+      type: ParquetNeo.DictionaryMode
+references:
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: ParquetNeo.DictionaryMode
+  commentId: T:ParquetNeo.DictionaryMode
+  parent: ParquetNeo
+  href: ParquetNeo.DictionaryMode.html
+  name: DictionaryMode
+  nameWithType: DictionaryMode
+  fullName: ParquetNeo.DictionaryMode
+- uid: ParquetNeo.DictionaryMode.Standard
+  commentId: F:ParquetNeo.DictionaryMode.Standard
+  href: ParquetNeo.DictionaryMode.html#ParquetNeo_DictionaryMode_Standard
+  name: Standard
+  nameWithType: DictionaryMode.Standard
+  fullName: ParquetNeo.DictionaryMode.Standard

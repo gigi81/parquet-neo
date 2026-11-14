@@ -1,0 +1,841 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Linq.ParquetQueryPlan
+  commentId: T:ParquetNeo.Linq.ParquetQueryPlan
+  id: ParquetQueryPlan
+  parent: ParquetNeo.Linq
+  children:
+  - ParquetNeo.Linq.ParquetQueryPlan.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.Boolean)
+  - ParquetNeo.Linq.ParquetQueryPlan.AnsweredFromMetadata
+  - ParquetNeo.Linq.ParquetQueryPlan.Columns
+  - ParquetNeo.Linq.ParquetQueryPlan.Files
+  - ParquetNeo.Linq.ParquetQueryPlan.FilesSkipped
+  - ParquetNeo.Linq.ParquetQueryPlan.Filter
+  - ParquetNeo.Linq.ParquetQueryPlan.RowGroups
+  - ParquetNeo.Linq.ParquetQueryPlan.RowGroupsSkipped
+  langs:
+  - csharp
+  - vb
+  name: ParquetQueryPlan
+  nameWithType: ParquetQueryPlan
+  fullName: ParquetNeo.Linq.ParquetQueryPlan
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryPlan.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ParquetQueryPlan
+    path: ../src/ParquetNeo.Linq/ParquetQueryPlan.cs
+    startLine: 10
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: What a query reads of a dataset, from the footers of its files; see <xref href="ParquetNeo.Linq.ParquetQueryableExtensions.Explain%60%601(System.Linq.IQueryable%7b%60%600%7d)" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: 'public sealed record ParquetQueryPlan : IEquatable<ParquetQueryPlan>'
+    content.vb: Public NotInheritable Class ParquetQueryPlan Implements IEquatable(Of ParquetQueryPlan)
+  inheritance:
+  - System.Object
+  implements:
+  - System.IEquatable{ParquetNeo.Linq.ParquetQueryPlan}
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.Linq.ParquetQueryPlan.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.Boolean)
+  commentId: M:ParquetNeo.Linq.ParquetQueryPlan.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.Boolean)
+  id: '#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.Boolean)'
+  parent: ParquetNeo.Linq.ParquetQueryPlan
+  langs:
+  - csharp
+  - vb
+  name: ParquetQueryPlan(int, int, int, int, string?, IReadOnlyList<string>?, bool)
+  nameWithType: ParquetQueryPlan.ParquetQueryPlan(int, int, int, int, string?, IReadOnlyList<string>?, bool)
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.ParquetQueryPlan(int, int, int, int, string?, System.Collections.Generic.IReadOnlyList<string>?, bool)
+  type: Constructor
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryPlan.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: .ctor
+    path: ../src/ParquetNeo.Linq/ParquetQueryPlan.cs
+    startLine: 10
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: What a query reads of a dataset, from the footers of its files; see <xref href="ParquetNeo.Linq.ParquetQueryableExtensions.Explain%60%601(System.Linq.IQueryable%7b%60%600%7d)" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: public ParquetQueryPlan(int Files, int FilesSkipped, int RowGroups, int RowGroupsSkipped, string? Filter, IReadOnlyList<string>? Columns, bool AnsweredFromMetadata)
+    parameters:
+    - id: Files
+      type: System.Int32
+      description: The number of files in the dataset.
+    - id: FilesSkipped
+      type: System.Int32
+      description: How many of them are not read at all, because their statistics rule out every row of them.
+    - id: RowGroups
+      type: System.Int32
+      description: The number of row groups in the files that are opened.
+    - id: RowGroupsSkipped
+      type: System.Int32
+      description: How many of those are not read, for the same reason.
+    - id: Filter
+      type: System.String
+      description: The condition that was taken from the query to check against the statistics, or null when none could be.
+    - id: Columns
+      type: System.Collections.Generic.IReadOnlyList{System.String}
+      description: The columns that are read, or null when all that the row type has are.
+    - id: AnsweredFromMetadata
+      type: System.Boolean
+      description: Whether the query is answered from the footers alone, with no data read (the number of rows of a dataset, or whether it has any).
+    content.vb: Public Sub New(Files As Integer, FilesSkipped As Integer, RowGroups As Integer, RowGroupsSkipped As Integer, Filter As String, Columns As IReadOnlyList(Of String), AnsweredFromMetadata As Boolean)
+  overload: ParquetNeo.Linq.ParquetQueryPlan.#ctor*
+  nameWithType.vb: ParquetQueryPlan.New(Integer, Integer, Integer, Integer, String, IReadOnlyList(Of String), Boolean)
+  fullName.vb: ParquetNeo.Linq.ParquetQueryPlan.New(Integer, Integer, Integer, Integer, String, System.Collections.Generic.IReadOnlyList(Of String), Boolean)
+  name.vb: New(Integer, Integer, Integer, Integer, String, IReadOnlyList(Of String), Boolean)
+- uid: ParquetNeo.Linq.ParquetQueryPlan.Files
+  commentId: P:ParquetNeo.Linq.ParquetQueryPlan.Files
+  id: Files
+  parent: ParquetNeo.Linq.ParquetQueryPlan
+  langs:
+  - csharp
+  - vb
+  name: Files
+  nameWithType: ParquetQueryPlan.Files
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.Files
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryPlan.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Files
+    path: ../src/ParquetNeo.Linq/ParquetQueryPlan.cs
+    startLine: 11
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: The number of files in the dataset.
+  example: []
+  syntax:
+    content: public int Files { get; init; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property Files As Integer
+  overload: ParquetNeo.Linq.ParquetQueryPlan.Files*
+- uid: ParquetNeo.Linq.ParquetQueryPlan.FilesSkipped
+  commentId: P:ParquetNeo.Linq.ParquetQueryPlan.FilesSkipped
+  id: FilesSkipped
+  parent: ParquetNeo.Linq.ParquetQueryPlan
+  langs:
+  - csharp
+  - vb
+  name: FilesSkipped
+  nameWithType: ParquetQueryPlan.FilesSkipped
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.FilesSkipped
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryPlan.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: FilesSkipped
+    path: ../src/ParquetNeo.Linq/ParquetQueryPlan.cs
+    startLine: 12
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: How many of them are not read at all, because their statistics rule out every row of them.
+  example: []
+  syntax:
+    content: public int FilesSkipped { get; init; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property FilesSkipped As Integer
+  overload: ParquetNeo.Linq.ParquetQueryPlan.FilesSkipped*
+- uid: ParquetNeo.Linq.ParquetQueryPlan.RowGroups
+  commentId: P:ParquetNeo.Linq.ParquetQueryPlan.RowGroups
+  id: RowGroups
+  parent: ParquetNeo.Linq.ParquetQueryPlan
+  langs:
+  - csharp
+  - vb
+  name: RowGroups
+  nameWithType: ParquetQueryPlan.RowGroups
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.RowGroups
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryPlan.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: RowGroups
+    path: ../src/ParquetNeo.Linq/ParquetQueryPlan.cs
+    startLine: 13
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: The number of row groups in the files that are opened.
+  example: []
+  syntax:
+    content: public int RowGroups { get; init; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property RowGroups As Integer
+  overload: ParquetNeo.Linq.ParquetQueryPlan.RowGroups*
+- uid: ParquetNeo.Linq.ParquetQueryPlan.RowGroupsSkipped
+  commentId: P:ParquetNeo.Linq.ParquetQueryPlan.RowGroupsSkipped
+  id: RowGroupsSkipped
+  parent: ParquetNeo.Linq.ParquetQueryPlan
+  langs:
+  - csharp
+  - vb
+  name: RowGroupsSkipped
+  nameWithType: ParquetQueryPlan.RowGroupsSkipped
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.RowGroupsSkipped
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryPlan.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: RowGroupsSkipped
+    path: ../src/ParquetNeo.Linq/ParquetQueryPlan.cs
+    startLine: 14
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: How many of those are not read, for the same reason.
+  example: []
+  syntax:
+    content: public int RowGroupsSkipped { get; init; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property RowGroupsSkipped As Integer
+  overload: ParquetNeo.Linq.ParquetQueryPlan.RowGroupsSkipped*
+- uid: ParquetNeo.Linq.ParquetQueryPlan.Filter
+  commentId: P:ParquetNeo.Linq.ParquetQueryPlan.Filter
+  id: Filter
+  parent: ParquetNeo.Linq.ParquetQueryPlan
+  langs:
+  - csharp
+  - vb
+  name: Filter
+  nameWithType: ParquetQueryPlan.Filter
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.Filter
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryPlan.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Filter
+    path: ../src/ParquetNeo.Linq/ParquetQueryPlan.cs
+    startLine: 15
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: The condition that was taken from the query to check against the statistics, or null when none could be.
+  example: []
+  syntax:
+    content: public string? Filter { get; init; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Filter As String
+  overload: ParquetNeo.Linq.ParquetQueryPlan.Filter*
+- uid: ParquetNeo.Linq.ParquetQueryPlan.Columns
+  commentId: P:ParquetNeo.Linq.ParquetQueryPlan.Columns
+  id: Columns
+  parent: ParquetNeo.Linq.ParquetQueryPlan
+  langs:
+  - csharp
+  - vb
+  name: Columns
+  nameWithType: ParquetQueryPlan.Columns
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.Columns
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryPlan.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Columns
+    path: ../src/ParquetNeo.Linq/ParquetQueryPlan.cs
+    startLine: 16
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: The columns that are read, or null when all that the row type has are.
+  example: []
+  syntax:
+    content: public IReadOnlyList<string>? Columns { get; init; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IReadOnlyList{System.String}
+    content.vb: Public Property Columns As IReadOnlyList(Of String)
+  overload: ParquetNeo.Linq.ParquetQueryPlan.Columns*
+- uid: ParquetNeo.Linq.ParquetQueryPlan.AnsweredFromMetadata
+  commentId: P:ParquetNeo.Linq.ParquetQueryPlan.AnsweredFromMetadata
+  id: AnsweredFromMetadata
+  parent: ParquetNeo.Linq.ParquetQueryPlan
+  langs:
+  - csharp
+  - vb
+  name: AnsweredFromMetadata
+  nameWithType: ParquetQueryPlan.AnsweredFromMetadata
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.AnsweredFromMetadata
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo.Linq/ParquetQueryPlan.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: AnsweredFromMetadata
+    path: ../src/ParquetNeo.Linq/ParquetQueryPlan.cs
+    startLine: 17
+  assemblies:
+  - ParquetNeo.Linq
+  namespace: ParquetNeo.Linq
+  summary: Whether the query is answered from the footers alone, with no data read (the number of rows of a dataset, or whether it has any).
+  example: []
+  syntax:
+    content: public bool AnsweredFromMetadata { get; init; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property AnsweredFromMetadata As Boolean
+  overload: ParquetNeo.Linq.ParquetQueryPlan.AnsweredFromMetadata*
+references:
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions.Explain``1(System.Linq.IQueryable{``0})
+  commentId: M:ParquetNeo.Linq.ParquetQueryableExtensions.Explain``1(System.Linq.IQueryable{``0})
+  isExternal: true
+  href: ParquetNeo.Linq.ParquetQueryableExtensions.html#ParquetNeo_Linq_ParquetQueryableExtensions_Explain__1_System_Linq_IQueryable___0__
+  name: Explain<T>(IQueryable<T>)
+  nameWithType: ParquetQueryableExtensions.Explain<T>(IQueryable<T>)
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions.Explain<T>(System.Linq.IQueryable<T>)
+  nameWithType.vb: ParquetQueryableExtensions.Explain(Of T)(IQueryable(Of T))
+  fullName.vb: ParquetNeo.Linq.ParquetQueryableExtensions.Explain(Of T)(System.Linq.IQueryable(Of T))
+  name.vb: Explain(Of T)(IQueryable(Of T))
+  spec.csharp:
+  - uid: ParquetNeo.Linq.ParquetQueryableExtensions.Explain``1(System.Linq.IQueryable{``0})
+    name: Explain
+    href: ParquetNeo.Linq.ParquetQueryableExtensions.html#ParquetNeo_Linq_ParquetQueryableExtensions_Explain__1_System_Linq_IQueryable___0__
+  - name: <
+  - name: T
+  - name: '>'
+  - name: (
+  - uid: System.Linq.IQueryable`1
+    name: IQueryable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq.iqueryable-1
+  - name: <
+  - name: T
+  - name: '>'
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.Linq.ParquetQueryableExtensions.Explain``1(System.Linq.IQueryable{``0})
+    name: Explain
+    href: ParquetNeo.Linq.ParquetQueryableExtensions.html#ParquetNeo_Linq_ParquetQueryableExtensions_Explain__1_System_Linq_IQueryable___0__
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+  - name: (
+  - uid: System.Linq.IQueryable`1
+    name: IQueryable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.linq.iqueryable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+  - name: )
+- uid: ParquetNeo.Linq
+  commentId: N:ParquetNeo.Linq
+  name: ParquetNeo.Linq
+  nameWithType: ParquetNeo.Linq
+  fullName: ParquetNeo.Linq
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Linq
+    name: Linq
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Linq
+    name: Linq
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.IEquatable{ParquetNeo.Linq.ParquetQueryPlan}
+  commentId: T:System.IEquatable{ParquetNeo.Linq.ParquetQueryPlan}
+  parent: System
+  definition: System.IEquatable`1
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<ParquetQueryPlan>
+  nameWithType: IEquatable<ParquetQueryPlan>
+  fullName: System.IEquatable<ParquetNeo.Linq.ParquetQueryPlan>
+  nameWithType.vb: IEquatable(Of ParquetQueryPlan)
+  fullName.vb: System.IEquatable(Of ParquetNeo.Linq.ParquetQueryPlan)
+  name.vb: IEquatable(Of ParquetQueryPlan)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - uid: ParquetNeo.Linq.ParquetQueryPlan
+    name: ParquetQueryPlan
+    href: ParquetNeo.Linq.ParquetQueryPlan.html
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.Linq.ParquetQueryPlan
+    name: ParquetQueryPlan
+    href: ParquetNeo.Linq.ParquetQueryPlan.html
+  - name: )
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.IEquatable`1
+  commentId: T:System.IEquatable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<T>
+  nameWithType: IEquatable<T>
+  fullName: System.IEquatable<T>
+  nameWithType.vb: IEquatable(Of T)
+  fullName.vb: System.IEquatable(Of T)
+  name.vb: IEquatable(Of T)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.Linq.ParquetQueryPlan.#ctor*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryPlan.#ctor
+  href: ParquetNeo.Linq.ParquetQueryPlan.html#ParquetNeo_Linq_ParquetQueryPlan__ctor_System_Int32_System_Int32_System_Int32_System_Int32_System_String_System_Collections_Generic_IReadOnlyList_System_String__System_Boolean_
+  name: ParquetQueryPlan
+  nameWithType: ParquetQueryPlan.ParquetQueryPlan
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.ParquetQueryPlan
+  nameWithType.vb: ParquetQueryPlan.New
+  fullName.vb: ParquetNeo.Linq.ParquetQueryPlan.New
+  name.vb: New
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: System.Collections.Generic.IReadOnlyList{System.String}
+  commentId: T:System.Collections.Generic.IReadOnlyList{System.String}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyList`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<string>
+  nameWithType: IReadOnlyList<string>
+  fullName: System.Collections.Generic.IReadOnlyList<string>
+  nameWithType.vb: IReadOnlyList(Of String)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of String)
+  name.vb: IReadOnlyList(Of String)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: System.Collections.Generic.IReadOnlyList`1
+  commentId: T:System.Collections.Generic.IReadOnlyList`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<T>
+  nameWithType: IReadOnlyList<T>
+  fullName: System.Collections.Generic.IReadOnlyList<T>
+  nameWithType.vb: IReadOnlyList(Of T)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of T)
+  name.vb: IReadOnlyList(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: ParquetNeo.Linq.ParquetQueryPlan.Files*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryPlan.Files
+  href: ParquetNeo.Linq.ParquetQueryPlan.html#ParquetNeo_Linq_ParquetQueryPlan_Files
+  name: Files
+  nameWithType: ParquetQueryPlan.Files
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.Files
+- uid: ParquetNeo.Linq.ParquetQueryPlan.FilesSkipped*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryPlan.FilesSkipped
+  href: ParquetNeo.Linq.ParquetQueryPlan.html#ParquetNeo_Linq_ParquetQueryPlan_FilesSkipped
+  name: FilesSkipped
+  nameWithType: ParquetQueryPlan.FilesSkipped
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.FilesSkipped
+- uid: ParquetNeo.Linq.ParquetQueryPlan.RowGroups*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryPlan.RowGroups
+  href: ParquetNeo.Linq.ParquetQueryPlan.html#ParquetNeo_Linq_ParquetQueryPlan_RowGroups
+  name: RowGroups
+  nameWithType: ParquetQueryPlan.RowGroups
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.RowGroups
+- uid: ParquetNeo.Linq.ParquetQueryPlan.RowGroupsSkipped*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryPlan.RowGroupsSkipped
+  href: ParquetNeo.Linq.ParquetQueryPlan.html#ParquetNeo_Linq_ParquetQueryPlan_RowGroupsSkipped
+  name: RowGroupsSkipped
+  nameWithType: ParquetQueryPlan.RowGroupsSkipped
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.RowGroupsSkipped
+- uid: ParquetNeo.Linq.ParquetQueryPlan.Filter*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryPlan.Filter
+  href: ParquetNeo.Linq.ParquetQueryPlan.html#ParquetNeo_Linq_ParquetQueryPlan_Filter
+  name: Filter
+  nameWithType: ParquetQueryPlan.Filter
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.Filter
+- uid: ParquetNeo.Linq.ParquetQueryPlan.Columns*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryPlan.Columns
+  href: ParquetNeo.Linq.ParquetQueryPlan.html#ParquetNeo_Linq_ParquetQueryPlan_Columns
+  name: Columns
+  nameWithType: ParquetQueryPlan.Columns
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.Columns
+- uid: ParquetNeo.Linq.ParquetQueryPlan.AnsweredFromMetadata*
+  commentId: Overload:ParquetNeo.Linq.ParquetQueryPlan.AnsweredFromMetadata
+  href: ParquetNeo.Linq.ParquetQueryPlan.html#ParquetNeo_Linq_ParquetQueryPlan_AnsweredFromMetadata
+  name: AnsweredFromMetadata
+  nameWithType: ParquetQueryPlan.AnsweredFromMetadata
+  fullName: ParquetNeo.Linq.ParquetQueryPlan.AnsweredFromMetadata

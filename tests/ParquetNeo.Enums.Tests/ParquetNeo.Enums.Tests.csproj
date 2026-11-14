@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- The format specification the values of the enumerations of the format are checked against. -->
-    <None Include="..\..\specs\parquet.thrift" Link="specs\parquet.thrift" CopyToOutputDirectory="PreserveNewest" />
+    <!-- A copy of parquet.thrift of the Parquet format (Apache License 2.0, see its header), which the values of the enumerations of the format are checked against. -->
+    <None Include="Fixtures\parquet.thrift" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

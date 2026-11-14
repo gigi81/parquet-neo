@@ -1,0 +1,456 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Metadata.Headers.DictionaryPageHeader
+  commentId: T:ParquetNeo.Metadata.Headers.DictionaryPageHeader
+  id: DictionaryPageHeader
+  parent: ParquetNeo.Metadata.Headers
+  children:
+  - ParquetNeo.Metadata.Headers.DictionaryPageHeader.Encoding
+  - ParquetNeo.Metadata.Headers.DictionaryPageHeader.IsSorted
+  - ParquetNeo.Metadata.Headers.DictionaryPageHeader.NumValues
+  langs:
+  - csharp
+  - vb
+  name: DictionaryPageHeader
+  nameWithType: DictionaryPageHeader
+  fullName: ParquetNeo.Metadata.Headers.DictionaryPageHeader
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/Headers/DictionaryPageHeader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: DictionaryPageHeader
+    path: ../src/ParquetNeo/Metadata/Headers/DictionaryPageHeader.cs
+    startLine: 4
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata.Headers
+  syntax:
+    content: public sealed class DictionaryPageHeader
+    content.vb: Public NotInheritable Class DictionaryPageHeader
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.Metadata.Headers.DictionaryPageHeader.NumValues
+  commentId: P:ParquetNeo.Metadata.Headers.DictionaryPageHeader.NumValues
+  id: NumValues
+  parent: ParquetNeo.Metadata.Headers.DictionaryPageHeader
+  langs:
+  - csharp
+  - vb
+  name: NumValues
+  nameWithType: DictionaryPageHeader.NumValues
+  fullName: ParquetNeo.Metadata.Headers.DictionaryPageHeader.NumValues
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/Headers/DictionaryPageHeader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: NumValues
+    path: ../src/ParquetNeo/Metadata/Headers/DictionaryPageHeader.cs
+    startLine: 6
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata.Headers
+  syntax:
+    content: public int NumValues { get; set; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property NumValues As Integer
+  overload: ParquetNeo.Metadata.Headers.DictionaryPageHeader.NumValues*
+- uid: ParquetNeo.Metadata.Headers.DictionaryPageHeader.Encoding
+  commentId: P:ParquetNeo.Metadata.Headers.DictionaryPageHeader.Encoding
+  id: Encoding
+  parent: ParquetNeo.Metadata.Headers.DictionaryPageHeader
+  langs:
+  - csharp
+  - vb
+  name: Encoding
+  nameWithType: DictionaryPageHeader.Encoding
+  fullName: ParquetNeo.Metadata.Headers.DictionaryPageHeader.Encoding
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/Headers/DictionaryPageHeader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Encoding
+    path: ../src/ParquetNeo/Metadata/Headers/DictionaryPageHeader.cs
+    startLine: 8
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata.Headers
+  syntax:
+    content: public ParquetEncoding Encoding { get; set; }
+    parameters: []
+    return:
+      type: ParquetNeo.ParquetEncoding
+    content.vb: Public Property Encoding As ParquetEncoding
+  overload: ParquetNeo.Metadata.Headers.DictionaryPageHeader.Encoding*
+- uid: ParquetNeo.Metadata.Headers.DictionaryPageHeader.IsSorted
+  commentId: P:ParquetNeo.Metadata.Headers.DictionaryPageHeader.IsSorted
+  id: IsSorted
+  parent: ParquetNeo.Metadata.Headers.DictionaryPageHeader
+  langs:
+  - csharp
+  - vb
+  name: IsSorted
+  nameWithType: DictionaryPageHeader.IsSorted
+  fullName: ParquetNeo.Metadata.Headers.DictionaryPageHeader.IsSorted
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/Headers/DictionaryPageHeader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: IsSorted
+    path: ../src/ParquetNeo/Metadata/Headers/DictionaryPageHeader.cs
+    startLine: 10
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata.Headers
+  syntax:
+    content: public bool? IsSorted { get; set; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Boolean}
+    content.vb: Public Property IsSorted As Boolean?
+  overload: ParquetNeo.Metadata.Headers.DictionaryPageHeader.IsSorted*
+references:
+- uid: ParquetNeo.Metadata.Headers
+  commentId: N:ParquetNeo.Metadata.Headers
+  name: ParquetNeo.Metadata.Headers
+  nameWithType: ParquetNeo.Metadata.Headers
+  fullName: ParquetNeo.Metadata.Headers
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+  - name: .
+  - uid: ParquetNeo.Metadata.Headers
+    name: Headers
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+  - name: .
+  - uid: ParquetNeo.Metadata.Headers
+    name: Headers
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: ParquetNeo.Metadata.Headers.DictionaryPageHeader.NumValues*
+  commentId: Overload:ParquetNeo.Metadata.Headers.DictionaryPageHeader.NumValues
+  href: ParquetNeo.Metadata.Headers.DictionaryPageHeader.html#ParquetNeo_Metadata_Headers_DictionaryPageHeader_NumValues
+  name: NumValues
+  nameWithType: DictionaryPageHeader.NumValues
+  fullName: ParquetNeo.Metadata.Headers.DictionaryPageHeader.NumValues
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: ParquetNeo.Metadata.Headers.DictionaryPageHeader.Encoding*
+  commentId: Overload:ParquetNeo.Metadata.Headers.DictionaryPageHeader.Encoding
+  href: ParquetNeo.Metadata.Headers.DictionaryPageHeader.html#ParquetNeo_Metadata_Headers_DictionaryPageHeader_Encoding
+  name: Encoding
+  nameWithType: DictionaryPageHeader.Encoding
+  fullName: ParquetNeo.Metadata.Headers.DictionaryPageHeader.Encoding
+- uid: ParquetNeo.ParquetEncoding
+  commentId: T:ParquetNeo.ParquetEncoding
+  parent: ParquetNeo
+  href: ParquetNeo.ParquetEncoding.html
+  name: ParquetEncoding
+  nameWithType: ParquetEncoding
+  fullName: ParquetNeo.ParquetEncoding
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: ParquetNeo.Metadata.Headers.DictionaryPageHeader.IsSorted*
+  commentId: Overload:ParquetNeo.Metadata.Headers.DictionaryPageHeader.IsSorted
+  href: ParquetNeo.Metadata.Headers.DictionaryPageHeader.html#ParquetNeo_Metadata_Headers_DictionaryPageHeader_IsSorted
+  name: IsSorted
+  nameWithType: DictionaryPageHeader.IsSorted
+  fullName: ParquetNeo.Metadata.Headers.DictionaryPageHeader.IsSorted
+- uid: System.Nullable{System.Boolean}
+  commentId: T:System.Nullable{System.Boolean}
+  parent: System
+  definition: System.Nullable`1
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool?
+  nameWithType: bool?
+  fullName: bool?
+  nameWithType.vb: Boolean?
+  fullName.vb: Boolean?
+  name.vb: Boolean?
+  spec.csharp:
+  - uid: System.Boolean
+    name: bool
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: '?'
+  spec.vb:
+  - uid: System.Boolean
+    name: Boolean
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: '?'
+- uid: System.Nullable`1
+  commentId: T:System.Nullable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  name: Nullable<T>
+  nameWithType: Nullable<T>
+  fullName: System.Nullable<T>
+  nameWithType.vb: Nullable(Of T)
+  fullName.vb: System.Nullable(Of T)
+  name.vb: Nullable(Of T)
+  spec.csharp:
+  - uid: System.Nullable`1
+    name: Nullable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Nullable`1
+    name: Nullable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )

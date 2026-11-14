@@ -1,0 +1,90 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Linq
+  commentId: N:ParquetNeo.Linq
+  id: ParquetNeo.Linq
+  children:
+  - ParquetNeo.Linq.ParquetDataset
+  - ParquetNeo.Linq.ParquetDatasetOptions
+  - ParquetNeo.Linq.ParquetDataset`1
+  - ParquetNeo.Linq.ParquetQueryPlan
+  - ParquetNeo.Linq.ParquetQueryableExtensions
+  langs:
+  - csharp
+  - vb
+  name: ParquetNeo.Linq
+  nameWithType: ParquetNeo.Linq
+  fullName: ParquetNeo.Linq
+  type: Namespace
+  assemblies:
+  - ParquetNeo.Linq
+references:
+- uid: ParquetNeo.Linq.ParquetDataset
+  commentId: T:ParquetNeo.Linq.ParquetDataset
+  href: ParquetNeo.Linq.ParquetDataset.html
+  name: ParquetDataset
+  nameWithType: ParquetDataset
+  fullName: ParquetNeo.Linq.ParquetDataset
+- uid: ParquetNeo.Linq.ParquetDataset`1
+  commentId: T:ParquetNeo.Linq.ParquetDataset`1
+  href: ParquetNeo.Linq.ParquetDataset-1.html
+  name: ParquetDataset<T>
+  nameWithType: ParquetDataset<T>
+  fullName: ParquetNeo.Linq.ParquetDataset<T>
+  nameWithType.vb: ParquetDataset(Of T)
+  fullName.vb: ParquetNeo.Linq.ParquetDataset(Of T)
+  name.vb: ParquetDataset(Of T)
+  spec.csharp:
+  - uid: ParquetNeo.Linq.ParquetDataset`1
+    name: ParquetDataset
+    href: ParquetNeo.Linq.ParquetDataset-1.html
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: ParquetNeo.Linq.ParquetDataset`1
+    name: ParquetDataset
+    href: ParquetNeo.Linq.ParquetDataset-1.html
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.Linq.ParquetDatasetOptions
+  commentId: T:ParquetNeo.Linq.ParquetDatasetOptions
+  parent: ParquetNeo.Linq
+  href: ParquetNeo.Linq.ParquetDatasetOptions.html
+  name: ParquetDatasetOptions
+  nameWithType: ParquetDatasetOptions
+  fullName: ParquetNeo.Linq.ParquetDatasetOptions
+- uid: ParquetNeo.Linq.ParquetQueryableExtensions
+  commentId: T:ParquetNeo.Linq.ParquetQueryableExtensions
+  parent: ParquetNeo.Linq
+  href: ParquetNeo.Linq.ParquetQueryableExtensions.html
+  name: ParquetQueryableExtensions
+  nameWithType: ParquetQueryableExtensions
+  fullName: ParquetNeo.Linq.ParquetQueryableExtensions
+- uid: ParquetNeo.Linq.ParquetQueryPlan
+  commentId: T:ParquetNeo.Linq.ParquetQueryPlan
+  parent: ParquetNeo.Linq
+  href: ParquetNeo.Linq.ParquetQueryPlan.html
+  name: ParquetQueryPlan
+  nameWithType: ParquetQueryPlan
+  fullName: ParquetNeo.Linq.ParquetQueryPlan
+- uid: ParquetNeo.Linq
+  commentId: N:ParquetNeo.Linq
+  name: ParquetNeo.Linq
+  nameWithType: ParquetNeo.Linq
+  fullName: ParquetNeo.Linq
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Linq
+    name: Linq
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Linq
+    name: Linq

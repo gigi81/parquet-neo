@@ -1,0 +1,1022 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.RowGroupReader
+  commentId: T:ParquetNeo.RowGroupReader
+  id: RowGroupReader
+  parent: ParquetNeo
+  children:
+  - ParquetNeo.RowGroupReader.ColumnCount
+  - ParquetNeo.RowGroupReader.GetStatistics(System.Int32)
+  - ParquetNeo.RowGroupReader.GetStatistics(System.String)
+  - ParquetNeo.RowGroupReader.Index
+  - ParquetNeo.RowGroupReader.MayMatch(ParquetNeo.ParquetFilter)
+  - ParquetNeo.RowGroupReader.Metadata
+  - ParquetNeo.RowGroupReader.OpenColumn(System.Int32)
+  - ParquetNeo.RowGroupReader.OpenColumn(System.Int32,ParquetNeo.RowSelection)
+  - ParquetNeo.RowGroupReader.OpenColumn(System.String)
+  - ParquetNeo.RowGroupReader.RowCount
+  - ParquetNeo.RowGroupReader.SelectRows(ParquetNeo.ParquetFilter,System.Collections.Generic.IEnumerable{System.Int32})
+  langs:
+  - csharp
+  - vb
+  name: RowGroupReader
+  nameWithType: RowGroupReader
+  fullName: ParquetNeo.RowGroupReader
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: RowGroupReader
+    path: ../src/ParquetNeo/RowGroupReader.cs
+    startLine: 9
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: Gives access to the columns of one row group.
+  example: []
+  syntax:
+    content: public sealed class RowGroupReader
+    content.vb: Public NotInheritable Class RowGroupReader
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.RowGroupReader.Index
+  commentId: P:ParquetNeo.RowGroupReader.Index
+  id: Index
+  parent: ParquetNeo.RowGroupReader
+  langs:
+  - csharp
+  - vb
+  name: Index
+  nameWithType: RowGroupReader.Index
+  fullName: ParquetNeo.RowGroupReader.Index
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Index
+    path: ../src/ParquetNeo/RowGroupReader.cs
+    startLine: 21
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  syntax:
+    content: public int Index { get; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public ReadOnly Property Index As Integer
+  overload: ParquetNeo.RowGroupReader.Index*
+- uid: ParquetNeo.RowGroupReader.Metadata
+  commentId: P:ParquetNeo.RowGroupReader.Metadata
+  id: Metadata
+  parent: ParquetNeo.RowGroupReader
+  langs:
+  - csharp
+  - vb
+  name: Metadata
+  nameWithType: RowGroupReader.Metadata
+  fullName: ParquetNeo.RowGroupReader.Metadata
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Metadata
+    path: ../src/ParquetNeo/RowGroupReader.cs
+    startLine: 23
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  syntax:
+    content: public RowGroup Metadata { get; }
+    parameters: []
+    return:
+      type: ParquetNeo.Metadata.RowGroup
+    content.vb: Public ReadOnly Property Metadata As RowGroup
+  overload: ParquetNeo.RowGroupReader.Metadata*
+- uid: ParquetNeo.RowGroupReader.RowCount
+  commentId: P:ParquetNeo.RowGroupReader.RowCount
+  id: RowCount
+  parent: ParquetNeo.RowGroupReader
+  langs:
+  - csharp
+  - vb
+  name: RowCount
+  nameWithType: RowGroupReader.RowCount
+  fullName: ParquetNeo.RowGroupReader.RowCount
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: RowCount
+    path: ../src/ParquetNeo/RowGroupReader.cs
+    startLine: 25
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  syntax:
+    content: public long RowCount { get; }
+    parameters: []
+    return:
+      type: System.Int64
+    content.vb: Public ReadOnly Property RowCount As Long
+  overload: ParquetNeo.RowGroupReader.RowCount*
+- uid: ParquetNeo.RowGroupReader.ColumnCount
+  commentId: P:ParquetNeo.RowGroupReader.ColumnCount
+  id: ColumnCount
+  parent: ParquetNeo.RowGroupReader
+  langs:
+  - csharp
+  - vb
+  name: ColumnCount
+  nameWithType: RowGroupReader.ColumnCount
+  fullName: ParquetNeo.RowGroupReader.ColumnCount
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ColumnCount
+    path: ../src/ParquetNeo/RowGroupReader.cs
+    startLine: 27
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  syntax:
+    content: public int ColumnCount { get; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public ReadOnly Property ColumnCount As Integer
+  overload: ParquetNeo.RowGroupReader.ColumnCount*
+- uid: ParquetNeo.RowGroupReader.OpenColumn(System.Int32)
+  commentId: M:ParquetNeo.RowGroupReader.OpenColumn(System.Int32)
+  id: OpenColumn(System.Int32)
+  parent: ParquetNeo.RowGroupReader
+  langs:
+  - csharp
+  - vb
+  name: OpenColumn(int)
+  nameWithType: RowGroupReader.OpenColumn(int)
+  fullName: ParquetNeo.RowGroupReader.OpenColumn(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: OpenColumn
+    path: ../src/ParquetNeo/RowGroupReader.cs
+    startLine: 31
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: Opens a column by its position in the schema (depth-first order).
+  example: []
+  syntax:
+    content: public ColumnReader OpenColumn(int index)
+    parameters:
+    - id: index
+      type: System.Int32
+    return:
+      type: ParquetNeo.ColumnReader
+    content.vb: Public Function OpenColumn(index As Integer) As ColumnReader
+  overload: ParquetNeo.RowGroupReader.OpenColumn*
+  exceptions:
+  - type: System.NotSupportedException
+    commentId: T:System.NotSupportedException
+    description: The column uses an unsupported encoding or lives in another file.
+  nameWithType.vb: RowGroupReader.OpenColumn(Integer)
+  fullName.vb: ParquetNeo.RowGroupReader.OpenColumn(Integer)
+  name.vb: OpenColumn(Integer)
+- uid: ParquetNeo.RowGroupReader.OpenColumn(System.String)
+  commentId: M:ParquetNeo.RowGroupReader.OpenColumn(System.String)
+  id: OpenColumn(System.String)
+  parent: ParquetNeo.RowGroupReader
+  langs:
+  - csharp
+  - vb
+  name: OpenColumn(string)
+  nameWithType: RowGroupReader.OpenColumn(string)
+  fullName: ParquetNeo.RowGroupReader.OpenColumn(string)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: OpenColumn
+    path: ../src/ParquetNeo/RowGroupReader.cs
+    startLine: 40
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: Opens a top-level column by name.
+  example: []
+  syntax:
+    content: public ColumnReader OpenColumn(string name)
+    parameters:
+    - id: name
+      type: System.String
+    return:
+      type: ParquetNeo.ColumnReader
+    content.vb: Public Function OpenColumn(name As String) As ColumnReader
+  overload: ParquetNeo.RowGroupReader.OpenColumn*
+  nameWithType.vb: RowGroupReader.OpenColumn(String)
+  fullName.vb: ParquetNeo.RowGroupReader.OpenColumn(String)
+  name.vb: OpenColumn(String)
+- uid: ParquetNeo.RowGroupReader.OpenColumn(System.Int32,ParquetNeo.RowSelection)
+  commentId: M:ParquetNeo.RowGroupReader.OpenColumn(System.Int32,ParquetNeo.RowSelection)
+  id: OpenColumn(System.Int32,ParquetNeo.RowSelection)
+  parent: ParquetNeo.RowGroupReader
+  langs:
+  - csharp
+  - vb
+  name: OpenColumn(int, RowSelection)
+  nameWithType: RowGroupReader.OpenColumn(int, RowSelection)
+  fullName: ParquetNeo.RowGroupReader.OpenColumn(int, ParquetNeo.RowSelection)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: OpenColumn
+    path: ../src/ParquetNeo/RowGroupReader.cs
+    startLine: 52
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    Opens a column to read only the rows of <code class="paramref">selection</code>: the pages that hold none of them are not read, and what
+
+    is read is those rows one after the other, as if the others were not there. Needs the offset index of the column.
+  example: []
+  syntax:
+    content: public ColumnReader OpenColumn(int index, RowSelection selection)
+    parameters:
+    - id: index
+      type: System.Int32
+    - id: selection
+      type: ParquetNeo.RowSelection
+    return:
+      type: ParquetNeo.ColumnReader
+    content.vb: Public Function OpenColumn(index As Integer, selection As RowSelection) As ColumnReader
+  overload: ParquetNeo.RowGroupReader.OpenColumn*
+  exceptions:
+  - type: System.NotSupportedException
+    commentId: T:System.NotSupportedException
+    description: The file has no usable offset index for the column, or the selection has rows past the end of the group.
+  nameWithType.vb: RowGroupReader.OpenColumn(Integer, RowSelection)
+  fullName.vb: ParquetNeo.RowGroupReader.OpenColumn(Integer, ParquetNeo.RowSelection)
+  name.vb: OpenColumn(Integer, RowSelection)
+- uid: ParquetNeo.RowGroupReader.SelectRows(ParquetNeo.ParquetFilter,System.Collections.Generic.IEnumerable{System.Int32})
+  commentId: M:ParquetNeo.RowGroupReader.SelectRows(ParquetNeo.ParquetFilter,System.Collections.Generic.IEnumerable{System.Int32})
+  id: SelectRows(ParquetNeo.ParquetFilter,System.Collections.Generic.IEnumerable{System.Int32})
+  parent: ParquetNeo.RowGroupReader
+  langs:
+  - csharp
+  - vb
+  name: SelectRows(ParquetFilter, IEnumerable<int>)
+  nameWithType: RowGroupReader.SelectRows(ParquetFilter, IEnumerable<int>)
+  fullName: ParquetNeo.RowGroupReader.SelectRows(ParquetNeo.ParquetFilter, System.Collections.Generic.IEnumerable<int>)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: SelectRows
+    path: ../src/ParquetNeo/RowGroupReader.cs
+    startLine: 81
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    The rows of this group that the filter may match by the page index of its columns, to be given to <xref href="ParquetNeo.RowGroupReader.OpenColumn(System.Int32%2cParquetNeo.RowSelection)" data-throw-if-not-resolved="false"></xref>
+
+    for each of <code class="paramref">columns</code>; <code>null</code> when there is nothing to gain: the filter cannot rule out a page, or one of
+
+    the columns has no offset index. The rows of the pages kept that do not satisfy the filter are in it, so check them as well when
+
+    the result must hold exactly.
+  example: []
+  syntax:
+    content: public RowSelection? SelectRows(ParquetFilter filter, IEnumerable<int> columns)
+    parameters:
+    - id: filter
+      type: ParquetNeo.ParquetFilter
+    - id: columns
+      type: System.Collections.Generic.IEnumerable{System.Int32}
+      description: The positions in the schema of the columns that are going to be read.
+    return:
+      type: ParquetNeo.RowSelection
+    content.vb: Public Function SelectRows(filter As ParquetFilter, columns As IEnumerable(Of Integer)) As RowSelection
+  overload: ParquetNeo.RowGroupReader.SelectRows*
+  nameWithType.vb: RowGroupReader.SelectRows(ParquetFilter, IEnumerable(Of Integer))
+  fullName.vb: ParquetNeo.RowGroupReader.SelectRows(ParquetNeo.ParquetFilter, System.Collections.Generic.IEnumerable(Of Integer))
+  name.vb: SelectRows(ParquetFilter, IEnumerable(Of Integer))
+- uid: ParquetNeo.RowGroupReader.GetStatistics(System.Int32)
+  commentId: M:ParquetNeo.RowGroupReader.GetStatistics(System.Int32)
+  id: GetStatistics(System.Int32)
+  parent: ParquetNeo.RowGroupReader
+  langs:
+  - csharp
+  - vb
+  name: GetStatistics(int)
+  nameWithType: RowGroupReader.GetStatistics(int)
+  fullName: ParquetNeo.RowGroupReader.GetStatistics(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetStatistics
+    path: ../src/ParquetNeo/RowGroupReader.cs
+    startLine: 115
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    Returns the statistics recorded for a column in this row group, or <code>null</code> when the writer recorded none.
+
+    Works for every column.
+  example: []
+  syntax:
+    content: public ColumnStatistics? GetStatistics(int index)
+    parameters:
+    - id: index
+      type: System.Int32
+    return:
+      type: ParquetNeo.Statistics.ColumnStatistics
+    content.vb: Public Function GetStatistics(index As Integer) As ColumnStatistics
+  overload: ParquetNeo.RowGroupReader.GetStatistics*
+  exceptions:
+  - type: ParquetNeo.Exceptions.MetadataException
+    commentId: T:ParquetNeo.Exceptions.MetadataException
+    description: The recorded minimum or maximum has the wrong size for the column's type.
+  nameWithType.vb: RowGroupReader.GetStatistics(Integer)
+  fullName.vb: ParquetNeo.RowGroupReader.GetStatistics(Integer)
+  name.vb: GetStatistics(Integer)
+- uid: ParquetNeo.RowGroupReader.GetStatistics(System.String)
+  commentId: M:ParquetNeo.RowGroupReader.GetStatistics(System.String)
+  id: GetStatistics(System.String)
+  parent: ParquetNeo.RowGroupReader
+  langs:
+  - csharp
+  - vb
+  name: GetStatistics(string)
+  nameWithType: RowGroupReader.GetStatistics(string)
+  fullName: ParquetNeo.RowGroupReader.GetStatistics(string)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetStatistics
+    path: ../src/ParquetNeo/RowGroupReader.cs
+    startLine: 124
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: Returns the statistics of a top-level column by name; see <xref href="ParquetNeo.RowGroupReader.GetStatistics(System.Int32)" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: public ColumnStatistics? GetStatistics(string name)
+    parameters:
+    - id: name
+      type: System.String
+    return:
+      type: ParquetNeo.Statistics.ColumnStatistics
+    content.vb: Public Function GetStatistics(name As String) As ColumnStatistics
+  overload: ParquetNeo.RowGroupReader.GetStatistics*
+  nameWithType.vb: RowGroupReader.GetStatistics(String)
+  fullName.vb: ParquetNeo.RowGroupReader.GetStatistics(String)
+  name.vb: GetStatistics(String)
+- uid: ParquetNeo.RowGroupReader.MayMatch(ParquetNeo.ParquetFilter)
+  commentId: M:ParquetNeo.RowGroupReader.MayMatch(ParquetNeo.ParquetFilter)
+  id: MayMatch(ParquetNeo.ParquetFilter)
+  parent: ParquetNeo.RowGroupReader
+  langs:
+  - csharp
+  - vb
+  name: MayMatch(ParquetFilter)
+  nameWithType: RowGroupReader.MayMatch(ParquetFilter)
+  fullName: ParquetNeo.RowGroupReader.MayMatch(ParquetNeo.ParquetFilter)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/RowGroupReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: MayMatch
+    path: ../src/ParquetNeo/RowGroupReader.cs
+    startLine: 136
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    Whether the row group can hold a row that satisfies the filter: false when the statistics of its columns show that none does.
+
+    See <xref href="ParquetNeo.ParquetFilter" data-throw-if-not-resolved="false"></xref> for what that means for the rows.
+  example: []
+  syntax:
+    content: public bool MayMatch(ParquetFilter filter)
+    parameters:
+    - id: filter
+      type: ParquetNeo.ParquetFilter
+    return:
+      type: System.Boolean
+    content.vb: Public Function MayMatch(filter As ParquetFilter) As Boolean
+  overload: ParquetNeo.RowGroupReader.MayMatch*
+  exceptions:
+  - type: System.ArgumentException
+    commentId: T:System.ArgumentException
+    description: The filter compares a column with a value of a type that does not suit the column.
+references:
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: ParquetNeo.RowGroupReader.Index*
+  commentId: Overload:ParquetNeo.RowGroupReader.Index
+  href: ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_Index
+  name: Index
+  nameWithType: RowGroupReader.Index
+  fullName: ParquetNeo.RowGroupReader.Index
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: ParquetNeo.RowGroupReader.Metadata*
+  commentId: Overload:ParquetNeo.RowGroupReader.Metadata
+  href: ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_Metadata
+  name: Metadata
+  nameWithType: RowGroupReader.Metadata
+  fullName: ParquetNeo.RowGroupReader.Metadata
+- uid: ParquetNeo.Metadata.RowGroup
+  commentId: T:ParquetNeo.Metadata.RowGroup
+  parent: ParquetNeo.Metadata
+  href: ParquetNeo.Metadata.RowGroup.html
+  name: RowGroup
+  nameWithType: RowGroup
+  fullName: ParquetNeo.Metadata.RowGroup
+- uid: ParquetNeo.Metadata
+  commentId: N:ParquetNeo.Metadata
+  name: ParquetNeo.Metadata
+  nameWithType: ParquetNeo.Metadata
+  fullName: ParquetNeo.Metadata
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+- uid: ParquetNeo.RowGroupReader.RowCount*
+  commentId: Overload:ParquetNeo.RowGroupReader.RowCount
+  href: ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_RowCount
+  name: RowCount
+  nameWithType: RowGroupReader.RowCount
+  fullName: ParquetNeo.RowGroupReader.RowCount
+- uid: System.Int64
+  commentId: T:System.Int64
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int64
+  name: long
+  nameWithType: long
+  fullName: long
+  nameWithType.vb: Long
+  fullName.vb: Long
+  name.vb: Long
+- uid: ParquetNeo.RowGroupReader.ColumnCount*
+  commentId: Overload:ParquetNeo.RowGroupReader.ColumnCount
+  href: ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_ColumnCount
+  name: ColumnCount
+  nameWithType: RowGroupReader.ColumnCount
+  fullName: ParquetNeo.RowGroupReader.ColumnCount
+- uid: System.NotSupportedException
+  commentId: T:System.NotSupportedException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.notsupportedexception
+  name: NotSupportedException
+  nameWithType: NotSupportedException
+  fullName: System.NotSupportedException
+- uid: ParquetNeo.RowGroupReader.OpenColumn*
+  commentId: Overload:ParquetNeo.RowGroupReader.OpenColumn
+  href: ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_OpenColumn_System_Int32_
+  name: OpenColumn
+  nameWithType: RowGroupReader.OpenColumn
+  fullName: ParquetNeo.RowGroupReader.OpenColumn
+- uid: ParquetNeo.ColumnReader
+  commentId: T:ParquetNeo.ColumnReader
+  parent: ParquetNeo
+  href: ParquetNeo.ColumnReader.html
+  name: ColumnReader
+  nameWithType: ColumnReader
+  fullName: ParquetNeo.ColumnReader
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: ParquetNeo.RowSelection
+  commentId: T:ParquetNeo.RowSelection
+  parent: ParquetNeo
+  href: ParquetNeo.RowSelection.html
+  name: RowSelection
+  nameWithType: RowSelection
+  fullName: ParquetNeo.RowSelection
+- uid: ParquetNeo.RowGroupReader.OpenColumn(System.Int32,ParquetNeo.RowSelection)
+  commentId: M:ParquetNeo.RowGroupReader.OpenColumn(System.Int32,ParquetNeo.RowSelection)
+  isExternal: true
+  href: ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_OpenColumn_System_Int32_ParquetNeo_RowSelection_
+  name: OpenColumn(int, RowSelection)
+  nameWithType: RowGroupReader.OpenColumn(int, RowSelection)
+  fullName: ParquetNeo.RowGroupReader.OpenColumn(int, ParquetNeo.RowSelection)
+  nameWithType.vb: RowGroupReader.OpenColumn(Integer, RowSelection)
+  fullName.vb: ParquetNeo.RowGroupReader.OpenColumn(Integer, ParquetNeo.RowSelection)
+  name.vb: OpenColumn(Integer, RowSelection)
+  spec.csharp:
+  - uid: ParquetNeo.RowGroupReader.OpenColumn(System.Int32,ParquetNeo.RowSelection)
+    name: OpenColumn
+    href: ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_OpenColumn_System_Int32_ParquetNeo_RowSelection_
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: ParquetNeo.RowSelection
+    name: RowSelection
+    href: ParquetNeo.RowSelection.html
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.RowGroupReader.OpenColumn(System.Int32,ParquetNeo.RowSelection)
+    name: OpenColumn
+    href: ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_OpenColumn_System_Int32_ParquetNeo_RowSelection_
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: ParquetNeo.RowSelection
+    name: RowSelection
+    href: ParquetNeo.RowSelection.html
+  - name: )
+- uid: ParquetNeo.RowGroupReader.SelectRows*
+  commentId: Overload:ParquetNeo.RowGroupReader.SelectRows
+  href: ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_SelectRows_ParquetNeo_ParquetFilter_System_Collections_Generic_IEnumerable_System_Int32__
+  name: SelectRows
+  nameWithType: RowGroupReader.SelectRows
+  fullName: ParquetNeo.RowGroupReader.SelectRows
+- uid: ParquetNeo.ParquetFilter
+  commentId: T:ParquetNeo.ParquetFilter
+  parent: ParquetNeo
+  href: ParquetNeo.ParquetFilter.html
+  name: ParquetFilter
+  nameWithType: ParquetFilter
+  fullName: ParquetNeo.ParquetFilter
+- uid: System.Collections.Generic.IEnumerable{System.Int32}
+  commentId: T:System.Collections.Generic.IEnumerable{System.Int32}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IEnumerable`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  name: IEnumerable<int>
+  nameWithType: IEnumerable<int>
+  fullName: System.Collections.Generic.IEnumerable<int>
+  nameWithType.vb: IEnumerable(Of Integer)
+  fullName.vb: System.Collections.Generic.IEnumerable(Of Integer)
+  name.vb: IEnumerable(Of Integer)
+  spec.csharp:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  - name: <
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: System.Collections.Generic.IEnumerable`1
+  commentId: T:System.Collections.Generic.IEnumerable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  name: IEnumerable<T>
+  nameWithType: IEnumerable<T>
+  fullName: System.Collections.Generic.IEnumerable<T>
+  nameWithType.vb: IEnumerable(Of T)
+  fullName.vb: System.Collections.Generic.IEnumerable(Of T)
+  name.vb: IEnumerable(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: ParquetNeo.Exceptions.MetadataException
+  commentId: T:ParquetNeo.Exceptions.MetadataException
+  href: ParquetNeo.Exceptions.MetadataException.html
+  name: MetadataException
+  nameWithType: MetadataException
+  fullName: ParquetNeo.Exceptions.MetadataException
+- uid: ParquetNeo.RowGroupReader.GetStatistics*
+  commentId: Overload:ParquetNeo.RowGroupReader.GetStatistics
+  href: ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_GetStatistics_System_Int32_
+  name: GetStatistics
+  nameWithType: RowGroupReader.GetStatistics
+  fullName: ParquetNeo.RowGroupReader.GetStatistics
+- uid: ParquetNeo.Statistics.ColumnStatistics
+  commentId: T:ParquetNeo.Statistics.ColumnStatistics
+  parent: ParquetNeo.Statistics
+  href: ParquetNeo.Statistics.ColumnStatistics.html
+  name: ColumnStatistics
+  nameWithType: ColumnStatistics
+  fullName: ParquetNeo.Statistics.ColumnStatistics
+- uid: ParquetNeo.Statistics
+  commentId: N:ParquetNeo.Statistics
+  name: ParquetNeo.Statistics
+  nameWithType: ParquetNeo.Statistics
+  fullName: ParquetNeo.Statistics
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Statistics
+    name: Statistics
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Statistics
+    name: Statistics
+- uid: ParquetNeo.RowGroupReader.GetStatistics(System.Int32)
+  commentId: M:ParquetNeo.RowGroupReader.GetStatistics(System.Int32)
+  isExternal: true
+  href: ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_GetStatistics_System_Int32_
+  name: GetStatistics(int)
+  nameWithType: RowGroupReader.GetStatistics(int)
+  fullName: ParquetNeo.RowGroupReader.GetStatistics(int)
+  nameWithType.vb: RowGroupReader.GetStatistics(Integer)
+  fullName.vb: ParquetNeo.RowGroupReader.GetStatistics(Integer)
+  name.vb: GetStatistics(Integer)
+  spec.csharp:
+  - uid: ParquetNeo.RowGroupReader.GetStatistics(System.Int32)
+    name: GetStatistics
+    href: ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_GetStatistics_System_Int32_
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.RowGroupReader.GetStatistics(System.Int32)
+    name: GetStatistics
+    href: ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_GetStatistics_System_Int32_
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: System.ArgumentException
+  commentId: T:System.ArgumentException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.argumentexception
+  name: ArgumentException
+  nameWithType: ArgumentException
+  fullName: System.ArgumentException
+- uid: ParquetNeo.RowGroupReader.MayMatch*
+  commentId: Overload:ParquetNeo.RowGroupReader.MayMatch
+  href: ParquetNeo.RowGroupReader.html#ParquetNeo_RowGroupReader_MayMatch_ParquetNeo_ParquetFilter_
+  name: MayMatch
+  nameWithType: RowGroupReader.MayMatch
+  fullName: ParquetNeo.RowGroupReader.MayMatch
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean

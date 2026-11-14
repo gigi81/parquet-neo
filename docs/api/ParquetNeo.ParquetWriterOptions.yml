@@ -1,0 +1,1369 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.ParquetWriterOptions
+  commentId: T:ParquetNeo.ParquetWriterOptions
+  id: ParquetWriterOptions
+  parent: ParquetNeo
+  children:
+  - ParquetNeo.ParquetWriterOptions.Codecs
+  - ParquetNeo.ParquetWriterOptions.ColumnBloomFilters
+  - ParquetNeo.ParquetWriterOptions.ColumnDictionaries
+  - ParquetNeo.ParquetWriterOptions.ColumnEncodings
+  - ParquetNeo.ParquetWriterOptions.Compression
+  - ParquetNeo.ParquetWriterOptions.CreatedBy
+  - ParquetNeo.ParquetWriterOptions.DataPageSize
+  - ParquetNeo.ParquetWriterOptions.DataPageVersion
+  - ParquetNeo.ParquetWriterOptions.DictionaryEnabled
+  - ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit
+  - ParquetNeo.ParquetWriterOptions.KeyValueMetadata
+  - ParquetNeo.ParquetWriterOptions.StatisticsEnabled
+  - ParquetNeo.ParquetWriterOptions.StatisticsTruncateLength
+  - ParquetNeo.ParquetWriterOptions.WritePageChecksums
+  - ParquetNeo.ParquetWriterOptions.WritePageIndex
+  langs:
+  - csharp
+  - vb
+  name: ParquetWriterOptions
+  nameWithType: ParquetWriterOptions
+  fullName: ParquetNeo.ParquetWriterOptions
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ParquetWriterOptions
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 5
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: Settings for a <xref href="ParquetNeo.ParquetFileWriter" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: 'public sealed record ParquetWriterOptions : IEquatable<ParquetWriterOptions>'
+    content.vb: Public NotInheritable Class ParquetWriterOptions Implements IEquatable(Of ParquetWriterOptions)
+  inheritance:
+  - System.Object
+  implements:
+  - System.IEquatable{ParquetNeo.ParquetWriterOptions}
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.ParquetWriterOptions.Compression
+  commentId: P:ParquetNeo.ParquetWriterOptions.Compression
+  id: Compression
+  parent: ParquetNeo.ParquetWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: Compression
+  nameWithType: ParquetWriterOptions.Compression
+  fullName: ParquetNeo.ParquetWriterOptions.Compression
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Compression
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 11
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    How pages are compressed. The codec must be available in <xref href="ParquetNeo.ParquetWriterOptions.Codecs" data-throw-if-not-resolved="false"></xref>; Snappy, Zstd and LZ4_RAW
+
+    come from add-on packages and have to be registered first. Defaults to no compression.
+  example: []
+  syntax:
+    content: public CompressionCodec Compression { get; init; }
+    parameters: []
+    return:
+      type: ParquetNeo.CompressionCodec
+    content.vb: Public Property Compression As CompressionCodec
+  overload: ParquetNeo.ParquetWriterOptions.Compression*
+- uid: ParquetNeo.ParquetWriterOptions.Codecs
+  commentId: P:ParquetNeo.ParquetWriterOptions.Codecs
+  id: Codecs
+  parent: ParquetNeo.ParquetWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: Codecs
+  nameWithType: ParquetWriterOptions.Codecs
+  fullName: ParquetNeo.ParquetWriterOptions.Codecs
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Codecs
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 14
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: Where the codec is looked up. Defaults to <xref href="ParquetNeo.Compression.CodecRegistry.Default" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: public CodecRegistry Codecs { get; init; }
+    parameters: []
+    return:
+      type: ParquetNeo.Compression.CodecRegistry
+    content.vb: Public Property Codecs As CodecRegistry
+  overload: ParquetNeo.ParquetWriterOptions.Codecs*
+- uid: ParquetNeo.ParquetWriterOptions.DataPageSize
+  commentId: P:ParquetNeo.ParquetWriterOptions.DataPageSize
+  id: DataPageSize
+  parent: ParquetNeo.ParquetWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: DataPageSize
+  nameWithType: ParquetWriterOptions.DataPageSize
+  fullName: ParquetNeo.ParquetWriterOptions.DataPageSize
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: DataPageSize
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 21
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    The size, in bytes of encoded values before compression, at which a data page is closed. Smaller pages
+
+    allow finer-grained reading, larger ones spend less on headers. A single value bigger than this still
+
+    gets a page of its own. Defaults to 1 MiB.
+  example: []
+  syntax:
+    content: public int DataPageSize { get; init; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property DataPageSize As Integer
+  overload: ParquetNeo.ParquetWriterOptions.DataPageSize*
+- uid: ParquetNeo.ParquetWriterOptions.DictionaryEnabled
+  commentId: P:ParquetNeo.ParquetWriterOptions.DictionaryEnabled
+  id: DictionaryEnabled
+  parent: ParquetNeo.ParquetWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: DictionaryEnabled
+  nameWithType: ParquetWriterOptions.DictionaryEnabled
+  fullName: ParquetNeo.ParquetWriterOptions.DictionaryEnabled
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: DictionaryEnabled
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 28
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    Whether columns are dictionary encoded: each distinct value is stored once and the rows refer to it by number,
+
+    which is far smaller for repetitive data. A column falls back to plain encoding once its dictionary grows past
+
+    <xref href="ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit" data-throw-if-not-resolved="false"></xref>. Booleans are never dictionary encoded. Defaults to <code>true</code>.
+  example: []
+  syntax:
+    content: public bool DictionaryEnabled { get; init; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property DictionaryEnabled As Boolean
+  overload: ParquetNeo.ParquetWriterOptions.DictionaryEnabled*
+- uid: ParquetNeo.ParquetWriterOptions.ColumnDictionaries
+  commentId: P:ParquetNeo.ParquetWriterOptions.ColumnDictionaries
+  id: ColumnDictionaries
+  parent: ParquetNeo.ParquetWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: ColumnDictionaries
+  nameWithType: ParquetWriterOptions.ColumnDictionaries
+  fullName: ParquetNeo.ParquetWriterOptions.ColumnDictionaries
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ColumnDictionaries
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 37
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    How chosen columns are dictionary encoded, keyed by column path with dots (<code>scores.list.element</code>): the
+
+    <xref href="ParquetNeo.DictionaryMode" data-throw-if-not-resolved="false"></xref> and the size limit of the dictionary, in place of <xref href="ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit" data-throw-if-not-resolved="false"></xref>. The
+
+    others use <xref href="ParquetNeo.DictionaryMode.Standard" data-throw-if-not-resolved="false"></xref> and the limit of the writer. A <xref href="ParquetNeo.DictionaryMode" data-throw-if-not-resolved="false"></xref> can be given
+
+    where settings are expected. Nothing here makes a column use a dictionary when <xref href="ParquetNeo.ParquetWriterOptions.DictionaryEnabled" data-throw-if-not-resolved="false"></xref> is off.
+  example: []
+  syntax:
+    content: public IReadOnlyDictionary<string, DictionarySettings>? ColumnDictionaries { get; init; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IReadOnlyDictionary{System.String,ParquetNeo.DictionarySettings}
+    content.vb: Public Property ColumnDictionaries As IReadOnlyDictionary(Of String, DictionarySettings)
+  overload: ParquetNeo.ParquetWriterOptions.ColumnDictionaries*
+  exceptions:
+  - type: System.ArgumentException
+    commentId: T:System.ArgumentException
+    description: 'Reported when the writer is created: a column that does not exist, or a size limit below 1.'
+- uid: ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit
+  commentId: P:ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit
+  id: DictionaryPageSizeLimit
+  parent: ParquetNeo.ParquetWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: DictionaryPageSizeLimit
+  nameWithType: ParquetWriterOptions.DictionaryPageSizeLimit
+  fullName: ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: DictionaryPageSizeLimit
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 44
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    The size, in bytes, a column chunk's dictionary may reach before the writer stops adding to it and falls back to
+
+    plain encoding for the rest of the chunk. Defaults to 1 MiB. The size is checked after every page worth of
+
+    values (and after every batch written), so a dictionary can overshoot the limit by up to that much.
+  example: []
+  syntax:
+    content: public int DictionaryPageSizeLimit { get; init; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property DictionaryPageSizeLimit As Integer
+  overload: ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit*
+- uid: ParquetNeo.ParquetWriterOptions.StatisticsEnabled
+  commentId: P:ParquetNeo.ParquetWriterOptions.StatisticsEnabled
+  id: StatisticsEnabled
+  parent: ParquetNeo.ParquetWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: StatisticsEnabled
+  nameWithType: ParquetWriterOptions.StatisticsEnabled
+  fullName: ParquetNeo.ParquetWriterOptions.StatisticsEnabled
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: StatisticsEnabled
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 50
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    Whether the minimum, maximum and null count of every column chunk are recorded in the footer, which lets readers
+
+    skip data that cannot match a filter. Costs a pass over the values. Defaults to <code>true</code>.
+  example: []
+  syntax:
+    content: public bool StatisticsEnabled { get; init; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property StatisticsEnabled As Boolean
+  overload: ParquetNeo.ParquetWriterOptions.StatisticsEnabled*
+- uid: ParquetNeo.ParquetWriterOptions.WritePageChecksums
+  commentId: P:ParquetNeo.ParquetWriterOptions.WritePageChecksums
+  id: WritePageChecksums
+  parent: ParquetNeo.ParquetWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: WritePageChecksums
+  nameWithType: ParquetWriterOptions.WritePageChecksums
+  fullName: ParquetNeo.ParquetWriterOptions.WritePageChecksums
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: WritePageChecksums
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 57
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    Whether the header of every page carries the CRC-32 of the page as it is written (after compression), so that a reader can
+
+    tell that the bytes were damaged. Computing it costs about 1 second per GB of page bytes: noticeable (tens of percent) when
+
+    writing uncompressed pages, negligible next to a compression codec. Off by default.
+  example: []
+  syntax:
+    content: public bool WritePageChecksums { get; init; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property WritePageChecksums As Boolean
+  overload: ParquetNeo.ParquetWriterOptions.WritePageChecksums*
+- uid: ParquetNeo.ParquetWriterOptions.WritePageIndex
+  commentId: P:ParquetNeo.ParquetWriterOptions.WritePageIndex
+  id: WritePageIndex
+  parent: ParquetNeo.ParquetWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: WritePageIndex
+  nameWithType: ParquetWriterOptions.WritePageIndex
+  fullName: ParquetNeo.ParquetWriterOptions.WritePageIndex
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: WritePageIndex
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 66
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    Whether the file gets a page index: for every column, where each data page is and the smallest and largest value in it, written
+
+    after the row groups. A reader that is given a condition can then skip the pages that cannot hold a row that satisfies it, not only
+
+    the row groups, which pays off in row groups of many pages whose values are in some order (a time, an id that grows). The index
+
+    takes a few bytes a page and the bounds cost a little time to collect. Needs <xref href="ParquetNeo.ParquetWriterOptions.StatisticsEnabled" data-throw-if-not-resolved="false"></xref> for the bounds; without
+
+    it only the positions of the pages are written. Off by default.
+  example: []
+  syntax:
+    content: public bool WritePageIndex { get; init; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property WritePageIndex As Boolean
+  overload: ParquetNeo.ParquetWriterOptions.WritePageIndex*
+- uid: ParquetNeo.ParquetWriterOptions.ColumnBloomFilters
+  commentId: P:ParquetNeo.ParquetWriterOptions.ColumnBloomFilters
+  id: ColumnBloomFilters
+  parent: ParquetNeo.ParquetWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: ColumnBloomFilters
+  nameWithType: ParquetWriterOptions.ColumnBloomFilters
+  fullName: ParquetNeo.ParquetWriterOptions.ColumnBloomFilters
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ColumnBloomFilters
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 77
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    The columns that get a bloom filter in every row group, keyed by column path with dots (<code>address.city</code>). A bloom
+
+    filter tells a reader that a value is certainly not in a row group (it is wrong the other way a small share of the time, see
+
+    <xref href="ParquetNeo.BloomFilterSettings.FalsePositiveRate" data-throw-if-not-resolved="false"></xref>), which the minimum and the maximum cannot when the values are spread
+
+    widely, as ids and names are. Each takes room in the file, about a byte for every few different values. Hashing and counting
+
+    the values makes writing the column several times slower when the pages are not compressed, and little slower when they are.
+
+    Booleans and INT96 cannot have one.
+  example: []
+  syntax:
+    content: public IReadOnlyDictionary<string, BloomFilterSettings>? ColumnBloomFilters { get; init; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IReadOnlyDictionary{System.String,ParquetNeo.BloomFilterSettings}
+    content.vb: Public Property ColumnBloomFilters As IReadOnlyDictionary(Of String, BloomFilterSettings)
+  overload: ParquetNeo.ParquetWriterOptions.ColumnBloomFilters*
+  exceptions:
+  - type: System.ArgumentException
+    commentId: T:System.ArgumentException
+    description: 'Reported when the writer is created: a column that does not exist or cannot have a filter, or settings that make no sense.'
+- uid: ParquetNeo.ParquetWriterOptions.StatisticsTruncateLength
+  commentId: P:ParquetNeo.ParquetWriterOptions.StatisticsTruncateLength
+  id: StatisticsTruncateLength
+  parent: ParquetNeo.ParquetWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: StatisticsTruncateLength
+  nameWithType: ParquetWriterOptions.StatisticsTruncateLength
+  fullName: ParquetNeo.ParquetWriterOptions.StatisticsTruncateLength
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: StatisticsTruncateLength
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 83
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    The longest minimum or maximum, in bytes, kept for string and binary columns. Longer ones are shortened to a
+
+    bound (a prefix for a minimum, an increased prefix for a maximum) and marked as not exact. Defaults to 64.
+  example: []
+  syntax:
+    content: public int StatisticsTruncateLength { get; init; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property StatisticsTruncateLength As Integer
+  overload: ParquetNeo.ParquetWriterOptions.StatisticsTruncateLength*
+- uid: ParquetNeo.ParquetWriterOptions.ColumnEncodings
+  commentId: P:ParquetNeo.ParquetWriterOptions.ColumnEncodings
+  id: ColumnEncodings
+  parent: ParquetNeo.ParquetWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: ColumnEncodings
+  nameWithType: ParquetWriterOptions.ColumnEncodings
+  fullName: ParquetNeo.ParquetWriterOptions.ColumnEncodings
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ColumnEncodings
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 93
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    The encoding to use for the values of chosen columns, keyed by column path with dots (<code>scores.list.element</code>).
+
+    The default is PLAIN. A column chosen here uses its encoding for every page that is not dictionary encoded: all of
+
+    them when <xref href="ParquetNeo.ParquetWriterOptions.DictionaryEnabled" data-throw-if-not-resolved="false"></xref> is off, otherwise the pages after the dictionary is given up.
+
+    DELTA_BINARY_PACKED suits integers that change steadily, DELTA_LENGTH_BYTE_ARRAY and DELTA_BYTE_ARRAY strings
+
+    (the latter when they share prefixes), and BYTE_STREAM_SPLIT floating-point numbers before compression.
+  example: []
+  syntax:
+    content: public IReadOnlyDictionary<string, ParquetEncoding>? ColumnEncodings { get; init; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IReadOnlyDictionary{System.String,ParquetNeo.ParquetEncoding}
+    content.vb: Public Property ColumnEncodings As IReadOnlyDictionary(Of String, ParquetEncoding)
+  overload: ParquetNeo.ParquetWriterOptions.ColumnEncodings*
+  exceptions:
+  - type: System.ArgumentException
+    commentId: T:System.ArgumentException
+    description: 'Reported when the writer is created: a column that does not exist, or an encoding its type cannot use.'
+- uid: ParquetNeo.ParquetWriterOptions.DataPageVersion
+  commentId: P:ParquetNeo.ParquetWriterOptions.DataPageVersion
+  id: DataPageVersion
+  parent: ParquetNeo.ParquetWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: DataPageVersion
+  nameWithType: ParquetWriterOptions.DataPageVersion
+  fullName: ParquetNeo.ParquetWriterOptions.DataPageVersion
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: DataPageVersion
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 99
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    The layout of the data pages. Defaults to <xref href="ParquetNeo.DataPageVersion.V1" data-throw-if-not-resolved="false"></xref>, which every reader understands;
+
+    <xref href="ParquetNeo.DataPageVersion.V2" data-throw-if-not-resolved="false"></xref> stores the levels uncompressed and compresses only the values.
+  example: []
+  syntax:
+    content: public DataPageVersion DataPageVersion { get; init; }
+    parameters: []
+    return:
+      type: ParquetNeo.DataPageVersion
+    content.vb: Public Property DataPageVersion As DataPageVersion
+  overload: ParquetNeo.ParquetWriterOptions.DataPageVersion*
+- uid: ParquetNeo.ParquetWriterOptions.KeyValueMetadata
+  commentId: P:ParquetNeo.ParquetWriterOptions.KeyValueMetadata
+  id: KeyValueMetadata
+  parent: ParquetNeo.ParquetWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: KeyValueMetadata
+  nameWithType: ParquetWriterOptions.KeyValueMetadata
+  fullName: ParquetNeo.ParquetWriterOptions.KeyValueMetadata
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: KeyValueMetadata
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 102
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: Free-form key/value pairs stored in the file footer.
+  example: []
+  syntax:
+    content: public IReadOnlyDictionary<string, string>? KeyValueMetadata { get; init; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IReadOnlyDictionary{System.String,System.String}
+    content.vb: Public Property KeyValueMetadata As IReadOnlyDictionary(Of String, String)
+  overload: ParquetNeo.ParquetWriterOptions.KeyValueMetadata*
+- uid: ParquetNeo.ParquetWriterOptions.CreatedBy
+  commentId: P:ParquetNeo.ParquetWriterOptions.CreatedBy
+  id: CreatedBy
+  parent: ParquetNeo.ParquetWriterOptions
+  langs:
+  - csharp
+  - vb
+  name: CreatedBy
+  nameWithType: ParquetWriterOptions.CreatedBy
+  fullName: ParquetNeo.ParquetWriterOptions.CreatedBy
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ParquetWriterOptions.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: CreatedBy
+    path: ../src/ParquetNeo/ParquetWriterOptions.cs
+    startLine: 105
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: The writer name stored in the footer; defaults to "ParquetNeo version x.y.z".
+  example: []
+  syntax:
+    content: public string? CreatedBy { get; init; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property CreatedBy As String
+  overload: ParquetNeo.ParquetWriterOptions.CreatedBy*
+references:
+- uid: ParquetNeo.ParquetFileWriter
+  commentId: T:ParquetNeo.ParquetFileWriter
+  href: ParquetNeo.ParquetFileWriter.html
+  name: ParquetFileWriter
+  nameWithType: ParquetFileWriter
+  fullName: ParquetNeo.ParquetFileWriter
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.IEquatable{ParquetNeo.ParquetWriterOptions}
+  commentId: T:System.IEquatable{ParquetNeo.ParquetWriterOptions}
+  parent: System
+  definition: System.IEquatable`1
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<ParquetWriterOptions>
+  nameWithType: IEquatable<ParquetWriterOptions>
+  fullName: System.IEquatable<ParquetNeo.ParquetWriterOptions>
+  nameWithType.vb: IEquatable(Of ParquetWriterOptions)
+  fullName.vb: System.IEquatable(Of ParquetNeo.ParquetWriterOptions)
+  name.vb: IEquatable(Of ParquetWriterOptions)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - uid: ParquetNeo.ParquetWriterOptions
+    name: ParquetWriterOptions
+    href: ParquetNeo.ParquetWriterOptions.html
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.ParquetWriterOptions
+    name: ParquetWriterOptions
+    href: ParquetNeo.ParquetWriterOptions.html
+  - name: )
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.IEquatable`1
+  commentId: T:System.IEquatable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<T>
+  nameWithType: IEquatable<T>
+  fullName: System.IEquatable<T>
+  nameWithType.vb: IEquatable(Of T)
+  fullName.vb: System.IEquatable(Of T)
+  name.vb: IEquatable(Of T)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.ParquetWriterOptions.Codecs
+  commentId: P:ParquetNeo.ParquetWriterOptions.Codecs
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_Codecs
+  name: Codecs
+  nameWithType: ParquetWriterOptions.Codecs
+  fullName: ParquetNeo.ParquetWriterOptions.Codecs
+- uid: ParquetNeo.ParquetWriterOptions.Compression*
+  commentId: Overload:ParquetNeo.ParquetWriterOptions.Compression
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_Compression
+  name: Compression
+  nameWithType: ParquetWriterOptions.Compression
+  fullName: ParquetNeo.ParquetWriterOptions.Compression
+- uid: ParquetNeo.CompressionCodec
+  commentId: T:ParquetNeo.CompressionCodec
+  parent: ParquetNeo
+  href: ParquetNeo.CompressionCodec.html
+  name: CompressionCodec
+  nameWithType: CompressionCodec
+  fullName: ParquetNeo.CompressionCodec
+- uid: ParquetNeo.Compression.CodecRegistry.Default
+  commentId: P:ParquetNeo.Compression.CodecRegistry.Default
+  href: ParquetNeo.Compression.CodecRegistry.html#ParquetNeo_Compression_CodecRegistry_Default
+  name: Default
+  nameWithType: CodecRegistry.Default
+  fullName: ParquetNeo.Compression.CodecRegistry.Default
+- uid: ParquetNeo.ParquetWriterOptions.Codecs*
+  commentId: Overload:ParquetNeo.ParquetWriterOptions.Codecs
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_Codecs
+  name: Codecs
+  nameWithType: ParquetWriterOptions.Codecs
+  fullName: ParquetNeo.ParquetWriterOptions.Codecs
+- uid: ParquetNeo.Compression.CodecRegistry
+  commentId: T:ParquetNeo.Compression.CodecRegistry
+  parent: ParquetNeo.Compression
+  href: ParquetNeo.Compression.CodecRegistry.html
+  name: CodecRegistry
+  nameWithType: CodecRegistry
+  fullName: ParquetNeo.Compression.CodecRegistry
+- uid: ParquetNeo.Compression
+  commentId: N:ParquetNeo.Compression
+  name: ParquetNeo.Compression
+  nameWithType: ParquetNeo.Compression
+  fullName: ParquetNeo.Compression
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Compression
+    name: Compression
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Compression
+    name: Compression
+- uid: ParquetNeo.ParquetWriterOptions.DataPageSize*
+  commentId: Overload:ParquetNeo.ParquetWriterOptions.DataPageSize
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_DataPageSize
+  name: DataPageSize
+  nameWithType: ParquetWriterOptions.DataPageSize
+  fullName: ParquetNeo.ParquetWriterOptions.DataPageSize
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit
+  commentId: P:ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_DictionaryPageSizeLimit
+  name: DictionaryPageSizeLimit
+  nameWithType: ParquetWriterOptions.DictionaryPageSizeLimit
+  fullName: ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit
+- uid: ParquetNeo.ParquetWriterOptions.DictionaryEnabled*
+  commentId: Overload:ParquetNeo.ParquetWriterOptions.DictionaryEnabled
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_DictionaryEnabled
+  name: DictionaryEnabled
+  nameWithType: ParquetWriterOptions.DictionaryEnabled
+  fullName: ParquetNeo.ParquetWriterOptions.DictionaryEnabled
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: ParquetNeo.DictionaryMode
+  commentId: T:ParquetNeo.DictionaryMode
+  parent: ParquetNeo
+  href: ParquetNeo.DictionaryMode.html
+  name: DictionaryMode
+  nameWithType: DictionaryMode
+  fullName: ParquetNeo.DictionaryMode
+- uid: ParquetNeo.DictionaryMode.Standard
+  commentId: F:ParquetNeo.DictionaryMode.Standard
+  href: ParquetNeo.DictionaryMode.html#ParquetNeo_DictionaryMode_Standard
+  name: Standard
+  nameWithType: DictionaryMode.Standard
+  fullName: ParquetNeo.DictionaryMode.Standard
+- uid: ParquetNeo.ParquetWriterOptions.DictionaryEnabled
+  commentId: P:ParquetNeo.ParquetWriterOptions.DictionaryEnabled
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_DictionaryEnabled
+  name: DictionaryEnabled
+  nameWithType: ParquetWriterOptions.DictionaryEnabled
+  fullName: ParquetNeo.ParquetWriterOptions.DictionaryEnabled
+- uid: System.ArgumentException
+  commentId: T:System.ArgumentException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.argumentexception
+  name: ArgumentException
+  nameWithType: ArgumentException
+  fullName: System.ArgumentException
+- uid: ParquetNeo.ParquetWriterOptions.ColumnDictionaries*
+  commentId: Overload:ParquetNeo.ParquetWriterOptions.ColumnDictionaries
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_ColumnDictionaries
+  name: ColumnDictionaries
+  nameWithType: ParquetWriterOptions.ColumnDictionaries
+  fullName: ParquetNeo.ParquetWriterOptions.ColumnDictionaries
+- uid: System.Collections.Generic.IReadOnlyDictionary{System.String,ParquetNeo.DictionarySettings}
+  commentId: T:System.Collections.Generic.IReadOnlyDictionary{System.String,ParquetNeo.DictionarySettings}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyDictionary`2
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  name: IReadOnlyDictionary<string, DictionarySettings>
+  nameWithType: IReadOnlyDictionary<string, DictionarySettings>
+  fullName: System.Collections.Generic.IReadOnlyDictionary<string, ParquetNeo.DictionarySettings>
+  nameWithType.vb: IReadOnlyDictionary(Of String, DictionarySettings)
+  fullName.vb: System.Collections.Generic.IReadOnlyDictionary(Of String, ParquetNeo.DictionarySettings)
+  name.vb: IReadOnlyDictionary(Of String, DictionarySettings)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: ParquetNeo.DictionarySettings
+    name: DictionarySettings
+    href: ParquetNeo.DictionarySettings.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: ParquetNeo.DictionarySettings
+    name: DictionarySettings
+    href: ParquetNeo.DictionarySettings.html
+  - name: )
+- uid: System.Collections.Generic.IReadOnlyDictionary`2
+  commentId: T:System.Collections.Generic.IReadOnlyDictionary`2
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  name: IReadOnlyDictionary<TKey, TValue>
+  nameWithType: IReadOnlyDictionary<TKey, TValue>
+  fullName: System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>
+  nameWithType.vb: IReadOnlyDictionary(Of TKey, TValue)
+  fullName.vb: System.Collections.Generic.IReadOnlyDictionary(Of TKey, TValue)
+  name.vb: IReadOnlyDictionary(Of TKey, TValue)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: <
+  - name: TKey
+  - name: ','
+  - name: " "
+  - name: TValue
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: (
+  - name: Of
+  - name: " "
+  - name: TKey
+  - name: ','
+  - name: " "
+  - name: TValue
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit*
+  commentId: Overload:ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_DictionaryPageSizeLimit
+  name: DictionaryPageSizeLimit
+  nameWithType: ParquetWriterOptions.DictionaryPageSizeLimit
+  fullName: ParquetNeo.ParquetWriterOptions.DictionaryPageSizeLimit
+- uid: ParquetNeo.ParquetWriterOptions.StatisticsEnabled*
+  commentId: Overload:ParquetNeo.ParquetWriterOptions.StatisticsEnabled
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_StatisticsEnabled
+  name: StatisticsEnabled
+  nameWithType: ParquetWriterOptions.StatisticsEnabled
+  fullName: ParquetNeo.ParquetWriterOptions.StatisticsEnabled
+- uid: ParquetNeo.ParquetWriterOptions.WritePageChecksums*
+  commentId: Overload:ParquetNeo.ParquetWriterOptions.WritePageChecksums
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_WritePageChecksums
+  name: WritePageChecksums
+  nameWithType: ParquetWriterOptions.WritePageChecksums
+  fullName: ParquetNeo.ParquetWriterOptions.WritePageChecksums
+- uid: ParquetNeo.ParquetWriterOptions.StatisticsEnabled
+  commentId: P:ParquetNeo.ParquetWriterOptions.StatisticsEnabled
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_StatisticsEnabled
+  name: StatisticsEnabled
+  nameWithType: ParquetWriterOptions.StatisticsEnabled
+  fullName: ParquetNeo.ParquetWriterOptions.StatisticsEnabled
+- uid: ParquetNeo.ParquetWriterOptions.WritePageIndex*
+  commentId: Overload:ParquetNeo.ParquetWriterOptions.WritePageIndex
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_WritePageIndex
+  name: WritePageIndex
+  nameWithType: ParquetWriterOptions.WritePageIndex
+  fullName: ParquetNeo.ParquetWriterOptions.WritePageIndex
+- uid: ParquetNeo.BloomFilterSettings.FalsePositiveRate
+  commentId: P:ParquetNeo.BloomFilterSettings.FalsePositiveRate
+  href: ParquetNeo.BloomFilterSettings.html#ParquetNeo_BloomFilterSettings_FalsePositiveRate
+  name: FalsePositiveRate
+  nameWithType: BloomFilterSettings.FalsePositiveRate
+  fullName: ParquetNeo.BloomFilterSettings.FalsePositiveRate
+- uid: ParquetNeo.ParquetWriterOptions.ColumnBloomFilters*
+  commentId: Overload:ParquetNeo.ParquetWriterOptions.ColumnBloomFilters
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_ColumnBloomFilters
+  name: ColumnBloomFilters
+  nameWithType: ParquetWriterOptions.ColumnBloomFilters
+  fullName: ParquetNeo.ParquetWriterOptions.ColumnBloomFilters
+- uid: System.Collections.Generic.IReadOnlyDictionary{System.String,ParquetNeo.BloomFilterSettings}
+  commentId: T:System.Collections.Generic.IReadOnlyDictionary{System.String,ParquetNeo.BloomFilterSettings}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyDictionary`2
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  name: IReadOnlyDictionary<string, BloomFilterSettings>
+  nameWithType: IReadOnlyDictionary<string, BloomFilterSettings>
+  fullName: System.Collections.Generic.IReadOnlyDictionary<string, ParquetNeo.BloomFilterSettings>
+  nameWithType.vb: IReadOnlyDictionary(Of String, BloomFilterSettings)
+  fullName.vb: System.Collections.Generic.IReadOnlyDictionary(Of String, ParquetNeo.BloomFilterSettings)
+  name.vb: IReadOnlyDictionary(Of String, BloomFilterSettings)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: ParquetNeo.BloomFilterSettings
+    name: BloomFilterSettings
+    href: ParquetNeo.BloomFilterSettings.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: ParquetNeo.BloomFilterSettings
+    name: BloomFilterSettings
+    href: ParquetNeo.BloomFilterSettings.html
+  - name: )
+- uid: ParquetNeo.ParquetWriterOptions.StatisticsTruncateLength*
+  commentId: Overload:ParquetNeo.ParquetWriterOptions.StatisticsTruncateLength
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_StatisticsTruncateLength
+  name: StatisticsTruncateLength
+  nameWithType: ParquetWriterOptions.StatisticsTruncateLength
+  fullName: ParquetNeo.ParquetWriterOptions.StatisticsTruncateLength
+- uid: ParquetNeo.ParquetWriterOptions.ColumnEncodings*
+  commentId: Overload:ParquetNeo.ParquetWriterOptions.ColumnEncodings
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_ColumnEncodings
+  name: ColumnEncodings
+  nameWithType: ParquetWriterOptions.ColumnEncodings
+  fullName: ParquetNeo.ParquetWriterOptions.ColumnEncodings
+- uid: System.Collections.Generic.IReadOnlyDictionary{System.String,ParquetNeo.ParquetEncoding}
+  commentId: T:System.Collections.Generic.IReadOnlyDictionary{System.String,ParquetNeo.ParquetEncoding}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyDictionary`2
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  name: IReadOnlyDictionary<string, ParquetEncoding>
+  nameWithType: IReadOnlyDictionary<string, ParquetEncoding>
+  fullName: System.Collections.Generic.IReadOnlyDictionary<string, ParquetNeo.ParquetEncoding>
+  nameWithType.vb: IReadOnlyDictionary(Of String, ParquetEncoding)
+  fullName.vb: System.Collections.Generic.IReadOnlyDictionary(Of String, ParquetNeo.ParquetEncoding)
+  name.vb: IReadOnlyDictionary(Of String, ParquetEncoding)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: ParquetNeo.ParquetEncoding
+    name: ParquetEncoding
+    href: ParquetNeo.ParquetEncoding.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: ParquetNeo.ParquetEncoding
+    name: ParquetEncoding
+    href: ParquetNeo.ParquetEncoding.html
+  - name: )
+- uid: ParquetNeo.DataPageVersion.V1
+  commentId: F:ParquetNeo.DataPageVersion.V1
+  href: ParquetNeo.DataPageVersion.html#ParquetNeo_DataPageVersion_V1
+  name: V1
+  nameWithType: DataPageVersion.V1
+  fullName: ParquetNeo.DataPageVersion.V1
+- uid: ParquetNeo.DataPageVersion.V2
+  commentId: F:ParquetNeo.DataPageVersion.V2
+  href: ParquetNeo.DataPageVersion.html#ParquetNeo_DataPageVersion_V2
+  name: V2
+  nameWithType: DataPageVersion.V2
+  fullName: ParquetNeo.DataPageVersion.V2
+- uid: ParquetNeo.ParquetWriterOptions.DataPageVersion*
+  commentId: Overload:ParquetNeo.ParquetWriterOptions.DataPageVersion
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_DataPageVersion
+  name: DataPageVersion
+  nameWithType: ParquetWriterOptions.DataPageVersion
+  fullName: ParquetNeo.ParquetWriterOptions.DataPageVersion
+- uid: ParquetNeo.DataPageVersion
+  commentId: T:ParquetNeo.DataPageVersion
+  parent: ParquetNeo
+  href: ParquetNeo.DataPageVersion.html
+  name: DataPageVersion
+  nameWithType: DataPageVersion
+  fullName: ParquetNeo.DataPageVersion
+- uid: ParquetNeo.ParquetWriterOptions.KeyValueMetadata*
+  commentId: Overload:ParquetNeo.ParquetWriterOptions.KeyValueMetadata
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_KeyValueMetadata
+  name: KeyValueMetadata
+  nameWithType: ParquetWriterOptions.KeyValueMetadata
+  fullName: ParquetNeo.ParquetWriterOptions.KeyValueMetadata
+- uid: System.Collections.Generic.IReadOnlyDictionary{System.String,System.String}
+  commentId: T:System.Collections.Generic.IReadOnlyDictionary{System.String,System.String}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyDictionary`2
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  name: IReadOnlyDictionary<string, string>
+  nameWithType: IReadOnlyDictionary<string, string>
+  fullName: System.Collections.Generic.IReadOnlyDictionary<string, string>
+  nameWithType.vb: IReadOnlyDictionary(Of String, String)
+  fullName.vb: System.Collections.Generic.IReadOnlyDictionary(Of String, String)
+  name.vb: IReadOnlyDictionary(Of String, String)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyDictionary`2
+    name: IReadOnlyDictionary
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: ParquetNeo.ParquetWriterOptions.CreatedBy*
+  commentId: Overload:ParquetNeo.ParquetWriterOptions.CreatedBy
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_CreatedBy
+  name: CreatedBy
+  nameWithType: ParquetWriterOptions.CreatedBy
+  fullName: ParquetNeo.ParquetWriterOptions.CreatedBy
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String

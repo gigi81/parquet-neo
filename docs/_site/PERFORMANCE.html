@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Performance | ParquetNeo </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Performance | ParquetNeo ">
+      
+      
+      <link rel="icon" href="favicon.ico">
+      <link rel="stylesheet" href="public/docfx.min.css">
+      <link rel="stylesheet" href="public/main.css">
+      <meta name="docfx:navrel" content="toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/gigi81/parquet-neo/blob/main/docs/PERFORMANCE.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="index.html">
+            <img id="logo" class="svg" src="logo.svg" alt="ParquetNeo">
+            ParquetNeo
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="performance">Performance</h1>
+
+<p>How ParquetNeo compares with <a href="https://github.com/aloneguid/parquet-dotnet">Parquet.Net</a> (6.1.0) and
+<a href="https://github.com/G-Research/ParquetSharp">ParquetSharp</a> (25.0.1.2, a wrapper of the Apache Arrow C++ implementation), and
+what was done about what the measurements showed.</p>
+<h2 id="what-is-measured">What is measured</h2>
+<p>One dataset of 1,000,000 rows and five columns: a required <code>long</code>, a nullable string with 5,000 distinct values (one null in
+ten), a nullable <code>double</code> (one null in three), a required <code>int</code> in a small range and a required <code>bool</code>. It is written as one
+row group, with the default encodings of each library (dictionary encoding where the library chooses it), uncompressed and
+with Snappy, to and from memory.</p>
+<ul>
+<li><strong>columns</strong>: the column-wise API of each library, which is the closest to the file (<code>ParquetFileWriter</code> for ParquetNeo,
+<code>ParquetWriter</code> for Parquet.Net, <code>ParquetFileWriter</code> with <code>LogicalWriter</code> for ParquetSharp).</li>
+<li><strong>serializer</strong>: objects in, objects out (<code>ParquetSerializer</code> of ParquetNeo and of Parquet.Net). ParquetSharp has none.</li>
+<li>Reading: every library reads the same file, written by ParquetSharp, into arrays (columns) or into objects (serializer).</li>
+</ul>
+<p>The competitors are driven the way their own documentation makes fastest, and each choice was timed against the alternatives
+(1M rows, same machine) before it was kept:</p>
+<ul>
+<li><strong>ParquetSharp, reading:</strong> a native buffer (<code>BufferReader</code> over the pinned bytes) and its physical column readers for the
+numbers (49 ms with the logical readers over a .NET stream, 38 ms with these, and 36 MB allocated against 8.5 MB). The text
+columns have no physical form that makes strings, so they use the logical reader. A physical <code>ReadBatch</code> can return fewer values
+than asked for, so it is called until every row is read (the benchmark checks the count).</li>
+<li><strong>Parquet.Net, reading:</strong> <code>ReadRawAsync</code> for the nullable double, which returns the values and their definition levels the way
+ParquetNeo does, instead of <code>ReadAsync</code>, which expands them to <code>double?</code> (62–76 ms down to 46–52 ms).</li>
+<li><strong>ParquetSharp, writing:</strong> nothing was faster than the logical writers: physical writers, a native output buffer and switching
+size statistics off all took 101–105 ms against 103 ms. The column descriptors are made once, outside the timed method.</li>
+<li><strong>Parquet.Net, writing:</strong> nothing was faster either: neither the pool limits, the dictionary settings (none of them make it use
+a dictionary), nor reusing the fields changed its 73 ms.</li>
+<li>Every library allocates the arrays it reads into inside the timed method, so none is helped by buffers made in advance.</li>
+</ul>
+<pre><code class="lang-bash">dotnet run -c Release --project benchmarks/ParquetNeo.Benchmarks -- --filter &quot;*WriteComparison*&quot;
+</code></pre>
+<pre><code class="lang-bash">dotnet run -c Release --project benchmarks/ParquetNeo.Benchmarks -- --filter &quot;*ReadComparison*&quot;
+</code></pre>
+<p><code>ColumnBreakdown</code> times each column of the low-level writer and reader on its own, which is how the work below was found.</p>
+<h2 id="results">Results</h2>
+<p>BenchmarkDotNet 0.15.8, .NET 10.0.14, Intel Xeon 2.10 GHz, 4 cores, Linux. Mean of 6 iterations after 2 warm-up iterations (a
+short job, so the error margins are wide: see the notes). Smaller is better.</p>
+<h3 id="writing">Writing</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">Uncompressed</th>
+<th style="text-align: right;">Snappy</th>
+<th style="text-align: right;">Allocated</th>
+<th style="text-align: right;">File (uncompressed / Snappy)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ParquetNeo, columns</td>
+<td style="text-align: right;">67 ms</td>
+<td style="text-align: right;">89 ms</td>
+<td style="text-align: right;">18 KB</td>
+<td style="text-align: right;">16.2 / 8.8 MB</td>
+</tr>
+<tr>
+<td>ParquetNeo, columns, no dictionary</td>
+<td style="text-align: right;">38 ms</td>
+<td style="text-align: right;">65 ms</td>
+<td style="text-align: right;">13 KB</td>
+<td style="text-align: right;">31.3 / 10.9 MB</td>
+</tr>
+<tr>
+<td>Parquet.Net, columns</td>
+<td style="text-align: right;">88 ms</td>
+<td style="text-align: right;">123 ms</td>
+<td style="text-align: right;">28 MB</td>
+<td style="text-align: right;">32.7 / 11.0 MB</td>
+</tr>
+<tr>
+<td>ParquetSharp, columns</td>
+<td style="text-align: right;">112 ms</td>
+<td style="text-align: right;">128 ms</td>
+<td style="text-align: right;">13 MB</td>
+<td style="text-align: right;">15.7 / 8.2 MB</td>
+</tr>
+<tr>
+<td>ParquetNeo, serializer</td>
+<td style="text-align: right;">129 ms</td>
+<td style="text-align: right;">148 ms</td>
+<td style="text-align: right;">36 MB (20 KB since the pooled buffers, below)</td>
+<td style="text-align: right;">16.2 / 8.8 MB</td>
+</tr>
+<tr>
+<td>ParquetNeo, serializer, 4 threads</td>
+<td style="text-align: right;">103 ms</td>
+<td style="text-align: right;">107 ms</td>
+<td style="text-align: right;">36 MB</td>
+<td style="text-align: right;">same</td>
+</tr>
+<tr>
+<td>Parquet.Net, serializer</td>
+<td style="text-align: right;">140 ms</td>
+<td style="text-align: right;">166 ms</td>
+<td style="text-align: right;">128 MB</td>
+<td style="text-align: right;">32.7 / 11.0 MB</td>
+</tr>
+</tbody>
+</table>
+<p>Parquet.Net's column writer writes every column PLAIN, with no dictionary (its dictionary options do not change that), which is
+cheaper per row and makes its files about twice the size of those of the libraries that use a dictionary. The like-for-like
+comparison with it is the row of ParquetNeo without a dictionary, which writes the same kind of file (31 MB against 33 MB) in
+less than half the time uncompressed. <code>dotnet run -c Release --project benchmarks/ParquetNeo.Benchmarks -- --sizes</code> prints the
+sizes.</p>
+<h3 id="reading">Reading</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">Uncompressed</th>
+<th style="text-align: right;">Snappy</th>
+<th style="text-align: right;">Allocated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ParquetNeo, columns</td>
+<td style="text-align: right;">22 ms</td>
+<td style="text-align: right;">44 ms</td>
+<td style="text-align: right;">34 MB</td>
+</tr>
+<tr>
+<td>Parquet.Net, columns</td>
+<td style="text-align: right;">88 ms</td>
+<td style="text-align: right;">94 ms</td>
+<td style="text-align: right;">73–92 MB</td>
+</tr>
+<tr>
+<td>ParquetSharp, columns</td>
+<td style="text-align: right;">51 ms</td>
+<td style="text-align: right;">80 ms</td>
+<td style="text-align: right;">30 MB</td>
+</tr>
+<tr>
+<td>ParquetNeo, serializer</td>
+<td style="text-align: right;">130 ms</td>
+<td style="text-align: right;">145 ms</td>
+<td style="text-align: right;">106 MB</td>
+</tr>
+<tr>
+<td>Parquet.Net, serializer</td>
+<td style="text-align: right;">210 ms</td>
+<td style="text-align: right;">180 ms</td>
+<td style="text-align: right;">148–167 MB</td>
+</tr>
+</tbody>
+</table>
+<h3 id="notes-on-the-numbers">Notes on the numbers</h3>
+<ul>
+<li>They come from one machine, one dataset and a short BenchmarkDotNet job. Differences of 10 to 20 percent between two rows
+are within the noise (the error column of the BenchmarkDotNet output is up to about 15 ms for writes, and the
+Parquet.Net serializer read has an error close to its mean). The large differences, such as reading through columns, are not.</li>
+<li>Writing through columns is ahead of both libraries, and the like-for-like row (no dictionary, the file Parquet.Net writes)
+is more than twice as fast as Parquet.Net uncompressed. The serializer takes about twice as long as the column API; it is
+ahead of Parquet.Net's serializer in both directions.</li>
+<li>ParquetNeo's writer takes its scratch space from the pool, so it allocates next to nothing once it is warm: the figure is for
+a file written after others, as in a benchmark or a service. A single file written in a fresh process still allocates for the
+pool to grow the first time.</li>
+</ul>
+<h2 id="what-the-measurements-led-to">What the measurements led to</h2>
+<p>Timing each column alone (<code>ColumnBreakdown</code>) showed that one column dominated both directions: the dictionary encoded string
+column took 93% of the time of the reader and 60% of the writer. Hence:</p>
+<ul>
+<li><strong>Strings of a dictionary are decoded once.</strong> Reading text turned every value into a new string, 900,000 of them for 5,000
+distinct values. A text dictionary now turns each entry into a string the first time it is used and hands out that string
+for every row that refers to it. Reading the string column went from 77 ms and 42 MB to 8 ms and 0.25 MB, and the whole
+table through columns from 108 ms to 23 ms. A batch of text also no longer ends at the end of a page, since the values are
+copies and no longer point into the page.</li>
+<li><strong>Strings are encoded in one pass.</strong> Up to 1,024 characters, a string is encoded to UTF-8 straight into a buffer sized for
+the longest it can be, instead of being measured and then encoded. Plain encoded string columns write about 20 percent
+faster.</li>
+<li><strong>Statistics of a dictionary column look at new entries only.</strong> The minimum and maximum of a column cannot change when a value
+already in the dictionary comes again, so only values new to the dictionary are compared (900,000 comparisons became 5,000
+here).</li>
+</ul>
+<p>None of this changes the files that are written.</p>
+<p>A second round went to the serializer, whose profile showed the encoders at about 60% of a write and the shredding of rows at
+about a third:</p>
+<ul>
+<li><strong>Columns can be encoded in parallel</strong> (<code>MaxDegreeOfParallelism</code> of <code>ParquetSerializerOptions</code> and of
+<code>ParquetDataWriterOptions</code>; 1, the calling thread, by default). Each column of a row group is encoded into a buffer of its own
+on a different thread and the buffers are copied to the file in the order of the schema, so the file is the same, byte for
+byte, whatever the degree. With four threads the serializer writes the table in 128 ms (121 ms with Snappy) instead of 143 ms
+(162 ms); the time is bounded by the slowest column, here the strings.</li>
+<li><strong>The column buffers are made big enough up front</strong> (the size of the row group, or the number of rows when the collection says
+how many there are) and no longer grow by doubling and copying.</li>
+<li><strong>The synchronous serializer writes straight to the stream</strong> and no longer stages the file in memory to copy it.</li>
+<li><strong>A property is read with one delegate call</strong> instead of two, and a reference is stored in a buffer without the check an
+array of references makes.</li>
+<li><strong>Reading rows sizes its lists and arrays from the file</strong>: the list of rows (which was also copied once more into the list that
+is returned) and the arrays that hold a column. The numbers are those of the file, so they are only trusted up to two million
+entries and the arrays grow normally beyond that.</li>
+</ul>
+<p>The serializer writes in 143 ms where it took 198 ms, with 87 MB allocated instead of 188 MB, and reads in 125 ms where it took 186 ms,
+with 106 MB allocated instead of 162 MB.</p>
+<p>A third round went to writing through columns, which allocated 52 MB for the table (against 28 MB and 13 MB for the other libraries)
+and was slower than Parquet.Net on at least one laptop. Writing each column on its own showed where it went: the two columns of
+unique values (an identifier and an amount) spent 19 ms and 25 MB each building a dictionary of 131,000 entries that the writer
+then gave up, and the string column spent most of its 47 ms in its dictionary.</p>
+<ul>
+<li><strong>The dictionaries are open-addressing tables over pooled arrays</strong>, for numbers (<code>FixedDictionary</code>) and for byte arrays and
+strings (<code>BinaryDictionary</code>: the values are copied one after the other into one array, and an entry is its offset, length and
+hash, so most mismatches are told from the hash alone). Entries are numbered in order of first appearance, so the file is the
+same. The hash is seeded randomly for every dictionary, so that input chosen by an attacker cannot be crafted to collide.</li>
+<li><strong>The scratch buffers of a writer come from the pool</strong> (<code>PooledBufferWriter</code>, in place of <code>ArrayBufferWriter</code>, which grows by
+doubling and is made anew for every file) and go back when the file is closed.</li>
+<li><strong>A dictionary index is appended with one call</strong> instead of a request for room and an advance.</li>
+</ul>
+<p>The unique <code>long</code> column went from 19 ms and 25 MB to 5 ms and nothing; the unique <code>double</code> column from 19 ms and 26 MB to 12 ms;
+the string column from 47 ms to 37 ms. The table through columns went from 86 ms and 52 MB to 67–71 ms and 18 KB.</p>
+<p>A fourth round compiled the rows. A row type whose properties are all single columns (no nested objects, collections or maps,
+and, for reading, created by its parameterless constructor) is written and read by one function generated for it with expression
+trees, instead of a loop over a tree of small objects that each make a virtual call and call a delegate per value:</p>
+<ul>
+<li><strong>Writing</strong>: the function reads every property of the row and adds it to its column buffer (<code>LeafBuffer</code>), with the null
+checks that the type of the property needs (none for a value type, <code>HasValue</code> for a nullable one, a reference check for a
+reference type, and the same error naming the property and the row when a required column is null).</li>
+<li><strong>Reading</strong>: the function creates the instance, takes the next value of every column and sets the property, or sets it to null
+(or raises the same error naming the row, when it cannot be).</li>
+<li>Any other shape (nested objects, lists, maps, types built by a constructor) keeps
+the general path, which does the same thing. The files written are the same, byte for byte.</li>
+</ul>
+<p>On the 1,000,000-row table of five columns the serializer writes in about 118 ms where it took 142 ms, and reads in about 65 ms where
+it took about 90 ms (the floor, objects made by hand from arrays read through the column API, is 39 ms).</p>
+<p>A fifth round gave up on dictionaries sooner, as an option because it changes which files are written. A column of mostly
+different values (an identifier, a measurement) fills a dictionary up to its size limit (131,000 entries for a <code>long</code>) before the
+writer gives it up, which cost 5 ms for the identifier column against 1.4 ms written plain, and left a file 7% bigger because of
+the dictionary page and the pages held for it.</p>
+<ul>
+<li><strong><code>DictionaryMode</code></strong> says, for a column, how it is dictionary encoded: <code>Standard</code> (the default, as before), <code>Adaptive</code> or
+<code>Disabled</code>. It is set for chosen columns with <code>ParquetWriterOptions.ColumnDictionaries</code> (by column path, like
+<code>ColumnEncodings</code>) or, in the serializer, with <code>[ParquetDictionary(DictionaryMode.Adaptive)]</code> on the property; the options win
+over the attribute, and <code>DictionaryEnabled = false</code> turns every dictionary off whatever a column says.</li>
+<li><strong>A size limit per column</strong>: <code>DictionarySettings</code> carries the mode and an optional <code>SizeLimit</code> that replaces
+<code>DictionaryPageSizeLimit</code> for that column (<code>SizeLimit = </code> on <code>[ParquetDictionary]</code>, or a <code>DictionarySettings</code> in
+<code>ColumnDictionaries</code>; a <code>DictionaryMode</code> alone converts to settings). Raise it for a column with few distinct values that are large
+(long texts, urls), whose dictionary would be dropped half way through; the dictionary and its pages are held in memory until the
+column is complete, so it costs memory.</li>
+<li><strong><code>Adaptive</code></strong> looks at the first 32 KiB of the values of the column (4,096 longs); if more than nine in ten are different, the
+dictionary is dropped there and the rest is written plain. The dictionary page and page written for those first values stay in
+the file (32 KB for a long), which readers handle like any other column that gave up its dictionary. A column that repeats is
+unchanged, byte for byte.</li>
+</ul>
+<p>On the benchmark table (identifier and amount adaptive; one laptop that was busy, so the ratios are what matters) writing the
+columns takes 0.80 of the time it did, 1 MB less in the file (16.2 MB to 15.2 MB uncompressed, 8.8 MB to 7.8 MB with Snappy). Written
+plain, without any dictionary, it takes 0.55 of the time, but the file is twice the size: the remaining difference is the
+dictionary of the string column.</p>
+<p>A sixth round went to the string dictionary, whose loop was the hottest in a column of text:</p>
+<ul>
+<li><strong>The hash is one 64 by 64 bit multiplication</strong> for values up to 16 bytes (two overlapping words, in the manner of wyhash) and
+one per 16 bytes beyond that, in place of a rotate and multiply per 8 bytes. It is still seeded randomly for every dictionary,
+and the output does not depend on it.</li>
+<li><strong>ASCII text is narrowed with <code>Ascii.FromUtf16</code></strong>, a vector at a time, and only text that is not ASCII goes through the UTF-8
+transcoder.</li>
+<li><strong>One loop adds a page of strings to the dictionary</strong>, keeping what changes in locals (the bytes of the page, the count of values,
+the dictionary, the statistics) instead of fields that every value reads and writes.</li>
+</ul>
+<p>The string column of 1,000,000 rows (900,000 values, 5,000 of them different) went from 26–28 ms to 24–25 ms; the table of five
+columns by 2 to 3 ms of 43 (the measurements of this laptop vary by that much). The files are the same, byte for byte.</p>
+<p>A seventh round made the parallel form public: <code>RowGroupWriter.WriteColumns(actions, maxDegreeOfParallelism)</code> (and an overload that
+uses the processors, and a cancellation token) takes one action per column, encodes them on different threads and copies the
+encoded columns to the file in the order of the schema, which is what the serializer and the ADO.NET writer already did. The
+file is the same, byte for byte, as the one written a column at a time (tested for several degrees, with and without
+compression). The encoded group is held in memory until every column is done, which <code>NextColumn</code> does not need.</p>
+<p>On the benchmark table, through the column API with four threads: 48.7 ms becomes 33.0 ms uncompressed (0.68) and 73.1 ms becomes
+34.1 ms with Snappy (0.47); the time is that of the slowest column, here the strings.</p>
+<p>An eighth round brought the compiled functions to rows that are not flat. The function generated for an object now handles every
+kind of property: a single column goes straight to its buffer (or is taken from its column), and an object, collection or
+dictionary is handed to its shredder (or assembler), which is called directly from the generated code instead of through a delegate
+that reads or sets the property. An object anywhere in the row is compiled, with the definition and repetition levels as arguments
+because it can be anywhere in the row. When reading, a list that is an array or a <code>List&lt;T&gt;</code> collects its elements in a scratch buffer
+of the read and is then made once, with exactly the room it needs, in place of a list that grows by doubling (and for an array, is
+copied again by <code>ToArray</code>); the scratch belongs to the read, not to the assembler, since assemblers are shared by every read of a row
+type.</p>
+<p>On 200,000 orders with an optional customer, an address, a list of tags, an array of scores and a list of order lines, written to a
+memory stream and read back (the <code>NestedSerializerBenchmarks</code> class), the time to write went from 117–131 ms to 104–118 ms, the time
+to read from 78–91 ms to 71–78 ms, and the memory allocated when reading from 144 MB to 124 MB. Reading is bound by the garbage
+collector (the objects it creates), so the time improves less than the allocation does. The files are the same, byte for byte.</p>
+<p>A ninth round pooled the column buffers of the serializer. A row group of a million rows takes about 35 MB of arrays (the values and
+the levels of each column), and they were allocated for every file written: on the large object heap, so every file caused a full
+garbage collection or more. A benchmark run on a laptop showed it as Gen2 collections for the serializer with four threads (one for
+every 16 files) that the column API does not have. <code>LeafBuffer</code> now takes its arrays from the shared array pool and gives them
+back when the serializer is disposed (cleared, for arrays of references, so that the pool does not keep the rows' strings alive),
+and so does the buffer of the ADO.NET writer. The pool hands out arrays that are not cleared and may be larger than asked, which
+nothing here depends on (checked by writing sparse rows into arrays a run of full ones left behind: the file is the same bytes).</p>
+<p>Per file of the benchmark table, the serializer allocates 20 KB (it was 36 MB) and 27 KB with four threads, with no garbage
+collection at all in a steady state; the time with four threads went from about 72 ms to 62 ms on the machine of the tests, and
+the time with one thread is unchanged within the noise of the measurements. The cost is that the pool keeps the arrays between
+files (it releases them when memory is short), so a process that writes one big file and then nothing holds on to that much memory
+for a while.</p>
+<p>A tenth round tuned asynchronous output, which had two costs: the encoded row group was staged in a <code>MemoryStream</code> that doubles on the
+large object heap for every file, and the next row group was not collected or encoded until the write of the one before had
+ended, so the time was that of encoding plus that of writing. Now:</p>
+<ul>
+<li><strong>The staging area is pooled</strong> (<code>StagingStream</code>): the bytes of a row group are encoded into arrays from the array pool, and the
+buffer that follows starts as big as the one before, so a file does not grow its staging by doubling and copying.</li>
+<li><strong>A row group is written while the next is collected and encoded</strong> (<code>PipelinedWriter</code>): <code>WriteAsync</code> of the stream is started and not
+awaited until the next row group is ready to be handed over, since a stream takes one write at a time. At most two row groups
+are in memory. A failed or cancelled write surfaces at the next hand-over or at the end, and the memory of a write that is
+going is not given back to the pool until the write ends. The same for <code>SerializeAsync</code> of asynchronous rows and for the
+asynchronous ADO.NET writer.</li>
+<li><strong>The synchronous ADO.NET writer writes straight to the stream</strong>, as the synchronous serializer already did, instead of staging
+each row group in memory first.</li>
+</ul>
+<p>Four row groups of the benchmark table (4,000,000 rows, 64.7 MB), to a destination that takes the time a given speed would:</p>
+<table>
+<thead>
+<tr>
+<th>Destination</th>
+<th>before</th>
+<th>after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>memory stream</td>
+<td>394 ms</td>
+<td>322 ms</td>
+</tr>
+<tr>
+<td>400 MB/s</td>
+<td>535 ms</td>
+<td>360 ms</td>
+</tr>
+<tr>
+<td>200 MB/s</td>
+<td>663 ms</td>
+<td>435 ms</td>
+</tr>
+<tr>
+<td>100 MB/s</td>
+<td>1,011 ms</td>
+<td>756 ms</td>
+</tr>
+</tbody>
+</table>
+<p>With a destination that takes no time the gain comes from the pooled staging (97 MB allocated on the calling thread becomes
+35 MB, and 0.1 MB with the pooled column buffers of the round before); with a slow one the encoding hides behind the writes (at 100 MB/s the writes alone take about 650 ms). Only the row groups
+overlap: a file of a single row group has nothing to overlap, so <code>RowGroupSize</code> should be a fraction of the rows for a slow
+destination. <code>AsyncWriteComparison</code> reproduces it with BenchmarkDotNet.</p>
+<h3 id="generated-mappings">Generated mappings</h3>
+<p><code>[ParquetSerializable]</code> (step 14) gives a type a mapping written at build time, for trimming and Native AOT. It must not cost time
+at run time, which <code>GeneratedMappingWriteBenchmarks</code> and <code>GeneratedMappingReadBenchmarks</code> check: the same 100,000 rows as a type
+with a generated mapping and as a twin left to reflection, flat (eight columns of numbers, text, a date, an enum) and nested (objects,
+lists, an array and a dictionary inside), to a memory stream and back. Linux x64, one run:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">reflection</th>
+<th style="text-align: right;">generated</th>
+<th style="text-align: right;">ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>write, flat</td>
+<td style="text-align: right;">24.0 ms</td>
+<td style="text-align: right;">25.4 ms</td>
+<td style="text-align: right;">1.06</td>
+</tr>
+<tr>
+<td>write, nested</td>
+<td style="text-align: right;">70.0 ms</td>
+<td style="text-align: right;">68.3 ms</td>
+<td style="text-align: right;">0.98</td>
+</tr>
+<tr>
+<td>read, flat</td>
+<td style="text-align: right;">18.4 ms</td>
+<td style="text-align: right;">17.3 ms</td>
+<td style="text-align: right;">0.94</td>
+</tr>
+<tr>
+<td>read, nested</td>
+<td style="text-align: right;">116.1 ms</td>
+<td style="text-align: right;">116.0 ms</td>
+<td style="text-align: right;">1.00</td>
+</tr>
+<tr>
+<td>read, flat record</td>
+<td style="text-align: right;">47.5 ms</td>
+<td style="text-align: right;">20.2 ms</td>
+<td style="text-align: right;">0.43</td>
+</tr>
+</tbody>
+</table>
+<p>The record row (the same eight columns, created by a constructor with parameters) is the exception, and the one place the generated code is faster: the reflection path holds the values in boxed slots until the constructor is called (35 MB allocated for 100,000 rows), where the generated code calls the constructor with the values straight from the columns (19 MB, the same as for a class). The other differences are inside the error of the runs (the standard deviation of the nested read is 20 ms, since it allocates 92 MB of
+rows and the time depends on when the garbage collector runs), and the allocation is the same to the byte. The generated code is the
+same straight-line code the expression compiler made, so parity is the expected result; what the generated mapping removes is the
+reflection and the compilation when a type is first used, and the need for either with Native AOT.</p>
+<h2 id="not-done-yet">Not done yet</h2>
+<p>Left for a follow-up, with what is known so far:</p>
+<ul>
+<li><strong>Rows built by a constructor, without a generated mapping.</strong> Types that are created by a constructor with parameters (records,
+for example) still read through the general path when they have no <code>[ParquetSerializable]</code>, which holds the values in boxed slots
+until the constructor is called; a generated mapping calls the constructor with the values straight from the columns (see
+Generated mappings), and the reflection path could do the same with a compiled function.</li>
+<li><strong>Collections and dictionaries inside rows</strong> are walked by their shredders and assemblers (a virtual call for each element); only
+the properties around them are compiled. Maps are still created empty and added to.</li>
+<li><strong>Encoding strings further.</strong> The dictionary encoded string column is still the slowest column to write (about 24 ms of the
+42 ms for the table, 27 ns for each of 900,000 values). The profile is flat: reading the string objects (they are all over
+the heap), narrowing them to bytes, hashing, the lookup (a table, an entry, then the bytes) and packing the indexes each take a
+few nanoseconds. A layout of the entries that puts offset, length and hash side by side was tried and did not show a gain.
+What would help most is not doing the work for a value: a cache by string reference helps data that shares its strings, but
+needs a hash of the reference, which the runtime does not give cheaply.</li>
+<li><strong>Asynchronous input.</strong> <code>DeserializeAllAsync</code> reads the footer and the byte ranges of the columns the row type needs; it does
+not read the next row group while the rows of one are assembled, as the writer now does in the other direction.</li>
+</ul>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/gigi81/parquet-neo/blob/main/docs/PERFORMANCE.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

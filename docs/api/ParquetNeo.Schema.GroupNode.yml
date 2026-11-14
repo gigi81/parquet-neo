@@ -1,0 +1,746 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Schema.GroupNode
+  commentId: T:ParquetNeo.Schema.GroupNode
+  id: GroupNode
+  parent: ParquetNeo.Schema
+  children:
+  - ParquetNeo.Schema.GroupNode.#ctor(System.String,ParquetNeo.FieldRepetitionType,System.Collections.Generic.IEnumerable{ParquetNeo.Schema.SchemaNode},ParquetNeo.Metadata.LogicalType,System.Nullable{System.Int32})
+  - ParquetNeo.Schema.GroupNode.Children
+  - ParquetNeo.Schema.GroupNode.FindChild(System.String)
+  langs:
+  - csharp
+  - vb
+  name: GroupNode
+  nameWithType: GroupNode
+  fullName: ParquetNeo.Schema.GroupNode
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/Schema/GroupNode.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GroupNode
+    path: ../src/ParquetNeo/Schema/GroupNode.cs
+    startLine: 5
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Schema
+  summary: An inner node holding other nodes (a struct, or part of a list or map).
+  example: []
+  syntax:
+    content: 'public sealed class GroupNode : SchemaNode'
+    content.vb: Public NotInheritable Class GroupNode Inherits SchemaNode
+  inheritance:
+  - System.Object
+  - ParquetNeo.Schema.SchemaNode
+  inheritedMembers:
+  - ParquetNeo.Schema.SchemaNode.Name
+  - ParquetNeo.Schema.SchemaNode.Repetition
+  - ParquetNeo.Schema.SchemaNode.LogicalType
+  - ParquetNeo.Schema.SchemaNode.ConvertedType
+  - ParquetNeo.Schema.SchemaNode.FieldId
+  - ParquetNeo.Schema.SchemaNode.Parent
+  - ParquetNeo.Schema.SchemaNode.MaxDefinitionLevel
+  - ParquetNeo.Schema.SchemaNode.MaxRepetitionLevel
+  - ParquetNeo.Schema.SchemaNode.Path
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.Schema.GroupNode.#ctor(System.String,ParquetNeo.FieldRepetitionType,System.Collections.Generic.IEnumerable{ParquetNeo.Schema.SchemaNode},ParquetNeo.Metadata.LogicalType,System.Nullable{System.Int32})
+  commentId: M:ParquetNeo.Schema.GroupNode.#ctor(System.String,ParquetNeo.FieldRepetitionType,System.Collections.Generic.IEnumerable{ParquetNeo.Schema.SchemaNode},ParquetNeo.Metadata.LogicalType,System.Nullable{System.Int32})
+  id: '#ctor(System.String,ParquetNeo.FieldRepetitionType,System.Collections.Generic.IEnumerable{ParquetNeo.Schema.SchemaNode},ParquetNeo.Metadata.LogicalType,System.Nullable{System.Int32})'
+  parent: ParquetNeo.Schema.GroupNode
+  langs:
+  - csharp
+  - vb
+  name: GroupNode(string, FieldRepetitionType, IEnumerable<SchemaNode>, LogicalType?, int?)
+  nameWithType: GroupNode.GroupNode(string, FieldRepetitionType, IEnumerable<SchemaNode>, LogicalType?, int?)
+  fullName: ParquetNeo.Schema.GroupNode.GroupNode(string, ParquetNeo.FieldRepetitionType, System.Collections.Generic.IEnumerable<ParquetNeo.Schema.SchemaNode>, ParquetNeo.Metadata.LogicalType?, int?)
+  type: Constructor
+  source:
+    remote:
+      path: src/ParquetNeo/Schema/GroupNode.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: .ctor
+    path: ../src/ParquetNeo/Schema/GroupNode.cs
+    startLine: 10
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Schema
+  example: []
+  syntax:
+    content: public GroupNode(string name, FieldRepetitionType repetition, IEnumerable<SchemaNode> children, LogicalType? logicalType = null, int? fieldId = null)
+    parameters:
+    - id: name
+      type: System.String
+    - id: repetition
+      type: ParquetNeo.FieldRepetitionType
+    - id: children
+      type: System.Collections.Generic.IEnumerable{ParquetNeo.Schema.SchemaNode}
+    - id: logicalType
+      type: ParquetNeo.Metadata.LogicalType
+    - id: fieldId
+      type: System.Nullable{System.Int32}
+    content.vb: Public Sub New(name As String, repetition As FieldRepetitionType, children As IEnumerable(Of SchemaNode), logicalType As LogicalType = Nothing, fieldId As Integer? = Nothing)
+  overload: ParquetNeo.Schema.GroupNode.#ctor*
+  exceptions:
+  - type: System.ArgumentException
+    commentId: T:System.ArgumentException
+    description: The logical type cannot annotate a group.
+  nameWithType.vb: GroupNode.New(String, FieldRepetitionType, IEnumerable(Of SchemaNode), LogicalType, Integer?)
+  fullName.vb: ParquetNeo.Schema.GroupNode.New(String, ParquetNeo.FieldRepetitionType, System.Collections.Generic.IEnumerable(Of ParquetNeo.Schema.SchemaNode), ParquetNeo.Metadata.LogicalType, Integer?)
+  name.vb: New(String, FieldRepetitionType, IEnumerable(Of SchemaNode), LogicalType, Integer?)
+- uid: ParquetNeo.Schema.GroupNode.Children
+  commentId: P:ParquetNeo.Schema.GroupNode.Children
+  id: Children
+  parent: ParquetNeo.Schema.GroupNode
+  langs:
+  - csharp
+  - vb
+  name: Children
+  nameWithType: GroupNode.Children
+  fullName: ParquetNeo.Schema.GroupNode.Children
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Schema/GroupNode.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Children
+    path: ../src/ParquetNeo/Schema/GroupNode.cs
+    startLine: 44
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Schema
+  syntax:
+    content: public IReadOnlyList<SchemaNode> Children { get; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IReadOnlyList{ParquetNeo.Schema.SchemaNode}
+    content.vb: Public ReadOnly Property Children As IReadOnlyList(Of SchemaNode)
+  overload: ParquetNeo.Schema.GroupNode.Children*
+- uid: ParquetNeo.Schema.GroupNode.FindChild(System.String)
+  commentId: M:ParquetNeo.Schema.GroupNode.FindChild(System.String)
+  id: FindChild(System.String)
+  parent: ParquetNeo.Schema.GroupNode
+  langs:
+  - csharp
+  - vb
+  name: FindChild(string)
+  nameWithType: GroupNode.FindChild(string)
+  fullName: ParquetNeo.Schema.GroupNode.FindChild(string)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Schema/GroupNode.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: FindChild
+    path: ../src/ParquetNeo/Schema/GroupNode.cs
+    startLine: 46
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Schema
+  syntax:
+    content: public SchemaNode? FindChild(string name)
+    parameters:
+    - id: name
+      type: System.String
+    return:
+      type: ParquetNeo.Schema.SchemaNode
+    content.vb: Public Function FindChild(name As String) As SchemaNode
+  overload: ParquetNeo.Schema.GroupNode.FindChild*
+  nameWithType.vb: GroupNode.FindChild(String)
+  fullName.vb: ParquetNeo.Schema.GroupNode.FindChild(String)
+  name.vb: FindChild(String)
+references:
+- uid: ParquetNeo.Schema
+  commentId: N:ParquetNeo.Schema
+  name: ParquetNeo.Schema
+  nameWithType: ParquetNeo.Schema
+  fullName: ParquetNeo.Schema
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Schema
+    name: Schema
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Schema
+    name: Schema
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: ParquetNeo.Schema.SchemaNode
+  commentId: T:ParquetNeo.Schema.SchemaNode
+  parent: ParquetNeo.Schema
+  href: ParquetNeo.Schema.SchemaNode.html
+  name: SchemaNode
+  nameWithType: SchemaNode
+  fullName: ParquetNeo.Schema.SchemaNode
+- uid: ParquetNeo.Schema.SchemaNode.Name
+  commentId: P:ParquetNeo.Schema.SchemaNode.Name
+  parent: ParquetNeo.Schema.SchemaNode
+  href: ParquetNeo.Schema.SchemaNode.html#ParquetNeo_Schema_SchemaNode_Name
+  name: Name
+  nameWithType: SchemaNode.Name
+  fullName: ParquetNeo.Schema.SchemaNode.Name
+- uid: ParquetNeo.Schema.SchemaNode.Repetition
+  commentId: P:ParquetNeo.Schema.SchemaNode.Repetition
+  parent: ParquetNeo.Schema.SchemaNode
+  href: ParquetNeo.Schema.SchemaNode.html#ParquetNeo_Schema_SchemaNode_Repetition
+  name: Repetition
+  nameWithType: SchemaNode.Repetition
+  fullName: ParquetNeo.Schema.SchemaNode.Repetition
+- uid: ParquetNeo.Schema.SchemaNode.LogicalType
+  commentId: P:ParquetNeo.Schema.SchemaNode.LogicalType
+  parent: ParquetNeo.Schema.SchemaNode
+  href: ParquetNeo.Schema.SchemaNode.html#ParquetNeo_Schema_SchemaNode_LogicalType
+  name: LogicalType
+  nameWithType: SchemaNode.LogicalType
+  fullName: ParquetNeo.Schema.SchemaNode.LogicalType
+- uid: ParquetNeo.Schema.SchemaNode.ConvertedType
+  commentId: P:ParquetNeo.Schema.SchemaNode.ConvertedType
+  parent: ParquetNeo.Schema.SchemaNode
+  href: ParquetNeo.Schema.SchemaNode.html#ParquetNeo_Schema_SchemaNode_ConvertedType
+  name: ConvertedType
+  nameWithType: SchemaNode.ConvertedType
+  fullName: ParquetNeo.Schema.SchemaNode.ConvertedType
+- uid: ParquetNeo.Schema.SchemaNode.FieldId
+  commentId: P:ParquetNeo.Schema.SchemaNode.FieldId
+  parent: ParquetNeo.Schema.SchemaNode
+  href: ParquetNeo.Schema.SchemaNode.html#ParquetNeo_Schema_SchemaNode_FieldId
+  name: FieldId
+  nameWithType: SchemaNode.FieldId
+  fullName: ParquetNeo.Schema.SchemaNode.FieldId
+- uid: ParquetNeo.Schema.SchemaNode.Parent
+  commentId: P:ParquetNeo.Schema.SchemaNode.Parent
+  parent: ParquetNeo.Schema.SchemaNode
+  href: ParquetNeo.Schema.SchemaNode.html#ParquetNeo_Schema_SchemaNode_Parent
+  name: Parent
+  nameWithType: SchemaNode.Parent
+  fullName: ParquetNeo.Schema.SchemaNode.Parent
+- uid: ParquetNeo.Schema.SchemaNode.MaxDefinitionLevel
+  commentId: P:ParquetNeo.Schema.SchemaNode.MaxDefinitionLevel
+  parent: ParquetNeo.Schema.SchemaNode
+  href: ParquetNeo.Schema.SchemaNode.html#ParquetNeo_Schema_SchemaNode_MaxDefinitionLevel
+  name: MaxDefinitionLevel
+  nameWithType: SchemaNode.MaxDefinitionLevel
+  fullName: ParquetNeo.Schema.SchemaNode.MaxDefinitionLevel
+- uid: ParquetNeo.Schema.SchemaNode.MaxRepetitionLevel
+  commentId: P:ParquetNeo.Schema.SchemaNode.MaxRepetitionLevel
+  parent: ParquetNeo.Schema.SchemaNode
+  href: ParquetNeo.Schema.SchemaNode.html#ParquetNeo_Schema_SchemaNode_MaxRepetitionLevel
+  name: MaxRepetitionLevel
+  nameWithType: SchemaNode.MaxRepetitionLevel
+  fullName: ParquetNeo.Schema.SchemaNode.MaxRepetitionLevel
+- uid: ParquetNeo.Schema.SchemaNode.Path
+  commentId: P:ParquetNeo.Schema.SchemaNode.Path
+  parent: ParquetNeo.Schema.SchemaNode
+  href: ParquetNeo.Schema.SchemaNode.html#ParquetNeo_Schema_SchemaNode_Path
+  name: Path
+  nameWithType: SchemaNode.Path
+  fullName: ParquetNeo.Schema.SchemaNode.Path
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.ArgumentException
+  commentId: T:System.ArgumentException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.argumentexception
+  name: ArgumentException
+  nameWithType: ArgumentException
+  fullName: System.ArgumentException
+- uid: ParquetNeo.Schema.GroupNode.#ctor*
+  commentId: Overload:ParquetNeo.Schema.GroupNode.#ctor
+  href: ParquetNeo.Schema.GroupNode.html#ParquetNeo_Schema_GroupNode__ctor_System_String_ParquetNeo_FieldRepetitionType_System_Collections_Generic_IEnumerable_ParquetNeo_Schema_SchemaNode__ParquetNeo_Metadata_LogicalType_System_Nullable_System_Int32__
+  name: GroupNode
+  nameWithType: GroupNode.GroupNode
+  fullName: ParquetNeo.Schema.GroupNode.GroupNode
+  nameWithType.vb: GroupNode.New
+  fullName.vb: ParquetNeo.Schema.GroupNode.New
+  name.vb: New
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: ParquetNeo.FieldRepetitionType
+  commentId: T:ParquetNeo.FieldRepetitionType
+  parent: ParquetNeo
+  href: ParquetNeo.FieldRepetitionType.html
+  name: FieldRepetitionType
+  nameWithType: FieldRepetitionType
+  fullName: ParquetNeo.FieldRepetitionType
+- uid: System.Collections.Generic.IEnumerable{ParquetNeo.Schema.SchemaNode}
+  commentId: T:System.Collections.Generic.IEnumerable{ParquetNeo.Schema.SchemaNode}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IEnumerable`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  name: IEnumerable<SchemaNode>
+  nameWithType: IEnumerable<SchemaNode>
+  fullName: System.Collections.Generic.IEnumerable<ParquetNeo.Schema.SchemaNode>
+  nameWithType.vb: IEnumerable(Of SchemaNode)
+  fullName.vb: System.Collections.Generic.IEnumerable(Of ParquetNeo.Schema.SchemaNode)
+  name.vb: IEnumerable(Of SchemaNode)
+  spec.csharp:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  - name: <
+  - uid: ParquetNeo.Schema.SchemaNode
+    name: SchemaNode
+    href: ParquetNeo.Schema.SchemaNode.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.Schema.SchemaNode
+    name: SchemaNode
+    href: ParquetNeo.Schema.SchemaNode.html
+  - name: )
+- uid: ParquetNeo.Metadata.LogicalType
+  commentId: T:ParquetNeo.Metadata.LogicalType
+  parent: ParquetNeo.Metadata
+  href: ParquetNeo.Metadata.LogicalType.html
+  name: LogicalType
+  nameWithType: LogicalType
+  fullName: ParquetNeo.Metadata.LogicalType
+- uid: System.Nullable{System.Int32}
+  commentId: T:System.Nullable{System.Int32}
+  parent: System
+  definition: System.Nullable`1
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int?
+  nameWithType: int?
+  fullName: int?
+  nameWithType.vb: Integer?
+  fullName.vb: Integer?
+  name.vb: Integer?
+  spec.csharp:
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: '?'
+  spec.vb:
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: '?'
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: System.Collections.Generic.IEnumerable`1
+  commentId: T:System.Collections.Generic.IEnumerable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  name: IEnumerable<T>
+  nameWithType: IEnumerable<T>
+  fullName: System.Collections.Generic.IEnumerable<T>
+  nameWithType.vb: IEnumerable(Of T)
+  fullName.vb: System.Collections.Generic.IEnumerable(Of T)
+  name.vb: IEnumerable(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IEnumerable`1
+    name: IEnumerable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: ParquetNeo.Metadata
+  commentId: N:ParquetNeo.Metadata
+  name: ParquetNeo.Metadata
+  nameWithType: ParquetNeo.Metadata
+  fullName: ParquetNeo.Metadata
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+- uid: System.Nullable`1
+  commentId: T:System.Nullable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  name: Nullable<T>
+  nameWithType: Nullable<T>
+  fullName: System.Nullable<T>
+  nameWithType.vb: Nullable(Of T)
+  fullName.vb: System.Nullable(Of T)
+  name.vb: Nullable(Of T)
+  spec.csharp:
+  - uid: System.Nullable`1
+    name: Nullable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Nullable`1
+    name: Nullable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.Schema.GroupNode.Children*
+  commentId: Overload:ParquetNeo.Schema.GroupNode.Children
+  href: ParquetNeo.Schema.GroupNode.html#ParquetNeo_Schema_GroupNode_Children
+  name: Children
+  nameWithType: GroupNode.Children
+  fullName: ParquetNeo.Schema.GroupNode.Children
+- uid: System.Collections.Generic.IReadOnlyList{ParquetNeo.Schema.SchemaNode}
+  commentId: T:System.Collections.Generic.IReadOnlyList{ParquetNeo.Schema.SchemaNode}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IReadOnlyList`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<SchemaNode>
+  nameWithType: IReadOnlyList<SchemaNode>
+  fullName: System.Collections.Generic.IReadOnlyList<ParquetNeo.Schema.SchemaNode>
+  nameWithType.vb: IReadOnlyList(Of SchemaNode)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of ParquetNeo.Schema.SchemaNode)
+  name.vb: IReadOnlyList(Of SchemaNode)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - uid: ParquetNeo.Schema.SchemaNode
+    name: SchemaNode
+    href: ParquetNeo.Schema.SchemaNode.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.Schema.SchemaNode
+    name: SchemaNode
+    href: ParquetNeo.Schema.SchemaNode.html
+  - name: )
+- uid: System.Collections.Generic.IReadOnlyList`1
+  commentId: T:System.Collections.Generic.IReadOnlyList`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  name: IReadOnlyList<T>
+  nameWithType: IReadOnlyList<T>
+  fullName: System.Collections.Generic.IReadOnlyList<T>
+  nameWithType.vb: IReadOnlyList(Of T)
+  fullName.vb: System.Collections.Generic.IReadOnlyList(Of T)
+  name.vb: IReadOnlyList(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IReadOnlyList`1
+    name: IReadOnlyList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.Schema.GroupNode.FindChild*
+  commentId: Overload:ParquetNeo.Schema.GroupNode.FindChild
+  href: ParquetNeo.Schema.GroupNode.html#ParquetNeo_Schema_GroupNode_FindChild_System_String_
+  name: FindChild
+  nameWithType: GroupNode.FindChild
+  fullName: ParquetNeo.Schema.GroupNode.FindChild

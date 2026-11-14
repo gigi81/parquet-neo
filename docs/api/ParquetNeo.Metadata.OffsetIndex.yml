@@ -1,0 +1,646 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Metadata.OffsetIndex
+  commentId: T:ParquetNeo.Metadata.OffsetIndex
+  id: OffsetIndex
+  parent: ParquetNeo.Metadata
+  children:
+  - ParquetNeo.Metadata.OffsetIndex.Deserialize(System.ReadOnlySpan{System.Byte})
+  - ParquetNeo.Metadata.OffsetIndex.PageLocations
+  - ParquetNeo.Metadata.OffsetIndex.Serialize(System.Buffers.IBufferWriter{System.Byte})
+  langs:
+  - csharp
+  - vb
+  name: OffsetIndex
+  nameWithType: OffsetIndex
+  fullName: ParquetNeo.Metadata.OffsetIndex
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/OffsetIndex.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: OffsetIndex
+    path: ../src/ParquetNeo/Metadata/OffsetIndex.cs
+    startLine: 6
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  summary: The positions of the data pages of a column chunk (thrift <code>OffsetIndex</code>), so that a reader can go to a page without reading the ones before it.
+  example: []
+  syntax:
+    content: public sealed class OffsetIndex
+    content.vb: Public NotInheritable Class OffsetIndex
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.Metadata.OffsetIndex.PageLocations
+  commentId: P:ParquetNeo.Metadata.OffsetIndex.PageLocations
+  id: PageLocations
+  parent: ParquetNeo.Metadata.OffsetIndex
+  langs:
+  - csharp
+  - vb
+  name: PageLocations
+  nameWithType: OffsetIndex.PageLocations
+  fullName: ParquetNeo.Metadata.OffsetIndex.PageLocations
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/OffsetIndex.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: PageLocations
+    path: ../src/ParquetNeo/Metadata/OffsetIndex.cs
+    startLine: 9
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  summary: The data pages in the order of the file; the first rows of the pages increase.
+  example: []
+  syntax:
+    content: public List<PageLocation> PageLocations { get; set; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.List{ParquetNeo.Metadata.PageLocation}
+    content.vb: Public Property PageLocations As List(Of PageLocation)
+  overload: ParquetNeo.Metadata.OffsetIndex.PageLocations*
+- uid: ParquetNeo.Metadata.OffsetIndex.Deserialize(System.ReadOnlySpan{System.Byte})
+  commentId: M:ParquetNeo.Metadata.OffsetIndex.Deserialize(System.ReadOnlySpan{System.Byte})
+  id: Deserialize(System.ReadOnlySpan{System.Byte})
+  parent: ParquetNeo.Metadata.OffsetIndex
+  langs:
+  - csharp
+  - vb
+  name: Deserialize(ReadOnlySpan<byte>)
+  nameWithType: OffsetIndex.Deserialize(ReadOnlySpan<byte>)
+  fullName: ParquetNeo.Metadata.OffsetIndex.Deserialize(System.ReadOnlySpan<byte>)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/OffsetIndex.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Deserialize
+    path: ../src/ParquetNeo/Metadata/OffsetIndex.cs
+    startLine: 11
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public static OffsetIndex Deserialize(ReadOnlySpan<byte> data)
+    parameters:
+    - id: data
+      type: System.ReadOnlySpan{System.Byte}
+    return:
+      type: ParquetNeo.Metadata.OffsetIndex
+    content.vb: Public Shared Function Deserialize(data As ReadOnlySpan(Of Byte)) As OffsetIndex
+  overload: ParquetNeo.Metadata.OffsetIndex.Deserialize*
+  nameWithType.vb: OffsetIndex.Deserialize(ReadOnlySpan(Of Byte))
+  fullName.vb: ParquetNeo.Metadata.OffsetIndex.Deserialize(System.ReadOnlySpan(Of Byte))
+  name.vb: Deserialize(ReadOnlySpan(Of Byte))
+- uid: ParquetNeo.Metadata.OffsetIndex.Serialize(System.Buffers.IBufferWriter{System.Byte})
+  commentId: M:ParquetNeo.Metadata.OffsetIndex.Serialize(System.Buffers.IBufferWriter{System.Byte})
+  id: Serialize(System.Buffers.IBufferWriter{System.Byte})
+  parent: ParquetNeo.Metadata.OffsetIndex
+  langs:
+  - csharp
+  - vb
+  name: Serialize(IBufferWriter<byte>)
+  nameWithType: OffsetIndex.Serialize(IBufferWriter<byte>)
+  fullName: ParquetNeo.Metadata.OffsetIndex.Serialize(System.Buffers.IBufferWriter<byte>)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/OffsetIndex.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Serialize
+    path: ../src/ParquetNeo/Metadata/OffsetIndex.cs
+    startLine: 13
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public void Serialize(IBufferWriter<byte> output)
+    parameters:
+    - id: output
+      type: System.Buffers.IBufferWriter{System.Byte}
+    content.vb: Public Sub Serialize(output As IBufferWriter(Of Byte))
+  overload: ParquetNeo.Metadata.OffsetIndex.Serialize*
+  nameWithType.vb: OffsetIndex.Serialize(IBufferWriter(Of Byte))
+  fullName.vb: ParquetNeo.Metadata.OffsetIndex.Serialize(System.Buffers.IBufferWriter(Of Byte))
+  name.vb: Serialize(IBufferWriter(Of Byte))
+references:
+- uid: ParquetNeo.Metadata
+  commentId: N:ParquetNeo.Metadata
+  name: ParquetNeo.Metadata
+  nameWithType: ParquetNeo.Metadata
+  fullName: ParquetNeo.Metadata
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: ParquetNeo.Metadata.OffsetIndex.PageLocations*
+  commentId: Overload:ParquetNeo.Metadata.OffsetIndex.PageLocations
+  href: ParquetNeo.Metadata.OffsetIndex.html#ParquetNeo_Metadata_OffsetIndex_PageLocations
+  name: PageLocations
+  nameWithType: OffsetIndex.PageLocations
+  fullName: ParquetNeo.Metadata.OffsetIndex.PageLocations
+- uid: System.Collections.Generic.List{ParquetNeo.Metadata.PageLocation}
+  commentId: T:System.Collections.Generic.List{ParquetNeo.Metadata.PageLocation}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<PageLocation>
+  nameWithType: List<PageLocation>
+  fullName: System.Collections.Generic.List<ParquetNeo.Metadata.PageLocation>
+  nameWithType.vb: List(Of PageLocation)
+  fullName.vb: System.Collections.Generic.List(Of ParquetNeo.Metadata.PageLocation)
+  name.vb: List(Of PageLocation)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - uid: ParquetNeo.Metadata.PageLocation
+    name: PageLocation
+    href: ParquetNeo.Metadata.PageLocation.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.Metadata.PageLocation
+    name: PageLocation
+    href: ParquetNeo.Metadata.PageLocation.html
+  - name: )
+- uid: System.Collections.Generic.List`1
+  commentId: T:System.Collections.Generic.List`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<T>
+  nameWithType: List<T>
+  fullName: System.Collections.Generic.List<T>
+  nameWithType.vb: List(Of T)
+  fullName.vb: System.Collections.Generic.List(Of T)
+  name.vb: List(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: ParquetNeo.Metadata.OffsetIndex.Deserialize*
+  commentId: Overload:ParquetNeo.Metadata.OffsetIndex.Deserialize
+  href: ParquetNeo.Metadata.OffsetIndex.html#ParquetNeo_Metadata_OffsetIndex_Deserialize_System_ReadOnlySpan_System_Byte__
+  name: Deserialize
+  nameWithType: OffsetIndex.Deserialize
+  fullName: ParquetNeo.Metadata.OffsetIndex.Deserialize
+- uid: System.ReadOnlySpan{System.Byte}
+  commentId: T:System.ReadOnlySpan{System.Byte}
+  parent: System
+  definition: System.ReadOnlySpan`1
+  href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  name: ReadOnlySpan<byte>
+  nameWithType: ReadOnlySpan<byte>
+  fullName: System.ReadOnlySpan<byte>
+  nameWithType.vb: ReadOnlySpan(Of Byte)
+  fullName.vb: System.ReadOnlySpan(Of Byte)
+  name.vb: ReadOnlySpan(Of Byte)
+  spec.csharp:
+  - uid: System.ReadOnlySpan`1
+    name: ReadOnlySpan
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  - name: <
+  - uid: System.Byte
+    name: byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: '>'
+  spec.vb:
+  - uid: System.ReadOnlySpan`1
+    name: ReadOnlySpan
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Byte
+    name: Byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: )
+- uid: ParquetNeo.Metadata.OffsetIndex
+  commentId: T:ParquetNeo.Metadata.OffsetIndex
+  parent: ParquetNeo.Metadata
+  href: ParquetNeo.Metadata.OffsetIndex.html
+  name: OffsetIndex
+  nameWithType: OffsetIndex
+  fullName: ParquetNeo.Metadata.OffsetIndex
+- uid: System.ReadOnlySpan`1
+  commentId: T:System.ReadOnlySpan`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  name: ReadOnlySpan<T>
+  nameWithType: ReadOnlySpan<T>
+  fullName: System.ReadOnlySpan<T>
+  nameWithType.vb: ReadOnlySpan(Of T)
+  fullName.vb: System.ReadOnlySpan(Of T)
+  name.vb: ReadOnlySpan(Of T)
+  spec.csharp:
+  - uid: System.ReadOnlySpan`1
+    name: ReadOnlySpan
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.ReadOnlySpan`1
+    name: ReadOnlySpan
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.Metadata.OffsetIndex.Serialize*
+  commentId: Overload:ParquetNeo.Metadata.OffsetIndex.Serialize
+  href: ParquetNeo.Metadata.OffsetIndex.html#ParquetNeo_Metadata_OffsetIndex_Serialize_System_Buffers_IBufferWriter_System_Byte__
+  name: Serialize
+  nameWithType: OffsetIndex.Serialize
+  fullName: ParquetNeo.Metadata.OffsetIndex.Serialize
+- uid: System.Buffers.IBufferWriter{System.Byte}
+  commentId: T:System.Buffers.IBufferWriter{System.Byte}
+  parent: System.Buffers
+  definition: System.Buffers.IBufferWriter`1
+  href: https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1
+  name: IBufferWriter<byte>
+  nameWithType: IBufferWriter<byte>
+  fullName: System.Buffers.IBufferWriter<byte>
+  nameWithType.vb: IBufferWriter(Of Byte)
+  fullName.vb: System.Buffers.IBufferWriter(Of Byte)
+  name.vb: IBufferWriter(Of Byte)
+  spec.csharp:
+  - uid: System.Buffers.IBufferWriter`1
+    name: IBufferWriter
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1
+  - name: <
+  - uid: System.Byte
+    name: byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: '>'
+  spec.vb:
+  - uid: System.Buffers.IBufferWriter`1
+    name: IBufferWriter
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Byte
+    name: Byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: )
+- uid: System.Buffers.IBufferWriter`1
+  commentId: T:System.Buffers.IBufferWriter`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1
+  name: IBufferWriter<T>
+  nameWithType: IBufferWriter<T>
+  fullName: System.Buffers.IBufferWriter<T>
+  nameWithType.vb: IBufferWriter(Of T)
+  fullName.vb: System.Buffers.IBufferWriter(Of T)
+  name.vb: IBufferWriter(Of T)
+  spec.csharp:
+  - uid: System.Buffers.IBufferWriter`1
+    name: IBufferWriter
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Buffers.IBufferWriter`1
+    name: IBufferWriter
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Buffers
+  commentId: N:System.Buffers
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Buffers
+  nameWithType: System.Buffers
+  fullName: System.Buffers
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Buffers
+    name: Buffers
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.buffers
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Buffers
+    name: Buffers
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.buffers

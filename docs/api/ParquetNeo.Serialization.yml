@@ -1,0 +1,56 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Serialization
+  commentId: N:ParquetNeo.Serialization
+  id: ParquetNeo.Serialization
+  children:
+  - ParquetNeo.Serialization.ParquetDeserializerOptions
+  - ParquetNeo.Serialization.ParquetSerializer
+  - ParquetNeo.Serialization.ParquetSerializerOptions
+  langs:
+  - csharp
+  - vb
+  name: ParquetNeo.Serialization
+  nameWithType: ParquetNeo.Serialization
+  fullName: ParquetNeo.Serialization
+  type: Namespace
+  assemblies:
+  - ParquetNeo.Serialization
+references:
+- uid: ParquetNeo.Serialization.ParquetDeserializerOptions
+  commentId: T:ParquetNeo.Serialization.ParquetDeserializerOptions
+  parent: ParquetNeo.Serialization
+  href: ParquetNeo.Serialization.ParquetDeserializerOptions.html
+  name: ParquetDeserializerOptions
+  nameWithType: ParquetDeserializerOptions
+  fullName: ParquetNeo.Serialization.ParquetDeserializerOptions
+- uid: ParquetNeo.Serialization.ParquetSerializer
+  commentId: T:ParquetNeo.Serialization.ParquetSerializer
+  href: ParquetNeo.Serialization.ParquetSerializer.html
+  name: ParquetSerializer
+  nameWithType: ParquetSerializer
+  fullName: ParquetNeo.Serialization.ParquetSerializer
+- uid: ParquetNeo.Serialization.ParquetSerializerOptions
+  commentId: T:ParquetNeo.Serialization.ParquetSerializerOptions
+  parent: ParquetNeo.Serialization
+  href: ParquetNeo.Serialization.ParquetSerializerOptions.html
+  name: ParquetSerializerOptions
+  nameWithType: ParquetSerializerOptions
+  fullName: ParquetNeo.Serialization.ParquetSerializerOptions
+- uid: ParquetNeo.Serialization
+  commentId: N:ParquetNeo.Serialization
+  name: ParquetNeo.Serialization
+  nameWithType: ParquetNeo.Serialization
+  fullName: ParquetNeo.Serialization
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Serialization
+    name: Serialization
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Serialization
+    name: Serialization

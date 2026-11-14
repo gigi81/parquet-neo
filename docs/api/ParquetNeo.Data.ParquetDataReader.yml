@@ -1,0 +1,4241 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Data.ParquetDataReader
+  commentId: T:ParquetNeo.Data.ParquetDataReader
+  id: ParquetDataReader
+  parent: ParquetNeo.Data
+  children:
+  - ParquetNeo.Data.ParquetDataReader.#ctor(System.IO.Stream,ParquetNeo.Data.ParquetDataReaderOptions,System.Boolean)
+  - ParquetNeo.Data.ParquetDataReader.Close
+  - ParquetNeo.Data.ParquetDataReader.Depth
+  - ParquetNeo.Data.ParquetDataReader.Dispose(System.Boolean)
+  - ParquetNeo.Data.ParquetDataReader.FieldCount
+  - ParquetNeo.Data.ParquetDataReader.GetBoolean(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetByte(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetBytes(System.Int32,System.Int64,System.Byte[],System.Int32,System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetChar(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetChars(System.Int32,System.Int64,System.Char[],System.Int32,System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetDataTypeName(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetDateTime(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetDecimal(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetDouble(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetEnumerator
+  - ParquetNeo.Data.ParquetDataReader.GetFieldType(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetFloat(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetGuid(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetInt16(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetInt32(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetInt64(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetName(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetOrdinal(System.String)
+  - ParquetNeo.Data.ParquetDataReader.GetSchemaTable
+  - ParquetNeo.Data.ParquetDataReader.GetString(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetValue(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.GetValues(System.Object[])
+  - ParquetNeo.Data.ParquetDataReader.HasRows
+  - ParquetNeo.Data.ParquetDataReader.IsClosed
+  - ParquetNeo.Data.ParquetDataReader.IsDBNull(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.Item(System.Int32)
+  - ParquetNeo.Data.ParquetDataReader.Item(System.String)
+  - ParquetNeo.Data.ParquetDataReader.NextResult
+  - ParquetNeo.Data.ParquetDataReader.Read
+  - ParquetNeo.Data.ParquetDataReader.RecordsAffected
+  langs:
+  - csharp
+  - vb
+  name: ParquetDataReader
+  nameWithType: ParquetDataReader
+  fullName: ParquetNeo.Data.ParquetDataReader
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ParquetDataReader
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 32
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: >-
+    Reads a Parquet file as a <xref href="System.Data.Common.DbDataReader" data-throw-if-not-resolved="false"></xref>, so that it can go wherever a query result can: <code>SqlBulkCopy</code>,
+
+    <xref href="System.Data.DataTable.Load(System.Data.IDataReader)" data-throw-if-not-resolved="false"></xref>, Dapper and the like.
+  remarks: >-
+    <p>
+
+    The columns are the top-level columns that hold a single value per row (not lists, maps or nested objects), or the ones named
+
+    in <xref href="ParquetNeo.Data.ParquetDataReaderOptions.Columns" data-throw-if-not-resolved="false"></xref>. Each is given as the .NET type its logical type stands for:
+
+    <xref href="System.Int32" data-throw-if-not-resolved="false"></xref> and <xref href="System.Int64" data-throw-if-not-resolved="false"></xref> for plain integers, <xref href="System.SByte" data-throw-if-not-resolved="false"></xref> to <xref href="System.UInt64" data-throw-if-not-resolved="false"></xref> for the annotated
+
+    ones, <xref href="System.String" data-throw-if-not-resolved="false"></xref> for text, <xref href="System.Byte" data-throw-if-not-resolved="false"></xref> arrays for binary, <xref href="System.Decimal" data-throw-if-not-resolved="false"></xref>, <xref href="System.DateTime" data-throw-if-not-resolved="false"></xref>
+
+    (UTC when the column is adjusted to UTC), <xref href="System.DateOnly" data-throw-if-not-resolved="false"></xref>, <xref href="System.TimeOnly" data-throw-if-not-resolved="false"></xref>, <xref href="System.Guid" data-throw-if-not-resolved="false"></xref>, <xref href="System.Half" data-throw-if-not-resolved="false"></xref>,
+
+    <xref href="System.Single" data-throw-if-not-resolved="false"></xref>, <xref href="System.Double" data-throw-if-not-resolved="false"></xref> and <xref href="System.Boolean" data-throw-if-not-resolved="false"></xref>. Binary columns, including an unannotated
+
+    FIXED_LEN_BYTE_ARRAY, are <xref href="System.Byte" data-throw-if-not-resolved="false"></xref> arrays. A column that no .NET type fits, such as an INTERVAL, is a
+
+    <xref href="System.NotSupportedException" data-throw-if-not-resolved="false"></xref> unless it is left out with <xref href="ParquetNeo.Data.ParquetDataReaderOptions.Columns" data-throw-if-not-resolved="false"></xref>.
+
+    A null is <xref href="System.DBNull" data-throw-if-not-resolved="false"></xref>.
+
+    </p>
+
+    <p>
+
+    A row group is read into memory, column by column, when the reader reaches it, and rows are then given from memory, so a
+
+    reader holds one row group at a time. The typed getters (<xref href="ParquetNeo.Data.ParquetDataReader.GetInt32(System.Int32)" data-throw-if-not-resolved="false"></xref> and so on) throw an
+
+    <xref href="System.InvalidCastException" data-throw-if-not-resolved="false"></xref> when the column is of another type or the value is null.
+
+    </p>
+  example: []
+  syntax:
+    content: 'public sealed class ParquetDataReader : DbDataReader, IEnumerable, IDataReader, IDataRecord, IDisposable, IAsyncDisposable'
+    content.vb: Public NotInheritable Class ParquetDataReader Inherits DbDataReader Implements IEnumerable, IDataReader, IDataRecord, IDisposable, IAsyncDisposable
+  inheritance:
+  - System.Object
+  - System.MarshalByRefObject
+  - System.Data.Common.DbDataReader
+  implements:
+  - System.Collections.IEnumerable
+  - System.Data.IDataReader
+  - System.Data.IDataRecord
+  - System.IDisposable
+  - System.IAsyncDisposable
+  inheritedMembers:
+  - System.Data.Common.DbDataReader.CloseAsync
+  - System.Data.Common.DbDataReader.DisposeAsync
+  - System.Data.Common.DbDataReader.GetFieldValueAsync``1(System.Int32)
+  - System.Data.Common.DbDataReader.GetFieldValueAsync``1(System.Int32,System.Threading.CancellationToken)
+  - System.Data.Common.DbDataReader.GetFieldValue``1(System.Int32)
+  - System.Data.Common.DbDataReader.GetSchemaTableAsync(System.Threading.CancellationToken)
+  - System.Data.Common.DbDataReader.GetColumnSchemaAsync(System.Threading.CancellationToken)
+  - System.Data.Common.DbDataReader.GetStream(System.Int32)
+  - System.Data.Common.DbDataReader.GetTextReader(System.Int32)
+  - System.Data.Common.DbDataReader.IsDBNullAsync(System.Int32)
+  - System.Data.Common.DbDataReader.IsDBNullAsync(System.Int32,System.Threading.CancellationToken)
+  - System.Data.Common.DbDataReader.NextResultAsync
+  - System.Data.Common.DbDataReader.NextResultAsync(System.Threading.CancellationToken)
+  - System.Data.Common.DbDataReader.ReadAsync
+  - System.Data.Common.DbDataReader.ReadAsync(System.Threading.CancellationToken)
+  - System.Data.Common.DbDataReader.VisibleFieldCount
+  - System.MarshalByRefObject.GetLifetimeService
+  - System.MarshalByRefObject.InitializeLifetimeService
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.Data.ParquetDataReader.#ctor(System.IO.Stream,ParquetNeo.Data.ParquetDataReaderOptions,System.Boolean)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.#ctor(System.IO.Stream,ParquetNeo.Data.ParquetDataReaderOptions,System.Boolean)
+  id: '#ctor(System.IO.Stream,ParquetNeo.Data.ParquetDataReaderOptions,System.Boolean)'
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: ParquetDataReader(Stream, ParquetDataReaderOptions?, bool)
+  nameWithType: ParquetDataReader.ParquetDataReader(Stream, ParquetDataReaderOptions?, bool)
+  fullName: ParquetNeo.Data.ParquetDataReader.ParquetDataReader(System.IO.Stream, ParquetNeo.Data.ParquetDataReaderOptions?, bool)
+  type: Constructor
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: .ctor
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 51
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  example: []
+  syntax:
+    content: public ParquetDataReader(Stream input, ParquetDataReaderOptions? options = null, bool leaveOpen = false)
+    parameters:
+    - id: input
+      type: System.IO.Stream
+      description: A readable, seekable stream holding the whole file.
+    - id: options
+      type: ParquetNeo.Data.ParquetDataReaderOptions
+      description: Which columns to read, and the codecs and limits; <code>null</code> for all and the defaults.
+    - id: leaveOpen
+      type: System.Boolean
+      description: Whether to keep <code class="paramref">input</code> open when the reader is closed.
+    content.vb: Public Sub New(input As Stream, options As ParquetDataReaderOptions = Nothing, leaveOpen As Boolean = False)
+  overload: ParquetNeo.Data.ParquetDataReader.#ctor*
+  exceptions:
+  - type: System.ArgumentException
+    commentId: T:System.ArgumentException
+    description: A column named in the options is not a column of the file that holds a single value per row.
+  - type: System.NotSupportedException
+    commentId: T:System.NotSupportedException
+    description: A column has no .NET type that fits it.
+  nameWithType.vb: ParquetDataReader.New(Stream, ParquetDataReaderOptions, Boolean)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.New(System.IO.Stream, ParquetNeo.Data.ParquetDataReaderOptions, Boolean)
+  name.vb: New(Stream, ParquetDataReaderOptions, Boolean)
+- uid: ParquetNeo.Data.ParquetDataReader.FieldCount
+  commentId: P:ParquetNeo.Data.ParquetDataReader.FieldCount
+  id: FieldCount
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: FieldCount
+  nameWithType: ParquetDataReader.FieldCount
+  fullName: ParquetNeo.Data.ParquetDataReader.FieldCount
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: FieldCount
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 80
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the number of columns in the current row.
+  example: []
+  syntax:
+    content: public override int FieldCount { get; }
+    parameters: []
+    return:
+      type: System.Int32
+      description: The number of columns in the current row.
+    content.vb: Public Overrides ReadOnly Property FieldCount As Integer
+  overridden: System.Data.Common.DbDataReader.FieldCount
+  overload: ParquetNeo.Data.ParquetDataReader.FieldCount*
+  exceptions:
+  - type: System.NotSupportedException
+    commentId: T:System.NotSupportedException
+    description: There is no current connection to an instance of SQL Server.
+- uid: ParquetNeo.Data.ParquetDataReader.HasRows
+  commentId: P:ParquetNeo.Data.ParquetDataReader.HasRows
+  id: HasRows
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: HasRows
+  nameWithType: ParquetDataReader.HasRows
+  fullName: ParquetNeo.Data.ParquetDataReader.HasRows
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: HasRows
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 82
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets a value that indicates whether this <xref href="System.Data.Common.DbDataReader" data-throw-if-not-resolved="false"></xref> contains one or more rows.
+  example: []
+  syntax:
+    content: public override bool HasRows { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+      description: <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the <xref href="System.Data.Common.DbDataReader" data-throw-if-not-resolved="false"></xref> contains one or more rows; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.
+    content.vb: Public Overrides ReadOnly Property HasRows As Boolean
+  overridden: System.Data.Common.DbDataReader.HasRows
+  overload: ParquetNeo.Data.ParquetDataReader.HasRows*
+- uid: ParquetNeo.Data.ParquetDataReader.IsClosed
+  commentId: P:ParquetNeo.Data.ParquetDataReader.IsClosed
+  id: IsClosed
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: IsClosed
+  nameWithType: ParquetDataReader.IsClosed
+  fullName: ParquetNeo.Data.ParquetDataReader.IsClosed
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: IsClosed
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 84
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets a value indicating whether the <xref href="System.Data.Common.DbDataReader" data-throw-if-not-resolved="false"></xref> is closed.
+  example: []
+  syntax:
+    content: public override bool IsClosed { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+      description: <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the <xref href="System.Data.Common.DbDataReader" data-throw-if-not-resolved="false"></xref> is closed; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.
+    content.vb: Public Overrides ReadOnly Property IsClosed As Boolean
+  overridden: System.Data.Common.DbDataReader.IsClosed
+  overload: ParquetNeo.Data.ParquetDataReader.IsClosed*
+  exceptions:
+  - type: System.InvalidOperationException
+    commentId: T:System.InvalidOperationException
+    description: The <xref href="System.Data.Common.DbDataReader" data-throw-if-not-resolved="false"></xref> is closed.
+- uid: ParquetNeo.Data.ParquetDataReader.Depth
+  commentId: P:ParquetNeo.Data.ParquetDataReader.Depth
+  id: Depth
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: Depth
+  nameWithType: ParquetDataReader.Depth
+  fullName: ParquetNeo.Data.ParquetDataReader.Depth
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Depth
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 86
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: Gets a value indicating the depth of nesting for the current row.
+  example: []
+  syntax:
+    content: public override int Depth { get; }
+    parameters: []
+    return:
+      type: System.Int32
+      description: The depth of nesting for the current row.
+    content.vb: Public Overrides ReadOnly Property Depth As Integer
+  overridden: System.Data.Common.DbDataReader.Depth
+  overload: ParquetNeo.Data.ParquetDataReader.Depth*
+- uid: ParquetNeo.Data.ParquetDataReader.RecordsAffected
+  commentId: P:ParquetNeo.Data.ParquetDataReader.RecordsAffected
+  id: RecordsAffected
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: RecordsAffected
+  nameWithType: ParquetDataReader.RecordsAffected
+  fullName: ParquetNeo.Data.ParquetDataReader.RecordsAffected
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: RecordsAffected
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 88
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the number of rows changed, inserted, or deleted by execution of the SQL statement.
+  example: []
+  syntax:
+    content: public override int RecordsAffected { get; }
+    parameters: []
+    return:
+      type: System.Int32
+      description: The number of rows changed, inserted, or deleted. -1 for SELECT statements; 0 if no rows were affected or the statement failed.
+    content.vb: Public Overrides ReadOnly Property RecordsAffected As Integer
+  overridden: System.Data.Common.DbDataReader.RecordsAffected
+  overload: ParquetNeo.Data.ParquetDataReader.RecordsAffected*
+- uid: ParquetNeo.Data.ParquetDataReader.Item(System.Int32)
+  commentId: P:ParquetNeo.Data.ParquetDataReader.Item(System.Int32)
+  id: Item(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: this[int]
+  nameWithType: ParquetDataReader.this[int]
+  fullName: ParquetNeo.Data.ParquetDataReader.this[int]
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: this[]
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 90
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the value of the specified column as an instance of <xref href="System.Object" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: public override object this[int ordinal] { get; }
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.Object
+      description: The value of the specified column.
+    content.vb: Public Overrides ReadOnly Default Property this[](ordinal As Integer) As Object
+  overridden: System.Data.Common.DbDataReader.Item(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.Item*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  nameWithType.vb: ParquetDataReader.this[](Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.this[](Integer)
+  name.vb: this[](Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.Item(System.String)
+  commentId: P:ParquetNeo.Data.ParquetDataReader.Item(System.String)
+  id: Item(System.String)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: this[string]
+  nameWithType: ParquetDataReader.this[string]
+  fullName: ParquetNeo.Data.ParquetDataReader.this[string]
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: this[]
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 92
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the value of the specified column as an instance of <xref href="System.Object" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: public override object this[string name] { get; }
+    parameters:
+    - id: name
+      type: System.String
+      description: The name of the column.
+    return:
+      type: System.Object
+      description: The value of the specified column.
+    content.vb: Public Overrides ReadOnly Default Property this[](name As String) As Object
+  overridden: System.Data.Common.DbDataReader.Item(System.String)
+  overload: ParquetNeo.Data.ParquetDataReader.Item*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: No column with the specified name was found.
+  nameWithType.vb: ParquetDataReader.this[](String)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.this[](String)
+  name.vb: this[](String)
+- uid: ParquetNeo.Data.ParquetDataReader.Read
+  commentId: M:ParquetNeo.Data.ParquetDataReader.Read
+  id: Read
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: Read()
+  nameWithType: ParquetDataReader.Read()
+  fullName: ParquetNeo.Data.ParquetDataReader.Read()
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Read
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 94
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, advances the reader to the next record in a result set.
+  example: []
+  syntax:
+    content: public override bool Read()
+    return:
+      type: System.Boolean
+      description: <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if there are more rows; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.
+    content.vb: Public Overrides Function Read() As Boolean
+  overridden: System.Data.Common.DbDataReader.Read
+  overload: ParquetNeo.Data.ParquetDataReader.Read*
+- uid: ParquetNeo.Data.ParquetDataReader.NextResult
+  commentId: M:ParquetNeo.Data.ParquetDataReader.NextResult
+  id: NextResult
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: NextResult()
+  nameWithType: ParquetDataReader.NextResult()
+  fullName: ParquetNeo.Data.ParquetDataReader.NextResult()
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: NextResult
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 110
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, advances the reader to the next result when reading the results of a batch of statements.
+  example: []
+  syntax:
+    content: public override bool NextResult()
+    return:
+      type: System.Boolean
+      description: <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if there are more result sets; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.
+    content.vb: Public Overrides Function NextResult() As Boolean
+  overridden: System.Data.Common.DbDataReader.NextResult
+  overload: ParquetNeo.Data.ParquetDataReader.NextResult*
+- uid: ParquetNeo.Data.ParquetDataReader.Close
+  commentId: M:ParquetNeo.Data.ParquetDataReader.Close
+  id: Close
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: Close()
+  nameWithType: ParquetDataReader.Close()
+  fullName: ParquetNeo.Data.ParquetDataReader.Close()
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Close
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 112
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: Closes the <xref href="System.Data.Common.DbDataReader" data-throw-if-not-resolved="false"></xref> object.
+  example: []
+  syntax:
+    content: public override void Close()
+    content.vb: Public Overrides Sub Close()
+  overridden: System.Data.Common.DbDataReader.Close
+  overload: ParquetNeo.Data.ParquetDataReader.Close*
+- uid: ParquetNeo.Data.ParquetDataReader.GetName(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetName(System.Int32)
+  id: GetName(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetName(int)
+  nameWithType: ParquetDataReader.GetName(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetName(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetName
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 121
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the name of the column, given the zero-based column ordinal.
+  example: []
+  syntax:
+    content: public override string GetName(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.String
+      description: The name of the specified column.
+    content.vb: Public Overrides Function GetName(ordinal As Integer) As String
+  overridden: System.Data.Common.DbDataReader.GetName(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetName*
+  nameWithType.vb: ParquetDataReader.GetName(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetName(Integer)
+  name.vb: GetName(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetOrdinal(System.String)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetOrdinal(System.String)
+  id: GetOrdinal(System.String)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetOrdinal(string)
+  nameWithType: ParquetDataReader.GetOrdinal(string)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetOrdinal(string)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetOrdinal
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 123
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the column ordinal given the name of the column.
+  example: []
+  syntax:
+    content: >-
+      [SuppressMessage("Major Code Smell", "S112:General or reserved exceptions should never be thrown", Justification = "IndexOutOfRangeException is what the DbDataReader contract says GetOrdinal throws for an unknown name, and consumers rely on it.")]
+
+      public override int GetOrdinal(string name)
+    parameters:
+    - id: name
+      type: System.String
+      description: The name of the column.
+    return:
+      type: System.Int32
+      description: The zero-based column ordinal.
+    content.vb: >-
+      <SuppressMessage("Major Code Smell", "S112:General or reserved exceptions should never be thrown", Justification:="IndexOutOfRangeException is what the DbDataReader contract says GetOrdinal throws for an unknown name, and consumers rely on it.")>
+
+      Public Overrides Function GetOrdinal(name As String) As Integer
+  overridden: System.Data.Common.DbDataReader.GetOrdinal(System.String)
+  overload: ParquetNeo.Data.ParquetDataReader.GetOrdinal*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The name specified is not a valid column name.
+  attributes:
+  - type: System.Diagnostics.CodeAnalysis.SuppressMessageAttribute
+    ctor: System.Diagnostics.CodeAnalysis.SuppressMessageAttribute.#ctor(System.String,System.String)
+    arguments:
+    - type: System.String
+      value: Major Code Smell
+    - type: System.String
+      value: S112:General or reserved exceptions should never be thrown
+    namedArguments:
+    - name: Justification
+      type: System.String
+      value: IndexOutOfRangeException is what the DbDataReader contract says GetOrdinal throws for an unknown name, and consumers rely on it.
+  nameWithType.vb: ParquetDataReader.GetOrdinal(String)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetOrdinal(String)
+  name.vb: GetOrdinal(String)
+- uid: ParquetNeo.Data.ParquetDataReader.GetFieldType(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetFieldType(System.Int32)
+  id: GetFieldType(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetFieldType(int)
+  nameWithType: ParquetDataReader.GetFieldType(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetFieldType(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetFieldType
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 144
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the data type of the specified column.
+  example: []
+  syntax:
+    content: >-
+      [UnconditionalSuppressMessage("Trimming", "IL2063:Value returned from method can not be statically determined and may not meet DynamicallyAccessedMembers requirements", Justification = "The types of the columns are the primitive types of the column types, whose members the caller of GetFieldType does not use by reflection.")]
+
+      public override Type GetFieldType(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.Type
+      description: The data type of the specified column.
+      attributes:
+      - type: System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute
+        ctor: System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute.#ctor(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes)
+        arguments:
+        - type: System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes
+          value: 544
+    content.vb: >-
+      <UnconditionalSuppressMessage("Trimming", "IL2063:Value returned from method can not be statically determined and may not meet DynamicallyAccessedMembers requirements", Justification:="The types of the columns are the primitive types of the column types, whose members the caller of GetFieldType does not use by reflection.")>
+
+      Public Overrides Function GetFieldType(ordinal As Integer) As Type
+  overridden: System.Data.Common.DbDataReader.GetFieldType(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetFieldType*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  - type: System.InvalidCastException
+    commentId: T:System.InvalidCastException
+    description: The specified cast is not valid.
+  attributes:
+  - type: System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute
+    ctor: System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute.#ctor(System.String,System.String)
+    arguments:
+    - type: System.String
+      value: Trimming
+    - type: System.String
+      value: IL2063:Value returned from method can not be statically determined and may not meet DynamicallyAccessedMembers requirements
+    namedArguments:
+    - name: Justification
+      type: System.String
+      value: The types of the columns are the primitive types of the column types, whose members the caller of GetFieldType does not use by reflection.
+  nameWithType.vb: ParquetDataReader.GetFieldType(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetFieldType(Integer)
+  name.vb: GetFieldType(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetDataTypeName(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetDataTypeName(System.Int32)
+  id: GetDataTypeName(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetDataTypeName(int)
+  nameWithType: ParquetDataReader.GetDataTypeName(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetDataTypeName(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetDataTypeName
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 149
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets name of the data type of the specified column.
+  example: []
+  syntax:
+    content: public override string GetDataTypeName(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.String
+      description: The name of the data type.
+    content.vb: Public Overrides Function GetDataTypeName(ordinal As Integer) As String
+  overridden: System.Data.Common.DbDataReader.GetDataTypeName(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetDataTypeName*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  nameWithType.vb: ParquetDataReader.GetDataTypeName(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetDataTypeName(Integer)
+  name.vb: GetDataTypeName(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.IsDBNull(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.IsDBNull(System.Int32)
+  id: IsDBNull(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: IsDBNull(int)
+  nameWithType: ParquetDataReader.IsDBNull(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.IsDBNull(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: IsDBNull
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 151
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets a value that indicates whether the column contains nonexistent or missing values.
+  example: []
+  syntax:
+    content: public override bool IsDBNull(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.Boolean
+      description: <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the specified column is equivalent to <xref href="System.DBNull" data-throw-if-not-resolved="false"></xref>; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.
+    content.vb: Public Overrides Function IsDBNull(ordinal As Integer) As Boolean
+  overridden: System.Data.Common.DbDataReader.IsDBNull(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.IsDBNull*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  nameWithType.vb: ParquetDataReader.IsDBNull(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.IsDBNull(Integer)
+  name.vb: IsDBNull(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetValue(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetValue(System.Int32)
+  id: GetValue(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetValue(int)
+  nameWithType: ParquetDataReader.GetValue(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetValue(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetValue
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 153
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the value of the specified column as an instance of <xref href="System.Object" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: public override object GetValue(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.Object
+      description: The value of the specified column.
+    content.vb: Public Overrides Function GetValue(ordinal As Integer) As Object
+  overridden: System.Data.Common.DbDataReader.GetValue(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetValue*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  nameWithType.vb: ParquetDataReader.GetValue(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetValue(Integer)
+  name.vb: GetValue(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetValues(System.Object[])
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetValues(System.Object[])
+  id: GetValues(System.Object[])
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetValues(object[])
+  nameWithType: ParquetDataReader.GetValues(object[])
+  fullName: ParquetNeo.Data.ParquetDataReader.GetValues(object[])
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetValues
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 155
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, populates an array of objects with the column values of the current row.
+  example: []
+  syntax:
+    content: public override int GetValues(object[] values)
+    parameters:
+    - id: values
+      type: System.Object[]
+      description: An array of <xref href="System.Object" data-throw-if-not-resolved="false"></xref> into which to copy the attribute columns.
+    return:
+      type: System.Int32
+      description: The number of instances of <xref href="System.Object" data-throw-if-not-resolved="false"></xref> in the array.
+    content.vb: Public Overrides Function GetValues(values As Object()) As Integer
+  overridden: System.Data.Common.DbDataReader.GetValues(System.Object[])
+  overload: ParquetNeo.Data.ParquetDataReader.GetValues*
+  nameWithType.vb: ParquetDataReader.GetValues(Object())
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetValues(Object())
+  name.vb: GetValues(Object())
+- uid: ParquetNeo.Data.ParquetDataReader.GetBoolean(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetBoolean(System.Int32)
+  id: GetBoolean(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetBoolean(int)
+  nameWithType: ParquetDataReader.GetBoolean(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetBoolean(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetBoolean
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 167
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the value of the specified column as a Boolean.
+  example: []
+  syntax:
+    content: public override bool GetBoolean(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.Boolean
+      description: The value of the specified column.
+    content.vb: Public Overrides Function GetBoolean(ordinal As Integer) As Boolean
+  overridden: System.Data.Common.DbDataReader.GetBoolean(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetBoolean*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  - type: System.InvalidCastException
+    commentId: T:System.InvalidCastException
+    description: The specified cast is not valid.
+  nameWithType.vb: ParquetDataReader.GetBoolean(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetBoolean(Integer)
+  name.vb: GetBoolean(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetByte(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetByte(System.Int32)
+  id: GetByte(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetByte(int)
+  nameWithType: ParquetDataReader.GetByte(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetByte(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetByte
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 169
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the value of the specified column as a byte.
+  example: []
+  syntax:
+    content: public override byte GetByte(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.Byte
+      description: The value of the specified column.
+    content.vb: Public Overrides Function GetByte(ordinal As Integer) As Byte
+  overridden: System.Data.Common.DbDataReader.GetByte(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetByte*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  - type: System.InvalidCastException
+    commentId: T:System.InvalidCastException
+    description: The specified cast is not valid.
+  nameWithType.vb: ParquetDataReader.GetByte(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetByte(Integer)
+  name.vb: GetByte(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetInt16(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetInt16(System.Int32)
+  id: GetInt16(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetInt16(int)
+  nameWithType: ParquetDataReader.GetInt16(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetInt16(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetInt16
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 171
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the value of the specified column as a 16-bit signed integer.
+  example: []
+  syntax:
+    content: public override short GetInt16(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.Int16
+      description: The value of the specified column.
+    content.vb: Public Overrides Function GetInt16(ordinal As Integer) As Short
+  overridden: System.Data.Common.DbDataReader.GetInt16(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetInt16*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  - type: System.InvalidCastException
+    commentId: T:System.InvalidCastException
+    description: The specified cast is not valid.
+  nameWithType.vb: ParquetDataReader.GetInt16(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetInt16(Integer)
+  name.vb: GetInt16(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetInt32(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetInt32(System.Int32)
+  id: GetInt32(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetInt32(int)
+  nameWithType: ParquetDataReader.GetInt32(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetInt32(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetInt32
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 173
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the value of the specified column as a 32-bit signed integer.
+  example: []
+  syntax:
+    content: public override int GetInt32(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.Int32
+      description: The value of the specified column.
+    content.vb: Public Overrides Function GetInt32(ordinal As Integer) As Integer
+  overridden: System.Data.Common.DbDataReader.GetInt32(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetInt32*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  - type: System.InvalidCastException
+    commentId: T:System.InvalidCastException
+    description: The specified cast is not valid.
+  nameWithType.vb: ParquetDataReader.GetInt32(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetInt32(Integer)
+  name.vb: GetInt32(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetInt64(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetInt64(System.Int32)
+  id: GetInt64(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetInt64(int)
+  nameWithType: ParquetDataReader.GetInt64(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetInt64(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetInt64
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 175
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the value of the specified column as a 64-bit signed integer.
+  example: []
+  syntax:
+    content: public override long GetInt64(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.Int64
+      description: The value of the specified column.
+    content.vb: Public Overrides Function GetInt64(ordinal As Integer) As Long
+  overridden: System.Data.Common.DbDataReader.GetInt64(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetInt64*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  - type: System.InvalidCastException
+    commentId: T:System.InvalidCastException
+    description: The specified cast is not valid.
+  nameWithType.vb: ParquetDataReader.GetInt64(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetInt64(Integer)
+  name.vb: GetInt64(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetFloat(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetFloat(System.Int32)
+  id: GetFloat(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetFloat(int)
+  nameWithType: ParquetDataReader.GetFloat(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetFloat(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetFloat
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 177
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the value of the specified column as a single-precision floating point number.
+  example: []
+  syntax:
+    content: public override float GetFloat(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.Single
+      description: The value of the specified column.
+    content.vb: Public Overrides Function GetFloat(ordinal As Integer) As Single
+  overridden: System.Data.Common.DbDataReader.GetFloat(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetFloat*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  - type: System.InvalidCastException
+    commentId: T:System.InvalidCastException
+    description: The specified cast is not valid.
+  nameWithType.vb: ParquetDataReader.GetFloat(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetFloat(Integer)
+  name.vb: GetFloat(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetDouble(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetDouble(System.Int32)
+  id: GetDouble(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetDouble(int)
+  nameWithType: ParquetDataReader.GetDouble(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetDouble(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetDouble
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 179
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the value of the specified column as a double-precision floating point number.
+  example: []
+  syntax:
+    content: public override double GetDouble(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.Double
+      description: The value of the specified column.
+    content.vb: Public Overrides Function GetDouble(ordinal As Integer) As Double
+  overridden: System.Data.Common.DbDataReader.GetDouble(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetDouble*
+  exceptions:
+  - type: System.InvalidCastException
+    commentId: T:System.InvalidCastException
+    description: The specified cast is not valid.
+  nameWithType.vb: ParquetDataReader.GetDouble(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetDouble(Integer)
+  name.vb: GetDouble(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetDecimal(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetDecimal(System.Int32)
+  id: GetDecimal(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetDecimal(int)
+  nameWithType: ParquetDataReader.GetDecimal(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetDecimal(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetDecimal
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 181
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the value of the specified column as a <xref href="System.Decimal" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: public override decimal GetDecimal(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.Decimal
+      description: The value of the specified column.
+    content.vb: Public Overrides Function GetDecimal(ordinal As Integer) As Decimal
+  overridden: System.Data.Common.DbDataReader.GetDecimal(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetDecimal*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  - type: System.InvalidCastException
+    commentId: T:System.InvalidCastException
+    description: The specified cast is not valid.
+  nameWithType.vb: ParquetDataReader.GetDecimal(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetDecimal(Integer)
+  name.vb: GetDecimal(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetString(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetString(System.Int32)
+  id: GetString(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetString(int)
+  nameWithType: ParquetDataReader.GetString(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetString(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetString
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 183
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the value of the specified column as an instance of <xref href="System.String" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: public override string GetString(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.String
+      description: The value of the specified column.
+    content.vb: Public Overrides Function GetString(ordinal As Integer) As String
+  overridden: System.Data.Common.DbDataReader.GetString(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetString*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  - type: System.InvalidCastException
+    commentId: T:System.InvalidCastException
+    description: The specified cast is not valid.
+  nameWithType.vb: ParquetDataReader.GetString(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetString(Integer)
+  name.vb: GetString(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetDateTime(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetDateTime(System.Int32)
+  id: GetDateTime(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetDateTime(int)
+  nameWithType: ParquetDataReader.GetDateTime(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetDateTime(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetDateTime
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 185
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the value of the specified column as a <xref href="System.DateTime" data-throw-if-not-resolved="false"></xref> object.
+  example: []
+  syntax:
+    content: public override DateTime GetDateTime(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.DateTime
+      description: The value of the specified column.
+    content.vb: Public Overrides Function GetDateTime(ordinal As Integer) As Date
+  overridden: System.Data.Common.DbDataReader.GetDateTime(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetDateTime*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  - type: System.InvalidCastException
+    commentId: T:System.InvalidCastException
+    description: The specified cast is not valid.
+  nameWithType.vb: ParquetDataReader.GetDateTime(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetDateTime(Integer)
+  name.vb: GetDateTime(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetGuid(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetGuid(System.Int32)
+  id: GetGuid(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetGuid(int)
+  nameWithType: ParquetDataReader.GetGuid(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetGuid(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetGuid
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 187
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the value of the specified column as a globally unique identifier (GUID).
+  example: []
+  syntax:
+    content: public override Guid GetGuid(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.Guid
+      description: The value of the specified column.
+    content.vb: Public Overrides Function GetGuid(ordinal As Integer) As Guid
+  overridden: System.Data.Common.DbDataReader.GetGuid(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetGuid*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  - type: System.InvalidCastException
+    commentId: T:System.InvalidCastException
+    description: The specified cast is not valid.
+  nameWithType.vb: ParquetDataReader.GetGuid(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetGuid(Integer)
+  name.vb: GetGuid(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetChar(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetChar(System.Int32)
+  id: GetChar(System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetChar(int)
+  nameWithType: ParquetDataReader.GetChar(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetChar(int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetChar
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 189
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, gets the value of the specified column as a single character.
+  example: []
+  syntax:
+    content: public override char GetChar(int ordinal)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    return:
+      type: System.Char
+      description: The value of the specified column.
+    content.vb: Public Overrides Function GetChar(ordinal As Integer) As Char
+  overridden: System.Data.Common.DbDataReader.GetChar(System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetChar*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  - type: System.InvalidCastException
+    commentId: T:System.InvalidCastException
+    description: The specified cast is not valid.
+  nameWithType.vb: ParquetDataReader.GetChar(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetChar(Integer)
+  name.vb: GetChar(Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetBytes(System.Int32,System.Int64,System.Byte[],System.Int32,System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetBytes(System.Int32,System.Int64,System.Byte[],System.Int32,System.Int32)
+  id: GetBytes(System.Int32,System.Int64,System.Byte[],System.Int32,System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetBytes(int, long, byte[]?, int, int)
+  nameWithType: ParquetDataReader.GetBytes(int, long, byte[]?, int, int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetBytes(int, long, byte[]?, int, int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetBytes
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 191
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, reads a specified number of bytes from the specified column starting at a specified index and writes them to a buffer starting at a specified position in the buffer.
+  example: []
+  syntax:
+    content: public override long GetBytes(int ordinal, long dataOffset, byte[]? buffer, int bufferOffset, int length)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    - id: dataOffset
+      type: System.Int64
+      description: The index within the row from which to begin the read operation.
+    - id: buffer
+      type: System.Byte[]
+      description: The buffer into which to copy the data.
+    - id: bufferOffset
+      type: System.Int32
+      description: The index with the buffer to which the data will be copied.
+    - id: length
+      type: System.Int32
+      description: The maximum number of bytes to read.
+    return:
+      type: System.Int64
+      description: The actual number of bytes read.
+    content.vb: Public Overrides Function GetBytes(ordinal As Integer, dataOffset As Long, buffer As Byte(), bufferOffset As Integer, length As Integer) As Long
+  overridden: System.Data.Common.DbDataReader.GetBytes(System.Int32,System.Int64,System.Byte[],System.Int32,System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetBytes*
+  exceptions:
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  - type: System.InvalidCastException
+    commentId: T:System.InvalidCastException
+    description: The specified cast is not valid.
+  nameWithType.vb: ParquetDataReader.GetBytes(Integer, Long, Byte(), Integer, Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetBytes(Integer, Long, Byte(), Integer, Integer)
+  name.vb: GetBytes(Integer, Long, Byte(), Integer, Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetChars(System.Int32,System.Int64,System.Char[],System.Int32,System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetChars(System.Int32,System.Int64,System.Char[],System.Int32,System.Int32)
+  id: GetChars(System.Int32,System.Int64,System.Char[],System.Int32,System.Int32)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetChars(int, long, char[]?, int, int)
+  nameWithType: ParquetDataReader.GetChars(int, long, char[]?, int, int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetChars(int, long, char[]?, int, int)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetChars
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 210
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, reads a specified number of characters from a specified column starting at a specified index, and writes them to a buffer starting at a specified position.
+  example: []
+  syntax:
+    content: public override long GetChars(int ordinal, long dataOffset, char[]? buffer, int bufferOffset, int length)
+    parameters:
+    - id: ordinal
+      type: System.Int32
+      description: The zero-based column ordinal.
+    - id: dataOffset
+      type: System.Int64
+      description: The index within the row from which to begin the read operation.
+    - id: buffer
+      type: System.Char[]
+      description: The buffer into which to copy the data.
+    - id: bufferOffset
+      type: System.Int32
+      description: The index with the buffer to which the data will be copied.
+    - id: length
+      type: System.Int32
+      description: The maximum number of characters to read.
+    return:
+      type: System.Int64
+      description: The actual number of characters read.
+    content.vb: Public Overrides Function GetChars(ordinal As Integer, dataOffset As Long, buffer As Char(), bufferOffset As Integer, length As Integer) As Long
+  overridden: System.Data.Common.DbDataReader.GetChars(System.Int32,System.Int64,System.Char[],System.Int32,System.Int32)
+  overload: ParquetNeo.Data.ParquetDataReader.GetChars*
+  nameWithType.vb: ParquetDataReader.GetChars(Integer, Long, Char(), Integer, Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetChars(Integer, Long, Char(), Integer, Integer)
+  name.vb: GetChars(Integer, Long, Char(), Integer, Integer)
+- uid: ParquetNeo.Data.ParquetDataReader.GetEnumerator
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetEnumerator
+  id: GetEnumerator
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetEnumerator()
+  nameWithType: ParquetDataReader.GetEnumerator()
+  fullName: ParquetNeo.Data.ParquetDataReader.GetEnumerator()
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetEnumerator
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 229
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: When overridden in a derived class, returns an enumerator that can be used to iterate through the rows in the data reader.
+  example: []
+  syntax:
+    content: public override IEnumerator GetEnumerator()
+    return:
+      type: System.Collections.IEnumerator
+      description: An enumerator that can be used to iterate through the rows in the data reader.
+    content.vb: Public Overrides Function GetEnumerator() As IEnumerator
+  overridden: System.Data.Common.DbDataReader.GetEnumerator
+  overload: ParquetNeo.Data.ParquetDataReader.GetEnumerator*
+- uid: ParquetNeo.Data.ParquetDataReader.GetSchemaTable
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetSchemaTable
+  id: GetSchemaTable
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: GetSchemaTable()
+  nameWithType: ParquetDataReader.GetSchemaTable()
+  fullName: ParquetNeo.Data.ParquetDataReader.GetSchemaTable()
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetSchemaTable
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 231
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: >-
+    Returns a <xref href="System.Data.DataTable" data-throw-if-not-resolved="false"></xref> that describes the column metadata of the <xref href="System.Data.Common.DbDataReader" data-throw-if-not-resolved="false"></xref>.
+
+    Returns <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if the executed command returned no resultset, or after <xref href="System.Data.Common.DbDataReader.NextResult" data-throw-if-not-resolved="false"></xref> returns <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.
+  example: []
+  syntax:
+    content: >-
+      [UnconditionalSuppressMessage("Trimming", "IL2111:Method with DynamicallyAccessedMembersAttribute is accessed via reflection", Justification = "DataTable only stores the Type values it is given as data; it does not read their members.")]
+
+      public override DataTable GetSchemaTable()
+    return:
+      type: System.Data.DataTable
+      description: A <xref href="System.Data.DataTable" data-throw-if-not-resolved="false"></xref> that describes the column metadata.
+    content.vb: >-
+      <UnconditionalSuppressMessage("Trimming", "IL2111:Method with DynamicallyAccessedMembersAttribute is accessed via reflection", Justification:="DataTable only stores the Type values it is given as data; it does not read their members.")>
+
+      Public Overrides Function GetSchemaTable() As DataTable
+  overridden: System.Data.Common.DbDataReader.GetSchemaTable
+  overload: ParquetNeo.Data.ParquetDataReader.GetSchemaTable*
+  exceptions:
+  - type: System.InvalidOperationException
+    commentId: T:System.InvalidOperationException
+    description: The <xref href="System.Data.Common.DbDataReader" data-throw-if-not-resolved="false"></xref> is closed.
+  - type: System.IndexOutOfRangeException
+    commentId: T:System.IndexOutOfRangeException
+    description: The column index is out of range.
+  - type: System.NotSupportedException
+    commentId: T:System.NotSupportedException
+    description: '.NET Core and .NET 5+ only: In all cases.'
+  attributes:
+  - type: System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute
+    ctor: System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute.#ctor(System.String,System.String)
+    arguments:
+    - type: System.String
+      value: Trimming
+    - type: System.String
+      value: IL2111:Method with DynamicallyAccessedMembersAttribute is accessed via reflection
+    namedArguments:
+    - name: Justification
+      type: System.String
+      value: DataTable only stores the Type values it is given as data; it does not read their members.
+- uid: ParquetNeo.Data.ParquetDataReader.Dispose(System.Boolean)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.Dispose(System.Boolean)
+  id: Dispose(System.Boolean)
+  parent: ParquetNeo.Data.ParquetDataReader
+  langs:
+  - csharp
+  - vb
+  name: Dispose(bool)
+  nameWithType: ParquetDataReader.Dispose(bool)
+  fullName: ParquetNeo.Data.ParquetDataReader.Dispose(bool)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/Data/ParquetDataReader.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Dispose
+    path: ../src/ParquetNeo/Data/ParquetDataReader.cs
+    startLine: 255
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Data
+  summary: Releases the unmanaged resources used by the <xref href="System.Data.Common.DbDataReader" data-throw-if-not-resolved="false"></xref> and optionally releases the managed resources.
+  example: []
+  syntax:
+    content: protected override void Dispose(bool disposing)
+    parameters:
+    - id: disposing
+      type: System.Boolean
+      description: <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to release managed and unmanaged resources; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to release only unmanaged resources.
+    content.vb: Protected Overrides Sub Dispose(disposing As Boolean)
+  overridden: System.Data.Common.DbDataReader.Dispose(System.Boolean)
+  overload: ParquetNeo.Data.ParquetDataReader.Dispose*
+  nameWithType.vb: ParquetDataReader.Dispose(Boolean)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.Dispose(Boolean)
+  name.vb: Dispose(Boolean)
+references:
+- uid: System.Data.Common.DbDataReader
+  commentId: T:System.Data.Common.DbDataReader
+  parent: System.Data.Common
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader
+  name: DbDataReader
+  nameWithType: DbDataReader
+  fullName: System.Data.Common.DbDataReader
+- uid: System.Data.DataTable.Load(System.Data.IDataReader)
+  commentId: M:System.Data.DataTable.Load(System.Data.IDataReader)
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.datatable.load#system-data-datatable-load(system-data-idatareader)
+  name: Load(IDataReader)
+  nameWithType: DataTable.Load(IDataReader)
+  fullName: System.Data.DataTable.Load(System.Data.IDataReader)
+  spec.csharp:
+  - uid: System.Data.DataTable.Load(System.Data.IDataReader)
+    name: Load
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.datatable.load#system-data-datatable-load(system-data-idatareader)
+  - name: (
+  - uid: System.Data.IDataReader
+    name: IDataReader
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.idatareader
+  - name: )
+  spec.vb:
+  - uid: System.Data.DataTable.Load(System.Data.IDataReader)
+    name: Load
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.datatable.load#system-data-datatable-load(system-data-idatareader)
+  - name: (
+  - uid: System.Data.IDataReader
+    name: IDataReader
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.idatareader
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReaderOptions.Columns
+  commentId: P:ParquetNeo.Data.ParquetDataReaderOptions.Columns
+  href: ParquetNeo.Data.ParquetDataReaderOptions.html#ParquetNeo_Data_ParquetDataReaderOptions_Columns
+  name: Columns
+  nameWithType: ParquetDataReaderOptions.Columns
+  fullName: ParquetNeo.Data.ParquetDataReaderOptions.Columns
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: System.Int64
+  commentId: T:System.Int64
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int64
+  name: long
+  nameWithType: long
+  fullName: long
+  nameWithType.vb: Long
+  fullName.vb: Long
+  name.vb: Long
+- uid: System.SByte
+  commentId: T:System.SByte
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.sbyte
+  name: sbyte
+  nameWithType: sbyte
+  fullName: sbyte
+  nameWithType.vb: SByte
+  fullName.vb: SByte
+  name.vb: SByte
+- uid: System.UInt64
+  commentId: T:System.UInt64
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.uint64
+  name: ulong
+  nameWithType: ulong
+  fullName: ulong
+  nameWithType.vb: ULong
+  fullName.vb: ULong
+  name.vb: ULong
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: System.Byte
+  commentId: T:System.Byte
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.byte
+  name: byte
+  nameWithType: byte
+  fullName: byte
+  nameWithType.vb: Byte
+  fullName.vb: Byte
+  name.vb: Byte
+- uid: System.Decimal
+  commentId: T:System.Decimal
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.decimal
+  name: decimal
+  nameWithType: decimal
+  fullName: decimal
+  nameWithType.vb: Decimal
+  fullName.vb: Decimal
+  name.vb: Decimal
+- uid: System.DateTime
+  commentId: T:System.DateTime
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.datetime
+  name: DateTime
+  nameWithType: DateTime
+  fullName: System.DateTime
+  nameWithType.vb: Date
+  fullName.vb: Date
+  name.vb: Date
+- uid: System.DateOnly
+  commentId: T:System.DateOnly
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.dateonly
+  name: DateOnly
+  nameWithType: DateOnly
+  fullName: System.DateOnly
+- uid: System.TimeOnly
+  commentId: T:System.TimeOnly
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.timeonly
+  name: TimeOnly
+  nameWithType: TimeOnly
+  fullName: System.TimeOnly
+- uid: System.Guid
+  commentId: T:System.Guid
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.guid
+  name: Guid
+  nameWithType: Guid
+  fullName: System.Guid
+- uid: System.Half
+  commentId: T:System.Half
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.half
+  name: Half
+  nameWithType: Half
+  fullName: System.Half
+- uid: System.Single
+  commentId: T:System.Single
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.single
+  name: float
+  nameWithType: float
+  fullName: float
+  nameWithType.vb: Single
+  fullName.vb: Single
+  name.vb: Single
+- uid: System.Double
+  commentId: T:System.Double
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.double
+  name: double
+  nameWithType: double
+  fullName: double
+  nameWithType.vb: Double
+  fullName.vb: Double
+  name.vb: Double
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: System.NotSupportedException
+  commentId: T:System.NotSupportedException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.notsupportedexception
+  name: NotSupportedException
+  nameWithType: NotSupportedException
+  fullName: System.NotSupportedException
+- uid: System.DBNull
+  commentId: T:System.DBNull
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.dbnull
+  name: DBNull
+  nameWithType: DBNull
+  fullName: System.DBNull
+- uid: ParquetNeo.Data.ParquetDataReader.GetInt32(System.Int32)
+  commentId: M:ParquetNeo.Data.ParquetDataReader.GetInt32(System.Int32)
+  isExternal: true
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetInt32_System_Int32_
+  name: GetInt32(int)
+  nameWithType: ParquetDataReader.GetInt32(int)
+  fullName: ParquetNeo.Data.ParquetDataReader.GetInt32(int)
+  nameWithType.vb: ParquetDataReader.GetInt32(Integer)
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.GetInt32(Integer)
+  name.vb: GetInt32(Integer)
+  spec.csharp:
+  - uid: ParquetNeo.Data.ParquetDataReader.GetInt32(System.Int32)
+    name: GetInt32
+    href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetInt32_System_Int32_
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.Data.ParquetDataReader.GetInt32(System.Int32)
+    name: GetInt32
+    href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetInt32_System_Int32_
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: System.InvalidCastException
+  commentId: T:System.InvalidCastException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.invalidcastexception
+  name: InvalidCastException
+  nameWithType: InvalidCastException
+  fullName: System.InvalidCastException
+- uid: ParquetNeo.Data
+  commentId: N:ParquetNeo.Data
+  name: ParquetNeo.Data
+  nameWithType: ParquetNeo.Data
+  fullName: ParquetNeo.Data
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Data
+    name: Data
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Data
+    name: Data
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.MarshalByRefObject
+  commentId: T:System.MarshalByRefObject
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.marshalbyrefobject
+  name: MarshalByRefObject
+  nameWithType: MarshalByRefObject
+  fullName: System.MarshalByRefObject
+- uid: System.Collections.IEnumerable
+  commentId: T:System.Collections.IEnumerable
+  parent: System.Collections
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.ienumerable
+  name: IEnumerable
+  nameWithType: IEnumerable
+  fullName: System.Collections.IEnumerable
+- uid: System.Data.IDataReader
+  commentId: T:System.Data.IDataReader
+  parent: System.Data
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.idatareader
+  name: IDataReader
+  nameWithType: IDataReader
+  fullName: System.Data.IDataReader
+- uid: System.Data.IDataRecord
+  commentId: T:System.Data.IDataRecord
+  parent: System.Data
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.idatarecord
+  name: IDataRecord
+  nameWithType: IDataRecord
+  fullName: System.Data.IDataRecord
+- uid: System.IDisposable
+  commentId: T:System.IDisposable
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.idisposable
+  name: IDisposable
+  nameWithType: IDisposable
+  fullName: System.IDisposable
+- uid: System.IAsyncDisposable
+  commentId: T:System.IAsyncDisposable
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.iasyncdisposable
+  name: IAsyncDisposable
+  nameWithType: IAsyncDisposable
+  fullName: System.IAsyncDisposable
+- uid: System.Data.Common.DbDataReader.CloseAsync
+  commentId: M:System.Data.Common.DbDataReader.CloseAsync
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.closeasync
+  name: CloseAsync()
+  nameWithType: DbDataReader.CloseAsync()
+  fullName: System.Data.Common.DbDataReader.CloseAsync()
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.CloseAsync
+    name: CloseAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.closeasync
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.CloseAsync
+    name: CloseAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.closeasync
+  - name: (
+  - name: )
+- uid: System.Data.Common.DbDataReader.DisposeAsync
+  commentId: M:System.Data.Common.DbDataReader.DisposeAsync
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.disposeasync
+  name: DisposeAsync()
+  nameWithType: DbDataReader.DisposeAsync()
+  fullName: System.Data.Common.DbDataReader.DisposeAsync()
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.DisposeAsync
+    name: DisposeAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.disposeasync
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.DisposeAsync
+    name: DisposeAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.disposeasync
+  - name: (
+  - name: )
+- uid: System.Data.Common.DbDataReader.GetFieldValueAsync``1(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetFieldValueAsync``1(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getfieldvalueasync#system-data-common-dbdatareader-getfieldvalueasync-1(system-int32)
+  name: GetFieldValueAsync<T>(int)
+  nameWithType: DbDataReader.GetFieldValueAsync<T>(int)
+  fullName: System.Data.Common.DbDataReader.GetFieldValueAsync<T>(int)
+  nameWithType.vb: DbDataReader.GetFieldValueAsync(Of T)(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetFieldValueAsync(Of T)(Integer)
+  name.vb: GetFieldValueAsync(Of T)(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetFieldValueAsync``1(System.Int32)
+    name: GetFieldValueAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getfieldvalueasync#system-data-common-dbdatareader-getfieldvalueasync-1(system-int32)
+  - name: <
+  - name: T
+  - name: '>'
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetFieldValueAsync``1(System.Int32)
+    name: GetFieldValueAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getfieldvalueasync#system-data-common-dbdatareader-getfieldvalueasync-1(system-int32)
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: System.Data.Common.DbDataReader.GetFieldValueAsync``1(System.Int32,System.Threading.CancellationToken)
+  commentId: M:System.Data.Common.DbDataReader.GetFieldValueAsync``1(System.Int32,System.Threading.CancellationToken)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getfieldvalueasync#system-data-common-dbdatareader-getfieldvalueasync-1(system-int32-system-threading-cancellationtoken)
+  name: GetFieldValueAsync<T>(int, CancellationToken)
+  nameWithType: DbDataReader.GetFieldValueAsync<T>(int, CancellationToken)
+  fullName: System.Data.Common.DbDataReader.GetFieldValueAsync<T>(int, System.Threading.CancellationToken)
+  nameWithType.vb: DbDataReader.GetFieldValueAsync(Of T)(Integer, CancellationToken)
+  fullName.vb: System.Data.Common.DbDataReader.GetFieldValueAsync(Of T)(Integer, System.Threading.CancellationToken)
+  name.vb: GetFieldValueAsync(Of T)(Integer, CancellationToken)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetFieldValueAsync``1(System.Int32,System.Threading.CancellationToken)
+    name: GetFieldValueAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getfieldvalueasync#system-data-common-dbdatareader-getfieldvalueasync-1(system-int32-system-threading-cancellationtoken)
+  - name: <
+  - name: T
+  - name: '>'
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: System.Threading.CancellationToken
+    name: CancellationToken
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetFieldValueAsync``1(System.Int32,System.Threading.CancellationToken)
+    name: GetFieldValueAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getfieldvalueasync#system-data-common-dbdatareader-getfieldvalueasync-1(system-int32-system-threading-cancellationtoken)
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: System.Threading.CancellationToken
+    name: CancellationToken
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  - name: )
+- uid: System.Data.Common.DbDataReader.GetFieldValue``1(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetFieldValue``1(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getfieldvalue
+  name: GetFieldValue<T>(int)
+  nameWithType: DbDataReader.GetFieldValue<T>(int)
+  fullName: System.Data.Common.DbDataReader.GetFieldValue<T>(int)
+  nameWithType.vb: DbDataReader.GetFieldValue(Of T)(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetFieldValue(Of T)(Integer)
+  name.vb: GetFieldValue(Of T)(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetFieldValue``1(System.Int32)
+    name: GetFieldValue
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getfieldvalue
+  - name: <
+  - name: T
+  - name: '>'
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetFieldValue``1(System.Int32)
+    name: GetFieldValue
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getfieldvalue
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: System.Data.Common.DbDataReader.GetSchemaTableAsync(System.Threading.CancellationToken)
+  commentId: M:System.Data.Common.DbDataReader.GetSchemaTableAsync(System.Threading.CancellationToken)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getschematableasync
+  name: GetSchemaTableAsync(CancellationToken)
+  nameWithType: DbDataReader.GetSchemaTableAsync(CancellationToken)
+  fullName: System.Data.Common.DbDataReader.GetSchemaTableAsync(System.Threading.CancellationToken)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetSchemaTableAsync(System.Threading.CancellationToken)
+    name: GetSchemaTableAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getschematableasync
+  - name: (
+  - uid: System.Threading.CancellationToken
+    name: CancellationToken
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetSchemaTableAsync(System.Threading.CancellationToken)
+    name: GetSchemaTableAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getschematableasync
+  - name: (
+  - uid: System.Threading.CancellationToken
+    name: CancellationToken
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  - name: )
+- uid: System.Data.Common.DbDataReader.GetColumnSchemaAsync(System.Threading.CancellationToken)
+  commentId: M:System.Data.Common.DbDataReader.GetColumnSchemaAsync(System.Threading.CancellationToken)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getcolumnschemaasync
+  name: GetColumnSchemaAsync(CancellationToken)
+  nameWithType: DbDataReader.GetColumnSchemaAsync(CancellationToken)
+  fullName: System.Data.Common.DbDataReader.GetColumnSchemaAsync(System.Threading.CancellationToken)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetColumnSchemaAsync(System.Threading.CancellationToken)
+    name: GetColumnSchemaAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getcolumnschemaasync
+  - name: (
+  - uid: System.Threading.CancellationToken
+    name: CancellationToken
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetColumnSchemaAsync(System.Threading.CancellationToken)
+    name: GetColumnSchemaAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getcolumnschemaasync
+  - name: (
+  - uid: System.Threading.CancellationToken
+    name: CancellationToken
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  - name: )
+- uid: System.Data.Common.DbDataReader.GetStream(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetStream(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getstream
+  name: GetStream(int)
+  nameWithType: DbDataReader.GetStream(int)
+  fullName: System.Data.Common.DbDataReader.GetStream(int)
+  nameWithType.vb: DbDataReader.GetStream(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetStream(Integer)
+  name.vb: GetStream(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetStream(System.Int32)
+    name: GetStream
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getstream
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetStream(System.Int32)
+    name: GetStream
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getstream
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: System.Data.Common.DbDataReader.GetTextReader(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetTextReader(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.gettextreader
+  name: GetTextReader(int)
+  nameWithType: DbDataReader.GetTextReader(int)
+  fullName: System.Data.Common.DbDataReader.GetTextReader(int)
+  nameWithType.vb: DbDataReader.GetTextReader(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetTextReader(Integer)
+  name.vb: GetTextReader(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetTextReader(System.Int32)
+    name: GetTextReader
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.gettextreader
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetTextReader(System.Int32)
+    name: GetTextReader
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.gettextreader
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: System.Data.Common.DbDataReader.IsDBNullAsync(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.IsDBNullAsync(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.isdbnullasync#system-data-common-dbdatareader-isdbnullasync(system-int32)
+  name: IsDBNullAsync(int)
+  nameWithType: DbDataReader.IsDBNullAsync(int)
+  fullName: System.Data.Common.DbDataReader.IsDBNullAsync(int)
+  nameWithType.vb: DbDataReader.IsDBNullAsync(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.IsDBNullAsync(Integer)
+  name.vb: IsDBNullAsync(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.IsDBNullAsync(System.Int32)
+    name: IsDBNullAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.isdbnullasync#system-data-common-dbdatareader-isdbnullasync(system-int32)
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.IsDBNullAsync(System.Int32)
+    name: IsDBNullAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.isdbnullasync#system-data-common-dbdatareader-isdbnullasync(system-int32)
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: System.Data.Common.DbDataReader.IsDBNullAsync(System.Int32,System.Threading.CancellationToken)
+  commentId: M:System.Data.Common.DbDataReader.IsDBNullAsync(System.Int32,System.Threading.CancellationToken)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.isdbnullasync#system-data-common-dbdatareader-isdbnullasync(system-int32-system-threading-cancellationtoken)
+  name: IsDBNullAsync(int, CancellationToken)
+  nameWithType: DbDataReader.IsDBNullAsync(int, CancellationToken)
+  fullName: System.Data.Common.DbDataReader.IsDBNullAsync(int, System.Threading.CancellationToken)
+  nameWithType.vb: DbDataReader.IsDBNullAsync(Integer, CancellationToken)
+  fullName.vb: System.Data.Common.DbDataReader.IsDBNullAsync(Integer, System.Threading.CancellationToken)
+  name.vb: IsDBNullAsync(Integer, CancellationToken)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.IsDBNullAsync(System.Int32,System.Threading.CancellationToken)
+    name: IsDBNullAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.isdbnullasync#system-data-common-dbdatareader-isdbnullasync(system-int32-system-threading-cancellationtoken)
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: System.Threading.CancellationToken
+    name: CancellationToken
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.IsDBNullAsync(System.Int32,System.Threading.CancellationToken)
+    name: IsDBNullAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.isdbnullasync#system-data-common-dbdatareader-isdbnullasync(system-int32-system-threading-cancellationtoken)
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: System.Threading.CancellationToken
+    name: CancellationToken
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  - name: )
+- uid: System.Data.Common.DbDataReader.NextResultAsync
+  commentId: M:System.Data.Common.DbDataReader.NextResultAsync
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.nextresultasync#system-data-common-dbdatareader-nextresultasync
+  name: NextResultAsync()
+  nameWithType: DbDataReader.NextResultAsync()
+  fullName: System.Data.Common.DbDataReader.NextResultAsync()
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.NextResultAsync
+    name: NextResultAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.nextresultasync#system-data-common-dbdatareader-nextresultasync
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.NextResultAsync
+    name: NextResultAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.nextresultasync#system-data-common-dbdatareader-nextresultasync
+  - name: (
+  - name: )
+- uid: System.Data.Common.DbDataReader.NextResultAsync(System.Threading.CancellationToken)
+  commentId: M:System.Data.Common.DbDataReader.NextResultAsync(System.Threading.CancellationToken)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.nextresultasync#system-data-common-dbdatareader-nextresultasync(system-threading-cancellationtoken)
+  name: NextResultAsync(CancellationToken)
+  nameWithType: DbDataReader.NextResultAsync(CancellationToken)
+  fullName: System.Data.Common.DbDataReader.NextResultAsync(System.Threading.CancellationToken)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.NextResultAsync(System.Threading.CancellationToken)
+    name: NextResultAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.nextresultasync#system-data-common-dbdatareader-nextresultasync(system-threading-cancellationtoken)
+  - name: (
+  - uid: System.Threading.CancellationToken
+    name: CancellationToken
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.NextResultAsync(System.Threading.CancellationToken)
+    name: NextResultAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.nextresultasync#system-data-common-dbdatareader-nextresultasync(system-threading-cancellationtoken)
+  - name: (
+  - uid: System.Threading.CancellationToken
+    name: CancellationToken
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  - name: )
+- uid: System.Data.Common.DbDataReader.ReadAsync
+  commentId: M:System.Data.Common.DbDataReader.ReadAsync
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.readasync#system-data-common-dbdatareader-readasync
+  name: ReadAsync()
+  nameWithType: DbDataReader.ReadAsync()
+  fullName: System.Data.Common.DbDataReader.ReadAsync()
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.ReadAsync
+    name: ReadAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.readasync#system-data-common-dbdatareader-readasync
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.ReadAsync
+    name: ReadAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.readasync#system-data-common-dbdatareader-readasync
+  - name: (
+  - name: )
+- uid: System.Data.Common.DbDataReader.ReadAsync(System.Threading.CancellationToken)
+  commentId: M:System.Data.Common.DbDataReader.ReadAsync(System.Threading.CancellationToken)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.readasync#system-data-common-dbdatareader-readasync(system-threading-cancellationtoken)
+  name: ReadAsync(CancellationToken)
+  nameWithType: DbDataReader.ReadAsync(CancellationToken)
+  fullName: System.Data.Common.DbDataReader.ReadAsync(System.Threading.CancellationToken)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.ReadAsync(System.Threading.CancellationToken)
+    name: ReadAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.readasync#system-data-common-dbdatareader-readasync(system-threading-cancellationtoken)
+  - name: (
+  - uid: System.Threading.CancellationToken
+    name: CancellationToken
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.ReadAsync(System.Threading.CancellationToken)
+    name: ReadAsync
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.readasync#system-data-common-dbdatareader-readasync(system-threading-cancellationtoken)
+  - name: (
+  - uid: System.Threading.CancellationToken
+    name: CancellationToken
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken
+  - name: )
+- uid: System.Data.Common.DbDataReader.VisibleFieldCount
+  commentId: P:System.Data.Common.DbDataReader.VisibleFieldCount
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.visiblefieldcount
+  name: VisibleFieldCount
+  nameWithType: DbDataReader.VisibleFieldCount
+  fullName: System.Data.Common.DbDataReader.VisibleFieldCount
+- uid: System.MarshalByRefObject.GetLifetimeService
+  commentId: M:System.MarshalByRefObject.GetLifetimeService
+  parent: System.MarshalByRefObject
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.marshalbyrefobject.getlifetimeservice
+  name: GetLifetimeService()
+  nameWithType: MarshalByRefObject.GetLifetimeService()
+  fullName: System.MarshalByRefObject.GetLifetimeService()
+  spec.csharp:
+  - uid: System.MarshalByRefObject.GetLifetimeService
+    name: GetLifetimeService
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.marshalbyrefobject.getlifetimeservice
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.MarshalByRefObject.GetLifetimeService
+    name: GetLifetimeService
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.marshalbyrefobject.getlifetimeservice
+  - name: (
+  - name: )
+- uid: System.MarshalByRefObject.InitializeLifetimeService
+  commentId: M:System.MarshalByRefObject.InitializeLifetimeService
+  parent: System.MarshalByRefObject
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.marshalbyrefobject.initializelifetimeservice
+  name: InitializeLifetimeService()
+  nameWithType: MarshalByRefObject.InitializeLifetimeService()
+  fullName: System.MarshalByRefObject.InitializeLifetimeService()
+  spec.csharp:
+  - uid: System.MarshalByRefObject.InitializeLifetimeService
+    name: InitializeLifetimeService
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.marshalbyrefobject.initializelifetimeservice
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.MarshalByRefObject.InitializeLifetimeService
+    name: InitializeLifetimeService
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.marshalbyrefobject.initializelifetimeservice
+  - name: (
+  - name: )
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System.Data.Common
+  commentId: N:System.Data.Common
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Data.Common
+  nameWithType: System.Data.Common
+  fullName: System.Data.Common
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Data
+    name: Data
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data
+  - name: .
+  - uid: System.Data.Common
+    name: Common
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Data
+    name: Data
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data
+  - name: .
+  - uid: System.Data.Common
+    name: Common
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.Collections
+  commentId: N:System.Collections
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections
+  nameWithType: System.Collections
+  fullName: System.Collections
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+- uid: System.Data
+  commentId: N:System.Data
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Data
+  nameWithType: System.Data
+  fullName: System.Data
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Data
+    name: Data
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Data
+    name: Data
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data
+- uid: System.ArgumentException
+  commentId: T:System.ArgumentException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.argumentexception
+  name: ArgumentException
+  nameWithType: ArgumentException
+  fullName: System.ArgumentException
+- uid: ParquetNeo.Data.ParquetDataReader.#ctor*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.#ctor
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader__ctor_System_IO_Stream_ParquetNeo_Data_ParquetDataReaderOptions_System_Boolean_
+  name: ParquetDataReader
+  nameWithType: ParquetDataReader.ParquetDataReader
+  fullName: ParquetNeo.Data.ParquetDataReader.ParquetDataReader
+  nameWithType.vb: ParquetDataReader.New
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.New
+  name.vb: New
+- uid: System.IO.Stream
+  commentId: T:System.IO.Stream
+  parent: System.IO
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.io.stream
+  name: Stream
+  nameWithType: Stream
+  fullName: System.IO.Stream
+- uid: ParquetNeo.Data.ParquetDataReaderOptions
+  commentId: T:ParquetNeo.Data.ParquetDataReaderOptions
+  parent: ParquetNeo.Data
+  href: ParquetNeo.Data.ParquetDataReaderOptions.html
+  name: ParquetDataReaderOptions
+  nameWithType: ParquetDataReaderOptions
+  fullName: ParquetNeo.Data.ParquetDataReaderOptions
+- uid: System.IO
+  commentId: N:System.IO
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.IO
+  nameWithType: System.IO
+  fullName: System.IO
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.IO
+    name: IO
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.io
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.IO
+    name: IO
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.io
+- uid: System.Data.Common.DbDataReader.FieldCount
+  commentId: P:System.Data.Common.DbDataReader.FieldCount
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.fieldcount
+  name: FieldCount
+  nameWithType: DbDataReader.FieldCount
+  fullName: System.Data.Common.DbDataReader.FieldCount
+- uid: ParquetNeo.Data.ParquetDataReader.FieldCount*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.FieldCount
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_FieldCount
+  name: FieldCount
+  nameWithType: ParquetDataReader.FieldCount
+  fullName: ParquetNeo.Data.ParquetDataReader.FieldCount
+- uid: System.Data.Common.DbDataReader.HasRows
+  commentId: P:System.Data.Common.DbDataReader.HasRows
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.hasrows
+  name: HasRows
+  nameWithType: DbDataReader.HasRows
+  fullName: System.Data.Common.DbDataReader.HasRows
+- uid: ParquetNeo.Data.ParquetDataReader.HasRows*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.HasRows
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_HasRows
+  name: HasRows
+  nameWithType: ParquetDataReader.HasRows
+  fullName: ParquetNeo.Data.ParquetDataReader.HasRows
+- uid: System.InvalidOperationException
+  commentId: T:System.InvalidOperationException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.invalidoperationexception
+  name: InvalidOperationException
+  nameWithType: InvalidOperationException
+  fullName: System.InvalidOperationException
+- uid: System.Data.Common.DbDataReader.IsClosed
+  commentId: P:System.Data.Common.DbDataReader.IsClosed
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.isclosed
+  name: IsClosed
+  nameWithType: DbDataReader.IsClosed
+  fullName: System.Data.Common.DbDataReader.IsClosed
+- uid: ParquetNeo.Data.ParquetDataReader.IsClosed*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.IsClosed
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_IsClosed
+  name: IsClosed
+  nameWithType: ParquetDataReader.IsClosed
+  fullName: ParquetNeo.Data.ParquetDataReader.IsClosed
+- uid: System.Data.Common.DbDataReader.Depth
+  commentId: P:System.Data.Common.DbDataReader.Depth
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.depth
+  name: Depth
+  nameWithType: DbDataReader.Depth
+  fullName: System.Data.Common.DbDataReader.Depth
+- uid: ParquetNeo.Data.ParquetDataReader.Depth*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.Depth
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_Depth
+  name: Depth
+  nameWithType: ParquetDataReader.Depth
+  fullName: ParquetNeo.Data.ParquetDataReader.Depth
+- uid: System.Data.Common.DbDataReader.RecordsAffected
+  commentId: P:System.Data.Common.DbDataReader.RecordsAffected
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.recordsaffected
+  name: RecordsAffected
+  nameWithType: DbDataReader.RecordsAffected
+  fullName: System.Data.Common.DbDataReader.RecordsAffected
+- uid: ParquetNeo.Data.ParquetDataReader.RecordsAffected*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.RecordsAffected
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_RecordsAffected
+  name: RecordsAffected
+  nameWithType: ParquetDataReader.RecordsAffected
+  fullName: ParquetNeo.Data.ParquetDataReader.RecordsAffected
+- uid: System.IndexOutOfRangeException
+  commentId: T:System.IndexOutOfRangeException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.indexoutofrangeexception
+  name: IndexOutOfRangeException
+  nameWithType: IndexOutOfRangeException
+  fullName: System.IndexOutOfRangeException
+- uid: System.Data.Common.DbDataReader.Item(System.Int32)
+  commentId: P:System.Data.Common.DbDataReader.Item(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: this[int]
+  nameWithType: DbDataReader.this[int]
+  fullName: System.Data.Common.DbDataReader.this[int]
+  nameWithType.vb: DbDataReader.this[](Integer)
+  fullName.vb: System.Data.Common.DbDataReader.this[](Integer)
+  name.vb: this[](Integer)
+  spec.csharp:
+  - name: this
+  - name: '['
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ']'
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.Item(System.Int32)
+    name: this[]
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.item
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.Item*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.Item
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_Item_System_Int32_
+  name: this
+  nameWithType: ParquetDataReader.this
+  fullName: ParquetNeo.Data.ParquetDataReader.this
+  nameWithType.vb: ParquetDataReader.this[]
+  fullName.vb: ParquetNeo.Data.ParquetDataReader.this[]
+  name.vb: this[]
+- uid: System.Data.Common.DbDataReader.Item(System.String)
+  commentId: P:System.Data.Common.DbDataReader.Item(System.String)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: this[string]
+  nameWithType: DbDataReader.this[string]
+  fullName: System.Data.Common.DbDataReader.this[string]
+  nameWithType.vb: DbDataReader.this[](String)
+  fullName.vb: System.Data.Common.DbDataReader.this[](String)
+  name.vb: this[](String)
+  spec.csharp:
+  - name: this
+  - name: '['
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ']'
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.Item(System.String)
+    name: this[]
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.item
+  - name: (
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: System.Data.Common.DbDataReader.Read
+  commentId: M:System.Data.Common.DbDataReader.Read
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.read
+  name: Read()
+  nameWithType: DbDataReader.Read()
+  fullName: System.Data.Common.DbDataReader.Read()
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.Read
+    name: Read
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.read
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.Read
+    name: Read
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.read
+  - name: (
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.Read*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.Read
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_Read
+  name: Read
+  nameWithType: ParquetDataReader.Read
+  fullName: ParquetNeo.Data.ParquetDataReader.Read
+- uid: System.Data.Common.DbDataReader.NextResult
+  commentId: M:System.Data.Common.DbDataReader.NextResult
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.nextresult
+  name: NextResult()
+  nameWithType: DbDataReader.NextResult()
+  fullName: System.Data.Common.DbDataReader.NextResult()
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.NextResult
+    name: NextResult
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.nextresult
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.NextResult
+    name: NextResult
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.nextresult
+  - name: (
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.NextResult*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.NextResult
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_NextResult
+  name: NextResult
+  nameWithType: ParquetDataReader.NextResult
+  fullName: ParquetNeo.Data.ParquetDataReader.NextResult
+- uid: System.Data.Common.DbDataReader.Close
+  commentId: M:System.Data.Common.DbDataReader.Close
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.close
+  name: Close()
+  nameWithType: DbDataReader.Close()
+  fullName: System.Data.Common.DbDataReader.Close()
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.Close
+    name: Close
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.close
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.Close
+    name: Close
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.close
+  - name: (
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.Close*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.Close
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_Close
+  name: Close
+  nameWithType: ParquetDataReader.Close
+  fullName: ParquetNeo.Data.ParquetDataReader.Close
+- uid: System.Data.Common.DbDataReader.GetName(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetName(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getname
+  name: GetName(int)
+  nameWithType: DbDataReader.GetName(int)
+  fullName: System.Data.Common.DbDataReader.GetName(int)
+  nameWithType.vb: DbDataReader.GetName(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetName(Integer)
+  name.vb: GetName(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetName(System.Int32)
+    name: GetName
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getname
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetName(System.Int32)
+    name: GetName
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getname
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetName*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetName
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetName_System_Int32_
+  name: GetName
+  nameWithType: ParquetDataReader.GetName
+  fullName: ParquetNeo.Data.ParquetDataReader.GetName
+- uid: System.Data.Common.DbDataReader.GetOrdinal(System.String)
+  commentId: M:System.Data.Common.DbDataReader.GetOrdinal(System.String)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getordinal
+  name: GetOrdinal(string)
+  nameWithType: DbDataReader.GetOrdinal(string)
+  fullName: System.Data.Common.DbDataReader.GetOrdinal(string)
+  nameWithType.vb: DbDataReader.GetOrdinal(String)
+  fullName.vb: System.Data.Common.DbDataReader.GetOrdinal(String)
+  name.vb: GetOrdinal(String)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetOrdinal(System.String)
+    name: GetOrdinal
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getordinal
+  - name: (
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetOrdinal(System.String)
+    name: GetOrdinal
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getordinal
+  - name: (
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetOrdinal*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetOrdinal
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetOrdinal_System_String_
+  name: GetOrdinal
+  nameWithType: ParquetDataReader.GetOrdinal
+  fullName: ParquetNeo.Data.ParquetDataReader.GetOrdinal
+- uid: System.Data.Common.DbDataReader.GetFieldType(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetFieldType(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getfieldtype
+  name: GetFieldType(int)
+  nameWithType: DbDataReader.GetFieldType(int)
+  fullName: System.Data.Common.DbDataReader.GetFieldType(int)
+  nameWithType.vb: DbDataReader.GetFieldType(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetFieldType(Integer)
+  name.vb: GetFieldType(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetFieldType(System.Int32)
+    name: GetFieldType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getfieldtype
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetFieldType(System.Int32)
+    name: GetFieldType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getfieldtype
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetFieldType*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetFieldType
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetFieldType_System_Int32_
+  name: GetFieldType
+  nameWithType: ParquetDataReader.GetFieldType
+  fullName: ParquetNeo.Data.ParquetDataReader.GetFieldType
+- uid: System.Type
+  commentId: T:System.Type
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.type
+  name: Type
+  nameWithType: Type
+  fullName: System.Type
+- uid: System.Data.Common.DbDataReader.GetDataTypeName(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetDataTypeName(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getdatatypename
+  name: GetDataTypeName(int)
+  nameWithType: DbDataReader.GetDataTypeName(int)
+  fullName: System.Data.Common.DbDataReader.GetDataTypeName(int)
+  nameWithType.vb: DbDataReader.GetDataTypeName(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetDataTypeName(Integer)
+  name.vb: GetDataTypeName(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetDataTypeName(System.Int32)
+    name: GetDataTypeName
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getdatatypename
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetDataTypeName(System.Int32)
+    name: GetDataTypeName
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getdatatypename
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetDataTypeName*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetDataTypeName
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetDataTypeName_System_Int32_
+  name: GetDataTypeName
+  nameWithType: ParquetDataReader.GetDataTypeName
+  fullName: ParquetNeo.Data.ParquetDataReader.GetDataTypeName
+- uid: System.Data.Common.DbDataReader.IsDBNull(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.IsDBNull(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.isdbnull
+  name: IsDBNull(int)
+  nameWithType: DbDataReader.IsDBNull(int)
+  fullName: System.Data.Common.DbDataReader.IsDBNull(int)
+  nameWithType.vb: DbDataReader.IsDBNull(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.IsDBNull(Integer)
+  name.vb: IsDBNull(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.IsDBNull(System.Int32)
+    name: IsDBNull
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.isdbnull
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.IsDBNull(System.Int32)
+    name: IsDBNull
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.isdbnull
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.IsDBNull*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.IsDBNull
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_IsDBNull_System_Int32_
+  name: IsDBNull
+  nameWithType: ParquetDataReader.IsDBNull
+  fullName: ParquetNeo.Data.ParquetDataReader.IsDBNull
+- uid: System.Data.Common.DbDataReader.GetValue(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetValue(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getvalue
+  name: GetValue(int)
+  nameWithType: DbDataReader.GetValue(int)
+  fullName: System.Data.Common.DbDataReader.GetValue(int)
+  nameWithType.vb: DbDataReader.GetValue(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetValue(Integer)
+  name.vb: GetValue(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetValue(System.Int32)
+    name: GetValue
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getvalue
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetValue(System.Int32)
+    name: GetValue
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getvalue
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetValue*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetValue
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetValue_System_Int32_
+  name: GetValue
+  nameWithType: ParquetDataReader.GetValue
+  fullName: ParquetNeo.Data.ParquetDataReader.GetValue
+- uid: System.Data.Common.DbDataReader.GetValues(System.Object[])
+  commentId: M:System.Data.Common.DbDataReader.GetValues(System.Object[])
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getvalues
+  name: GetValues(object[])
+  nameWithType: DbDataReader.GetValues(object[])
+  fullName: System.Data.Common.DbDataReader.GetValues(object[])
+  nameWithType.vb: DbDataReader.GetValues(Object())
+  fullName.vb: System.Data.Common.DbDataReader.GetValues(Object())
+  name.vb: GetValues(Object())
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetValues(System.Object[])
+    name: GetValues
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getvalues
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: '['
+  - name: ']'
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetValues(System.Object[])
+    name: GetValues
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getvalues
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: (
+  - name: )
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetValues*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetValues
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetValues_System_Object___
+  name: GetValues
+  nameWithType: ParquetDataReader.GetValues
+  fullName: ParquetNeo.Data.ParquetDataReader.GetValues
+- uid: System.Object[]
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object[]
+  nameWithType: object[]
+  fullName: object[]
+  nameWithType.vb: Object()
+  fullName.vb: Object()
+  name.vb: Object()
+  spec.csharp:
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: '['
+  - name: ']'
+  spec.vb:
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: (
+  - name: )
+- uid: System.Data.Common.DbDataReader.GetBoolean(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetBoolean(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getboolean
+  name: GetBoolean(int)
+  nameWithType: DbDataReader.GetBoolean(int)
+  fullName: System.Data.Common.DbDataReader.GetBoolean(int)
+  nameWithType.vb: DbDataReader.GetBoolean(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetBoolean(Integer)
+  name.vb: GetBoolean(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetBoolean(System.Int32)
+    name: GetBoolean
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getboolean
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetBoolean(System.Int32)
+    name: GetBoolean
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getboolean
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetBoolean*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetBoolean
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetBoolean_System_Int32_
+  name: GetBoolean
+  nameWithType: ParquetDataReader.GetBoolean
+  fullName: ParquetNeo.Data.ParquetDataReader.GetBoolean
+- uid: System.Data.Common.DbDataReader.GetByte(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetByte(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getbyte
+  name: GetByte(int)
+  nameWithType: DbDataReader.GetByte(int)
+  fullName: System.Data.Common.DbDataReader.GetByte(int)
+  nameWithType.vb: DbDataReader.GetByte(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetByte(Integer)
+  name.vb: GetByte(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetByte(System.Int32)
+    name: GetByte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getbyte
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetByte(System.Int32)
+    name: GetByte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getbyte
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetByte*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetByte
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetByte_System_Int32_
+  name: GetByte
+  nameWithType: ParquetDataReader.GetByte
+  fullName: ParquetNeo.Data.ParquetDataReader.GetByte
+- uid: System.Data.Common.DbDataReader.GetInt16(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetInt16(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getint16
+  name: GetInt16(int)
+  nameWithType: DbDataReader.GetInt16(int)
+  fullName: System.Data.Common.DbDataReader.GetInt16(int)
+  nameWithType.vb: DbDataReader.GetInt16(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetInt16(Integer)
+  name.vb: GetInt16(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetInt16(System.Int32)
+    name: GetInt16
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getint16
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetInt16(System.Int32)
+    name: GetInt16
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getint16
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetInt16*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetInt16
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetInt16_System_Int32_
+  name: GetInt16
+  nameWithType: ParquetDataReader.GetInt16
+  fullName: ParquetNeo.Data.ParquetDataReader.GetInt16
+- uid: System.Int16
+  commentId: T:System.Int16
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int16
+  name: short
+  nameWithType: short
+  fullName: short
+  nameWithType.vb: Short
+  fullName.vb: Short
+  name.vb: Short
+- uid: System.Data.Common.DbDataReader.GetInt32(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetInt32(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getint32
+  name: GetInt32(int)
+  nameWithType: DbDataReader.GetInt32(int)
+  fullName: System.Data.Common.DbDataReader.GetInt32(int)
+  nameWithType.vb: DbDataReader.GetInt32(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetInt32(Integer)
+  name.vb: GetInt32(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetInt32(System.Int32)
+    name: GetInt32
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getint32
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetInt32(System.Int32)
+    name: GetInt32
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getint32
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetInt32*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetInt32
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetInt32_System_Int32_
+  name: GetInt32
+  nameWithType: ParquetDataReader.GetInt32
+  fullName: ParquetNeo.Data.ParquetDataReader.GetInt32
+- uid: System.Data.Common.DbDataReader.GetInt64(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetInt64(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getint64
+  name: GetInt64(int)
+  nameWithType: DbDataReader.GetInt64(int)
+  fullName: System.Data.Common.DbDataReader.GetInt64(int)
+  nameWithType.vb: DbDataReader.GetInt64(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetInt64(Integer)
+  name.vb: GetInt64(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetInt64(System.Int32)
+    name: GetInt64
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getint64
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetInt64(System.Int32)
+    name: GetInt64
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getint64
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetInt64*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetInt64
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetInt64_System_Int32_
+  name: GetInt64
+  nameWithType: ParquetDataReader.GetInt64
+  fullName: ParquetNeo.Data.ParquetDataReader.GetInt64
+- uid: System.Data.Common.DbDataReader.GetFloat(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetFloat(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getfloat
+  name: GetFloat(int)
+  nameWithType: DbDataReader.GetFloat(int)
+  fullName: System.Data.Common.DbDataReader.GetFloat(int)
+  nameWithType.vb: DbDataReader.GetFloat(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetFloat(Integer)
+  name.vb: GetFloat(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetFloat(System.Int32)
+    name: GetFloat
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getfloat
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetFloat(System.Int32)
+    name: GetFloat
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getfloat
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetFloat*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetFloat
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetFloat_System_Int32_
+  name: GetFloat
+  nameWithType: ParquetDataReader.GetFloat
+  fullName: ParquetNeo.Data.ParquetDataReader.GetFloat
+- uid: System.Data.Common.DbDataReader.GetDouble(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetDouble(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getdouble
+  name: GetDouble(int)
+  nameWithType: DbDataReader.GetDouble(int)
+  fullName: System.Data.Common.DbDataReader.GetDouble(int)
+  nameWithType.vb: DbDataReader.GetDouble(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetDouble(Integer)
+  name.vb: GetDouble(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetDouble(System.Int32)
+    name: GetDouble
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getdouble
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetDouble(System.Int32)
+    name: GetDouble
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getdouble
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetDouble*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetDouble
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetDouble_System_Int32_
+  name: GetDouble
+  nameWithType: ParquetDataReader.GetDouble
+  fullName: ParquetNeo.Data.ParquetDataReader.GetDouble
+- uid: System.Data.Common.DbDataReader.GetDecimal(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetDecimal(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getdecimal
+  name: GetDecimal(int)
+  nameWithType: DbDataReader.GetDecimal(int)
+  fullName: System.Data.Common.DbDataReader.GetDecimal(int)
+  nameWithType.vb: DbDataReader.GetDecimal(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetDecimal(Integer)
+  name.vb: GetDecimal(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetDecimal(System.Int32)
+    name: GetDecimal
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getdecimal
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetDecimal(System.Int32)
+    name: GetDecimal
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getdecimal
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetDecimal*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetDecimal
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetDecimal_System_Int32_
+  name: GetDecimal
+  nameWithType: ParquetDataReader.GetDecimal
+  fullName: ParquetNeo.Data.ParquetDataReader.GetDecimal
+- uid: System.Data.Common.DbDataReader.GetString(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetString(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getstring
+  name: GetString(int)
+  nameWithType: DbDataReader.GetString(int)
+  fullName: System.Data.Common.DbDataReader.GetString(int)
+  nameWithType.vb: DbDataReader.GetString(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetString(Integer)
+  name.vb: GetString(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetString(System.Int32)
+    name: GetString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getstring
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetString(System.Int32)
+    name: GetString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getstring
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetString*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetString
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetString_System_Int32_
+  name: GetString
+  nameWithType: ParquetDataReader.GetString
+  fullName: ParquetNeo.Data.ParquetDataReader.GetString
+- uid: System.Data.Common.DbDataReader.GetDateTime(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetDateTime(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getdatetime
+  name: GetDateTime(int)
+  nameWithType: DbDataReader.GetDateTime(int)
+  fullName: System.Data.Common.DbDataReader.GetDateTime(int)
+  nameWithType.vb: DbDataReader.GetDateTime(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetDateTime(Integer)
+  name.vb: GetDateTime(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetDateTime(System.Int32)
+    name: GetDateTime
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getdatetime
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetDateTime(System.Int32)
+    name: GetDateTime
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getdatetime
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetDateTime*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetDateTime
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetDateTime_System_Int32_
+  name: GetDateTime
+  nameWithType: ParquetDataReader.GetDateTime
+  fullName: ParquetNeo.Data.ParquetDataReader.GetDateTime
+- uid: System.Data.Common.DbDataReader.GetGuid(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetGuid(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getguid
+  name: GetGuid(int)
+  nameWithType: DbDataReader.GetGuid(int)
+  fullName: System.Data.Common.DbDataReader.GetGuid(int)
+  nameWithType.vb: DbDataReader.GetGuid(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetGuid(Integer)
+  name.vb: GetGuid(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetGuid(System.Int32)
+    name: GetGuid
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getguid
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetGuid(System.Int32)
+    name: GetGuid
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getguid
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetGuid*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetGuid
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetGuid_System_Int32_
+  name: GetGuid
+  nameWithType: ParquetDataReader.GetGuid
+  fullName: ParquetNeo.Data.ParquetDataReader.GetGuid
+- uid: System.Data.Common.DbDataReader.GetChar(System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetChar(System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getchar
+  name: GetChar(int)
+  nameWithType: DbDataReader.GetChar(int)
+  fullName: System.Data.Common.DbDataReader.GetChar(int)
+  nameWithType.vb: DbDataReader.GetChar(Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetChar(Integer)
+  name.vb: GetChar(Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetChar(System.Int32)
+    name: GetChar
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getchar
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetChar(System.Int32)
+    name: GetChar
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getchar
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetChar*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetChar
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetChar_System_Int32_
+  name: GetChar
+  nameWithType: ParquetDataReader.GetChar
+  fullName: ParquetNeo.Data.ParquetDataReader.GetChar
+- uid: System.Char
+  commentId: T:System.Char
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.char
+  name: char
+  nameWithType: char
+  fullName: char
+  nameWithType.vb: Char
+  fullName.vb: Char
+  name.vb: Char
+- uid: System.Data.Common.DbDataReader.GetBytes(System.Int32,System.Int64,System.Byte[],System.Int32,System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetBytes(System.Int32,System.Int64,System.Byte[],System.Int32,System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getbytes
+  name: GetBytes(int, long, byte[], int, int)
+  nameWithType: DbDataReader.GetBytes(int, long, byte[], int, int)
+  fullName: System.Data.Common.DbDataReader.GetBytes(int, long, byte[], int, int)
+  nameWithType.vb: DbDataReader.GetBytes(Integer, Long, Byte(), Integer, Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetBytes(Integer, Long, Byte(), Integer, Integer)
+  name.vb: GetBytes(Integer, Long, Byte(), Integer, Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetBytes(System.Int32,System.Int64,System.Byte[],System.Int32,System.Int32)
+    name: GetBytes
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getbytes
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: System.Int64
+    name: long
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int64
+  - name: ','
+  - name: " "
+  - uid: System.Byte
+    name: byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: '['
+  - name: ']'
+  - name: ','
+  - name: " "
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetBytes(System.Int32,System.Int64,System.Byte[],System.Int32,System.Int32)
+    name: GetBytes
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getbytes
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: System.Int64
+    name: Long
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int64
+  - name: ','
+  - name: " "
+  - uid: System.Byte
+    name: Byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: (
+  - name: )
+  - name: ','
+  - name: " "
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetBytes*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetBytes
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetBytes_System_Int32_System_Int64_System_Byte___System_Int32_System_Int32_
+  name: GetBytes
+  nameWithType: ParquetDataReader.GetBytes
+  fullName: ParquetNeo.Data.ParquetDataReader.GetBytes
+- uid: System.Byte[]
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.byte
+  name: byte[]
+  nameWithType: byte[]
+  fullName: byte[]
+  nameWithType.vb: Byte()
+  fullName.vb: Byte()
+  name.vb: Byte()
+  spec.csharp:
+  - uid: System.Byte
+    name: byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: '['
+  - name: ']'
+  spec.vb:
+  - uid: System.Byte
+    name: Byte
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.byte
+  - name: (
+  - name: )
+- uid: System.Data.Common.DbDataReader.GetChars(System.Int32,System.Int64,System.Char[],System.Int32,System.Int32)
+  commentId: M:System.Data.Common.DbDataReader.GetChars(System.Int32,System.Int64,System.Char[],System.Int32,System.Int32)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getchars
+  name: GetChars(int, long, char[], int, int)
+  nameWithType: DbDataReader.GetChars(int, long, char[], int, int)
+  fullName: System.Data.Common.DbDataReader.GetChars(int, long, char[], int, int)
+  nameWithType.vb: DbDataReader.GetChars(Integer, Long, Char(), Integer, Integer)
+  fullName.vb: System.Data.Common.DbDataReader.GetChars(Integer, Long, Char(), Integer, Integer)
+  name.vb: GetChars(Integer, Long, Char(), Integer, Integer)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetChars(System.Int32,System.Int64,System.Char[],System.Int32,System.Int32)
+    name: GetChars
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getchars
+  - name: (
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: System.Int64
+    name: long
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int64
+  - name: ','
+  - name: " "
+  - uid: System.Char
+    name: char
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.char
+  - name: '['
+  - name: ']'
+  - name: ','
+  - name: " "
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetChars(System.Int32,System.Int64,System.Char[],System.Int32,System.Int32)
+    name: GetChars
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getchars
+  - name: (
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: System.Int64
+    name: Long
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int64
+  - name: ','
+  - name: " "
+  - uid: System.Char
+    name: Char
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.char
+  - name: (
+  - name: )
+  - name: ','
+  - name: " "
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: ','
+  - name: " "
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetChars*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetChars
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetChars_System_Int32_System_Int64_System_Char___System_Int32_System_Int32_
+  name: GetChars
+  nameWithType: ParquetDataReader.GetChars
+  fullName: ParquetNeo.Data.ParquetDataReader.GetChars
+- uid: System.Char[]
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.char
+  name: char[]
+  nameWithType: char[]
+  fullName: char[]
+  nameWithType.vb: Char()
+  fullName.vb: Char()
+  name.vb: Char()
+  spec.csharp:
+  - uid: System.Char
+    name: char
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.char
+  - name: '['
+  - name: ']'
+  spec.vb:
+  - uid: System.Char
+    name: Char
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.char
+  - name: (
+  - name: )
+- uid: System.Data.Common.DbDataReader.GetEnumerator
+  commentId: M:System.Data.Common.DbDataReader.GetEnumerator
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  name: GetEnumerator()
+  nameWithType: DbDataReader.GetEnumerator()
+  fullName: System.Data.Common.DbDataReader.GetEnumerator()
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetEnumerator
+    name: GetEnumerator
+    isExternal: true
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetEnumerator
+    name: GetEnumerator
+    isExternal: true
+  - name: (
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetEnumerator*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetEnumerator
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetEnumerator
+  name: GetEnumerator
+  nameWithType: ParquetDataReader.GetEnumerator
+  fullName: ParquetNeo.Data.ParquetDataReader.GetEnumerator
+- uid: System.Collections.IEnumerator
+  commentId: T:System.Collections.IEnumerator
+  parent: System.Collections
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.ienumerator
+  name: IEnumerator
+  nameWithType: IEnumerator
+  fullName: System.Collections.IEnumerator
+- uid: System.Data.DataTable
+  commentId: T:System.Data.DataTable
+  parent: System.Data
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.datatable
+  name: DataTable
+  nameWithType: DataTable
+  fullName: System.Data.DataTable
+- uid: System.Data.Common.DbDataReader.GetSchemaTable
+  commentId: M:System.Data.Common.DbDataReader.GetSchemaTable
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getschematable
+  name: GetSchemaTable()
+  nameWithType: DbDataReader.GetSchemaTable()
+  fullName: System.Data.Common.DbDataReader.GetSchemaTable()
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.GetSchemaTable
+    name: GetSchemaTable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getschematable
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.GetSchemaTable
+    name: GetSchemaTable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.getschematable
+  - name: (
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.GetSchemaTable*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.GetSchemaTable
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_GetSchemaTable
+  name: GetSchemaTable
+  nameWithType: ParquetDataReader.GetSchemaTable
+  fullName: ParquetNeo.Data.ParquetDataReader.GetSchemaTable
+- uid: System.Data.Common.DbDataReader.Dispose(System.Boolean)
+  commentId: M:System.Data.Common.DbDataReader.Dispose(System.Boolean)
+  parent: System.Data.Common.DbDataReader
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.dispose#system-data-common-dbdatareader-dispose(system-boolean)
+  name: Dispose(bool)
+  nameWithType: DbDataReader.Dispose(bool)
+  fullName: System.Data.Common.DbDataReader.Dispose(bool)
+  nameWithType.vb: DbDataReader.Dispose(Boolean)
+  fullName.vb: System.Data.Common.DbDataReader.Dispose(Boolean)
+  name.vb: Dispose(Boolean)
+  spec.csharp:
+  - uid: System.Data.Common.DbDataReader.Dispose(System.Boolean)
+    name: Dispose
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.dispose#system-data-common-dbdatareader-dispose(system-boolean)
+  - name: (
+  - uid: System.Boolean
+    name: bool
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: )
+  spec.vb:
+  - uid: System.Data.Common.DbDataReader.Dispose(System.Boolean)
+    name: Dispose
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.data.common.dbdatareader.dispose#system-data-common-dbdatareader-dispose(system-boolean)
+  - name: (
+  - uid: System.Boolean
+    name: Boolean
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: )
+- uid: ParquetNeo.Data.ParquetDataReader.Dispose*
+  commentId: Overload:ParquetNeo.Data.ParquetDataReader.Dispose
+  href: ParquetNeo.Data.ParquetDataReader.html#ParquetNeo_Data_ParquetDataReader_Dispose_System_Boolean_
+  name: Dispose
+  nameWithType: ParquetDataReader.Dispose
+  fullName: ParquetNeo.Data.ParquetDataReader.Dispose

@@ -1,0 +1,719 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.ColumnTypes.ColumnType
+  commentId: T:ParquetNeo.ColumnTypes.ColumnType
+  id: ColumnType
+  parent: ParquetNeo.ColumnTypes
+  children:
+  - ParquetNeo.ColumnTypes.ColumnType.CreateNode(System.String,ParquetNeo.FieldRepetitionType)
+  - ParquetNeo.ColumnTypes.ColumnType.GetProblem(ParquetNeo.Schema.PrimitiveNode)
+  - ParquetNeo.ColumnTypes.ColumnType.Name
+  - ParquetNeo.ColumnTypes.ColumnType.Require(ParquetNeo.Schema.PrimitiveNode)
+  - ParquetNeo.ColumnTypes.ColumnType.SupportedSettings
+  - ParquetNeo.ColumnTypes.ColumnType.ValueType
+  - ParquetNeo.ColumnTypes.ColumnType.WithSettings(ParquetNeo.ColumnTypes.ColumnSettings)
+  langs:
+  - csharp
+  - vb
+  name: ColumnType
+  nameWithType: ColumnType
+  fullName: ParquetNeo.ColumnTypes.ColumnType
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/ColumnTypes/ColumnType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ColumnType
+    path: ../src/ParquetNeo/ColumnTypes/ColumnType.cs
+    startLine: 8
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.ColumnTypes
+  summary: >-
+    What every column type says without knowing its .NET type: which one it is, the column it creates, and whether a column fits it.
+
+    Derive from <xref href="ParquetNeo.ColumnTypes.ColumnType%601" data-throw-if-not-resolved="false"></xref>, which adds reading and writing, to add a type of your own.
+  example: []
+  syntax:
+    content: public abstract class ColumnType
+    content.vb: Public MustInherit Class ColumnType
+  inheritance:
+  - System.Object
+  derivedClasses:
+  - ParquetNeo.ColumnTypes.ColumnType`1
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.ColumnTypes.ColumnType.Name
+  commentId: P:ParquetNeo.ColumnTypes.ColumnType.Name
+  id: Name
+  parent: ParquetNeo.ColumnTypes.ColumnType
+  langs:
+  - csharp
+  - vb
+  name: Name
+  nameWithType: ColumnType.Name
+  fullName: ParquetNeo.ColumnTypes.ColumnType.Name
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ColumnTypes/ColumnType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Name
+    path: ../src/ParquetNeo/ColumnTypes/ColumnType.cs
+    startLine: 15
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.ColumnTypes
+  summary: The name of the .NET type, as messages call it.
+  example: []
+  syntax:
+    content: public abstract string Name { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public MustOverride ReadOnly Property Name As String
+  overload: ParquetNeo.ColumnTypes.ColumnType.Name*
+- uid: ParquetNeo.ColumnTypes.ColumnType.ValueType
+  commentId: P:ParquetNeo.ColumnTypes.ColumnType.ValueType
+  id: ValueType
+  parent: ParquetNeo.ColumnTypes.ColumnType
+  langs:
+  - csharp
+  - vb
+  name: ValueType
+  nameWithType: ColumnType.ValueType
+  fullName: ParquetNeo.ColumnTypes.ColumnType.ValueType
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ColumnTypes/ColumnType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: ValueType
+    path: ../src/ParquetNeo/ColumnTypes/ColumnType.cs
+    startLine: 18
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.ColumnTypes
+  summary: The .NET type the column type reads and writes.
+  example: []
+  syntax:
+    content: public abstract Type ValueType { get; }
+    parameters: []
+    return:
+      type: System.Type
+    content.vb: Public MustOverride ReadOnly Property ValueType As Type
+  overload: ParquetNeo.ColumnTypes.ColumnType.ValueType*
+- uid: ParquetNeo.ColumnTypes.ColumnType.SupportedSettings
+  commentId: P:ParquetNeo.ColumnTypes.ColumnType.SupportedSettings
+  id: SupportedSettings
+  parent: ParquetNeo.ColumnTypes.ColumnType
+  langs:
+  - csharp
+  - vb
+  name: SupportedSettings
+  nameWithType: ColumnType.SupportedSettings
+  fullName: ParquetNeo.ColumnTypes.ColumnType.SupportedSettings
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/ColumnTypes/ColumnType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: SupportedSettings
+    path: ../src/ParquetNeo/ColumnTypes/ColumnType.cs
+    startLine: 24
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.ColumnTypes
+  summary: The kinds of <xref href="ParquetNeo.ColumnTypes.ColumnSettings" data-throw-if-not-resolved="false"></xref> the type takes; none for most.
+  example: []
+  syntax:
+    content: public abstract ColumnSettingKinds SupportedSettings { get; }
+    parameters: []
+    return:
+      type: ParquetNeo.ColumnSettingKinds
+    content.vb: Public MustOverride ReadOnly Property SupportedSettings As ColumnSettingKinds
+  overload: ParquetNeo.ColumnTypes.ColumnType.SupportedSettings*
+- uid: ParquetNeo.ColumnTypes.ColumnType.WithSettings(ParquetNeo.ColumnTypes.ColumnSettings)
+  commentId: M:ParquetNeo.ColumnTypes.ColumnType.WithSettings(ParquetNeo.ColumnTypes.ColumnSettings)
+  id: WithSettings(ParquetNeo.ColumnTypes.ColumnSettings)
+  parent: ParquetNeo.ColumnTypes.ColumnType
+  langs:
+  - csharp
+  - vb
+  name: WithSettings(ColumnSettings)
+  nameWithType: ColumnType.WithSettings(ColumnSettings)
+  fullName: ParquetNeo.ColumnTypes.ColumnType.WithSettings(ParquetNeo.ColumnTypes.ColumnSettings)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/ColumnTypes/ColumnType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: WithSettings
+    path: ../src/ParquetNeo/ColumnTypes/ColumnType.cs
+    startLine: 30
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.ColumnTypes
+  summary: >-
+    The type with the settings that suit it applied, or this type when there are none; the form of
+
+    <xref href="ParquetNeo.ColumnTypes.ColumnType%601.Configure(ParquetNeo.ColumnTypes.ColumnSettings)" data-throw-if-not-resolved="false"></xref> for when the .NET type is only known at run time.
+  example: []
+  syntax:
+    content: public abstract ColumnType WithSettings(ColumnSettings settings)
+    parameters:
+    - id: settings
+      type: ParquetNeo.ColumnTypes.ColumnSettings
+    return:
+      type: ParquetNeo.ColumnTypes.ColumnType
+    content.vb: Public MustOverride Function WithSettings(settings As ColumnSettings) As ColumnType
+  overload: ParquetNeo.ColumnTypes.ColumnType.WithSettings*
+- uid: ParquetNeo.ColumnTypes.ColumnType.CreateNode(System.String,ParquetNeo.FieldRepetitionType)
+  commentId: M:ParquetNeo.ColumnTypes.ColumnType.CreateNode(System.String,ParquetNeo.FieldRepetitionType)
+  id: CreateNode(System.String,ParquetNeo.FieldRepetitionType)
+  parent: ParquetNeo.ColumnTypes.ColumnType
+  langs:
+  - csharp
+  - vb
+  name: CreateNode(string, FieldRepetitionType)
+  nameWithType: ColumnType.CreateNode(string, FieldRepetitionType)
+  fullName: ParquetNeo.ColumnTypes.ColumnType.CreateNode(string, ParquetNeo.FieldRepetitionType)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/ColumnTypes/ColumnType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: CreateNode
+    path: ../src/ParquetNeo/ColumnTypes/ColumnType.cs
+    startLine: 33
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.ColumnTypes
+  summary: 'A new column of this type: its physical type, its logical type annotation and its length. A node belongs to one schema, so make one for each.'
+  example: []
+  syntax:
+    content: public abstract PrimitiveNode CreateNode(string name, FieldRepetitionType repetition)
+    parameters:
+    - id: name
+      type: System.String
+    - id: repetition
+      type: ParquetNeo.FieldRepetitionType
+    return:
+      type: ParquetNeo.Schema.PrimitiveNode
+    content.vb: Public MustOverride Function CreateNode(name As String, repetition As FieldRepetitionType) As PrimitiveNode
+  overload: ParquetNeo.ColumnTypes.ColumnType.CreateNode*
+  nameWithType.vb: ColumnType.CreateNode(String, FieldRepetitionType)
+  fullName.vb: ParquetNeo.ColumnTypes.ColumnType.CreateNode(String, ParquetNeo.FieldRepetitionType)
+  name.vb: CreateNode(String, FieldRepetitionType)
+- uid: ParquetNeo.ColumnTypes.ColumnType.GetProblem(ParquetNeo.Schema.PrimitiveNode)
+  commentId: M:ParquetNeo.ColumnTypes.ColumnType.GetProblem(ParquetNeo.Schema.PrimitiveNode)
+  id: GetProblem(ParquetNeo.Schema.PrimitiveNode)
+  parent: ParquetNeo.ColumnTypes.ColumnType
+  langs:
+  - csharp
+  - vb
+  name: GetProblem(PrimitiveNode)
+  nameWithType: ColumnType.GetProblem(PrimitiveNode)
+  fullName: ParquetNeo.ColumnTypes.ColumnType.GetProblem(ParquetNeo.Schema.PrimitiveNode)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/ColumnTypes/ColumnType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: GetProblem
+    path: ../src/ParquetNeo/ColumnTypes/ColumnType.cs
+    startLine: 36
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.ColumnTypes
+  summary: Why a column of a file cannot be read or written as this type, or null when it can.
+  example: []
+  syntax:
+    content: public abstract string? GetProblem(PrimitiveNode column)
+    parameters:
+    - id: column
+      type: ParquetNeo.Schema.PrimitiveNode
+    return:
+      type: System.String
+    content.vb: Public MustOverride Function GetProblem(column As PrimitiveNode) As String
+  overload: ParquetNeo.ColumnTypes.ColumnType.GetProblem*
+- uid: ParquetNeo.ColumnTypes.ColumnType.Require(ParquetNeo.Schema.PrimitiveNode)
+  commentId: M:ParquetNeo.ColumnTypes.ColumnType.Require(ParquetNeo.Schema.PrimitiveNode)
+  id: Require(ParquetNeo.Schema.PrimitiveNode)
+  parent: ParquetNeo.ColumnTypes.ColumnType
+  langs:
+  - csharp
+  - vb
+  name: Require(PrimitiveNode)
+  nameWithType: ColumnType.Require(PrimitiveNode)
+  fullName: ParquetNeo.ColumnTypes.ColumnType.Require(ParquetNeo.Schema.PrimitiveNode)
+  type: Method
+  source:
+    remote:
+      path: src/ParquetNeo/ColumnTypes/ColumnType.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Require
+    path: ../src/ParquetNeo/ColumnTypes/ColumnType.cs
+    startLine: 40
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.ColumnTypes
+  summary: Checks that the column fits the type.
+  example: []
+  syntax:
+    content: public void Require(PrimitiveNode column)
+    parameters:
+    - id: column
+      type: ParquetNeo.Schema.PrimitiveNode
+    content.vb: Public Sub Require(column As PrimitiveNode)
+  overload: ParquetNeo.ColumnTypes.ColumnType.Require*
+  exceptions:
+  - type: System.ArgumentException
+    commentId: T:System.ArgumentException
+    description: The column cannot be read or written as this type.
+references:
+- uid: ParquetNeo.ColumnTypes.ColumnType`1
+  commentId: T:ParquetNeo.ColumnTypes.ColumnType`1
+  parent: ParquetNeo.ColumnTypes
+  href: ParquetNeo.ColumnTypes.ColumnType-1.html
+  name: ColumnType<TValue>
+  nameWithType: ColumnType<TValue>
+  fullName: ParquetNeo.ColumnTypes.ColumnType<TValue>
+  nameWithType.vb: ColumnType(Of TValue)
+  fullName.vb: ParquetNeo.ColumnTypes.ColumnType(Of TValue)
+  name.vb: ColumnType(Of TValue)
+  spec.csharp:
+  - uid: ParquetNeo.ColumnTypes.ColumnType`1
+    name: ColumnType
+    href: ParquetNeo.ColumnTypes.ColumnType-1.html
+  - name: <
+  - name: TValue
+  - name: '>'
+  spec.vb:
+  - uid: ParquetNeo.ColumnTypes.ColumnType`1
+    name: ColumnType
+    href: ParquetNeo.ColumnTypes.ColumnType-1.html
+  - name: (
+  - name: Of
+  - name: " "
+  - name: TValue
+  - name: )
+- uid: ParquetNeo.ColumnTypes
+  commentId: N:ParquetNeo.ColumnTypes
+  name: ParquetNeo.ColumnTypes
+  nameWithType: ParquetNeo.ColumnTypes
+  fullName: ParquetNeo.ColumnTypes
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.ColumnTypes
+    name: ColumnTypes
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.ColumnTypes
+    name: ColumnTypes
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: ParquetNeo.ColumnTypes.ColumnType.Name*
+  commentId: Overload:ParquetNeo.ColumnTypes.ColumnType.Name
+  href: ParquetNeo.ColumnTypes.ColumnType.html#ParquetNeo_ColumnTypes_ColumnType_Name
+  name: Name
+  nameWithType: ColumnType.Name
+  fullName: ParquetNeo.ColumnTypes.ColumnType.Name
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: ParquetNeo.ColumnTypes.ColumnType.ValueType*
+  commentId: Overload:ParquetNeo.ColumnTypes.ColumnType.ValueType
+  href: ParquetNeo.ColumnTypes.ColumnType.html#ParquetNeo_ColumnTypes_ColumnType_ValueType
+  name: ValueType
+  nameWithType: ColumnType.ValueType
+  fullName: ParquetNeo.ColumnTypes.ColumnType.ValueType
+- uid: System.Type
+  commentId: T:System.Type
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.type
+  name: Type
+  nameWithType: Type
+  fullName: System.Type
+- uid: ParquetNeo.ColumnTypes.ColumnSettings
+  commentId: T:ParquetNeo.ColumnTypes.ColumnSettings
+  parent: ParquetNeo.ColumnTypes
+  href: ParquetNeo.ColumnTypes.ColumnSettings.html
+  name: ColumnSettings
+  nameWithType: ColumnSettings
+  fullName: ParquetNeo.ColumnTypes.ColumnSettings
+- uid: ParquetNeo.ColumnTypes.ColumnType.SupportedSettings*
+  commentId: Overload:ParquetNeo.ColumnTypes.ColumnType.SupportedSettings
+  href: ParquetNeo.ColumnTypes.ColumnType.html#ParquetNeo_ColumnTypes_ColumnType_SupportedSettings
+  name: SupportedSettings
+  nameWithType: ColumnType.SupportedSettings
+  fullName: ParquetNeo.ColumnTypes.ColumnType.SupportedSettings
+- uid: ParquetNeo.ColumnSettingKinds
+  commentId: T:ParquetNeo.ColumnSettingKinds
+  parent: ParquetNeo
+  href: ParquetNeo.ColumnSettingKinds.html
+  name: ColumnSettingKinds
+  nameWithType: ColumnSettingKinds
+  fullName: ParquetNeo.ColumnSettingKinds
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: ParquetNeo.ColumnTypes.ColumnType`1.Configure(ParquetNeo.ColumnTypes.ColumnSettings)
+  commentId: M:ParquetNeo.ColumnTypes.ColumnType`1.Configure(ParquetNeo.ColumnTypes.ColumnSettings)
+  href: ParquetNeo.ColumnTypes.ColumnType-1.html#ParquetNeo_ColumnTypes_ColumnType_1_Configure_ParquetNeo_ColumnTypes_ColumnSettings_
+  name: Configure(ColumnSettings)
+  nameWithType: ColumnType<TValue>.Configure(ColumnSettings)
+  fullName: ParquetNeo.ColumnTypes.ColumnType<TValue>.Configure(ParquetNeo.ColumnTypes.ColumnSettings)
+  nameWithType.vb: ColumnType(Of TValue).Configure(ColumnSettings)
+  fullName.vb: ParquetNeo.ColumnTypes.ColumnType(Of TValue).Configure(ParquetNeo.ColumnTypes.ColumnSettings)
+  spec.csharp:
+  - uid: ParquetNeo.ColumnTypes.ColumnType`1.Configure(ParquetNeo.ColumnTypes.ColumnSettings)
+    name: Configure
+    href: ParquetNeo.ColumnTypes.ColumnType-1.html#ParquetNeo_ColumnTypes_ColumnType_1_Configure_ParquetNeo_ColumnTypes_ColumnSettings_
+  - name: (
+  - uid: ParquetNeo.ColumnTypes.ColumnSettings
+    name: ColumnSettings
+    href: ParquetNeo.ColumnTypes.ColumnSettings.html
+  - name: )
+  spec.vb:
+  - uid: ParquetNeo.ColumnTypes.ColumnType`1.Configure(ParquetNeo.ColumnTypes.ColumnSettings)
+    name: Configure
+    href: ParquetNeo.ColumnTypes.ColumnType-1.html#ParquetNeo_ColumnTypes_ColumnType_1_Configure_ParquetNeo_ColumnTypes_ColumnSettings_
+  - name: (
+  - uid: ParquetNeo.ColumnTypes.ColumnSettings
+    name: ColumnSettings
+    href: ParquetNeo.ColumnTypes.ColumnSettings.html
+  - name: )
+- uid: ParquetNeo.ColumnTypes.ColumnType.WithSettings*
+  commentId: Overload:ParquetNeo.ColumnTypes.ColumnType.WithSettings
+  href: ParquetNeo.ColumnTypes.ColumnType.html#ParquetNeo_ColumnTypes_ColumnType_WithSettings_ParquetNeo_ColumnTypes_ColumnSettings_
+  name: WithSettings
+  nameWithType: ColumnType.WithSettings
+  fullName: ParquetNeo.ColumnTypes.ColumnType.WithSettings
+- uid: ParquetNeo.ColumnTypes.ColumnType
+  commentId: T:ParquetNeo.ColumnTypes.ColumnType
+  parent: ParquetNeo.ColumnTypes
+  href: ParquetNeo.ColumnTypes.ColumnType.html
+  name: ColumnType
+  nameWithType: ColumnType
+  fullName: ParquetNeo.ColumnTypes.ColumnType
+- uid: ParquetNeo.ColumnTypes.ColumnType.CreateNode*
+  commentId: Overload:ParquetNeo.ColumnTypes.ColumnType.CreateNode
+  href: ParquetNeo.ColumnTypes.ColumnType.html#ParquetNeo_ColumnTypes_ColumnType_CreateNode_System_String_ParquetNeo_FieldRepetitionType_
+  name: CreateNode
+  nameWithType: ColumnType.CreateNode
+  fullName: ParquetNeo.ColumnTypes.ColumnType.CreateNode
+- uid: ParquetNeo.FieldRepetitionType
+  commentId: T:ParquetNeo.FieldRepetitionType
+  parent: ParquetNeo
+  href: ParquetNeo.FieldRepetitionType.html
+  name: FieldRepetitionType
+  nameWithType: FieldRepetitionType
+  fullName: ParquetNeo.FieldRepetitionType
+- uid: ParquetNeo.Schema.PrimitiveNode
+  commentId: T:ParquetNeo.Schema.PrimitiveNode
+  parent: ParquetNeo.Schema
+  href: ParquetNeo.Schema.PrimitiveNode.html
+  name: PrimitiveNode
+  nameWithType: PrimitiveNode
+  fullName: ParquetNeo.Schema.PrimitiveNode
+- uid: ParquetNeo.Schema
+  commentId: N:ParquetNeo.Schema
+  name: ParquetNeo.Schema
+  nameWithType: ParquetNeo.Schema
+  fullName: ParquetNeo.Schema
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Schema
+    name: Schema
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Schema
+    name: Schema
+- uid: ParquetNeo.ColumnTypes.ColumnType.GetProblem*
+  commentId: Overload:ParquetNeo.ColumnTypes.ColumnType.GetProblem
+  href: ParquetNeo.ColumnTypes.ColumnType.html#ParquetNeo_ColumnTypes_ColumnType_GetProblem_ParquetNeo_Schema_PrimitiveNode_
+  name: GetProblem
+  nameWithType: ColumnType.GetProblem
+  fullName: ParquetNeo.ColumnTypes.ColumnType.GetProblem
+- uid: System.ArgumentException
+  commentId: T:System.ArgumentException
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.argumentexception
+  name: ArgumentException
+  nameWithType: ArgumentException
+  fullName: System.ArgumentException
+- uid: ParquetNeo.ColumnTypes.ColumnType.Require*
+  commentId: Overload:ParquetNeo.ColumnTypes.ColumnType.Require
+  href: ParquetNeo.ColumnTypes.ColumnType.html#ParquetNeo_ColumnTypes_ColumnType_Require_ParquetNeo_Schema_PrimitiveNode_
+  name: Require
+  nameWithType: ColumnType.Require
+  fullName: ParquetNeo.ColumnTypes.ColumnType.Require

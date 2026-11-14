@@ -1,0 +1,408 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.Metadata.PageEncodingStats
+  commentId: T:ParquetNeo.Metadata.PageEncodingStats
+  id: PageEncodingStats
+  parent: ParquetNeo.Metadata
+  children:
+  - ParquetNeo.Metadata.PageEncodingStats.Count
+  - ParquetNeo.Metadata.PageEncodingStats.Encoding
+  - ParquetNeo.Metadata.PageEncodingStats.PageType
+  langs:
+  - csharp
+  - vb
+  name: PageEncodingStats
+  nameWithType: PageEncodingStats
+  fullName: ParquetNeo.Metadata.PageEncodingStats
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/PageEncodingStats.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: PageEncodingStats
+    path: ../src/ParquetNeo/Metadata/PageEncodingStats.cs
+    startLine: 5
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  summary: How many pages of a type used an encoding (thrift <code>PageEncodingStats</code>).
+  example: []
+  syntax:
+    content: public sealed class PageEncodingStats
+    content.vb: Public NotInheritable Class PageEncodingStats
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.Metadata.PageEncodingStats.PageType
+  commentId: P:ParquetNeo.Metadata.PageEncodingStats.PageType
+  id: PageType
+  parent: ParquetNeo.Metadata.PageEncodingStats
+  langs:
+  - csharp
+  - vb
+  name: PageType
+  nameWithType: PageEncodingStats.PageType
+  fullName: ParquetNeo.Metadata.PageEncodingStats.PageType
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/PageEncodingStats.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: PageType
+    path: ../src/ParquetNeo/Metadata/PageEncodingStats.cs
+    startLine: 7
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public PageType PageType { get; set; }
+    parameters: []
+    return:
+      type: ParquetNeo.PageType
+    content.vb: Public Property PageType As PageType
+  overload: ParquetNeo.Metadata.PageEncodingStats.PageType*
+- uid: ParquetNeo.Metadata.PageEncodingStats.Encoding
+  commentId: P:ParquetNeo.Metadata.PageEncodingStats.Encoding
+  id: Encoding
+  parent: ParquetNeo.Metadata.PageEncodingStats
+  langs:
+  - csharp
+  - vb
+  name: Encoding
+  nameWithType: PageEncodingStats.Encoding
+  fullName: ParquetNeo.Metadata.PageEncodingStats.Encoding
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/PageEncodingStats.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Encoding
+    path: ../src/ParquetNeo/Metadata/PageEncodingStats.cs
+    startLine: 9
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public ParquetEncoding Encoding { get; set; }
+    parameters: []
+    return:
+      type: ParquetNeo.ParquetEncoding
+    content.vb: Public Property Encoding As ParquetEncoding
+  overload: ParquetNeo.Metadata.PageEncodingStats.Encoding*
+- uid: ParquetNeo.Metadata.PageEncodingStats.Count
+  commentId: P:ParquetNeo.Metadata.PageEncodingStats.Count
+  id: Count
+  parent: ParquetNeo.Metadata.PageEncodingStats
+  langs:
+  - csharp
+  - vb
+  name: Count
+  nameWithType: PageEncodingStats.Count
+  fullName: ParquetNeo.Metadata.PageEncodingStats.Count
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/Metadata/PageEncodingStats.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: Count
+    path: ../src/ParquetNeo/Metadata/PageEncodingStats.cs
+    startLine: 11
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo.Metadata
+  syntax:
+    content: public int Count { get; set; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property Count As Integer
+  overload: ParquetNeo.Metadata.PageEncodingStats.Count*
+references:
+- uid: ParquetNeo.Metadata
+  commentId: N:ParquetNeo.Metadata
+  name: ParquetNeo.Metadata
+  nameWithType: ParquetNeo.Metadata
+  fullName: ParquetNeo.Metadata
+  spec.csharp:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+  spec.vb:
+  - uid: ParquetNeo
+    name: ParquetNeo
+  - name: .
+  - uid: ParquetNeo.Metadata
+    name: Metadata
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: ParquetNeo.Metadata.PageEncodingStats.PageType*
+  commentId: Overload:ParquetNeo.Metadata.PageEncodingStats.PageType
+  href: ParquetNeo.Metadata.PageEncodingStats.html#ParquetNeo_Metadata_PageEncodingStats_PageType
+  name: PageType
+  nameWithType: PageEncodingStats.PageType
+  fullName: ParquetNeo.Metadata.PageEncodingStats.PageType
+- uid: ParquetNeo.PageType
+  commentId: T:ParquetNeo.PageType
+  parent: ParquetNeo
+  href: ParquetNeo.PageType.html
+  name: PageType
+  nameWithType: PageType
+  fullName: ParquetNeo.PageType
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: ParquetNeo.Metadata.PageEncodingStats.Encoding*
+  commentId: Overload:ParquetNeo.Metadata.PageEncodingStats.Encoding
+  href: ParquetNeo.Metadata.PageEncodingStats.html#ParquetNeo_Metadata_PageEncodingStats_Encoding
+  name: Encoding
+  nameWithType: PageEncodingStats.Encoding
+  fullName: ParquetNeo.Metadata.PageEncodingStats.Encoding
+- uid: ParquetNeo.ParquetEncoding
+  commentId: T:ParquetNeo.ParquetEncoding
+  parent: ParquetNeo
+  href: ParquetNeo.ParquetEncoding.html
+  name: ParquetEncoding
+  nameWithType: ParquetEncoding
+  fullName: ParquetNeo.ParquetEncoding
+- uid: ParquetNeo.Metadata.PageEncodingStats.Count*
+  commentId: Overload:ParquetNeo.Metadata.PageEncodingStats.Count
+  href: ParquetNeo.Metadata.PageEncodingStats.html#ParquetNeo_Metadata_PageEncodingStats_Count
+  name: Count
+  nameWithType: PageEncodingStats.Count
+  fullName: ParquetNeo.Metadata.PageEncodingStats.Count
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer

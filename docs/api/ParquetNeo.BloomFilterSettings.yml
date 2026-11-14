@@ -1,0 +1,428 @@
+### YamlMime:ManagedReference
+items:
+- uid: ParquetNeo.BloomFilterSettings
+  commentId: T:ParquetNeo.BloomFilterSettings
+  id: BloomFilterSettings
+  parent: ParquetNeo
+  children:
+  - ParquetNeo.BloomFilterSettings.FalsePositiveRate
+  - ParquetNeo.BloomFilterSettings.MaxBytes
+  langs:
+  - csharp
+  - vb
+  name: BloomFilterSettings
+  nameWithType: BloomFilterSettings
+  fullName: ParquetNeo.BloomFilterSettings
+  type: Class
+  source:
+    remote:
+      path: src/ParquetNeo/BloomFilterSettings.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: BloomFilterSettings
+    path: ../src/ParquetNeo/BloomFilterSettings.cs
+    startLine: 3
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: A bloom filter for a column, see <xref href="ParquetNeo.ParquetWriterOptions.ColumnBloomFilters" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: 'public sealed record BloomFilterSettings : IEquatable<BloomFilterSettings>'
+    content.vb: Public NotInheritable Class BloomFilterSettings Implements IEquatable(Of BloomFilterSettings)
+  inheritance:
+  - System.Object
+  implements:
+  - System.IEquatable{ParquetNeo.BloomFilterSettings}
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: ParquetNeo.BloomFilterSettings.FalsePositiveRate
+  commentId: P:ParquetNeo.BloomFilterSettings.FalsePositiveRate
+  id: FalsePositiveRate
+  parent: ParquetNeo.BloomFilterSettings
+  langs:
+  - csharp
+  - vb
+  name: FalsePositiveRate
+  nameWithType: BloomFilterSettings.FalsePositiveRate
+  fullName: ParquetNeo.BloomFilterSettings.FalsePositiveRate
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/BloomFilterSettings.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: FalsePositiveRate
+    path: ../src/ParquetNeo/BloomFilterSettings.cs
+    startLine: 9
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: >-
+    The chance that the filter says a value may be in a row group when it is not, for as many different values as the row group
+
+    has in the column; a smaller one takes more room. Between 0 and 1, exclusive. Defaults to 0.05.
+  example: []
+  syntax:
+    content: public double FalsePositiveRate { get; init; }
+    parameters: []
+    return:
+      type: System.Double
+    content.vb: Public Property FalsePositiveRate As Double
+  overload: ParquetNeo.BloomFilterSettings.FalsePositiveRate*
+- uid: ParquetNeo.BloomFilterSettings.MaxBytes
+  commentId: P:ParquetNeo.BloomFilterSettings.MaxBytes
+  id: MaxBytes
+  parent: ParquetNeo.BloomFilterSettings
+  langs:
+  - csharp
+  - vb
+  name: MaxBytes
+  nameWithType: BloomFilterSettings.MaxBytes
+  fullName: ParquetNeo.BloomFilterSettings.MaxBytes
+  type: Property
+  source:
+    remote:
+      path: src/ParquetNeo/BloomFilterSettings.cs
+      branch: docfx
+      repo: https://github.com/gigi81/parquet-neo
+    id: MaxBytes
+    path: ../src/ParquetNeo/BloomFilterSettings.cs
+    startLine: 12
+  assemblies:
+  - ParquetNeo
+  namespace: ParquetNeo
+  summary: The most bytes a filter takes; a column with so many different values that the filter would take more gets a filter of this size, which is less exact. Defaults to 8 MiB.
+  example: []
+  syntax:
+    content: public int MaxBytes { get; init; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property MaxBytes As Integer
+  overload: ParquetNeo.BloomFilterSettings.MaxBytes*
+references:
+- uid: ParquetNeo.ParquetWriterOptions.ColumnBloomFilters
+  commentId: P:ParquetNeo.ParquetWriterOptions.ColumnBloomFilters
+  href: ParquetNeo.ParquetWriterOptions.html#ParquetNeo_ParquetWriterOptions_ColumnBloomFilters
+  name: ColumnBloomFilters
+  nameWithType: ParquetWriterOptions.ColumnBloomFilters
+  fullName: ParquetNeo.ParquetWriterOptions.ColumnBloomFilters
+- uid: ParquetNeo
+  commentId: N:ParquetNeo
+  name: ParquetNeo
+  nameWithType: ParquetNeo
+  fullName: ParquetNeo
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.IEquatable{ParquetNeo.BloomFilterSettings}
+  commentId: T:System.IEquatable{ParquetNeo.BloomFilterSettings}
+  parent: System
+  definition: System.IEquatable`1
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<BloomFilterSettings>
+  nameWithType: IEquatable<BloomFilterSettings>
+  fullName: System.IEquatable<ParquetNeo.BloomFilterSettings>
+  nameWithType.vb: IEquatable(Of BloomFilterSettings)
+  fullName.vb: System.IEquatable(Of ParquetNeo.BloomFilterSettings)
+  name.vb: IEquatable(Of BloomFilterSettings)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - uid: ParquetNeo.BloomFilterSettings
+    name: BloomFilterSettings
+    href: ParquetNeo.BloomFilterSettings.html
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: ParquetNeo.BloomFilterSettings
+    name: BloomFilterSettings
+    href: ParquetNeo.BloomFilterSettings.html
+  - name: )
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.IEquatable`1
+  commentId: T:System.IEquatable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  name: IEquatable<T>
+  nameWithType: IEquatable<T>
+  fullName: System.IEquatable<T>
+  nameWithType.vb: IEquatable(Of T)
+  fullName.vb: System.IEquatable(Of T)
+  name.vb: IEquatable(Of T)
+  spec.csharp:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.IEquatable`1
+    name: IEquatable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: ParquetNeo.BloomFilterSettings.FalsePositiveRate*
+  commentId: Overload:ParquetNeo.BloomFilterSettings.FalsePositiveRate
+  href: ParquetNeo.BloomFilterSettings.html#ParquetNeo_BloomFilterSettings_FalsePositiveRate
+  name: FalsePositiveRate
+  nameWithType: BloomFilterSettings.FalsePositiveRate
+  fullName: ParquetNeo.BloomFilterSettings.FalsePositiveRate
+- uid: System.Double
+  commentId: T:System.Double
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.double
+  name: double
+  nameWithType: double
+  fullName: double
+  nameWithType.vb: Double
+  fullName.vb: Double
+  name.vb: Double
+- uid: ParquetNeo.BloomFilterSettings.MaxBytes*
+  commentId: Overload:ParquetNeo.BloomFilterSettings.MaxBytes
+  href: ParquetNeo.BloomFilterSettings.html#ParquetNeo_BloomFilterSettings_MaxBytes
+  name: MaxBytes
+  nameWithType: BloomFilterSettings.MaxBytes
+  fullName: ParquetNeo.BloomFilterSettings.MaxBytes
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
