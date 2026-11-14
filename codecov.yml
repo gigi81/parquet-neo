@@ -1,0 +1,15 @@
+# Coverage varies a little from run to run (some tests depend on timing and on how work is scheduled), so a small drop is not
+# a failure: the project check fails when coverage falls by more than a point. The patch check only reports.
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+    patch:
+      default:
+        informational: true
+
+comment:
+  layout: "condensed_header, condensed_files"
+  require_changes: true
