@@ -4,6 +4,7 @@
 [![Downloads](https://img.shields.io/nuget/dt/ParquetNeo.All?logo=nuget)](https://www.nuget.org/packages/ParquetNeo.All)
 [![Build](https://github.com/gigi81/parquet-neo/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/gigi81/parquet-neo/actions/workflows/ci.yml)
 [![Coverage](https://codecov.io/gh/gigi81/parquet-neo/branch/main/graph/badge.svg)](https://codecov.io/gh/gigi81/parquet-neo)
+[![Docs](https://img.shields.io/badge/docs-gigi81.github.io-blue)](https://gigi81.github.io/parquet-neo/)
 [![License: MIT](https://img.shields.io/github/license/gigi81/parquet-neo)](LICENSE.md)
 ![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet)
 ![Native AOT](https://img.shields.io/badge/Native%20AOT-ready-brightgreen)
@@ -11,6 +12,8 @@
 A high-performance .NET library for reading and writing [Apache Parquet](https://parquet.apache.org/) files.
 
 > **Status:** early development: the API may still change before 1.0. See the [implementation plan](docs/PLAN.md).
+
+**Documentation:** <https://gigi81.github.io/parquet-neo/> (articles and the API reference; the sources are in [`docs`](docs)).
 
 ## Installing
 
@@ -231,7 +234,7 @@ while (reader.Read())
 | `tests/ParquetNeo.AotSmoke` | A program published with Native AOT in CI: it uses the serializer with a generated mapping |
 | `tests/ParquetNeo.Enums.Tests`, `tests/ParquetNeo.Generator.Tests`, `tests/ParquetNeo.Compression.*.Tests` | Each project has a test project of its own; the add-on codec projects run the shared codec checks of `tests/ParquetNeo.Tests.Common` |
 | `benchmarks/ParquetNeo.Benchmarks` | [BenchmarkDotNet](https://benchmarkdotnet.org/) benchmarks |
-| `docs` | Project documentation, including the plan |
+| `docs` | The documentation site ([docfx](https://dotnet.github.io/docfx/); `dotnet tool restore && dotnet docfx docs/docfx.json` builds it into `docs/_site`), the performance report and the plan |
 
 The format is specified at [parquet.apache.org](https://parquet.apache.org/docs/file-format/), with the Thrift definitions in
 [`parquet.thrift`](https://github.com/apache/parquet-format/blob/master/src/main/thrift/parquet.thrift).

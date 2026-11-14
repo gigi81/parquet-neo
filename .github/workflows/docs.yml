@@ -1,0 +1,58 @@
+name: Documentation
+
+# The documentation site (docfx): built on every pull request that changes it, and published to GitHub Pages from main.
+# Needs "GitHub Actions" as the source of Pages in the settings of the repository.
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**', 'src/**', '.config/dotnet-tools.json', '.github/workflows/docs.yml']
+  pull_request:
+    paths: ['docs/**', 'src/**', '.config/dotnet-tools.json', '.github/workflows/docs.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Build the site
+        run: |
+          dotnet tool restore
+          dotnet docfx docs/docfx.json 2>&1 | tee docfx.log
+          # Any warning (a broken link, a reference that does not resolve) fails the build, except one docfx gives for the source generator project.
+          # (docfx prints each warning on a line that starts with "warning", and a summary line with a count of them, which is not one.)
+          if grep -E "^warning" docfx.log | grep -v "Duplicate source file"; then exit 1; fi
+
+      - uses: actions/configure-pages@v6
+        if: github.event_name != 'pull_request'
+
+      - uses: actions/upload-pages-artifact@v5
+        if: github.event_name != 'pull_request'
+        with:
+          path: docs/_site
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

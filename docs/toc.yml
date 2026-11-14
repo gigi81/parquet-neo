@@ -1,0 +1,12 @@
+- name: Documentation
+  href: articles/
+- name: API reference
+  href: api/
+- name: Performance
+  href: PERFORMANCE.md
+- name: Plan
+  href: PLAN.md
+- name: NuGet
+  href: https://www.nuget.org/packages/ParquetNeo.All
+- name: GitHub
+  href: https://github.com/gigi81/parquet-neo
