@@ -156,11 +156,75 @@ public class Base { public int FromBase { get; set; } }
     }
 
     [Test]
-    public async Task ATypeWithoutAParameterlessConstructor_IsOnlyWritten_AndTheUserIsTold()
+    public async Task ATypeWhoseConstructorParametersAreItsProperties_IsCreatedByTheConstructor()
     {
-        var run = Run("[ParquetSerializable] public class Row { public Row(int value) { Value = value; } public int Value { get; set; } }");
+        var run = Run("[ParquetSerializable] public class Row { public Row(int value, string? text) { Value = value; Text = text; } public int Value { get; } public string? Text { get; } }");
+
+        await Assert.That(run.ReportedIds).IsEmpty();
+        await Assert.That(run.Generated!).Contains("RegisterRead<global::Sample.Row>");
+        await Assert.That(run.Generated!).Contains("=> new global::Sample.Row(source.Take<int>(0), source.TryTake<string>(1, out var value1) ? value1 : null)");
+        await Assert.That(run.CompileErrors).IsEmpty();
+    }
+
+    [Test]
+    public async Task ARecord_IsCreatedByItsConstructor_AndTheSettersTakeWhatIsNotAParameter()
+    {
+        var run = Run("[ParquetSerializable] public record Rec(int Id, string Name) { public string? Note { get; set; } public int? Extra { get; init; } }");
+
+        string code = run.Generated!;
+        await Assert.That(run.ReportedIds).IsEmpty();
+        await Assert.That(code).Contains("=> new global::Sample.Rec(source.Take<int>(0), source.Take<string>(1))");
+        await Assert.That(code).Contains("Note = source.TryTake<string>(2, out var value2) ? value2 : null,");
+        await Assert.That(code).Contains("Extra = source.TryTake<int>(3, out var value3) ? (int?)value3 : null,");
+        await Assert.That(run.CompileErrors).IsEmpty();
+    }
+
+    [Test]
+    public async Task TheConstructorWithTheMostParameters_ThatAreAllProperties_IsTheOneUsed_AndParametersMatchWithoutRegardToCase()
+    {
+        var run = Run(@"
+[ParquetSerializable] public class Row
+{
+    public Row(int id) { Id = id; Label = """"; }
+    public Row(string other) { Id = 0; Label = other; }
+    public Row(int ID, string label) { Id = ID; Label = label; }
+    public int Id { get; }
+    public string Label { get; }
+}");
+
+        await Assert.That(run.ReportedIds).IsEmpty();
+        await Assert.That(run.Generated!).Contains("=> new global::Sample.Row(source.Take<int>(0), source.Take<string>(1))");
+        await Assert.That(run.CompileErrors).IsEmpty();
+    }
+
+    [Test]
+    public async Task ParametersAreTakenInTheirOwnOrder_NotTheOrderOfTheColumns()
+    {
+        var run = Run("[ParquetSerializable] public class Row { public Row(string second, int first) { First = first; Second = second; } public int First { get; } public string Second { get; } }");
+
+        await Assert.That(run.Generated!).Contains("=> new global::Sample.Row(source.Take<string>(1), source.Take<int>(0))");
+        await Assert.That(run.CompileErrors).IsEmpty();
+    }
+
+    [Test]
+    public async Task AReadOnlyStructWithAConstructor_AndARecordInsideARow_AreCreatedByTheirConstructors()
+    {
+        var run = Run("public readonly struct Coord { public Coord(int x, int y) { X = x; Y = y; } public int X { get; } public int Y { get; } } public record Spot(int A); [ParquetSerializable] public record Row(Coord Where, Spot? At);");
+
+        string code = run.Generated!;
+        await Assert.That(run.ReportedIds).IsEmpty();
+        await Assert.That(code).Contains("=> new global::Sample.Coord(source.Take<int>(0), source.Take<int>(1))");
+        await Assert.That(code).Contains("=> new global::Sample.Row(source.ReadChild<global::Sample.Coord>(0), source.TryReadChild<global::Sample.Spot>(1, out var value1) ? value1 : null)");
+        await Assert.That(run.CompileErrors).IsEmpty();
+    }
+
+    [Test]
+    public async Task ATypeWhoseConstructorsFitNoProperties_IsOnlyWritten_AndTheUserIsTold()
+    {
+        var run = Run("[ParquetSerializable] public class Row { public Row(int count) { Value = count; } public int Value { get; set; } }");
 
         await Assert.That(run.ReportedIds).IsEquivalentTo(new[] { "PNEO002" });
+        await Assert.That(run.Reported[0].GetMessage()).Contains("none whose parameters are all properties of the same names and types");
         await Assert.That(run.Generated!).Contains("RegisterWrite<global::Sample.Row>");
         await Assert.That(run.Generated!).DoesNotContain("RegisterRead");
         await Assert.That(run.CompileErrors).IsEmpty();
@@ -286,10 +350,10 @@ public class Names : List<string> { }
     [Test]
     public async Task AnObjectThatCannotBeCreated_MakesTheRowWriteOnly()
     {
-        var run = Run("public class Place { public Place(int zip) { Zip = zip; } public int Zip { get; set; } } [ParquetSerializable] public class Row { public Place Home { get; set; } = new(1); }");
+        var run = Run("public class Place { public Place(int count) { Zip = count; } public int Zip { get; set; } } [ParquetSerializable] public class Row { public Place Home { get; set; } = new(1); }");
 
         await Assert.That(run.ReportedIds).IsEquivalentTo(new[] { "PNEO002" });
-        await Assert.That(run.Reported[0].GetMessage()).Contains("Place has no public constructor without parameters");
+        await Assert.That(run.Reported[0].GetMessage()).Contains("Place has no public constructor without parameters and none whose parameters");
         await Assert.That(run.Generated!).Contains("RegisterWrite<global::Sample.Row>");
         await Assert.That(run.Generated!).DoesNotContain("RegisterRead");
         await Assert.That(run.CompileErrors).IsEmpty();

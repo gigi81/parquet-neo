@@ -136,7 +136,7 @@ namespace ParquetNeo.Generator
         private void WriteReadObject(ObjectModel model, int number)
         {
             string builder = $"{Generated}.ReadMappingBuilder<TRow>";
-            var readable = model.Properties.Where(p => p.CanSet).ToList();
+            var readable = model.Properties.Where(p => p.Read).ToList();
             Line();
             Line($"        private static void DescribeRead{number}<TRow>({builder} builder, string name, string description, bool optional)");
             Line("        {");
@@ -154,13 +154,39 @@ namespace ParquetNeo.Generator
 
             Line("        }");
             Line();
-            Line($"        private static {model.Type} Assemble{number}({Generated}.RowSource source) => new {model.Type}");
-            Line("        {");
+            WriteAssemble(model, number, readable);
+        }
+
+        /// <summary>The method that creates an object from what its properties read: through the constructor, when there is one with parameters, and then the setters of the rest.</summary>
+        private void WriteAssemble(ObjectModel model, int number, List<PropertyModel> readable)
+        {
+            var expressions = new List<string>();
             int column = 0;
             for (int p = 0; p < readable.Count; p++)
             {
-                Line($"            {readable[p].PropertyName} = {ReadExpression(readable[p].Shape, p, column)},");
+                expressions.Add(ReadExpression(readable[p].Shape, p, column));
                 column += readable[p].Shape.ReadColumns;
+            }
+
+            var arguments = readable
+                .Select((property, index) => (property.Parameter, Expression: expressions[index]))
+                .Where(a => a.Parameter >= 0)
+                .OrderBy(a => a.Parameter)
+                .Select(a => a.Expression)
+                .ToList();
+            string call = model.UsesConstructor ? $"new {model.Type}({string.Join(", ", arguments)})" : $"new {model.Type}";
+            Line($"        private static {model.Type} Assemble{number}({Generated}.RowSource source) => {call}");
+            var setters = readable.Select((property, index) => (Property: property, Expression: expressions[index])).Where(a => a.Property.Parameter < 0).ToList();
+            if (setters.Count == 0)
+            {
+                Line("        ;");
+                return;
+            }
+
+            Line("        {");
+            foreach (var (property, expression) in setters)
+            {
+                Line($"            {property.PropertyName} = {expression},");
             }
 
             Line("        };");

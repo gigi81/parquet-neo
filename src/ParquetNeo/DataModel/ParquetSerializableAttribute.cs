@@ -9,8 +9,10 @@ namespace ParquetNeo.DataModel;
 /// </summary>
 /// <remarks>
 /// The same properties are columns as without it, with the same attributes; the objects, collections and dictionaries inside the type
-/// need no attribute of their own. A type the generator cannot map yet (a type built by a constructor with parameters, or one with a
-/// property that is not stored as columns) gets a warning and is left to reflection.
+/// need no attribute of their own. A type is created with its constructor without parameters and the setters of its properties or,
+/// when it has none, with the public constructor whose parameters are all properties (as a record has), as without it. A type the
+/// generator cannot map (a property that is not stored as columns, or no constructor that fits) gets a warning and is left to
+/// reflection.
 /// </remarks>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
 public sealed class ParquetSerializableAttribute : Attribute

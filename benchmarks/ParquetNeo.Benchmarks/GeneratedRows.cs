@@ -97,6 +97,13 @@ public sealed class ReflectedNestedRow : NestedRowShape
 {
 }
 
+/// <summary>A flat row that is a record, which is created by its constructor, with a mapping generated at build time.</summary>
+[ParquetSerializable]
+public sealed record GeneratedRecordRow(long Id, string? Name, double Score, int? Count, DateTime Created, bool Active, RowKind Kind, decimal? Amount);
+
+/// <summary>The flat record row left to reflection.</summary>
+public sealed record ReflectedRecordRow(long Id, string? Name, double Score, int? Count, DateTime Created, bool Active, RowKind Kind, decimal? Amount);
+
 /// <summary>Rows for the benchmarks of generated mappings.</summary>
 public static class GeneratedRowData
 {
@@ -112,6 +119,22 @@ public static class GeneratedRowData
         row.Kind = (RowKind)(i % 3);
         row.Amount = i % 5 == 0 ? null : i * 0.01m;
         return row;
+    }
+
+    public static GeneratedRecordRow Record(int i) => new(
+        i,
+        i % 10 == 0 ? null : "name-" + (i % 1000),
+        i * 0.5,
+        i % 7 == 0 ? null : i,
+        new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(i),
+        i % 3 == 0,
+        (RowKind)(i % 3),
+        i % 5 == 0 ? null : i * 0.01m);
+
+    public static ReflectedRecordRow ReflectedRecord(int i)
+    {
+        var row = Record(i);
+        return new ReflectedRecordRow(row.Id, row.Name, row.Score, row.Count, row.Created, row.Active, row.Kind, row.Amount);
     }
 
     public static TRow FillNested<TRow>(TRow row, int i)
