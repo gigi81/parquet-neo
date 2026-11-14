@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Buffers.Binary;
 using ParquetNeo.Exceptions;
+using ParquetNeo.Filtering;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
@@ -79,6 +80,28 @@ public sealed class ParquetFileReader : IDisposable, IAsyncDisposable
         ArgumentOutOfRangeException.ThrowIfNegative(index);
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, RowGroupCount);
         return new RowGroupReader(this, index, Metadata.RowGroups[index]);
+    }
+
+    /// <summary>
+    /// The positions of the row groups that can hold a row that satisfies a filter, in order: the others are skipped because the
+    /// statistics of their columns show that no row does. See <see cref="ParquetFilter"/> for what that means for the rows of the
+    /// row groups that are kept.
+    /// </summary>
+    /// <exception cref="ArgumentException">The filter compares a column with a value of a type that does not suit the column.</exception>
+    public IReadOnlyList<int> GetMatchingRowGroups(ParquetFilter filter)
+    {
+        EnsureOpen();
+        ArgumentNullException.ThrowIfNull(filter);
+        var matching = new List<int>(RowGroupCount);
+        for (int index = 0; index < RowGroupCount; index++)
+        {
+            if (filter.MayMatch(Schema, Metadata.ColumnOrders, Metadata.RowGroups[index]))
+            {
+                matching.Add(index);
+            }
+        }
+
+        return matching;
     }
 
     public void Dispose()

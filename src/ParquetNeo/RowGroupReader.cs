@@ -1,4 +1,5 @@
 using ParquetNeo.Exceptions;
+using ParquetNeo.Filtering;
 using ParquetNeo.Metadata;
 using ParquetNeo.Statistics;
 
@@ -61,5 +62,17 @@ public sealed class RowGroupReader
         ArgumentNullException.ThrowIfNull(name);
         var column = _file.Schema.FindColumn([name]) ?? throw new ArgumentException($"There is no column named '{name}'.", nameof(name));
         return GetStatistics(column.ColumnIndex);
+    }
+
+    /// <summary>
+    /// Whether the row group can hold a row that satisfies the filter: false when the statistics of its columns show that none does.
+    /// See <see cref="ParquetFilter"/> for what that means for the rows.
+    /// </summary>
+    /// <exception cref="ArgumentException">The filter compares a column with a value of a type that does not suit the column.</exception>
+    public bool MayMatch(ParquetFilter filter)
+    {
+        _file.EnsureOpen();
+        ArgumentNullException.ThrowIfNull(filter);
+        return filter.MayMatch(_file.Schema, _file.Metadata.ColumnOrders, Metadata);
     }
 }

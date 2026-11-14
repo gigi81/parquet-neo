@@ -1,4 +1,5 @@
 using ParquetNeo.Exceptions;
+using ParquetNeo.Filtering;
 using ParquetNeo.Serialization.Assemblers;
 
 namespace ParquetNeo.Serialization;
@@ -17,18 +18,22 @@ internal sealed class DeserializationSession<TRow>
     private readonly ReadPlan _plan;
     private readonly ReadContext _context;
 
+    /// <param name="filter">When there is one, the row groups it rules out by their statistics are left out of <see cref="RowGroups"/>.</param>
     /// <exception cref="Exceptions.SchemaMismatchException">The file does not have the columns the row type needs, or has them as other types.</exception>
-    public DeserializationSession(ParquetFileReader reader)
+    public DeserializationSession(ParquetFileReader reader, ParquetFilter? filter = null)
     {
         _reader = reader;
+        RowGroups = filter is null ? Enumerable.Range(0, reader.RowGroupCount).ToArray() : reader.GetMatchingRowGroups(filter);
+        RowCount = RowGroups.Sum(group => reader.Metadata.RowGroups[group].NumRows);
         _plan = _model.Bind(reader.Schema);
         _context = _model.CreateContext(_plan);
     }
 
-    public int RowGroupCount => _reader.RowGroupCount;
+    /// <summary>The positions of the row groups that are read, in order.</summary>
+    public IReadOnlyList<int> RowGroups { get; }
 
-    /// <summary>The number of rows in the file, as the footer says.</summary>
-    public long RowCount => _reader.RowCount;
+    /// <summary>The number of rows in the row groups that are read, as the footer says.</summary>
+    public long RowCount { get; }
 
     /// <summary>The byte ranges of the file that hold the column chunks of a row group that are read.</summary>
     public List<(long Start, int Length)> Chunks(int rowGroup)

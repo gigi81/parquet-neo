@@ -49,6 +49,21 @@ names as parameters. For a type it cannot map (a property of a type that is not 
 reports a warning and the type keeps working through reflection; a type it can write but not read gets a warning of its own. In a
 Native AOT program a type with no generated mapping is refused with an explanation.
 
+#### Skipping row groups
+
+Every row group records the smallest and largest value of each column, and how many are null. A filter checked against them skips the
+row groups that cannot hold a row you want, which means they are not read (and with the asynchronous methods, not fetched):
+
+```csharp
+using ParquetNeo.Filtering;
+
+var recent = ParquetFilter.Column("Born").GreaterThanOrEqual(new DateOnly(1900, 1, 1)) & ParquetFilter.Column("Name").IsNotNull();
+var rows = ParquetSerializer.Deserialize<Person>(stream, new ParquetDeserializerOptions { RowGroupFilter = recent });
+```
+
+A filter only prunes: the rows of the row groups that are read are all returned, so apply the condition to them as well when it
+must hold exactly. `ParquetFileReader.GetMatchingRowGroups` and `ParquetDataReaderOptions.RowGroupFilter` take the same filter.
+
 ### Low-level API
 
 Describe the columns in a schema, then write one batch of values per column for each row group.

@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using ParquetNeo.Exceptions;
+using ParquetNeo.Filtering;
 
 namespace ParquetNeo.Serialization;
 
@@ -12,10 +13,11 @@ public static partial class ParquetSerializer
     public static List<TRow> Deserialize<TRow>(Stream source, ParquetDeserializerOptions? options = null)
     {
         RequireReadable(source);
-        using var reader = new ParquetFileReader(source, (options ?? new ParquetDeserializerOptions()).Reader, leaveOpen: true);
-        var session = new DeserializationSession<TRow>(reader);
+        options ??= new ParquetDeserializerOptions();
+        using var reader = new ParquetFileReader(source, options.Reader, leaveOpen: true);
+        var session = new DeserializationSession<TRow>(reader, options.RowGroupFilter);
         var rows = new List<TRow>(DeserializationSession<TRow>.PreallocatedRows(session.RowCount));
-        for (int group = 0; group < session.RowGroupCount; group++)
+        foreach (int group in session.RowGroups)
         {
             rows.AddRange(session.ReadRowGroup(group));
         }
@@ -64,8 +66,8 @@ public static partial class ParquetSerializer
     private static IEnumerable<TRow> ReadAll<TRow>(Stream source, ParquetDeserializerOptions options)
     {
         using var reader = new ParquetFileReader(source, options.Reader, leaveOpen: true);
-        var session = new DeserializationSession<TRow>(reader);
-        for (int group = 0; group < session.RowGroupCount; group++)
+        var session = new DeserializationSession<TRow>(reader, options.RowGroupFilter);
+        foreach (int group in session.RowGroups)
         {
             foreach (var row in session.ReadRowGroup(group))
             {
@@ -79,8 +81,8 @@ public static partial class ParquetSerializer
         var prefetched = new PrefetchedStream(source.Length);
         await LoadFooterAsync(source, prefetched, options, cancellationToken).ConfigureAwait(false);
         using var reader = new ParquetFileReader(prefetched, options.Reader, leaveOpen: true);
-        var session = new DeserializationSession<TRow>(reader);
-        for (int group = 0; group < session.RowGroupCount; group++)
+        var session = new DeserializationSession<TRow>(reader, options.RowGroupFilter);
+        foreach (int group in session.RowGroups)
         {
             cancellationToken.ThrowIfCancellationRequested();
             foreach (var (start, length) in session.Chunks(group))
