@@ -569,7 +569,7 @@ public sealed partial class ColumnReader : IDisposable
         }
 
         int count = CheckEntryCount(info.NumValues);
-        LoadPageV1(dataStart, compressedSize, uncompressedSize);
+        LoadPageV1(dataStart, compressedSize, uncompressedSize, header.Crc);
         var source = _page.AsSpan(0, uncompressedSize);
 
         // Each size is checked against the bytes present before anything is allocated for it.
@@ -679,7 +679,7 @@ public sealed partial class ColumnReader : IDisposable
         var info = header.DataPageHeader ?? throw Corrupt("a data page has no data page header");
         int entries = CheckEntryCount(info.NumValues);
         CheckEncoding(info.Encoding);
-        LoadPageV1(dataStart, compressedSize, uncompressedSize);
+        LoadPageV1(dataStart, compressedSize, uncompressedSize, header.Crc);
 
         // [repetition levels][definition levels][values]: each level section is a 4-byte length and RLE data.
         int position = 0;
@@ -743,6 +743,7 @@ public sealed partial class ColumnReader : IDisposable
         int levelsLength = (int)levelBytes;
         EnsureCapacity(ref _compressed, compressedSize);
         _file.ReadAt(dataStart, _compressed.AsSpan(0, compressedSize));
+        VerifyChecksum(header.Crc, compressedSize);
         EnsureCapacity(ref _page, uncompressedSize);
         _compressed.AsSpan(0, levelsLength).CopyTo(_page);
 
@@ -775,10 +776,11 @@ public sealed partial class ColumnReader : IDisposable
     }
 
     /// <summary>Reads a v1 page body and leaves its uncompressed bytes in <see cref="_page"/>.</summary>
-    private void LoadPageV1(long dataStart, int compressedSize, int uncompressedSize)
+    private void LoadPageV1(long dataStart, int compressedSize, int uncompressedSize, int? crc)
     {
         EnsureCapacity(ref _compressed, compressedSize);
         _file.ReadAt(dataStart, _compressed.AsSpan(0, compressedSize));
+        VerifyChecksum(crc, compressedSize);
         if (_codec.Id == CompressionCodec.Uncompressed)
         {
             if (compressedSize != uncompressedSize)
@@ -792,6 +794,19 @@ public sealed partial class ColumnReader : IDisposable
 
         EnsureCapacity(ref _page, uncompressedSize);
         _codec.Decompress(_compressed.AsSpan(0, compressedSize), _page.AsSpan(0, uncompressedSize));
+    }
+
+    /// <summary>Checks the page body just read into <see cref="_compressed"/> against the CRC-32 in its header, when asked to and there is one.</summary>
+    private void VerifyChecksum(int? stored, int compressedSize)
+    {
+        if (stored is { } expected && _file.Options.VerifyPageChecksums)
+        {
+            uint actual = Crc32.Compute(_compressed.AsSpan(0, compressedSize));
+            if (actual != (uint)expected)
+            {
+                throw Corrupt($"a page does not match its checksum (the file says {(uint)expected:X8}, its bytes give {actual:X8})");
+            }
+        }
     }
 
     private void DecodeLevels(ReadOnlySpan<byte> encoded, int entries)

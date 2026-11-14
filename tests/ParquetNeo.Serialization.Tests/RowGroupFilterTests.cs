@@ -154,4 +154,49 @@ public class RowGroupFilterTests
         await Assert.That(withNulls.Count).IsEqualTo(500);
         await Assert.That(allNumbers).IsEmpty();
     }
+
+    /// <summary>Five row groups of 100 rows whose ids are spread over the whole range: group g has the ids that leave g when divided by 5.</summary>
+    private static byte[] Spread(bool bloomFilters)
+    {
+        var rows = Enumerable.Range(0, 500).OrderBy(i => i % 5).ThenBy(i => i).Select(i => new Reading { Id = i, Name = $"name-{i}", Value = i }).ToList();
+        var writer = bloomFilters ? new ParquetWriterOptions { ColumnBloomFilters = new Dictionary<string, BloomFilterSettings> { ["Id"] = new() { FalsePositiveRate = 0.0001 } } } : new ParquetWriterOptions();
+        var stream = new MemoryStream();
+        ParquetSerializer.Serialize(rows, stream, new ParquetSerializerOptions { RowGroupSize = 100, Writer = writer });
+        return stream.ToArray();
+    }
+
+    [Test]
+    public async Task TheBloomFiltersOfAFile_RuleOutTheRowGroupsTheStatisticsCannot()
+    {
+        var options = Filtered(ParquetFilter.Column("Id").Equal(233));
+
+        var withFilters = ParquetSerializer.Deserialize<Reading>(new MemoryStream(Spread(bloomFilters: true)), options);
+        var without = ParquetSerializer.Deserialize<Reading>(new MemoryStream(Spread(bloomFilters: false)), options);
+
+        // 233 is in the range of every row group; only the filters know it is in one.
+        await Assert.That(withFilters.Count).IsEqualTo(100);
+        await Assert.That(withFilters.All(r => r.Id % 5 == 3)).IsTrue();
+        await Assert.That(without.Count).IsEqualTo(500);
+    }
+
+    [Test]
+    public async Task TheRowsAreTheSame_WithBloomFiltersAsWithout_OnceTheFilterIsAppliedToThem()
+    {
+        var filter = ParquetFilter.Column("Id").In(7, 12, 499, 1000);
+
+        var withFilters = ParquetSerializer.Deserialize<Reading>(new MemoryStream(Spread(bloomFilters: true)), Filtered(filter)).Where(r => r.Id is 7 or 12 or 499 or 1000).Select(r => r.Id).Order().ToList();
+        var without = ParquetSerializer.Deserialize<Reading>(new MemoryStream(Spread(bloomFilters: false)), Filtered(filter)).Where(r => r.Id is 7 or 12 or 499 or 1000).Select(r => r.Id).Order().ToList();
+
+        await Assert.That(withFilters).IsEquivalentTo(new[] { 7, 12, 499 });
+        await Assert.That(without).IsEquivalentTo(withFilters);
+    }
+
+    [Test]
+    public async Task TheAsynchronousMethods_CheckTheStatisticsOnly_AndStillReturnTheRows()
+    {
+        var rows = await ParquetSerializer.DeserializeAsync<Reading>(new MemoryStream(Spread(bloomFilters: true)), Filtered(ParquetFilter.Column("Id").Equal(233)));
+
+        await Assert.That(rows.Count).IsEqualTo(500);
+        await Assert.That(rows.Any(r => r.Id == 233)).IsTrue();
+    }
 }

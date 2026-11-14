@@ -1,3 +1,5 @@
+using ParquetNeo.Schema;
+
 namespace ParquetNeo.Filtering;
 
 /// <summary>
@@ -67,6 +69,37 @@ internal sealed class TicksDomain(TicksKind kind, TimeUnit unit) : ValueDomain
     }
 
     public override int Compare(object left, object right) => ((long)left).CompareTo((long)right);
+
+    public override PlainValue GetPlainValue(object key, PrimitiveNode column)
+    {
+        long ticks = (long)key;
+        long count;
+        if (kind == TicksKind.Date)
+        {
+            return ticks is >= int.MinValue and <= int.MaxValue ? PlainValue.Of((int)ticks) : PlainValue.NotStorable;
+        }
+
+        // Many nanoseconds read back as the same tick, so a count of them is not one value.
+        if (unit == TimeUnit.Nanos)
+        {
+            return PlainValue.Unsupported;
+        }
+
+        long perUnit = unit == TimeUnit.Millis ? TicksPerMillisecond : TicksPerMicrosecond;
+        long since = kind == TicksKind.Timestamp ? ticks - DateTime.UnixEpoch.Ticks : ticks;
+        if (since % perUnit != 0)
+        {
+            return PlainValue.NotStorable;
+        }
+
+        count = since / perUnit;
+        if (column.Type == PhysicalType.Int32)
+        {
+            return count is >= int.MinValue and <= int.MaxValue ? PlainValue.Of((int)count) : PlainValue.NotStorable;
+        }
+
+        return PlainValue.Of(count);
+    }
 
     private long ToTicks(long count) => unit switch
     {

@@ -1,3 +1,4 @@
+using ParquetNeo.Core;
 using ParquetNeo.Filtering;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
@@ -78,8 +79,8 @@ public abstract class ParquetFilter
     internal virtual ParquetFilter Negate() => new NotFilter(this);
 
     /// <summary>Whether a row group can hold a row that satisfies the filter, by its statistics.</summary>
-    internal bool MayMatch(ParquetSchema schema, IReadOnlyList<ColumnOrder>? columnOrders, RowGroup rowGroup) =>
-        Evaluate(new FilterContext(schema, columnOrders, rowGroup)) != FilterOutcome.None;
+    internal bool MayMatch(ParquetSchema schema, IReadOnlyList<ColumnOrder>? columnOrders, RowGroup rowGroup, Func<ColumnChunk, BloomFilter?>? bloomFilters = null) =>
+        Evaluate(new FilterContext(schema, columnOrders, rowGroup, bloomFilters)) != FilterOutcome.None;
 
     internal abstract FilterOutcome Evaluate(FilterContext context);
 

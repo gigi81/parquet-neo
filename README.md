@@ -62,6 +62,33 @@ var rows = ParquetSerializer.Deserialize<Person>(stream, new ParquetDeserializer
 A filter only prunes: the rows of the row groups that are read are all returned, so apply the condition to them as well when it
 must hold exactly. `ParquetFileReader.GetMatchingRowGroups` and `ParquetDataReaderOptions.RowGroupFilter` take the same filter.
 
+#### Checksums and bloom filters
+
+Statistics rule out little when values are spread widely (ids, names). A bloom filter tells a reader that a value is certainly not
+in a row group, so an equality filter skips it. Ask for one on the columns that are searched, and, if wanted, for the CRC-32 of every
+page, which readers can verify:
+
+```csharp
+var written = new ParquetSerializerOptions
+{
+    Writer = new ParquetWriterOptions
+    {
+        WritePageChecksums = true,
+        ColumnBloomFilters = new Dictionary<string, BloomFilterSettings> { ["Email"] = new() { FalsePositiveRate = 0.01 } },
+    },
+};
+var found = ParquetSerializer.Deserialize<Person>(stream, new ParquetDeserializerOptions
+{
+    Reader = new ParquetReaderOptions { VerifyPageChecksums = true },       // a damaged page throws CorruptColumnException
+    RowGroupFilter = ParquetFilter.Column("Email").Equal("ada@example.com"), // checked against the bloom filters too
+});
+```
+
+Both are off by default because they cost time when writing: the checksums about a second per GB of page bytes, the bloom filters
+(which hash and count every value of their columns) several times the time of writing those columns when the pages are not
+compressed, and little when they are. Bloom filters in files written by other tools are read too (the layout follows the format specification); the asynchronous methods of
+`ParquetSerializer` do not fetch them and check the statistics only.
+
 #### LINQ over files
 
 `ParquetNeo.Linq` queries a file, or all the files of a directory, with LINQ. A `Where` is turned into a filter that skips the files and

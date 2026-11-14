@@ -72,6 +72,6 @@ public sealed class RowGroupReader
     {
         _file.EnsureOpen();
         ArgumentNullException.ThrowIfNull(filter);
-        return filter.MayMatch(_file.Schema, _file.Metadata.ColumnOrders, Metadata);
+        return filter.MayMatch(_file.Schema, _file.Metadata.ColumnOrders, Metadata, _file.ReadBloomFilter);
     }
 }

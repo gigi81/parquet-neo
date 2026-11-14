@@ -45,6 +45,9 @@ internal abstract class ValueDomain
 
     public abstract int Compare(object left, object right);
 
+    /// <summary>The plain encoding of a key in a column, to look it up in the bloom filter of the column.</summary>
+    public virtual PlainValue GetPlainValue(object key, PrimitiveNode column) => PlainValue.Unsupported;
+
     /// <summary>Whether a key is a NaN.</summary>
     public virtual bool IsNotANumber(object key) => false;
 

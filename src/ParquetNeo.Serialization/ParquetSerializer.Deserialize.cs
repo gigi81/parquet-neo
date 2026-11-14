@@ -80,7 +80,7 @@ public static partial class ParquetSerializer
         var prefetched = new PrefetchedStream(source.Length);
         await LoadFooterAsync(source, prefetched, options, cancellationToken).ConfigureAwait(false);
         using var reader = new ParquetFileReader(prefetched, options.Reader, leaveOpen: true);
-        var session = new DeserializationSession<TRow>(reader, options.RowGroupFilter);
+        var session = new DeserializationSession<TRow>(reader, options.RowGroupFilter, useBloomFilters: false);
         foreach (int group in session.RowGroups)
         {
             cancellationToken.ThrowIfCancellationRequested();

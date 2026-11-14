@@ -1,3 +1,5 @@
+using ParquetNeo.Schema;
+
 namespace ParquetNeo.Filtering;
 
 /// <summary>Text and binary values, as the bytes the statistics hold, compared as unsigned bytes.</summary>
@@ -31,6 +33,12 @@ internal sealed class BytesDomain(BytesKind kind) : ValueDomain
                     _ => throw Mismatch(value, path, "binary values"),
                 };
         }
+    }
+
+    public override PlainValue GetPlainValue(object key, PrimitiveNode column)
+    {
+        var bytes = (byte[])key;
+        return column.Type == PhysicalType.FixedLenByteArray && bytes.Length != column.TypeLength ? PlainValue.NotStorable : PlainValue.Of(bytes);
     }
 
     public override int Compare(object left, object right) => ((byte[])left).AsSpan().SequenceCompareTo((byte[])right);

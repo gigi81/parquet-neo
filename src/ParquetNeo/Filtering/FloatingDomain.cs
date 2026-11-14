@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using ParquetNeo.Schema;
 
 namespace ParquetNeo.Filtering;
 
@@ -38,4 +39,23 @@ internal sealed class FloatingDomain : ValueDomain
     public override int Compare(object left, object right) => ((double)left).CompareTo((double)right);
 
     public override bool IsNotANumber(object key) => double.IsNaN((double)key);
+
+    public override PlainValue GetPlainValue(object key, PrimitiveNode column)
+    {
+        double value = (double)key;
+
+        // Zero is stored as +0 or -0, which are different bytes and the same number.
+        if (Math.Abs(value) < double.Epsilon || column.Type is not (PhysicalType.Float or PhysicalType.Double))
+        {
+            return PlainValue.Unsupported;
+        }
+
+        if (column.Type == PhysicalType.Double)
+        {
+            return PlainValue.Of(BitConverter.DoubleToInt64Bits(value));
+        }
+
+        float narrow = (float)value;
+        return BitConverter.DoubleToInt64Bits((double)narrow) == BitConverter.DoubleToInt64Bits(value) ? PlainValue.Of(BitConverter.SingleToInt32Bits(narrow)) : PlainValue.NotStorable;
+    }
 }
