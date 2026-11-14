@@ -1,5 +1,3 @@
-using ParquetNeo.Filtering;
-
 namespace ParquetNeo.Tests.Filtering;
 
 /// <summary>

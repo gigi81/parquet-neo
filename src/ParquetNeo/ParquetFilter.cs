@@ -1,7 +1,8 @@
+using ParquetNeo.Filtering;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Filtering;
+namespace ParquetNeo;
 
 /// <summary>
 /// A condition on the values of columns, which a reader checks against the statistics of each row group (the smallest and largest

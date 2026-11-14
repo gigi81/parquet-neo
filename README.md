@@ -55,14 +55,37 @@ Every row group records the smallest and largest value of each column, and how m
 row groups that cannot hold a row you want, which means they are not read (and with the asynchronous methods, not fetched):
 
 ```csharp
-using ParquetNeo.Filtering;
-
 var recent = ParquetFilter.Column("Born").GreaterThanOrEqual(new DateOnly(1900, 1, 1)) & ParquetFilter.Column("Name").IsNotNull();
 var rows = ParquetSerializer.Deserialize<Person>(stream, new ParquetDeserializerOptions { RowGroupFilter = recent });
 ```
 
 A filter only prunes: the rows of the row groups that are read are all returned, so apply the condition to them as well when it
 must hold exactly. `ParquetFileReader.GetMatchingRowGroups` and `ParquetDataReaderOptions.RowGroupFilter` take the same filter.
+
+#### LINQ over files
+
+`ParquetNeo.Linq` queries a file, or all the files of a directory, with LINQ. A `Where` is turned into a filter that skips the files and
+row groups whose statistics rule it out (the whole predicate is still applied to the rows that are read, so the result is exact), and a
+query that ends in a `Select` reads only the columns it uses:
+
+```csharp
+using ParquetNeo.Linq;
+
+var people = ParquetDataset.Open<Person>("people/");   // a file, or a directory (and the folders below it)
+var names = people.Where(p => p.Born >= new DateOnly(1900, 1, 1) && p.Name != null)
+                  .OrderBy(p => p.Born)
+                  .Select(p => new { p.Name, p.Born })
+                  .Take(100)
+                  .ToList();
+
+var plan = people.Where(p => p.Id > 5000).Explain();   // files and row groups skipped, columns read
+int count = people.Count();                            // from the footers: no data is read
+await foreach (var row in people.Where(p => p.Id > 5000).AsAsyncEnumerable()) { }
+```
+
+Every operator of LINQ to objects works on the rows that are read. Files are read in parallel, so without an `OrderBy` the rows
+come in no particular order. The project builds expression trees and types at run time, so unlike the rest of the library it is not
+safe with trimming or Native AOT.
 
 ### Low-level API
 
@@ -129,9 +152,11 @@ while (reader.Read())
 |---|---|
 | `src/ParquetNeo` | The core library: the file reader and writer, the schema, the encodings and codecs, and the ADO.NET reader and writer |
 | `src/ParquetNeo.Serialization` | `ParquetSerializer`, which maps your classes and records to Parquet files, with the attributes that adjust it and the code the source generator writes against (add it to use the high-level API; it brings `ParquetNeo`) |
+| `src/ParquetNeo.Linq` | `ParquetDataset<T>`: LINQ over a file or a directory of files, with skipping of files, row groups and columns (not trim or AOT safe) |
 | `src/ParquetNeo.Generator` | The source generator behind `[ParquetSerializable]` (a Roslyn component, not a reference of your code) |
 | `src/ParquetNeo.Enums` | The enumerations (the types of the Parquet format, and the options that name a choice), all in the `ParquetNeo` namespace |
 | `tests/ParquetNeo.Tests` | Unit tests of `ParquetNeo` ([TUnit](https://tunit.dev/)) |
+| `tests/ParquetNeo.Linq.Tests` | Unit tests of `ParquetNeo.Linq`: results against LINQ to objects, random predicates, plans, directories |
 | `tests/ParquetNeo.Serialization.Tests` | Unit tests of `ParquetNeo.Serialization`, including the generated mappings against the reflection path |
 | `tests/ParquetNeo.AotSmoke` | A program published with Native AOT in CI: it uses the serializer with a generated mapping |
 | `tests/ParquetNeo.Enums.Tests`, `tests/ParquetNeo.Generator.Tests`, `tests/ParquetNeo.Compression.*.Tests` | Each project has a test project of its own; the add-on codec projects run the shared codec checks of `tests/ParquetNeo.Tests.Common` |

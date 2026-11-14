@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using ParquetNeo.Exceptions;
-using ParquetNeo.Filtering;
 
 namespace ParquetNeo.Serialization;
 

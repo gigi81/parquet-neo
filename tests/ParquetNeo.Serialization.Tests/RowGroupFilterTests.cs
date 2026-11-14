@@ -1,5 +1,3 @@
-using ParquetNeo.Filtering;
-
 namespace ParquetNeo.Serialization.Tests;
 
 /// <summary>The serializer skips the row groups a filter rules out, and does not fetch their bytes.</summary>

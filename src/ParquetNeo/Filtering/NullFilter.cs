@@ -32,4 +32,6 @@ internal sealed class NullFilter(string[] path, bool isNull) : ParquetFilter
     }
 
     internal override void CollectColumns(List<IReadOnlyList<string>> paths) => paths.Add(path);
+
+    public override string ToString() => $"{string.Join('.', path)} is {(isNull ? "" : "not ")}null";
 }

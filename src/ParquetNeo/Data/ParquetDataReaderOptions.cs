@@ -1,6 +1,3 @@
-
-using ParquetNeo.Filtering;
-
 namespace ParquetNeo.Data;
 
 /// <summary>Settings for <see cref="ParquetDataReader"/>.</summary>
