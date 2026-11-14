@@ -12,7 +12,13 @@ internal static class ColumnStatisticsDecoder
     /// <exception cref="MetadataException">A recorded minimum or maximum does not have the size its type requires.</exception>
     public static ColumnStatistics? Decode(PrimitiveNode column, ColumnChunk chunk, IReadOnlyList<ColumnOrder>? columnOrders)
     {
-        var raw = chunk.MetaData?.Statistics;
+        return Decode(column, chunk.MetaData?.Statistics, columnOrders);
+    }
+
+    /// <summary>Returns null when <paramref name="raw"/> is null.</summary>
+    /// <exception cref="MetadataException">A recorded minimum or maximum does not have the size its type requires.</exception>
+    public static ColumnStatistics? Decode(PrimitiveNode column, Metadata.Statistics? raw, IReadOnlyList<ColumnOrder>? columnOrders)
+    {
         if (raw is null)
         {
             return null;

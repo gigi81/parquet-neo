@@ -11,7 +11,7 @@ internal sealed class TestDataset : IDisposable
 
     private static readonly string[] Cities = ["Rome", "Paris", "Oslo", "Lima", "Cairo"];
 
-    public TestDataset()
+    public TestDataset(ParquetWriterOptions? writer = null)
     {
         Directory = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "parquet-neo-linq-" + Guid.NewGuid().ToString("N"));
         System.IO.Directory.CreateDirectory(Directory);
@@ -20,7 +20,7 @@ internal sealed class TestDataset : IDisposable
             var rows = Enumerable.Range(0, RowsPerFile).Select(i => Make(file * 1000 + i)).ToList();
             All.AddRange(rows);
             using var stream = File.Create(System.IO.Path.Combine(Directory, $"people-{file}.parquet"));
-            ParquetSerializer.Serialize(rows, stream, new ParquetSerializerOptions { RowGroupSize = RowGroupSize });
+            ParquetSerializer.Serialize(rows, stream, new ParquetSerializerOptions { RowGroupSize = RowGroupSize, Writer = writer ?? new ParquetWriterOptions() });
         }
     }
 

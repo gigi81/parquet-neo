@@ -16,14 +16,16 @@ internal sealed class DeserializationSession<TRow>
     private readonly ReadModel<TRow> _model = ReadModel<TRow>.Get();
     private readonly ReadPlan _plan;
     private readonly ReadContext _context;
+    private readonly ParquetFilter? _pageFilter; // the filter, when the pages it rules out can be left unread
 
     /// <param name="filter">When there is one, the row groups it rules out by their statistics are left out of <see cref="RowGroups"/>.</param>
     /// <exception cref="Exceptions.SchemaMismatchException">The file does not have the columns the row type needs, or has them as other types.</exception>
-    /// <param name="useBloomFilters">Whether bloom filters are read from the stream to rule out row groups: not when only some byte ranges of it have been loaded.</param>
-    public DeserializationSession(ParquetFileReader reader, ParquetFilter? filter = null, bool useBloomFilters = true)
+    /// <param name="useFileIndexes">Whether bloom filters and the page index are read from the stream to rule out row groups and pages: not when only some byte ranges of it have been loaded.</param>
+    public DeserializationSession(ParquetFileReader reader, ParquetFilter? filter = null, bool useFileIndexes = true)
     {
         _reader = reader;
-        RowGroups = filter is null ? Enumerable.Range(0, reader.RowGroupCount).ToArray() : reader.GetMatchingRowGroups(filter, useBloomFilters);
+        _pageFilter = useFileIndexes ? filter : null;
+        RowGroups = filter is null ? Enumerable.Range(0, reader.RowGroupCount).ToArray() : reader.GetMatchingRowGroups(filter, useFileIndexes);
         RowCount = RowGroups.Sum(group => reader.Metadata.RowGroups[group].NumRows);
         _plan = _model.Bind(reader.Schema);
         _context = _model.CreateContext(_plan);
@@ -61,7 +63,8 @@ internal sealed class DeserializationSession<TRow>
     public List<TRow> ReadRowGroup(int rowGroup)
     {
         var group = _reader.OpenRowGroup(rowGroup);
-        long count = group.RowCount;
+        var selection = _pageFilter is null ? null : group.SelectRows(_pageFilter, _plan.FileColumns.Where(column => column >= 0));
+        long count = selection?.RowCount ?? group.RowCount;
         if (count > int.MaxValue)
         {
             throw new NotSupportedException($"Row group {rowGroup} has {count} rows, more than can be read into a list.");
@@ -75,7 +78,7 @@ internal sealed class DeserializationSession<TRow>
             }
             else
             {
-                using var column = group.OpenColumn(_plan.FileColumns[slot]);
+                using var column = selection is null ? group.OpenColumn(_plan.FileColumns[slot]) : group.OpenColumn(_plan.FileColumns[slot], selection);
                 _context.Columns[slot].Fill(column);
             }
         }

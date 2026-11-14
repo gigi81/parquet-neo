@@ -41,6 +41,9 @@ internal sealed class BinaryDictionary : IDictionaryBuilder
 
     public long EncodedSize => _encodedSize;
 
+    /// <summary>The bytes of an entry, without the length that BYTE_ARRAY entries carry in the file.</summary>
+    public ReadOnlySpan<byte> GetValue(int entry) => _arena.AsSpan(_offsets[entry], _lengths[entry]);
+
     /// <summary>Returns the index of <paramref name="value"/>, adding it (as a copy) if it is new, which <paramref name="added"/> says.</summary>
     public int GetOrAdd(ReadOnlySpan<byte> value, out bool added)
     {

@@ -38,6 +38,7 @@ public sealed class ParquetDataReader : DbDataReader
     private readonly Type[] _types;
     private readonly Dictionary<string, int> _ordinals;
     private readonly IReadOnlyList<int> _rowGroups;
+    private readonly ParquetFilter? _filter;
     private int _rowGroup = -1;
     private int _rowsInGroup;
     private int _row = -1;
@@ -54,7 +55,8 @@ public sealed class ParquetDataReader : DbDataReader
         _file = new ParquetFileReader(input, options.Reader, leaveOpen);
         try
         {
-            _rowGroups = options.RowGroupFilter is { } filter ? _file.GetMatchingRowGroups(filter) : Enumerable.Range(0, _file.RowGroupCount).ToArray();
+            _filter = options.RowGroupFilter;
+            _rowGroups = _filter is { } filter ? _file.GetMatchingRowGroups(filter) : Enumerable.Range(0, _file.RowGroupCount).ToArray();
             _nodes = SelectColumns(_file.Schema, options.Columns);
             _columns = new ColumnData[_nodes.Length];
             _types = new Type[_nodes.Length];
@@ -284,15 +286,17 @@ public sealed class ParquetDataReader : DbDataReader
         while (++_rowGroup < _rowGroups.Count)
         {
             var group = _file.OpenRowGroup(_rowGroups[_rowGroup]);
-            if (group.RowCount == 0)
+            var selection = _filter is null || group.RowCount == 0 ? null : group.SelectRows(_filter, _nodes.Select(node => node.ColumnIndex));
+            long selected = selection?.RowCount ?? group.RowCount;
+            if (selected == 0)
             {
                 continue;
             }
 
-            int rows = checked((int)group.RowCount);
+            int rows = checked((int)selected);
             for (int i = 0; i < _columns.Length; i++)
             {
-                using var reader = group.OpenColumn(_nodes[i].ColumnIndex);
+                using var reader = selection is null ? group.OpenColumn(_nodes[i].ColumnIndex) : group.OpenColumn(_nodes[i].ColumnIndex, selection);
                 _columns[i].Fill(reader, rows);
             }
 

@@ -89,6 +89,23 @@ Both are off by default because they cost time when writing: the checksums about
 compressed, and little when they are. Bloom filters in files written by other tools are read too (the layout follows the format specification); the asynchronous methods of
 `ParquetSerializer` do not fetch them and check the statistics only.
 
+#### Page index
+
+A row group is made of many pages, and its statistics say nothing of which of them hold a value. A file written with a page index records where each page of a column starts and its smallest and largest value, so that a filter skips
+pages as well as row groups, and only the pages that may hold a wanted row are read, decompressed and decoded:
+
+```csharp
+var options = new ParquetSerializerOptions { Writer = new ParquetWriterOptions { WritePageIndex = true } };
+// ... Deserialize with a RowGroupFilter as above: the pages the filter rules out are not read either.
+```
+
+It pays when the values of a column are in some order (a time, an id that grows), which makes the bounds of a page tight. Reading 100
+ids out of 2 million in one row group took 313 ms with the statistics of the row group only and 39 ms with the page index (158 and 48 ms
+gzipped); the index took 2.5 KB of a 63 MB file, and writing took 8 to 10% longer, so it is off by default. A filter then returns the
+rows of the pages it keeps, which still include rows it does not match. The low-level API has the same: `RowGroupReader.SelectRows(filter,
+columns)` gives the rows to read, and `OpenColumn(index, selection)` reads only those. The asynchronous methods of `ParquetSerializer`
+do not fetch the index.
+
 #### LINQ over files
 
 `ParquetNeo.Linq` queries a file, or all the files of a directory, with LINQ. A `Where` is turned into a filter that skips the files and

@@ -13,9 +13,9 @@ public sealed record ParquetDataReaderOptions
     public IReadOnlyList<string>? Columns { get; init; }
 
     /// <summary>
-    /// A condition that row groups are checked against by the statistics of their columns, to skip those that cannot hold a row that
-    /// satisfies it. It only prunes: the rows of the row groups that are read are all given, whether they satisfy the condition or
-    /// not. All the row groups are read when it is not set.
+    /// A condition that row groups are checked against by the statistics of their columns, and the pages of their columns by the page
+    /// index when the file has one, to skip those that cannot hold a row that satisfies it. It only prunes: the rows of the row groups
+    /// and pages that are read are all given, whether they satisfy the condition or not. All the rows are read when it is not set.
     /// </summary>
     public ParquetFilter? RowGroupFilter { get; init; }
 }

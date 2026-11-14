@@ -1,4 +1,6 @@
+using ParquetNeo.Core;
 using ParquetNeo.Exceptions;
+using ParquetNeo.Filtering;
 using ParquetNeo.Metadata;
 using ParquetNeo.Statistics;
 
@@ -8,6 +10,7 @@ namespace ParquetNeo;
 public sealed class RowGroupReader
 {
     private readonly ParquetFileReader _file;
+    private readonly Dictionary<int, ColumnPages?> _pages = new();
 
     internal RowGroupReader(ParquetFileReader file, int index, RowGroup metadata)
     {
@@ -40,6 +43,69 @@ public sealed class RowGroupReader
         ArgumentNullException.ThrowIfNull(name);
         var column = _file.Schema.FindColumn([name]) ?? throw new ArgumentException($"There is no column named '{name}'.", nameof(name));
         return OpenColumn(column.ColumnIndex);
+    }
+
+    /// <summary>
+    /// Opens a column to read only the rows of <paramref name="selection"/>: the pages that hold none of them are not read, and what
+    /// is read is those rows one after the other, as if the others were not there. Needs the offset index of the column.
+    /// </summary>
+    /// <exception cref="NotSupportedException">The file has no usable offset index for the column, or the selection has rows past the end of the group.</exception>
+    public ColumnReader OpenColumn(int index, RowSelection selection)
+    {
+        ArgumentNullException.ThrowIfNull(selection);
+        var reader = OpenColumn(index);
+        try
+        {
+            if (selection.Ranges.Count > 0 && selection.Ranges[^1].End > RowCount)
+            {
+                throw new NotSupportedException($"The selection has rows past the {RowCount} rows of the row group.");
+            }
+
+            var pages = PagesOf(index) ?? throw new NotSupportedException($"Column '{reader.Column.Name}' has no usable offset index, so its pages cannot be skipped.");
+            reader.Select(selection, pages.Locations);
+            return reader;
+        }
+        catch
+        {
+            reader.Dispose();
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// The rows of this group that the filter may match by the page index of its columns, to be given to <see cref="OpenColumn(int, RowSelection)"/>
+    /// for each of <paramref name="columns"/>; <c>null</c> when there is nothing to gain: the filter cannot rule out a page, or one of
+    /// the columns has no offset index. The rows of the pages kept that do not satisfy the filter are in it, so check them as well when
+    /// the result must hold exactly.
+    /// </summary>
+    /// <param name="columns">The positions in the schema of the columns that are going to be read.</param>
+    public RowSelection? SelectRows(ParquetFilter filter, IEnumerable<int> columns)
+    {
+        _file.EnsureOpen();
+        ArgumentNullException.ThrowIfNull(filter);
+        ArgumentNullException.ThrowIfNull(columns);
+        foreach (int column in columns)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(column);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(column, ColumnCount);
+            if (PagesOf(column) is null)
+            {
+                return null;
+            }
+        }
+
+        var ranges = PageSelector.Select(filter, _file.Schema, _file.Metadata.ColumnOrders, Metadata, _file.ReadBloomFilter, PagesOf);
+        return ranges is null ? null : new RowSelection(ranges);
+    }
+
+    private ColumnPages? PagesOf(int column)
+    {
+        if (!_pages.TryGetValue(column, out var pages))
+        {
+            _pages[column] = pages = _file.ReadColumnPages(Metadata.Columns[column], RowCount);
+        }
+
+        return pages;
     }
 
     /// <summary>

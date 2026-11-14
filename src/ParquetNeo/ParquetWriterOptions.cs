@@ -58,6 +58,15 @@ public sealed record ParquetWriterOptions
     public bool WritePageChecksums { get; init; }
 
     /// <summary>
+    /// Whether the file gets a page index: for every column, where each data page is and the smallest and largest value in it, written
+    /// after the row groups. A reader that is given a condition can then skip the pages that cannot hold a row that satisfies it, not only
+    /// the row groups, which pays off in row groups of many pages whose values are in some order (a time, an id that grows). The index
+    /// takes a few bytes a page and the bounds cost a little time to collect. Needs <see cref="StatisticsEnabled"/> for the bounds; without
+    /// it only the positions of the pages are written. Off by default.
+    /// </summary>
+    public bool WritePageIndex { get; init; }
+
+    /// <summary>
     /// The columns that get a bloom filter in every row group, keyed by column path with dots (<c>address.city</c>). A bloom
     /// filter tells a reader that a value is certainly not in a row group (it is wrong the other way a small share of the time, see
     /// <see cref="BloomFilterSettings.FalsePositiveRate"/>), which the minimum and the maximum cannot when the values are spread
