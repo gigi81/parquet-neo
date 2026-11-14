@@ -1,4 +1,4 @@
-namespace ParquetNeo.Core;
+namespace ParquetNeo;
 
 /// <summary>How one column is dictionary encoded; see <see cref="ParquetWriterOptions.ColumnDictionaries"/>.</summary>
 /// <remarks>A <see cref="DictionaryMode"/> alone can be used where settings are expected, to choose the mode and keep the size limit.</remarks>

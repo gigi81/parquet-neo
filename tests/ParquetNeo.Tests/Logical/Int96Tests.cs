@@ -1,5 +1,4 @@
 using ParquetNeo.ColumnTypes;
-using ParquetNeo.Core;
 using ParquetNeo.Encodings;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Schema;

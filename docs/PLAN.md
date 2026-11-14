@@ -8,7 +8,7 @@ spec in [`specs/`](../specs) (`File Format _ Parquet.html` and `parquet.thrift`)
 - **Fast first, easy second.** Zero per-value allocations on hot paths, span-based
   APIs, pooled buffers, SIMD where it pays off, async I/O.
 - **Two layers of usage**
-  - **Low level** (`ParquetNeo.Core`): `ParquetFileReader` / `ParquetFileWriter` work on
+  - **Low level** (`ParquetNeo`): `ParquetFileReader` / `ParquetFileWriter` work on
     row groups and column chunks. Columns are read/written as `Span<T>` plus
     definition/repetition levels. Metadata and statistics are exposed.
   - **High level** (`ParquetNeo`): `ParquetSerializer.SerializeAsync<T>(...)` and

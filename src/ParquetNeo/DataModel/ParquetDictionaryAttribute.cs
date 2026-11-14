@@ -1,4 +1,3 @@
-using ParquetNeo.Core;
 
 namespace ParquetNeo.DataModel;
 
@@ -27,7 +26,7 @@ namespace ParquetNeo.DataModel;
 /// <see cref="SizeLimit"/> raises (or lowers) how big the dictionary of the column may grow before the writer gives it up, for
 /// a column with few distinct values that are large, such as long descriptions or urls that come again and again.
 /// </para>
-/// <para>What is set in the options (<see cref="Core.ParquetWriterOptions.ColumnDictionaries"/>) wins over this attribute.</para>
+/// <para>What is set in the options (<see cref="ParquetWriterOptions.ColumnDictionaries"/>) wins over this attribute.</para>
 /// </remarks>
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
 public sealed class ParquetDictionaryAttribute(DictionaryMode mode) : Attribute
@@ -36,7 +35,7 @@ public sealed class ParquetDictionaryAttribute(DictionaryMode mode) : Attribute
 
     /// <summary>
     /// The size, in bytes, the dictionary may reach before the rest of the column is written plain, in place of
-    /// <see cref="Core.ParquetWriterOptions.DictionaryPageSizeLimit"/>. Zero, the default, leaves the limit of the writer. The
+    /// <see cref="ParquetWriterOptions.DictionaryPageSizeLimit"/>. Zero, the default, leaves the limit of the writer. The
     /// dictionary and the pages that use it are held in memory until the column is complete, so a big limit costs memory.
     /// </summary>
     public int SizeLimit { get; init; }

@@ -2,7 +2,6 @@ using System.Buffers;
 using System.Data;
 using System.Runtime.CompilerServices;
 using ParquetNeo.ColumnTypes;
-using ParquetNeo.Core;
 
 namespace ParquetNeo.Data;
 

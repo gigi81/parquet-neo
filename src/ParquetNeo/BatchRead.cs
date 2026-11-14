@@ -1,4 +1,4 @@
-namespace ParquetNeo.Core;
+namespace ParquetNeo;
 
 /// <summary>The outcome of a <see cref="ColumnReader"/> batch read.</summary>
 /// <param name="Entries">

@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using ParquetNeo.Compression;
 using ParquetNeo.ColumnTypes;
+using ParquetNeo.Core;
 using ParquetNeo.Encodings;
 using ParquetNeo.Metadata;
 using ParquetNeo.Metadata.Headers;
@@ -12,7 +13,7 @@ using ParquetNeo.Nested;
 using ParquetNeo.Schema;
 using ParquetNeo.Statistics;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo;
 
 /// <summary>
 /// Writes the values of one column of a row group. Obtain it from <see cref="RowGroupWriter.NextColumn"/>, call

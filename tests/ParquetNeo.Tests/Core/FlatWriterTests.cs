@@ -1,6 +1,5 @@
 using System.IO.Compression;
 using ParquetNeo.Compression;
-using ParquetNeo.Core;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 

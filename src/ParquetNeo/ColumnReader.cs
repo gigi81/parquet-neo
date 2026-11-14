@@ -9,7 +9,7 @@ using ParquetNeo.Metadata;
 using ParquetNeo.Metadata.Headers;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo;
 
 /// <summary>
 /// Reads the values of one column chunk, a batch at a time. Obtain it from <see cref="RowGroupReader.OpenColumn(int)"/>

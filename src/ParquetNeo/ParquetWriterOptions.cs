@@ -1,6 +1,6 @@
 using ParquetNeo.Compression;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo;
 
 /// <summary>Settings for a <see cref="ParquetFileWriter"/>.</summary>
 public sealed record ParquetWriterOptions

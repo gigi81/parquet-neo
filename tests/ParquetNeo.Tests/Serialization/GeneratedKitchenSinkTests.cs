@@ -1,5 +1,4 @@
 using ParquetNeo.Compression;
-using ParquetNeo.Core;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Schema;
 using ParquetNeo.Serialization;

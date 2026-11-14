@@ -1,5 +1,4 @@
 using System.Data;
-using ParquetNeo.Core;
 using ParquetNeo.Data;
 using ParquetNeo.DataModel;
 using ParquetNeo.Serialization;

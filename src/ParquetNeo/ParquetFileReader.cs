@@ -4,7 +4,7 @@ using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo;
 
 /// <summary>
 /// Reads a Parquet file one row group and one leaf column at a time, with the definition and repetition levels of

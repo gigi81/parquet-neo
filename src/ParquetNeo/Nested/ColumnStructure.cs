@@ -17,7 +17,7 @@ namespace ParquetNeo.Nested;
 /// </para>
 /// <para>
 /// The values of the column are not part of the structure: they are the values of the entries whose every ancestor is
-/// present, in order, which is exactly what <see cref="Core.ColumnWriter"/> takes and <see cref="Core.ColumnReader"/> returns.
+/// present, in order, which is exactly what <see cref="ColumnWriter"/> takes and <see cref="ColumnReader"/> returns.
 /// </para>
 /// </remarks>
 public sealed class ColumnStructure
@@ -81,7 +81,7 @@ public sealed class ColumnStructure
     }
 
     /// <summary>
-    /// Builds the structure from the definition and repetition levels of whole rows, as <see cref="Core.ColumnReader"/>
+    /// Builds the structure from the definition and repetition levels of whole rows, as <see cref="ColumnReader"/>
     /// returns them.
     /// </summary>
     /// <param name="repetitionLevels">Empty when the column is not repeated.</param>
@@ -208,7 +208,7 @@ public sealed class ColumnStructure
         return lastRowStart < 0 ? 0 : lastRowStart;
     }
 
-    /// <summary>The definition and repetition levels of the structure, ready for <see cref="Core.ColumnWriter"/>.</summary>
+    /// <summary>The definition and repetition levels of the structure, ready for <see cref="ColumnWriter"/>.</summary>
     /// <param name="repetitionLevels">Empty when the column is not repeated.</param>
     public void GetLevels(out int[] definitionLevels, out int[] repetitionLevels)
     {

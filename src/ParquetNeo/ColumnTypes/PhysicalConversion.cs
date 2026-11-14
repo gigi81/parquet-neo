@@ -1,6 +1,5 @@
 using System.Buffers;
 using System.Runtime.InteropServices;
-using ParquetNeo.Core;
 
 namespace ParquetNeo.ColumnTypes;
 

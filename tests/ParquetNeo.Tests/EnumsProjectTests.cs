@@ -1,6 +1,5 @@
 using System.Reflection;
 using ParquetNeo.Compression;
-using ParquetNeo.Core;
 
 namespace ParquetNeo.Tests;
 

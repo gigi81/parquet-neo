@@ -2,7 +2,6 @@ using System.Runtime.InteropServices;
 using BenchmarkDotNet.Attributes;
 using ParquetNeo.Compression;
 using ParquetNeo.Compression.Snappy;
-using ParquetNeo.Core;
 using ParquetNeo.Metadata;
 using ParquetNeo.Serialization;
 using PqNet = Parquet;

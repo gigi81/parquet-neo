@@ -550,7 +550,7 @@ namespace ParquetNeo.Generator
             {
                 // Zero, the default of the attribute, leaves the limit of the writer.
                 string limit = NamedArgument(dictionary, "SizeLimit") is { Value: int value } && value != 0 ? $", SizeLimit = {Number(value)}" : "";
-                attributes.Dictionary = $"new global::ParquetNeo.Core.DictionarySettings {{ Mode = (global::ParquetNeo.DictionaryMode){Number(dictionary.ConstructorArguments[0].Value)}{limit} }}";
+                attributes.Dictionary = $"new global::ParquetNeo.DictionarySettings {{ Mode = (global::ParquetNeo.DictionaryMode){Number(dictionary.ConstructorArguments[0].Value)}{limit} }}";
             }
 
             return attributes;
