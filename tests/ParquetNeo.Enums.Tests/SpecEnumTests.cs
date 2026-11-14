@@ -5,7 +5,7 @@ namespace ParquetNeo.Enums.Tests;
 /// <summary>The values of the enumerations of the format are written into files, so they must be those of parquet.thrift.</summary>
 public partial class SpecEnumTests
 {
-    private static readonly string Spec = StripComments(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "specs", "parquet.thrift")));
+    private static readonly string Spec = StripComments(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", "parquet.thrift")));
 
     [Test]
     [Arguments("Type", typeof(PhysicalType))]
