@@ -1,0 +1,65 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/schemas/docfx.schema.json",
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "../src",
+          "files": [
+            "ParquetNeo/ParquetNeo.csproj",
+            "ParquetNeo.Enums/ParquetNeo.Enums.csproj",
+            "ParquetNeo.Serialization/ParquetNeo.Serialization.csproj",
+            "ParquetNeo.Linq/ParquetNeo.Linq.csproj",
+            "ParquetNeo.Compression.Snappy/ParquetNeo.Compression.Snappy.csproj",
+            "ParquetNeo.Compression.Lz4/ParquetNeo.Compression.Lz4.csproj",
+            "ParquetNeo.Compression.Zstd/ParquetNeo.Compression.Zstd.csproj"
+          ]
+        }
+      ],
+      "dest": "api",
+      "properties": {
+        "Configuration": "Release"
+      }
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "api/**.yml",
+          "api/index.md"
+        ]
+      },
+      {
+        "files": [
+          "articles/**.md",
+          "articles/**/toc.yml",
+          "toc.yml",
+          "*.md"
+        ],
+        "exclude": [
+          "README.md"
+        ]
+      }
+    ],
+    "output": "_site",
+    "globalMetadata": {
+      "_appName": "ParquetNeo",
+      "_appTitle": "ParquetNeo",
+      "_enableSearch": true,
+      "_gitContribute": {
+        "repo": "https://github.com/gigi81/parquet-neo",
+        "branch": "main"
+      }
+    },
+    "template": [
+      "default",
+      "modern"
+    ],
+    "markdownEngineProperties": {
+      "alerts": {
+        "TIP": "alert alert-success"
+      }
+    }
+  }
+}

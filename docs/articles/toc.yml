@@ -1,0 +1,18 @@
+- name: Getting started
+  href: getting-started.md
+- name: Packages
+  href: packages.md
+- name: Serializing your classes
+  href: serializer.md
+- name: Trimming and Native AOT
+  href: aot.md
+- name: Compression
+  href: compression.md
+- name: Skipping what is not needed
+  href: filtering.md
+- name: LINQ over files
+  href: linq.md
+- name: Low-level API
+  href: low-level.md
+- name: ADO.NET
+  href: ado-net.md

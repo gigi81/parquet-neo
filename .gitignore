@@ -814,3 +814,8 @@ fabric.properties
 
 TestResults/
 .idea
+
+# docfx
+docs/_site/
+docs/api/*.yml
+docs/api/.manifest
