@@ -39,7 +39,11 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options)
             return files.SelectMany(file => ReadFile<TRow>(file, filter));
         }
 
-        return Unwrapped(files.AsParallel().AsUnordered().WithDegreeOfParallelism(degree).WithMergeOptions(ParallelMergeOptions.NotBuffered).SelectMany(file => ReadFile<TRow>(file, filter)));
+        return Unwrapped(files.AsParallel()
+            .AsUnordered()
+            .WithDegreeOfParallelism(degree)
+            .WithMergeOptions(ParallelMergeOptions.NotBuffered)
+            .SelectMany(file => ReadFile<TRow>(file, filter)));
     }
 
     /// <summary>The number of rows in all the files, from their footers.</summary>
