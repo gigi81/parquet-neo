@@ -27,7 +27,7 @@ Next: step 17 and the enhancements listed after step 15. The *Status* column of 
 
 | Topic | Default |
 |---|---|
-| Target framework | `net10.0` only (matches the existing scaffold) |
+| Target framework | `net10.0` and `net11.0` (since SDK 11): the packages have a build for each, the tests run on both, and the Native AOT checks publish for both |
 | Encryption (modular) | Out of scope for v1 |
 | Variant, Variant shredding, Geospatial, ALP | After the core is stable (step 17) |
 | LZ4 (Hadoop-framed) / LZO | Not supported. `LZ4_RAW` is |

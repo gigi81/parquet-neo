@@ -18,6 +18,12 @@ references it, directly or through `ParquetNeo.Linq` or `ParquetNeo.All`.
 
 All the types are in the `ParquetNeo` namespace or one below it, whatever the package they are in.
 
+## Frameworks
+
+Every package has a build for `net10.0` and one for `net11.0`: .NET 10 is the long term support release and .NET 11 the current one.
+The tests run on both, and the Native AOT checks publish for both. The source generator runs in the compiler and works with
+the SDK of either.
+
 ## Versions
 
 The version comes from the git tag of the release: `v1.2.3` is version 1.2.3 and `v1.2.3-preview.1` is a prerelease.

@@ -2,6 +2,7 @@
   <Import Project="..\Directory.Build.props" />
 
   <PropertyGroup>
+    <TargetFrameworks>$(LibraryTargetFrameworks)</TargetFrameworks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 

@@ -1,6 +1,8 @@
 <Project>
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- The packages support the current release of .NET and the one before it (long term support); tests run on both. -->
+    <LibraryTargetFrameworks>net10.0;net11.0</LibraryTargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>

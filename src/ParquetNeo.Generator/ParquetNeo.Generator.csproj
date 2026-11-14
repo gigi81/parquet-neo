@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- A source generator runs inside the compiler, which loads it as netstandard2.0. -->
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>

@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # Checks the packages the way a user gets them: a new project that installs only ParquetNeo.All from the folder of packages
 # must build, get the source generator, and run as a Native AOT program.
-#   build/verify-packages.sh <folder with the .nupkg files> <version of the packages>
+# It does so for every framework the packages support.
+#   build/verify-packages.sh <folder with the .nupkg files> <version of the packages> [frameworks, default "net10.0 net11.0"]
 set -euo pipefail
 
 packages=$(realpath "$1")
 version=$2
+frameworks=${3:-"net10.0 net11.0"}
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
@@ -27,7 +29,7 @@ cat > "$work/Consumer.csproj" <<PROJECT
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFrameworks>$(echo "$frameworks" | tr ' ' ';')</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishAot>true</PublishAot>
@@ -71,5 +73,8 @@ PROGRAM
 
 cd "$work"
 rid=$(dotnet --info | sed -n 's/^ *RID: *//p' | head -1)
-dotnet publish -c Release -r "$rid" -o out
-"./out/Consumer"
+for framework in $frameworks; do
+  echo "== $framework"
+  dotnet publish -c Release -r "$rid" -f "$framework" -o "out/$framework"
+  "./out/$framework/Consumer"
+done

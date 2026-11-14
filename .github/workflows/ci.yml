@@ -17,7 +17,8 @@ jobs:
 
       - uses: actions/setup-dotnet@v6
         with:
-          global-json-file: global.json
+          global-json-file: global.json # the SDK to build with: 11
+          dotnet-version: 10.0.x # and the runtime of .NET 10, which the tests of the net10.0 build run on
 
       - name: Restore
         run: dotnet restore
@@ -32,8 +33,10 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          dotnet publish tests/ParquetNeo.AotSmoke -c Release -r linux-x64 -o aot-smoke
-          ./aot-smoke/ParquetNeo.AotSmoke
+          for framework in net10.0 net11.0; do
+            dotnet publish tests/ParquetNeo.AotSmoke -c Release -r linux-x64 -f "$framework" -o "aot-smoke/$framework"
+            "./aot-smoke/$framework/ParquetNeo.AotSmoke"
+          done
 
       - name: Coverage summary
         if: always()
@@ -71,7 +74,8 @@ jobs:
 
       - uses: actions/setup-dotnet@v6
         with:
-          global-json-file: global.json
+          global-json-file: global.json # the SDK to build with: 11
+          dotnet-version: 10.0.x # and the runtime of .NET 10, which the tests of the net10.0 build run on
 
       - name: Pack
         run: dotnet pack ParquetNeo.slnx -c Release -o packages
