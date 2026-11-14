@@ -4,6 +4,7 @@
 [![Downloads](https://img.shields.io/nuget/dt/ParquetNeo.All?logo=nuget)](https://www.nuget.org/packages/ParquetNeo.All)
 [![Build](https://github.com/gigi81/parquet-neo/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/gigi81/parquet-neo/actions/workflows/ci.yml)
 [![Coverage](https://codecov.io/gh/gigi81/parquet-neo/branch/main/graph/badge.svg)](https://codecov.io/gh/gigi81/parquet-neo)
+[![Docs](https://img.shields.io/badge/docs-gigi81.github.io-blue)](https://gigi81.github.io/parquet-neo/)
 [![License: MIT](https://img.shields.io/github/license/gigi81/parquet-neo)](LICENSE.md)
 ![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet)
 ![Native AOT](https://img.shields.io/badge/Native%20AOT-ready-brightgreen)

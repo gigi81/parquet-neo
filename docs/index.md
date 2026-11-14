@@ -23,4 +23,6 @@ var back = ParquetSerializer.Deserialize<Person>(File.OpenRead("people.parquet")
 public record Person(int Id, string Name, DateOnly Born);
 ```
 
+**Links:** [NuGet](https://www.nuget.org/packages/ParquetNeo.All) · [source on GitHub](https://github.com/gigi81/parquet-neo) · [releases](https://github.com/gigi81/parquet-neo/releases) · [report a problem](https://github.com/gigi81/parquet-neo/issues)
+
 Start with [Getting started](articles/getting-started.md), or go to the [API reference](api/index.md).
