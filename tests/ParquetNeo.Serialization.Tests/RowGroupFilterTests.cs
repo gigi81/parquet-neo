@@ -199,4 +199,50 @@ public class RowGroupFilterTests
         await Assert.That(rows.Count).IsEqualTo(500);
         await Assert.That(rows.Any(r => r.Id == 233)).IsTrue();
     }
+
+    /// <summary>One row group of 5000 rows in order of Id, in many small pages, with or without a page index.</summary>
+    private static byte[] Paged(bool pageIndex)
+    {
+        var rows = Enumerable.Range(0, 5000).Select(i => new Reading { Id = i, Name = $"name-{i}", Value = i % 7 == 0 ? null : i }).ToList();
+        var stream = new MemoryStream();
+        ParquetSerializer.Serialize(rows, stream, new ParquetSerializerOptions { Writer = new ParquetWriterOptions { WritePageIndex = pageIndex, DataPageSize = 600 } });
+        return stream.ToArray();
+    }
+
+    [Test]
+    public async Task ThePageIndexOfAFile_RulesOutThePagesTheRowGroupStatisticsCannot()
+    {
+        var options = Filtered(ParquetFilter.Column("Id").GreaterThanOrEqual(1000) & ParquetFilter.Column("Id").LessThan(1100));
+
+        var indexed = ParquetSerializer.Deserialize<Reading>(new MemoryStream(Paged(pageIndex: true)), options);
+        var plain = ParquetSerializer.Deserialize<Reading>(new MemoryStream(Paged(pageIndex: false)), options);
+
+        await Assert.That(plain.Count).IsEqualTo(5000);
+        await Assert.That(indexed.Count).IsBetween(100, 1000);
+        await Assert.That(indexed.Count(r => r.Id is >= 1000 and < 1100)).IsEqualTo(100);
+        await Assert.That(indexed.All(r => r.Name == $"name-{r.Id}" && r.Value == (r.Id % 7 == 0 ? null : r.Id))).IsTrue();
+    }
+
+    [Test]
+    public async Task ThePageIndex_ReadsFewerBytes()
+    {
+        var options = Filtered(ParquetFilter.Column("Id").Equal(2500));
+        var bytes = Paged(pageIndex: true);
+        using var all = new CountingStream(new MemoryStream(bytes));
+        using var some = new CountingStream(new MemoryStream(bytes));
+
+        ParquetSerializer.Deserialize<Reading>(all, new ParquetDeserializerOptions());
+        var rows = ParquetSerializer.Deserialize<Reading>(some, options);
+
+        await Assert.That(rows.Any(r => r.Id == 2500)).IsTrue();
+        await Assert.That(some.BytesRead).IsLessThan(all.BytesRead / 5);
+    }
+
+    [Test]
+    public async Task TheAsynchronousMethods_DoNotUseThePageIndex()
+    {
+        var rows = await ParquetSerializer.DeserializeAsync<Reading>(new MemoryStream(Paged(pageIndex: true)), Filtered(ParquetFilter.Column("Id").Equal(2500)));
+
+        await Assert.That(rows.Count).IsEqualTo(5000);
+    }
 }

@@ -13,8 +13,10 @@ public sealed record ParquetDeserializerOptions
     /// result must hold exactly. All the row groups are read when it is not set.
     /// </summary>
     /// <remarks>
-    /// Equality conditions are also checked against the bloom filters of the columns, which the file may have, by the synchronous
-    /// methods; the asynchronous ones fetch only the byte ranges of the footer and of the columns they read, and check the statistics.
+    /// The synchronous methods look further: equality conditions are also checked against the bloom filters of the columns, and the
+    /// pages of the row groups that are read against the page index, when the file has them; the rows of the pages that cannot hold a
+    /// row that satisfies the condition are not returned either. The asynchronous methods fetch only the byte ranges of the footer and
+    /// of the columns they read, and check the statistics.
     /// </remarks>
     public ParquetFilter? RowGroupFilter { get; init; }
 }

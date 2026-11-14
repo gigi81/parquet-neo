@@ -354,6 +354,12 @@ public sealed partial class ColumnReader : IDisposable
             _indices = null;
         }
 
+        if (_recordStarts is not null)
+        {
+            ArrayPool<int>.Shared.Return(_recordStarts);
+            _recordStarts = null;
+        }
+
         _dictionaryValues = null;
         _dictionaryStrings = null;
     }
@@ -476,7 +482,10 @@ public sealed partial class ColumnReader : IDisposable
         _pageValueIndex += values;
     }
 
-    private bool LoadNextPage()
+    private bool LoadNextPage(bool sequential = false) =>
+        _selection is null || sequential ? LoadNextPageInSequence() : LoadNextSelected();
+
+    private bool LoadNextPageInSequence()
     {
         _pageEntries = _pageEntryIndex = _pageValueIndex = 0;
         while (_position < _chunkEnd)

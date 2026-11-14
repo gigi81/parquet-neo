@@ -140,6 +140,71 @@ public sealed class ParquetFileReader : IDisposable, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// The page index of a column chunk, or null when the file has none or it cannot be used: an index that does not fit its
+    /// column chunk proves nothing and is left alone, the rows are then read as if there were none.
+    /// </summary>
+    internal ColumnPages? ReadColumnPages(ColumnChunk chunk, long rowCount)
+    {
+        if (chunk.MetaData is not { } meta || chunk.OffsetIndexOffset is not { } offsetsStart || chunk.OffsetIndexLength is not { } offsetsLength)
+        {
+            return null;
+        }
+
+        try
+        {
+            var offsets = OffsetIndex.Deserialize(ReadIndexBytes(offsetsStart, offsetsLength) ?? []);
+            long start = meta.DictionaryPageOffset is > 0 ? meta.DictionaryPageOffset.Value : meta.DataPageOffset;
+            long end = start + meta.TotalCompressedSize;
+            long previousRow = -1;
+            long previousOffset = start - 1;
+            foreach (var page in offsets.PageLocations)
+            {
+                if (page.FirstRowIndex <= previousRow || page.FirstRowIndex >= rowCount || page.Offset <= previousOffset || page.Offset >= end || page.CompressedPageSize <= 0)
+                {
+                    return null;
+                }
+
+                previousRow = page.FirstRowIndex;
+                previousOffset = page.Offset;
+            }
+
+            if (offsets.PageLocations.Count == 0 || offsets.PageLocations[0].FirstRowIndex != 0)
+            {
+                return null;
+            }
+
+            ColumnIndex? bounds = null;
+            if (chunk.ColumnIndexOffset is { } boundsStart && chunk.ColumnIndexLength is { } boundsLength && ReadIndexBytes(boundsStart, boundsLength) is { } bytes)
+            {
+                bounds = ColumnIndex.Deserialize(bytes);
+                int pages = offsets.PageLocations.Count;
+                if (bounds.NullPages.Count != pages || bounds.MinValues.Count != pages || bounds.MaxValues.Count != pages || (bounds.NullCounts is { } counts && counts.Count != pages))
+                {
+                    bounds = null;
+                }
+            }
+
+            return new ColumnPages(offsets.PageLocations, bounds);
+        }
+        catch (ParquetException)
+        {
+            return null;
+        }
+    }
+
+    private byte[]? ReadIndexBytes(long offset, int length)
+    {
+        if (offset < 4 || length <= 0 || length > Options.MaxPageSize || offset > FileLength - length)
+        {
+            return null;
+        }
+
+        var bytes = new byte[length];
+        ReadAt(offset, bytes);
+        return bytes;
+    }
+
     public void Dispose()
     {
         if (!_disposed)

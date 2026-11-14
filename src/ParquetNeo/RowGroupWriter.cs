@@ -18,6 +18,7 @@ public sealed class RowGroupWriter : IDisposable
     private readonly int _ordinal;
     private readonly List<ColumnChunk> _chunks = new();
     private readonly List<(ColumnMetaData Metadata, BloomFilter Filter)> _bloomFilters = [];
+    private readonly List<(ColumnChunk Chunk, PageIndex Index)> _pageIndexes = [];
     private ColumnWriter? _current;
     private int _nextColumn;
     private long _rows = -1;
@@ -148,6 +149,7 @@ public sealed class RowGroupWriter : IDisposable
                     metadata.DictionaryPageOffset = dictionaryOffset + start;
                 }
 
+                writers[i]!.PageIndex?.Shift(start);
                 Record(writers[i]!, chunk, writers[i]!.FirstPageOffset + start);
                 sinks[i]!.Dispose();
                 sinks[i] = null;
@@ -190,6 +192,7 @@ public sealed class RowGroupWriter : IDisposable
 
         _closed = true;
         WriteBloomFilters();
+        _file.AddPageIndexes(_pageIndexes);
         _file.OnRowGroupClosed(new RowGroup
         {
             Columns = _chunks,
@@ -276,6 +279,11 @@ public sealed class RowGroupWriter : IDisposable
         if (column.BloomFilter is { } filter)
         {
             _bloomFilters.Add((chunk.MetaData!, filter));
+        }
+
+        if (column.PageIndex is { } pageIndex)
+        {
+            _pageIndexes.Add((chunk, pageIndex));
         }
 
         _totalUncompressed += column.TotalUncompressedSize;

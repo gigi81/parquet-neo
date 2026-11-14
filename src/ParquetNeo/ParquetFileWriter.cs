@@ -32,6 +32,7 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
     private readonly ParquetWriterOptions _options;
     private readonly ICodec _codec;
     private readonly List<RowGroup> _rowGroups = new();
+    private readonly List<(ColumnChunk Chunk, PageIndex Index)> _pageIndexes = new();
     private RowGroupWriter? _openGroup;
     private long _totalRows;
     private bool _closed;
@@ -115,6 +116,7 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
         }
 
         _closed = true;
+        WritePageIndexes();
         WriteFooter();
         _output.Flush();
         ReleaseStream();
@@ -169,6 +171,9 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
         _openGroup = null;
     }
 
+    /// <summary>Takes the page indexes of the columns of a row group, which are written after the last row group.</summary>
+    internal void AddPageIndexes(List<(ColumnChunk Chunk, PageIndex Index)> pageIndexes) => _pageIndexes.AddRange(pageIndexes);
+
     internal void Abandon() => _abandoned = true;
 
     void IColumnSink.EnsureUsable() => EnsureUsable();
@@ -192,6 +197,36 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
     {
         _output.Write(bytes);
         Position += bytes.Length;
+    }
+
+    /// <summary>Writes the column indexes of all the columns, then their offset indexes, and records where each is in its column chunk.</summary>
+    private void WritePageIndexes()
+    {
+        var buffer = new ArrayBufferWriter<byte>();
+        foreach (var (chunk, index) in _pageIndexes)
+        {
+            if (index.Columns is null)
+            {
+                continue;
+            }
+
+            buffer.ResetWrittenCount();
+            index.Columns.Serialize(buffer);
+            chunk.ColumnIndexOffset = Position;
+            chunk.ColumnIndexLength = buffer.WrittenCount;
+            Write(buffer.WrittenSpan);
+        }
+
+        foreach (var (chunk, index) in _pageIndexes)
+        {
+            buffer.ResetWrittenCount();
+            index.Offsets.Serialize(buffer);
+            chunk.OffsetIndexOffset = Position;
+            chunk.OffsetIndexLength = buffer.WrittenCount;
+            Write(buffer.WrittenSpan);
+        }
+
+        _pageIndexes.Clear();
     }
 
     private void WriteFooter()

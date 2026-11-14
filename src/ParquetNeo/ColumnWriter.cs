@@ -71,6 +71,13 @@ public sealed partial class ColumnWriter
     private readonly List<EncodedPage> _pending = new();
     private byte[]? _stringScratch;
     private readonly StatisticsCollector? _statistics;
+    private readonly ParquetWriterOptions _options;
+    private readonly bool _pageIndex;
+    private StatisticsCollector? _pageStatistics; // the bounds of the page being filled, when the file has a page index
+    private readonly List<PageIndexEntry> _pageEntries = new();
+    private bool[] _seenInPage = [];
+    private PageIndexEntry? _flushingEntry; // of the page being flushed, until its bytes are written
+    private long _pageFirstRow; // the row of the group the page being filled starts with
     private long _valueCount; // non-null values written, so that rows minus values is the null count
 
     private int _pageLevelCount;
@@ -120,6 +127,9 @@ public sealed partial class ColumnWriter
         _dictionary = options.DictionaryEnabled && dictionaryMode != DictionaryMode.Disabled ? CreateDictionary(column.Type, column.TypeLength) : null;
         _dictionaryProbePending = _dictionary is not null && dictionaryMode == DictionaryMode.Adaptive;
         _statistics = StatisticsFactory.Create(column, options);
+        _options = options;
+        _pageIndex = options.WritePageIndex;
+        _pageStatistics = _pageIndex ? StatisticsFactory.Create(column, options) : null;
         _valueEncoding = ValueEncodingRules.For(column, options.ColumnEncodings);
         _dataPageV2 = options.DataPageVersion == DataPageVersion.V2;
         _checksums = options.WritePageChecksums;
@@ -178,7 +188,7 @@ public sealed partial class ColumnWriter
             take = ExtendToRecordEnd(repetitionLevels, entry, take, entries);
             int valueCount = AppendLevels(definitionLevels, repetitionLevels, entry, take);
             _buffers.Booleans.Write(values.Slice(next, valueCount));
-            _statistics?.Add(values.Slice(next, valueCount));
+            AddToStatistics(values.Slice(next, valueCount));
             _valueCount += valueCount;
             CompleteChunk(take, atBatchEnd: entry + take == entries);
             entry += take;
@@ -337,7 +347,7 @@ public sealed partial class ColumnWriter
                 {
                     for (int i = 0; i < valueCount; i++)
                     {
-                        _statistics.AddBinary(chunk.Slice(i * length, length));
+                        AddBinaryToStatistics(chunk.Slice(i * length, length));
                     }
                 }
 
@@ -425,6 +435,7 @@ public sealed partial class ColumnWriter
         }
 
         BloomFilter = _bloom?.Build();
+        PageIndex = _pageIndex ? BuildPageIndex() : null;
         return new ColumnChunk
         {
             FileOffset = 0, // deprecated; 0 when no ColumnMetaData is written outside the footer
@@ -444,6 +455,9 @@ public sealed partial class ColumnWriter
             },
         };
     }
+
+    /// <summary>The page index of the chunk, which the file writes after its row groups; null when the file has none. Available once the chunk is complete.</summary>
+    internal PageIndex? PageIndex { get; private set; }
 
     /// <summary>The bloom filter of the chunk, which the row group writes after its columns; null when the column has none. Available once the chunk is complete.</summary>
     internal BloomFilter? BloomFilter { get; private set; }
@@ -469,7 +483,7 @@ public sealed partial class ColumnWriter
             take = ExtendToRecordEnd(repetitionLevels, entry, take, entries);
             int valueCount = AppendLevels(definitionLevels, repetitionLevels, entry, take);
             var chunk = values.Slice(next, valueCount);
-            _statistics?.Add(chunk);
+            AddToStatistics(chunk);
             _valueCount += valueCount;
             if (_dictionary is not null)
             {
@@ -503,7 +517,7 @@ public sealed partial class ColumnWriter
         }
         else
         {
-            _statistics?.AddBinary(value);
+            AddBinaryToStatistics(value);
             PlainEncoder.WriteByteArray(value, _buffers.Values);
         }
     }
@@ -516,7 +530,7 @@ public sealed partial class ColumnWriter
         if (_statistics is not null)
         {
             // The string was encoded straight into the page buffer; the statistics read it back from there.
-            _statistics.AddBinary(_buffers.Values.WrittenSpan[(start + sizeof(int))..]);
+            AddBinaryToStatistics(_buffers.Values.WrittenSpan[(start + sizeof(int))..]);
         }
     }
 
@@ -596,6 +610,19 @@ public sealed partial class ColumnWriter
     }
 
     private void AddIndex(int index) => _buffers.Indices.Append(index);
+
+    private void AddToStatistics<T>(ReadOnlySpan<T> values) where T : unmanaged
+    {
+        _statistics?.Add(values);
+        _pageStatistics?.Add(values);
+    }
+
+    /// <summary>Adds a value that is stored PLAIN (not in a dictionary, whose values the page statistics take from the indexes of the page) to the statistics.</summary>
+    private void AddBinaryToStatistics(ReadOnlySpan<byte> value)
+    {
+        _statistics?.AddBinary(value);
+        _pageStatistics?.AddBinary(value);
+    }
 
     /// <summary>Checks a batch and returns its number of level entries.</summary>
     private int PrepareBatch(PhysicalType expected, int valueCount, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels)
@@ -792,6 +819,80 @@ public sealed partial class ColumnWriter
         _dictionary = null;
     }
 
+    /// <summary>Starts the page index entry of the page being flushed: its first row, its counts and the bounds of its values.</summary>
+    private PageIndexEntry BeginPageEntry()
+    {
+        if (_dictionary is BinaryDictionary binary && _pageStatistics is not null)
+        {
+            // The values of a dictionary were added to the statistics of the chunk when they first appeared, so the values of
+            // this page are found through its indexes.
+            if (_seenInPage.Length < binary.Count)
+            {
+                _seenInPage = new bool[Math.Max(binary.Count, _seenInPage.Length * 2)];
+            }
+
+            Array.Clear(_seenInPage, 0, binary.Count);
+            foreach (int index in _buffers.Indices.WrittenSpan)
+            {
+                if (!_seenInPage[index])
+                {
+                    _seenInPage[index] = true;
+                    _pageStatistics.AddBinary(binary.GetValue(index));
+                }
+            }
+        }
+
+        var entry = new PageIndexEntry
+        {
+            FirstRow = _pageFirstRow,
+            NullCount = _pageNullCount,
+            ValueCount = _pageLevelCount - _pageNullCount,
+            Statistics = _pageStatistics?.Build(_pageNullCount),
+        };
+        _pageEntries.Add(entry);
+        _pageFirstRow += _pageRecords;
+        _pageStatistics = _statistics is null ? null : StatisticsFactory.Create(Column, _options);
+        return entry;
+    }
+
+    private PageIndex BuildPageIndex()
+    {
+        var offsets = new OffsetIndex();
+        foreach (var entry in _pageEntries)
+        {
+            offsets.PageLocations.Add(new PageLocation { Offset = entry.Offset, CompressedPageSize = entry.Size, FirstRowIndex = entry.FirstRow });
+        }
+
+        return new PageIndex(offsets, BuildColumnIndex());
+    }
+
+    /// <summary>The bounds of the pages, or null when they cannot all be stated: no statistics, values without an order, or a page of nothing but NaN.</summary>
+    private ColumnIndex? BuildColumnIndex()
+    {
+        var index = new ColumnIndex { NullCounts = new List<long>(_pageEntries.Count) };
+        foreach (var entry in _pageEntries)
+        {
+            var statistics = entry.Statistics;
+            if (statistics is null)
+            {
+                return null;
+            }
+
+            bool nullPage = entry.ValueCount == 0;
+            if (!nullPage && (statistics.MinValue is null || statistics.MaxValue is null))
+            {
+                return null;
+            }
+
+            index.NullPages.Add(nullPage);
+            index.MinValues.Add(nullPage ? [] : statistics.MinValue!);
+            index.MaxValues.Add(nullPage ? [] : statistics.MaxValue!);
+            index.NullCounts.Add(entry.NullCount);
+        }
+
+        return index;
+    }
+
     private void FlushPage()
     {
         _pageActionsDeferred = false;
@@ -809,6 +910,7 @@ public sealed partial class ColumnWriter
         var levelData = ReadOnlySpan<byte>.Empty;
         _levelRepetitionBytes = _levelDefinitionBytes = 0;
         _pageNullCount = HasLevels ? _pageLevelCount - _buffers.Levels.WrittenSpan.Count(_maxDefinitionLevel) : 0;
+        _flushingEntry = _pageIndex ? BeginPageEntry() : null;
         if (_dataPageV2)
         {
             var block = _buffers.LevelBlock;
@@ -876,7 +978,7 @@ public sealed partial class ColumnWriter
         body.Advance(1);
         RleBitPackedEncoder.Encode(_buffers.Indices.WrittenSpan, bitWidth, body);
 
-        _pending.Add(BuildPage(PageType.DataPage, _pageLevelCount, ParquetEncoding.RleDictionary, levelPrefix, levelData, body.WrittenSpan));
+        _pending.Add(BuildPage(PageType.DataPage, _pageLevelCount, ParquetEncoding.RleDictionary, levelPrefix, levelData, body.WrittenSpan) with { Entry = _flushingEntry });
         _dictionaryEncodedPages++;
     }
 
@@ -911,6 +1013,7 @@ public sealed partial class ColumnWriter
             _dataPageOffset = _sink.Position;
         }
 
+        long pageStart = _sink.Position;
         if (_codec.Id == CompressionCodec.Uncompressed)
         {
             // No copy needed: the three parts go straight to the stream.
@@ -921,10 +1024,15 @@ public sealed partial class ColumnWriter
             _sink.Write(levelData);
             _sink.Write(values);
             Account(headerLength, uncompressedSize, uncompressedSize);
+            if (_flushingEntry is { } entry)
+            {
+                entry.Offset = pageStart;
+                entry.Size = headerLength + uncompressedSize;
+            }
         }
         else
         {
-            WriteEncoded(BuildPage(PageType.DataPage, _pageLevelCount, _valueEncoding, levelPrefix, levelData, values));
+            WriteEncoded(BuildPage(PageType.DataPage, _pageLevelCount, _valueEncoding, levelPrefix, levelData, values) with { Entry = _flushingEntry });
         }
 
         _plainPages++;
@@ -1093,6 +1201,12 @@ public sealed partial class ColumnWriter
 
     private void WriteEncoded(EncodedPage page)
     {
+        if (page.Entry is { } entry)
+        {
+            entry.Offset = _sink.Position;
+            entry.Size = page.Length;
+        }
+
         _sink.Write(page.Buffer.AsSpan(0, page.Length));
         Account(page.HeaderLength, page.UncompressedSize, page.CompressedSize);
         ArrayPool<byte>.Shared.Return(page.Buffer);
@@ -1172,7 +1286,7 @@ public sealed partial class ColumnWriter
         _sink.EnsureUsable();
     }
 
-    private readonly record struct EncodedPage(byte[] Buffer, int Length, int HeaderLength, int UncompressedSize, int CompressedSize);
+    private readonly record struct EncodedPage(byte[] Buffer, int Length, int HeaderLength, int UncompressedSize, int CompressedSize, PageIndexEntry? Entry = null);
 
     private interface IPlainValueEncoder<T>
     {

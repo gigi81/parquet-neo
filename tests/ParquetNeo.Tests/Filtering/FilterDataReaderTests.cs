@@ -58,4 +58,28 @@ public class FilterDataReaderTests
 
         await Assert.That(ids.Select(id => id / 10).Distinct().ToArray()).IsEquivalentTo(new long[] { 3 });
     }
+
+    [Test]
+    public async Task ThePagesTheFilterRulesOut_AreNotRead_WhenTheFileHasAPageIndex()
+    {
+        var bytes = FilterFile.CreateBytes(
+            [FilterFile.Column<long>("Id"), FilterFile.Column<int>("Group")],
+            1,
+            (_, writer) =>
+            {
+                writer.NextColumn().WriteBatch(Enumerable.Range(0, 4000).Select(i => (long)i).ToArray());
+                writer.NextColumn().WriteBatch(Enumerable.Range(0, 4000).Select(i => i * 2).ToArray());
+            },
+            new ParquetWriterOptions { WritePageIndex = true, DataPageSize = 500 });
+        using var reader = new ParquetDataReader(new MemoryStream(bytes), new ParquetDataReaderOptions { RowGroupFilter = ParquetFilter.Column("Id").Equal(1234L) });
+        var rows = new List<(long Id, int Group)>();
+        while (reader.Read())
+        {
+            rows.Add((reader.GetInt64(0), reader.GetInt32(1)));
+        }
+
+        await Assert.That(rows.Count).IsBetween(1, 400);
+        await Assert.That(rows).Contains((1234L, 2468));
+        await Assert.That(rows.All(r => r.Group == r.Id * 2)).IsTrue();
+    }
 }
