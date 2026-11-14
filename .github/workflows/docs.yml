@@ -32,7 +32,8 @@ jobs:
           dotnet tool restore
           dotnet docfx docs/docfx.json 2>&1 | tee docfx.log
           # Any warning (a broken link, a reference that does not resolve) fails the build, except one docfx gives for the source generator project.
-          if grep -i "warning" docfx.log | grep -v "Duplicate source file"; then exit 1; fi
+          # (docfx prints each warning on a line that starts with "warning", and a summary line with a count of them, which is not one.)
+          if grep -E "^warning" docfx.log | grep -v "Duplicate source file"; then exit 1; fi
 
       - uses: actions/configure-pages@v6
         if: github.event_name != 'pull_request'
