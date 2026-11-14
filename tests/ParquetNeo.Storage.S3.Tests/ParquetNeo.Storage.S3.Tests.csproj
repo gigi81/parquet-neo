@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ParquetNeo.Storage.S3\ParquetNeo.Storage.S3.csproj" />
+    <ProjectReference Include="..\..\src\ParquetNeo.Linq\ParquetNeo.Linq.csproj" />
+    <ProjectReference Include="..\ParquetNeo.Tests.Common\ParquetNeo.Tests.Common.csproj" />
+  </ItemGroup>
+
+</Project>

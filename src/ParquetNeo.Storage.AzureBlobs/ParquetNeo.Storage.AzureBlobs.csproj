@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Description>Reads Parquet files from Azure Blob Storage for ParquetNeo: only the byte ranges that are needed are requested.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" />
+    <ProjectReference Include="..\ParquetNeo\ParquetNeo.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ParquetNeo.Storage.AzureBlobs.Tests" />
+  </ItemGroup>
+
+</Project>

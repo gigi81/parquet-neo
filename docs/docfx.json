@@ -10,6 +10,8 @@
             "ParquetNeo.Enums/ParquetNeo.Enums.csproj",
             "ParquetNeo.Serialization/ParquetNeo.Serialization.csproj",
             "ParquetNeo.Linq/ParquetNeo.Linq.csproj",
+            "ParquetNeo.Storage.S3/ParquetNeo.Storage.S3.csproj",
+            "ParquetNeo.Storage.AzureBlobs/ParquetNeo.Storage.AzureBlobs.csproj",
             "ParquetNeo.Compression.Snappy/ParquetNeo.Compression.Snappy.csproj",
             "ParquetNeo.Compression.Lz4/ParquetNeo.Compression.Lz4.csproj",
             "ParquetNeo.Compression.Zstd/ParquetNeo.Compression.Zstd.csproj"

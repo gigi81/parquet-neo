@@ -1,5 +1,6 @@
 # Coverage varies a little from run to run (some tests depend on timing and on how work is scheduled), so a small drop is not
-# a failure: the project check fails when coverage falls by more than a point. The patch check only reports.
+# a failure: the project check fails when coverage falls by more than a point. The code that a pull request adds or changes (the
+# patch) has to be covered at 90% or more; below that the patch check fails.
 coverage:
   status:
     project:
@@ -8,7 +9,7 @@ coverage:
         threshold: 1%
     patch:
       default:
-        informational: true
+        target: 90%
 
 comment:
   layout: "condensed_header, condensed_files"

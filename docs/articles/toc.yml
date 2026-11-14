@@ -12,6 +12,8 @@
   href: filtering.md
 - name: LINQ over files
   href: linq.md
+- name: Reading from S3 and Azure
+  href: object-storage.md
 - name: GraphQL with Hot Chocolate
   href: graphql.md
 - name: Low-level API

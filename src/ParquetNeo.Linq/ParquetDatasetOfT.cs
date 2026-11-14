@@ -13,7 +13,7 @@ public sealed class ParquetDataset<T> : IOrderedQueryable<T>, IDatasetRoot
         Expression = Expression.Constant(this);
     }
 
-    /// <summary>The file or directory the rows are in.</summary>
+    /// <summary>The file or directory the rows are in, or the prefix of the keys of their files in a storage.</summary>
     public string Path => Source.Path;
 
     public Type ElementType => typeof(T);
