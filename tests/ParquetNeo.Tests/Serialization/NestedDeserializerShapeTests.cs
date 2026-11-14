@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using ParquetNeo.Core;
 using ParquetNeo.DataModel;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;

@@ -2,7 +2,7 @@ using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Statistics;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo;
 
 /// <summary>Gives access to the columns of one row group.</summary>
 public sealed class RowGroupReader

@@ -1,4 +1,3 @@
-using ParquetNeo.Core;
 using ParquetNeo.DataModel;
 using ParquetNeo.Serialization;
 using ParquetNeo.Tests.Core;

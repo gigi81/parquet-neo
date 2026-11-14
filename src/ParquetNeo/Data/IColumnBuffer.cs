@@ -1,5 +1,4 @@
 using System.Data;
-using ParquetNeo.Core;
 
 namespace ParquetNeo.Data;
 

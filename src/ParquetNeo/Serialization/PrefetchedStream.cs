@@ -4,7 +4,7 @@ namespace ParquetNeo.Serialization;
 
 /// <summary>
 /// A stand-in for a file of which only some ranges have been read: the footer, and the column chunks of the row group being
-/// read. <see cref="Core.ParquetFileReader"/> reads from streams synchronously, so the ranges are first read with asynchronous
+/// read. <see cref="ParquetFileReader"/> reads from streams synchronously, so the ranges are first read with asynchronous
 /// calls and the reader is then given this stream, which serves them from memory.
 /// </summary>
 internal sealed class PrefetchedStream(long length) : Stream

@@ -1,5 +1,4 @@
 using System.Buffers;
-using ParquetNeo.Core;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 

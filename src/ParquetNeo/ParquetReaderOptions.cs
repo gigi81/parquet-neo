@@ -1,6 +1,6 @@
 using ParquetNeo.Compression;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo;
 
 /// <summary>Settings for a <see cref="ParquetFileReader"/>. The limits protect against corrupt or hostile files.</summary>
 public sealed record ParquetReaderOptions

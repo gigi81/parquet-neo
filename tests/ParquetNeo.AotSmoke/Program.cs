@@ -1,6 +1,5 @@
 using ParquetNeo;
 using ParquetNeo.AotSmoke;
-using ParquetNeo.Core;
 using ParquetNeo.Compression;
 using ParquetNeo.Metadata;
 using ParquetNeo.Serialization;

@@ -1,6 +1,6 @@
 using ParquetNeo.ColumnTypes;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo;
 
 /// <summary>
 /// Writing columns with a logical type from the .NET type it stands for; the counterpart of the logical overloads of

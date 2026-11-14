@@ -1,5 +1,4 @@
 using System.Text;
-using ParquetNeo.Core;
 using ParquetNeo.Schema;
 
 namespace ParquetNeo.Tests.Core.Nested;

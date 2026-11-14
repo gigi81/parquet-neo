@@ -1,4 +1,3 @@
-using ParquetNeo.Core;
 using ParquetNeo.Tests.Core.Nested;
 using ParquetNeo.Tests.Encodings;
 

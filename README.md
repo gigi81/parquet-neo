@@ -55,7 +55,6 @@ Describe the columns in a schema, then write one batch of values per column for 
 
 ```csharp
 using ParquetNeo;
-using ParquetNeo.Core;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 

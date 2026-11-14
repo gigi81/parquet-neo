@@ -1,8 +1,9 @@
 using System.Collections.Concurrent;
 using System.Runtime.ExceptionServices;
+using ParquetNeo.Core;
 using ParquetNeo.Metadata;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo;
 
 /// <summary>
 /// Writes one row group: every column of the schema, in schema order, each with the same number of rows.

@@ -1,5 +1,4 @@
 using System.Buffers.Binary;
-using ParquetNeo.Core;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Metadata.Headers;

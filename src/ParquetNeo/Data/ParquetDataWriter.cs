@@ -1,6 +1,6 @@
-using ParquetNeo.Core;
 using System.Data;
 using System.Data.Common;
+using ParquetNeo.Core;
 
 namespace ParquetNeo.Data;
 

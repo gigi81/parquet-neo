@@ -3,7 +3,7 @@ using ParquetNeo.ColumnTypes;
 using ParquetNeo.Encodings;
 using ParquetNeo.Exceptions;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo;
 
 /// <summary>
 /// Reading columns with a logical type as the .NET type it stands for. Each overload is the <see cref="ColumnType{TValue}"/> of

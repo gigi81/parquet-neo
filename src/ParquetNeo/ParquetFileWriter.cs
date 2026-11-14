@@ -1,10 +1,11 @@
 using System.Buffers.Binary;
 using System.Buffers;
 using ParquetNeo.Compression;
+using ParquetNeo.Core;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-namespace ParquetNeo.Core;
+namespace ParquetNeo;
 
 /// <summary>
 /// Writes a Parquet file, one row group at a time. Columns are written one leaf column at a time, with the definition and

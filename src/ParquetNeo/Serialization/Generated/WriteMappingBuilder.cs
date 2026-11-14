@@ -1,5 +1,4 @@
 using ParquetNeo.ColumnTypes;
-using ParquetNeo.Core;
 using ParquetNeo.Serialization.Buffers;
 using ParquetNeo.Serialization.Shredders;
 
