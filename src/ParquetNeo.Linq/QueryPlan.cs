@@ -80,18 +80,35 @@ internal sealed class QueryPlan
         return current;
     }
 
-    /// <summary>The condition of the <c>Where</c>s that come first, which apply to every row of the dataset.</summary>
+    /// <summary>
+    /// The condition of the <c>Where</c>s that apply to every row of the dataset: the ones that come first, and the ones that come after
+    /// an ordering, which can be moved in front of it without changing what the query gives (a <c>Where</c> does not depend on the
+    /// order of the rows, and ordering is stable). Hot Chocolate, for one, puts the ordering of a query before its filter.
+    /// A <c>Skip</c>, a <c>Take</c>, a <c>Select</c> or any other operator stops the search: a <c>Where</c> after it is about other rows.
+    /// </summary>
     private static ParquetFilter? LeadingFilter(List<MethodCallExpression> calls)
     {
         ParquetFilter? filter = null;
-        foreach (var call in calls.TakeWhile(IsWhere))
+        foreach (var call in calls)
         {
+            if (IsOrdering(call))
+            {
+                continue;
+            }
+
+            if (!IsWhere(call))
+            {
+                break;
+            }
+
             var part = PredicateTranslator.Translate(Lambda(call.Arguments[1]));
             filter = filter is null || part is null ? filter ?? part : filter.And(part);
         }
 
         return filter;
     }
+
+    private static bool IsOrdering(MethodCallExpression call) => OrderingMethods.Contains(call.Method.Name) && HasOneParameter(call);
 
     /// <summary>
     /// The class to read when the query goes from the rows to something else with <c>Select</c>, after only <c>Where</c>, ordering
@@ -112,7 +129,7 @@ internal sealed class QueryPlan
             {
                 select = index;
             }
-            else if (!(IsWhere(call) || (OrderingMethods.Contains(call.Method.Name) && HasOneParameter(call)) || (call.Method.Name is "Skip" or "Take" && call.Arguments.Count == 2)))
+            else if (!(IsWhere(call) || IsOrdering(call) || (call.Method.Name is "Skip" or "Take" && call.Arguments.Count == 2)))
             {
                 return (null, 0, null);
             }

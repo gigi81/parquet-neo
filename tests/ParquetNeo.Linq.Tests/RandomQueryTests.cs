@@ -80,4 +80,40 @@ public class RandomQueryTests
         // Not empty of meaning: the statistics ruled something out for a fair share of the queries.
         await Assert.That(skippingQueries).IsGreaterThan(30);
     }
+
+    [Test]
+    public async Task APredicateAfterAnOrdering_GivesTheRowsItGivesInMemory_AndSkipsAsMuch()
+    {
+        using var data = new TestDataset();
+        var dataset = data.Open();
+        var memory = data.All.AsQueryable();
+        var random = new Random(77);
+        var failures = new List<string>();
+        int worse = 0;
+        int skippingQueries = 0;
+        for (int n = 0; n < 150; n++)
+        {
+            var row = Expression.Parameter(typeof(Person), "p");
+            var lambda = Expression.Lambda<Func<Person, bool>>(Predicate(row, random, depth: 3), row);
+
+            var expected = memory.OrderBy(p => p.Age).ThenByDescending(p => p.Id).Where(lambda).Select(p => p.Id).ToList();
+            var query = dataset.OrderBy(p => p.Age).ThenByDescending(p => p.Id).Where(lambda);
+            var actual = query.Select(p => p.Id).ToList();
+            if (!actual.SequenceEqual(expected))
+            {
+                failures.Add($"{lambda}: {actual.Count} rows, expected {expected.Count}");
+            }
+
+            var plan = query.Explain();
+            var first = dataset.Where(lambda).Explain();
+            skippingQueries += plan.FilesSkipped + plan.RowGroupsSkipped > 0 ? 1 : 0;
+            worse += plan.FilesSkipped < first.FilesSkipped || plan.RowGroupsSkipped < first.RowGroupsSkipped ? 1 : 0;
+        }
+
+        await Assert.That(failures.Take(5).ToArray()).IsEmpty();
+        await Assert.That(skippingQueries).IsGreaterThan(30);
+
+        // The ordering in front of the condition does not make the query skip less than the condition alone.
+        await Assert.That(worse).IsEqualTo(0);
+    }
 }

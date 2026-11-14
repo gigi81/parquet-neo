@@ -207,4 +207,45 @@ public class QueryPlanTests
             Directory.Delete(directory, recursive: true);
         }
     }
+
+    [Test]
+    public async Task AConditionAfterAnOrdering_SkipsAsIfItCameFirst()
+    {
+        using var data = new TestDataset();
+
+        // As Hot Chocolate writes a query: the ordering, then the filter, then the projection.
+        var plan = data.Open().OrderBy(p => p.Age).ThenByDescending(p => p.Id).Where(p => p.Id >= 2000 && p.Id < 2150).Select(p => new Person { Id = p.Id, Name = p.Name }).Explain();
+
+        await Assert.That(plan.FilesSkipped).IsEqualTo(3);
+        await Assert.That(plan.RowGroupsSkipped).IsEqualTo(2);
+        await Assert.That(plan.Filter).IsEqualTo("(Id >= 2000 and Id < 2150)");
+        await Assert.That(plan.Columns).IsEquivalentTo(new[] { "Age", "Id", "Name" });
+    }
+
+    [Test]
+    public async Task ConditionsBeforeAndAfterAnOrdering_AreBothUsed()
+    {
+        using var data = new TestDataset();
+
+        var plan = data.Open().Where(p => p.Id >= 2000).OrderBy(p => p.Age).Where(p => p.Id < 2150).Explain();
+
+        await Assert.That(plan.Filter).IsEqualTo("(Id >= 2000 and Id < 2150)");
+        await Assert.That(plan.RowGroupsSkipped).IsEqualTo(2);
+    }
+
+    [Test]
+    public async Task AConditionAfterASkipOrATake_IsAboutOtherRows_AndSkipsNothing()
+    {
+        using var data = new TestDataset();
+
+        var afterSkip = data.Open().OrderBy(p => p.Id).Skip(10).Where(p => p.Id >= 2000 && p.Id < 2150).Explain();
+        var afterTake = data.Open().Take(50).Where(p => p.Id >= 2000 && p.Id < 2150).Explain();
+        var afterSelect = data.Open().Select(p => p).Where(p => p.Id >= 2000 && p.Id < 2150).Explain();
+
+        await Assert.That(afterSkip.Filter).IsNull();
+        await Assert.That(afterTake.Filter).IsNull();
+        await Assert.That(afterSelect.Filter).IsNull();
+        await Assert.That(afterSkip.RowGroupsSkipped).IsEqualTo(0);
+        await Assert.That(afterTake.RowGroupsSkipped).IsEqualTo(0);
+    }
 }

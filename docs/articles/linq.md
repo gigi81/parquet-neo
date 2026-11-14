@@ -17,7 +17,8 @@ var names = people.Where(p => p.Born >= new DateOnly(1900, 1, 1) && p.Name != nu
 `ParquetDataset<T>` is an `IQueryable<T>`. Every operator of LINQ to objects works on the rows that are read, and what is added is
 what lets it read less:
 
-- **Files, row groups and pages are skipped.** The `Where`s at the start of the query are turned into a `ParquetFilter` (see
+- **Files, row groups and pages are skipped.** The `Where`s at the start of the query, or after an ordering (which is the same to
+  the result), are turned into a `ParquetFilter` (see
   [Skipping what is not needed](filtering.md)): comparisons with constants and captured values, null tests, boolean properties,
   `Contains` on a list, nested properties, `&&`, `||` and `!`. The whole predicate is still applied to the rows that are read, so
   the result is exact.
