@@ -37,6 +37,7 @@ public sealed class ParquetDataReader : DbDataReader
     private readonly PrimitiveNode[] _nodes;
     private readonly Type[] _types;
     private readonly Dictionary<string, int> _ordinals;
+    private readonly IReadOnlyList<int> _rowGroups;
     private int _rowGroup = -1;
     private int _rowsInGroup;
     private int _row = -1;
@@ -53,6 +54,7 @@ public sealed class ParquetDataReader : DbDataReader
         _file = new ParquetFileReader(input, options.Reader, leaveOpen);
         try
         {
+            _rowGroups = options.RowGroupFilter is { } filter ? _file.GetMatchingRowGroups(filter) : Enumerable.Range(0, _file.RowGroupCount).ToArray();
             _nodes = SelectColumns(_file.Schema, options.Columns);
             _columns = new ColumnData[_nodes.Length];
             _types = new Type[_nodes.Length];
@@ -279,9 +281,9 @@ public sealed class ParquetDataReader : DbDataReader
 
     private bool LoadNextRowGroup()
     {
-        while (++_rowGroup < _file.RowGroupCount)
+        while (++_rowGroup < _rowGroups.Count)
         {
-            var group = _file.OpenRowGroup(_rowGroup);
+            var group = _file.OpenRowGroup(_rowGroups[_rowGroup]);
             if (group.RowCount == 0)
             {
                 continue;
