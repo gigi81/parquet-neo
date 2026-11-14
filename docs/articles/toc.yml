@@ -12,6 +12,8 @@
   href: filtering.md
 - name: LINQ over files
   href: linq.md
+- name: GraphQL with Hot Chocolate
+  href: graphql.md
 - name: Low-level API
   href: low-level.md
 - name: ADO.NET

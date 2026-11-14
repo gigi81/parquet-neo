@@ -162,4 +162,24 @@ public class QueryResultTests
         // The first source is the dataset, so joining it with rows in memory is fine.
         await Assert.That(joined.Count()).IsEqualTo(data.All.Count);
     }
+
+    [Test]
+    public async Task WhereAfterAnOrdering() =>
+        await Same(q => q.OrderBy(p => p.Age).ThenByDescending(p => p.Id).Where(p => p.Id >= 1250 && p.Id < 2100 && p.Name != null), ordered: true);
+
+    [Test]
+    public async Task WhereBeforeAndAfterAnOrdering() =>
+        await Same(q => q.Where(p => p.Id >= 1000).OrderByDescending(p => p.Score).ThenBy(p => p.Id).Where(p => p.Id < 3100 || p.City == "Oslo"), ordered: true);
+
+    [Test]
+    public async Task OrderingThenWhereThenSelect() =>
+        await Same(q => q.OrderBy(p => p.Age).ThenBy(p => p.Id).Where(p => p.Id >= 2000 && p.Id < 2150).Select(p => new { p.Id, p.Name }), ordered: true);
+
+    [Test]
+    public async Task WhereAfterASkip_IsAboutTheRowsThatAreLeft() =>
+        await Same(q => q.OrderBy(p => p.Id).Skip(1500).Where(p => p.Id >= 2000 && p.Id < 2150), ordered: true);
+
+    [Test]
+    public async Task WhereAfterATake_IsAboutTheRowsThatAreTaken() =>
+        await Same(q => q.OrderBy(p => p.Id).Take(2050).Where(p => p.Id >= 2000), ordered: true);
 }
