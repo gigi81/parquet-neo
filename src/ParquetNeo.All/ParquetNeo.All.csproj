@@ -6,7 +6,7 @@
     <IncludeSymbols>false</IncludeSymbols>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);NU5128</NoWarn>
-    <Description>Everything of ParquetNeo in one package: the reader and writer, the serializer with its source generator, LINQ over files, and the Snappy, LZ4 and Zstandard codecs. Install the packages one by one to take less.</Description>
+    <Description>Everything of ParquetNeo in one package: the reader and writer, the serializer with its source generator, LINQ over files, the Snappy, LZ4 and Zstandard codecs, and reading from Amazon S3 and Azure Blob Storage. Install the packages one by one to take less.</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +16,8 @@
     <ProjectReference Include="..\ParquetNeo.Compression.Snappy\ParquetNeo.Compression.Snappy.csproj" />
     <ProjectReference Include="..\ParquetNeo.Compression.Lz4\ParquetNeo.Compression.Lz4.csproj" />
     <ProjectReference Include="..\ParquetNeo.Compression.Zstd\ParquetNeo.Compression.Zstd.csproj" />
+    <ProjectReference Include="..\ParquetNeo.Storage.S3\ParquetNeo.Storage.S3.csproj" />
+    <ProjectReference Include="..\ParquetNeo.Storage.AzureBlobs\ParquetNeo.Storage.AzureBlobs.csproj" />
   </ItemGroup>
 
 </Project>

@@ -12,6 +12,8 @@ Every package has the version of the release, and a package that depends on anot
 | `ParquetNeo.Compression.Snappy` | Snappy, through the managed Snappier library | yes | `ParquetNeo` |
 | `ParquetNeo.Compression.Lz4` | LZ4_RAW | yes | `ParquetNeo` |
 | `ParquetNeo.Compression.Zstd` | Zstandard, through the managed ZstdSharp library | yes | `ParquetNeo` |
+| `ParquetNeo.Storage.S3` | Reading from Amazon S3 and S3 compatible storage (AWS SDK) | no | `ParquetNeo`, `AWSSDK.S3` |
+| `ParquetNeo.Storage.AzureBlobs` | Reading from Azure Blob Storage (Azure SDK) | no | `ParquetNeo`, `Azure.Storage.Blobs` |
 
 The source generator is not a package of its own: it is inside `ParquetNeo.Serialization`, and runs in every project that
 references it, directly or through `ParquetNeo.Linq` or `ParquetNeo.All`.

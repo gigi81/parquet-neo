@@ -35,4 +35,4 @@ await foreach (var row in people.Where(p => p.Id > 5000).AsAsyncEnumerable()) { 
 `AsAsyncEnumerable`, `ToListAsync`, `ToArrayAsync`, `FirstAsync`, `FirstOrDefaultAsync`, `CountAsync` and `AnyAsync` run the query on
 another thread and do not block the caller.
 
-Datasets are local files for now.
+Datasets are local files, or the files of an object storage: see [Reading from S3 and Azure](object-storage.md).

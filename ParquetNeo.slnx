@@ -7,6 +7,8 @@
     <Project Path="src/ParquetNeo.Enums/ParquetNeo.Enums.csproj" />
     <Project Path="src/ParquetNeo.Linq/ParquetNeo.Linq.csproj" />
     <Project Path="src/ParquetNeo.Serialization/ParquetNeo.Serialization.csproj" />
+    <Project Path="src/ParquetNeo.Storage.AzureBlobs/ParquetNeo.Storage.AzureBlobs.csproj" />
+    <Project Path="src/ParquetNeo.Storage.S3/ParquetNeo.Storage.S3.csproj" />
     <Project Path="src/ParquetNeo.All/ParquetNeo.All.csproj" />
     <Project Path="src/ParquetNeo.Generator/ParquetNeo.Generator.csproj" />
     <Project Path="src/ParquetNeo.Compression.Lz4/ParquetNeo.Compression.Lz4.csproj" />
@@ -21,6 +23,8 @@
     <Project Path="tests/ParquetNeo.Generator.Tests/ParquetNeo.Generator.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Linq.Tests/ParquetNeo.Linq.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Serialization.Tests/ParquetNeo.Serialization.Tests.csproj" />
+    <Project Path="tests/ParquetNeo.Storage.AzureBlobs.Tests/ParquetNeo.Storage.AzureBlobs.Tests.csproj" />
+    <Project Path="tests/ParquetNeo.Storage.S3.Tests/ParquetNeo.Storage.S3.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Tests/ParquetNeo.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Tests.Common/ParquetNeo.Tests.Common.csproj" />
   </Folder>

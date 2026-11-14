@@ -1,11 +1,14 @@
 using System.Runtime.ExceptionServices;
+using System.IO.Enumeration;
 using ParquetNeo.Serialization;
+using ParquetNeo.Storage;
 
 namespace ParquetNeo.Linq;
 
 /// <summary>The files of a dataset, and how rows are read from them.</summary>
-internal sealed class DatasetSource(string path, ParquetDatasetOptions options)
+internal sealed class DatasetSource(string path, ParquetDatasetOptions options, IParquetStorage? storage = null)
 {
+    /// <summary>The file or directory, or the prefix of the keys in the storage.</summary>
     public string Path { get; } = path;
 
     public ParquetDatasetOptions Options { get; } = options;
@@ -14,6 +17,11 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options)
     /// <exception cref="FileNotFoundException">The path is neither a file nor a directory.</exception>
     public IReadOnlyList<string> Files()
     {
+        if (storage is not null)
+        {
+            return StorageFiles(storage);
+        }
+
         if (File.Exists(Path))
         {
             return [Path];
@@ -27,6 +35,28 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options)
         var files = Directory.EnumerateFiles(Path, Options.SearchPattern, Options.Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).ToList();
         files.Sort(StringComparer.Ordinal);
         return files;
+    }
+
+    /// <summary>Opens a file of the list of <see cref="Files"/> for reading, from the disk or from the storage.</summary>
+    public Stream OpenFile(string file) =>
+        storage is null ? File.OpenRead(file) : storage.OpenReadAsync(file).AsTask().GetAwaiter().GetResult();
+
+    /// <summary>The keys below the prefix that match the search pattern (and are not in a folder below it, when the dataset does not look there), in the order of their names.</summary>
+    private List<string> StorageFiles(IParquetStorage source)
+    {
+        var keys = new List<string>();
+        foreach (string key in source.ListAsync(Path).Select(storageObject => storageObject.Key).ToBlockingEnumerable())
+        {
+            string name = key[(key.LastIndexOf('/') + 1)..];
+            bool inFolder = key.AsSpan(Path.Length).Contains('/');
+            if (FileSystemName.MatchesSimpleExpression(Options.SearchPattern, name) && (Options.Recursive || !inFolder))
+            {
+                keys.Add(key);
+            }
+        }
+
+        keys.Sort(StringComparer.Ordinal);
+        return keys;
     }
 
     /// <summary>The rows of the row groups of the files that the filter does not rule out, files in parallel.</summary>
@@ -52,7 +82,7 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options)
         long rows = 0;
         foreach (string file in Files())
         {
-            using var stream = File.OpenRead(file);
+            using var stream = OpenFile(file);
             using var reader = new ParquetFileReader(stream, Options.Deserializer.Reader, leaveOpen: true);
             rows += reader.RowCount;
         }
@@ -69,7 +99,7 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options)
         int skippedGroups = 0;
         foreach (string file in files)
         {
-            using var stream = File.OpenRead(file);
+            using var stream = OpenFile(file);
             using var reader = new ParquetFileReader(stream, Options.Deserializer.Reader, leaveOpen: true);
             int kept = MatchingRowGroups(reader, filter).Count;
             if (kept == 0)
@@ -105,7 +135,7 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options)
 
     private IEnumerable<TRow> ReadFile<TRow>(string file, ParquetFilter? filter)
     {
-        using var stream = File.OpenRead(file);
+        using var stream = OpenFile(file);
         ParquetFilter? effective = filter;
         if (filter is not null)
         {
