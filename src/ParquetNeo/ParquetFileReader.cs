@@ -1,7 +1,6 @@
 using System.Buffers;
 using System.Buffers.Binary;
 using ParquetNeo.Exceptions;
-using ParquetNeo.Filtering;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 

@@ -19,6 +19,8 @@ internal sealed class AndFilter(ParquetFilter[] filters) : ParquetFilter
         return outcome;
     }
 
+    public override string ToString() => "(" + string.Join(" and ", filters.Select(f => f.ToString())) + ")";
+
     internal override void CollectColumns(List<IReadOnlyList<string>> paths)
     {
         foreach (var filter in filters)

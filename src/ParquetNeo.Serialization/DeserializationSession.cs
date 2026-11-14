@@ -1,5 +1,4 @@
 using ParquetNeo.Exceptions;
-using ParquetNeo.Filtering;
 using ParquetNeo.Serialization.Assemblers;
 
 namespace ParquetNeo.Serialization;

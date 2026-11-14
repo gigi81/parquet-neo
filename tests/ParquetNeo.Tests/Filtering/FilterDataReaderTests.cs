@@ -1,5 +1,4 @@
 using ParquetNeo.Data;
-using ParquetNeo.Filtering;
 
 namespace ParquetNeo.Tests.Filtering;
 

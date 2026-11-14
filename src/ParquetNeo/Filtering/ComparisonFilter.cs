@@ -46,6 +46,20 @@ internal sealed class ComparisonFilter(string[] path, ComparisonKind kind, objec
 
     internal override void CollectColumns(List<IReadOnlyList<string>> paths) => paths.Add(path);
 
+    public override string ToString()
+    {
+        string symbol = kind switch
+        {
+            ComparisonKind.Equal => "==",
+            ComparisonKind.LessThan => "<",
+            ComparisonKind.LessThanOrEqual => "<=",
+            ComparisonKind.GreaterThan => ">",
+            _ => ">=",
+        };
+        string shown = value is string text ? $"\"{text}\"" : Convert.ToString(value, System.Globalization.CultureInfo.InvariantCulture) ?? "";
+        return $"{string.Join('.', path)} {symbol} {shown}";
+    }
+
     private static FilterOutcome Decide(bool none, bool all)
     {
         if (none)

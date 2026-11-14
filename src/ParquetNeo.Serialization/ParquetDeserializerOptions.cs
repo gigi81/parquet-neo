@@ -1,5 +1,3 @@
-using ParquetNeo.Filtering;
-
 namespace ParquetNeo.Serialization;
 
 /// <summary>Settings for reading rows with <see cref="ParquetSerializer"/>.</summary>

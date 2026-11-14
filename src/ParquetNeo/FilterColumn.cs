@@ -1,4 +1,6 @@
-namespace ParquetNeo.Filtering;
+using ParquetNeo.Filtering;
+
+namespace ParquetNeo;
 
 /// <summary>A column a condition is put on; see <see cref="ParquetFilter.Column(string[])"/>.</summary>
 public sealed class FilterColumn

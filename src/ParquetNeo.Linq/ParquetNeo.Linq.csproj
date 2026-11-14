@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    LINQ over Parquet files: it reads expression trees and builds types at run time, so, unlike the rest of the library, it is
+    neither trimming nor Native AOT safe.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ParquetNeo.Serialization\ParquetNeo.Serialization.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ParquetNeo.Linq.Tests" />
+  </ItemGroup>
+
+</Project>
