@@ -41,9 +41,12 @@ Read the rows back with `ParquetSerializer.Deserialize<Person>(stream)`.
 By default the serializer finds out how a type maps to columns by reflection and compiles that into code the first time the type
 is used, which neither trimming nor Native AOT allows. Put `[ParquetSerializable]` on a type (or, for a type you do not own,
 `[assembly: ParquetSerializable(typeof(TheirType))]`) and the source generator writes the mapping when you build, so nothing is
-looked at or compiled at run time; the serializer is called as before. The generator handles types whose properties are all single
-columns (numbers, strings, dates, `Guid`, enums, byte arrays and their nullable forms); for any other type it reports a warning and
-the type keeps working through reflection. In a Native AOT program a type with no generated mapping is refused with an explanation.
+looked at or compiled at run time; the serializer is called as before. The generator handles properties that are single columns
+(numbers, strings, dates, `Guid`, enums, byte arrays and their nullable forms), objects and structs (nested to any depth), and
+arrays, lists, sets and dictionaries of any of them. For a type it cannot map yet (one built by a constructor with parameters, so a
+record with a primary constructor, or one with a property of a type that is not stored as columns) it reports a warning and the type
+keeps working through reflection; a type it can write but not read gets a warning of its own. In a Native AOT program a type with
+no generated mapping is refused with an explanation.
 
 ### Low-level API
 

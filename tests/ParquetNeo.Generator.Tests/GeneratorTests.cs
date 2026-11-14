@@ -6,6 +6,12 @@ public class GeneratorTests
 
     /// <param name="source">The code of the sample, which is in the namespace <c>Sample</c>; one line comes before it.</param>
     /// <param name="assemblyAttributes">Attributes of the assembly, which come before everything else.</param>
+    private static string Between(string text, string from, string to)
+    {
+        int start = text.IndexOf(from, StringComparison.Ordinal);
+        return text.Substring(start, text.IndexOf(to, start + from.Length, StringComparison.Ordinal) - start);
+    }
+
     private static GeneratorRun Run(string source, string assemblyAttributes = "") =>
         GeneratorRun.Of(Usings + assemblyAttributes + "namespace Sample;\n" + source);
 
@@ -18,9 +24,9 @@ public class GeneratorTests
         await Assert.That(run.CompileErrors).IsEmpty();
         await Assert.That(run.Generated!).Contains("RegisterWrite<global::Sample.Order>");
         await Assert.That(run.Generated!).Contains("RegisterRead<global::Sample.Order>");
-        await Assert.That(run.Generated!).Contains(".Column<long>(\"Id\", \"Property 'Order.Id'\", optional: false)");
-        await Assert.That(run.Generated!).Contains(".Column<string>(\"Name\", \"Property 'Order.Name'\", optional: true)");
-        await Assert.That(run.Generated!).Contains(".Column<int>(\"Count\", \"Property 'Order.Count'\", optional: true)");
+        await Assert.That(run.Generated!).Contains(".Leaf<long>(\"Id\", \"Property 'Order.Id'\", optional: false)");
+        await Assert.That(run.Generated!).Contains(".Leaf<string>(\"Name\", \"Property 'Order.Name'\", optional: true)");
+        await Assert.That(run.Generated!).Contains(".Leaf<int>(\"Count\", \"Property 'Order.Count'\", optional: true)");
     }
 
     [Test]
@@ -40,7 +46,7 @@ public class GeneratorTests
 
         await Assert.That(annotated.Generated!).Contains("\"Required\", \"Property 'A.Required'\", optional: false");
         await Assert.That(annotated.Generated!).Contains("\"Optional\", \"Property 'A.Optional'\", optional: true");
-        await Assert.That(annotated.Generated!).Contains(".Column<byte[]>(\"Bytes\", \"Property 'A.Bytes'\", optional: false)");
+        await Assert.That(annotated.Generated!).Contains(".Leaf<byte[]>(\"Bytes\", \"Property 'A.Bytes'\", optional: false)");
         await Assert.That(oblivious.Generated!).Contains("\"Text\", \"Property 'B.Text'\", optional: true");
     }
 
@@ -60,7 +66,7 @@ public class Base { public int FromBase { get; set; } }
 
         string code = run.Generated!;
         var names = new[] { "\"First\"", "\"FromBase\"", "\"Third\"", "\"Fourth\"", "\"second\"" };
-        int[] positions = names.Select(n => code.IndexOf(".Column<int>(" + n, StringComparison.Ordinal)).ToArray();
+        int[] positions = names.Select(n => code.IndexOf(".Leaf<int>(" + n, StringComparison.Ordinal)).ToArray();
 
         await Assert.That(positions.All(p => p >= 0)).IsTrue();
         await Assert.That(positions.SequenceEqual(positions.OrderBy(p => p))).IsTrue();
@@ -74,15 +80,15 @@ public class Base { public int FromBase { get; set; } }
         var run = Run("[ParquetSerializable] public class Row { public int Both { get; set; } public int WriteOnly { get; } = 1; public int Initialized { get; init; } public int Private { get; private set; } }");
 
         string code = run.Generated!;
-        string read = code.Substring(code.IndexOf("CreateRead0()", StringComparison.Ordinal) + 1);
-        string write = code.Substring(code.IndexOf("CreateWrite0()", StringComparison.Ordinal), code.IndexOf("CreateRead0()", StringComparison.Ordinal) - code.IndexOf("CreateWrite0()", StringComparison.Ordinal));
+        string write = Between(code, "Properties0<TRow>", "Shred0(");
+        string read = Between(code, "ReadProperties0<TRow>", "Assemble0(") + Between(code, "Assemble0(", "}");
 
         await Assert.That(write).Contains("WriteOnly");
         await Assert.That(write).Contains("Private");
-        await Assert.That(read).Contains("Both = ");
-        await Assert.That(read).Contains("Initialized = ");
+        await Assert.That(read).Contains("Both");
+        await Assert.That(read).Contains("Initialized");
         await Assert.That(read).DoesNotContain("WriteOnly");
-        await Assert.That(read).DoesNotContain("Private = ");
+        await Assert.That(read).DoesNotContain("Private");
         await Assert.That(run.CompileErrors).IsEmpty();
     }
 
@@ -92,8 +98,8 @@ public class Base { public int FromBase { get; set; } }
         var run = Run("public enum Color { Red } [ParquetSerializable] public class Row { public Color Main { get; set; } public Color? Other { get; set; } }");
 
         await Assert.That(run.Generated!).Contains("ColumnTypeRegistry.RegisterEnum<global::Sample.Color>()");
-        await Assert.That(run.Generated!).Contains(".Column<global::Sample.Color>(\"Main\"");
-        await Assert.That(run.Generated!).Contains(".Column<global::Sample.Color>(\"Other\"");
+        await Assert.That(run.Generated!).Contains(".Leaf<global::Sample.Color>(\"Main\"");
+        await Assert.That(run.Generated!).Contains(".Leaf<global::Sample.Color>(\"Other\"");
         await Assert.That(run.CompileErrors).IsEmpty();
     }
 
@@ -161,16 +167,23 @@ public class Base { public int FromBase { get; set; } }
     }
 
     [Test]
-    [Arguments("public class Inner { public int X { get; set; } } [ParquetSerializable] public class Row { public Inner Child { get; set; } = new(); }", "objects and collections")]
-    [Arguments("[ParquetSerializable] public class Row { public List<int> Values { get; set; } = new(); }", "objects and collections")]
-    [Arguments("[ParquetSerializable] public class Row { public int[] Values { get; set; } = []; }", "objects and collections")]
     [Arguments("[ParquetSerializable] public class Row { [ParquetDecimal(10, 2)] public int Count { get; set; } }", "ParquetDecimalAttribute")]
     [Arguments("[ParquetSerializable] public class Row { [ParquetTimestamp] public TimeOnly Clock { get; set; } }", "ParquetTimestampAttribute")]
     [Arguments("[ParquetSerializable] public class Row { [ParquetDecimal(40, 2)] public decimal Money { get; set; } }", "not valid")]
+    [Arguments("[ParquetSerializable] public class Row { [ParquetDecimal(10, 2)] public List<int> Values { get; set; } = new(); }", "ParquetDecimalAttribute")]
+    [Arguments("public class Inner { public int X { get; set; } } [ParquetSerializable] public class Row { [ParquetDecimal(10, 2)] public Inner Child { get; set; } = new(); }", "ParquetDecimalAttribute")]
+    [Arguments("[ParquetSerializable] public class Row { [ParquetDecimal(10, 2)] public Dictionary<string, int> Values { get; set; } = new(); }", "none of what it is made of")]
     [Arguments("[ParquetSerializable] public class Row { public int Value { get; set; } [ParquetColumn(\"Value\")] public int Other { get; set; } }", "column named 'Value'")]
     [Arguments("[ParquetSerializable] public class Row { private int Hidden { get; set; } }", "no public properties")]
     [Arguments("[ParquetSerializable] public class Row<T> { public int Value { get; set; } }", "generic")]
-    [Arguments("[ParquetSerializable] public class Row { public object Anything { get; set; } = new(); }", "objects and collections")]
+    [Arguments("[ParquetSerializable] public class Row { public object Anything { get; set; } = new(); }", "cannot be written as a column")]
+    [Arguments("[ParquetSerializable] public class Row { public TimeSpan Span { get; set; } }", "cannot be written as a column")]
+    [Arguments("[ParquetSerializable] public class Row { public int[,] Grid { get; set; } = new int[0, 0]; }", "cannot be written as a column")]
+    [Arguments("[ParquetSerializable] public class Row { public Dictionary<int?, int> Values { get; set; } = new(); }", "keys of type")]
+    [Arguments("[ParquetSerializable] public class Row { public System.Collections.Immutable.ImmutableArray<int> Values { get; set; } }", "a collection that is a struct")]
+    [Arguments("public class Node { public Node? Next { get; set; } public int Value { get; set; } } [ParquetSerializable] public class Row { public Node Head { get; set; } = new(); }", "contains itself")]
+    [Arguments("public class Empty { } [ParquetSerializable] public class Row { public Empty Nothing { get; set; } = new(); }", "no public properties")]
+    [Arguments("public class Inner { public object Hidden { get; set; } = new(); } [ParquetSerializable] public class Row { public List<Inner> Items { get; set; } = new(); }", "cannot be written as a column")]
     public async Task ATypeThatCannotBeMapped_IsLeftToReflection_WithAWarningThatSaysWhy(string source, string reason)
     {
         var run = Run(source);
@@ -179,6 +192,128 @@ public class Base { public int FromBase { get; set; } }
         await Assert.That(run.ReportedIds).IsEquivalentTo(new[] { "PNEO001" });
         await Assert.That(run.Reported[0].GetMessage()).Contains(reason);
         await Assert.That(run.Reported[0].Severity).IsEqualTo(Microsoft.CodeAnalysis.DiagnosticSeverity.Warning);
+    }
+
+    [Test]
+    public async Task ObjectsInsideARow_AreDescribedOnceEach_AndRegisteredWithTheirColumns()
+    {
+        var run = Run(@"
+public class Place { public string Street { get; set; } = """"; public int? Zip { get; set; } }
+public struct Point { public int X { get; set; } }
+[ParquetSerializable] public class Row
+{
+    public Place Home { get; set; } = new();
+    public Place? Work { get; set; }
+    public Point Where { get; set; }
+    public Point? Spot { get; set; }
+}");
+
+        string code = run.Generated!;
+        await Assert.That(run.ReportedIds).IsEmpty();
+        await Assert.That(run.CompileErrors).IsEmpty();
+        await Assert.That(code.Split("private static void Describe").Length - 1).IsEqualTo(6);
+        await Assert.That(code).Contains("optional: false);");
+        await Assert.That(code).Contains(", \"Work\", \"Property 'Row.Work'\", optional: true)");
+        await Assert.That(code).Contains("sink.Child<global::Sample.Point>(");
+        await Assert.That(code).Contains(".GetValueOrDefault(), row.Spot.HasValue)");
+        await Assert.That(code).Contains("source.TryReadChild<global::Sample.Place>(");
+    }
+
+    [Test]
+    public async Task Collections_AreDescribedByTheirElements_WhateverTheKindOfCollection()
+    {
+        var run = Run(@"
+public class Place { public int Zip { get; set; } }
+public class Names : List<string> { }
+[ParquetSerializable] public class Row
+{
+    public List<string> Tags { get; set; } = new();
+    public string[] Codes { get; set; } = new string[0];
+    public List<int?> Scores { get; set; } = new();
+    public HashSet<string> Labels { get; set; } = new();
+    public ISet<int> Numbers { get; set; } = new HashSet<int>();
+    public IReadOnlyList<Place> Places { get; set; } = new List<Place>();
+    public Names Team { get; set; } = new();
+    public List<List<int>> Matrix { get; set; } = new();
+}");
+
+        string code = run.Generated!;
+        await Assert.That(run.ReportedIds).IsEmpty();
+        await Assert.That(run.CompileErrors).IsEmpty();
+        await Assert.That(code).Contains("BeginList<global::System.Collections.Generic.List<string>, string>(\"Tags\"");
+        await Assert.That(code).Contains("BeginList<string[], string>(\"Codes\"");
+        await Assert.That(code).Contains("BeginNullableList<global::System.Collections.Generic.List<int?>, int>(\"Scores\"");
+        await Assert.That(code).Contains("BeginList<global::System.Collections.Generic.List<global::System.Collections.Generic.List<int>>, global::System.Collections.Generic.List<int>>(\"Matrix\"");
+
+        // Only what is not made from the elements read needs a function that creates it.
+        await Assert.That(code).Contains("create: static () => new global::System.Collections.Generic.HashSet<string>()");
+        await Assert.That(code).Contains("create: static () => new global::System.Collections.Generic.HashSet<int>()");
+        await Assert.That(code).Contains("create: static () => new global::Sample.Names()");
+        await Assert.That(code.Split("create: ").Length - 1).IsEqualTo(3);
+    }
+
+    [Test]
+    public async Task Dictionaries_AreDescribedByTheirKeysAndValues()
+    {
+        var run = Run(@"
+[ParquetSerializable] public class Row
+{
+    public Dictionary<string, int> Counts { get; set; } = new();
+    public IDictionary<int, List<string>> Groups { get; set; } = new Dictionary<int, List<string>>();
+    public IReadOnlyDictionary<string, int?> Optionals { get; set; } = new Dictionary<string, int?>();
+}");
+
+        string code = run.Generated!;
+        await Assert.That(run.ReportedIds).IsEmpty();
+        await Assert.That(run.CompileErrors).IsEmpty();
+        await Assert.That(code).Contains("BeginMap<global::System.Collections.Generic.Dictionary<string, int>, string, int>(\"Counts\"");
+        await Assert.That(code).Contains("BeginMapOfNullable<global::System.Collections.Generic.IReadOnlyDictionary<string, int?>, string, int>(\"Optionals\"");
+        await Assert.That(code).Contains("create: static () => new global::System.Collections.Generic.Dictionary<string, int?>()");
+    }
+
+    [Test]
+    public async Task AnAttributeOnACollection_AdjustsTheColumnsOfItsElements()
+    {
+        var run = Run("[ParquetSerializable] public class Row { [ParquetDecimal(10, 2)] public List<decimal> Amounts { get; set; } = new(); [ParquetDecimal(8, 1)] public Dictionary<string, decimal> Prices { get; set; } = new(); }");
+
+        string code = run.Generated!;
+        await Assert.That(run.ReportedIds).IsEmpty();
+        await Assert.That(code).Contains("Leaf<decimal>(null, null, optional: false, settings: new global::ParquetNeo.ColumnTypes.ColumnSettings { Precision = 10, Scale = 2 })");
+        await Assert.That(code).Contains("Leaf<decimal>(null, null, optional: false, settings: new global::ParquetNeo.ColumnTypes.ColumnSettings { Precision = 8, Scale = 1 })");
+        await Assert.That(run.CompileErrors).IsEmpty();
+    }
+
+    [Test]
+    public async Task AnObjectThatCannotBeCreated_MakesTheRowWriteOnly()
+    {
+        var run = Run("public class Place { public Place(int zip) { Zip = zip; } public int Zip { get; set; } } [ParquetSerializable] public class Row { public Place Home { get; set; } = new(1); }");
+
+        await Assert.That(run.ReportedIds).IsEquivalentTo(new[] { "PNEO002" });
+        await Assert.That(run.Reported[0].GetMessage()).Contains("Place has no public constructor without parameters");
+        await Assert.That(run.Generated!).Contains("RegisterWrite<global::Sample.Row>");
+        await Assert.That(run.Generated!).DoesNotContain("RegisterRead");
+        await Assert.That(run.CompileErrors).IsEmpty();
+    }
+
+    [Test]
+    public async Task ACollectionThatCannotBeCreated_MakesTheRowWriteOnly()
+    {
+        var run = Run("public interface IMine : IEnumerable<int> { } [ParquetSerializable] public class Row { public IMine Values { get; set; } = null!; }");
+
+        await Assert.That(run.ReportedIds).IsEquivalentTo(new[] { "PNEO002" });
+        await Assert.That(run.Reported[0].GetMessage()).Contains("cannot be created");
+        await Assert.That(run.Generated!).DoesNotContain("RegisterRead");
+        await Assert.That(run.CompileErrors).IsEmpty();
+    }
+
+    [Test]
+    public async Task AnObjectUsedByTwoRows_IsDescribedOnce()
+    {
+        var run = Run("public class Place { public int Zip { get; set; } } [ParquetSerializable] public class A { public Place P { get; set; } = new(); } [ParquetSerializable] public class B { public List<Place> Ps { get; set; } = new(); }");
+
+        await Assert.That(run.CompileErrors).IsEmpty();
+        await Assert.That(run.Generated!.Split("BeginObject<global::Sample.Place>").Length - 1).IsEqualTo(2);
+        await Assert.That(run.Generated!.Split("private static void Shred").Length - 1).IsEqualTo(3);
     }
 
     [Test]
@@ -194,7 +329,7 @@ public class Base { public int FromBase { get; set; } }
     [Test]
     public async Task OneBadTypeDoesNotStopTheOthers()
     {
-        var run = Run("[ParquetSerializable] public class Good { public int Value { get; set; } } [ParquetSerializable] public class Bad { public List<int> Values { get; set; } = new(); }");
+        var run = Run("[ParquetSerializable] public class Good { public int Value { get; set; } } [ParquetSerializable] public class Bad { public object Values { get; set; } = new(); }");
 
         await Assert.That(run.ReportedIds).IsEquivalentTo(new[] { "PNEO001" });
         await Assert.That(run.Generated!).Contains("RegisterWrite<global::Sample.Good>");
@@ -204,7 +339,7 @@ public class Base { public int FromBase { get; set; } }
     [Test]
     public async Task TheWarningIsAtTheAttribute()
     {
-        var run = Run("[ParquetSerializable] public class Row { public List<int> Values { get; set; } = new(); }");
+        var run = Run("[ParquetSerializable] public class Row { public object Values { get; set; } = new(); }");
 
         var place = run.Reported[0].Location.GetLineSpan();
 

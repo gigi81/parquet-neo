@@ -18,6 +18,10 @@ internal abstract class Assembler(int firstColumn, int columnCount, string descr
 
     /// <summary>Matches the part to a node of the file, or to nothing when the file lacks it, and checks that the node fits.</summary>
     /// <exception cref="Exceptions.SchemaMismatchException">The node cannot be read as the part.</exception>
+    /// <summary>The property of an object that has this part as its value, which has no <see cref="System.Reflection.PropertyInfo"/> when the code that sets it was generated.</summary>
+    /// <param name="slot">The index of the property among those of the object.</param>
+    public abstract IPropertyAssembler CreateProperty(string name, string description, bool optional, int slot);
+
     public abstract void Bind(SchemaNode? file, ReadBinder binder);
 
     /// <summary>

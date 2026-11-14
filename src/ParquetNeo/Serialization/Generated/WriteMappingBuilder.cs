@@ -6,48 +6,122 @@ using ParquetNeo.Serialization.Shredders;
 namespace ParquetNeo.Serialization.Generated;
 
 /// <summary>
-/// Describes the columns a row type is written as, and then takes the code that gives the values of a row to them. What the source
+/// Describes how a row type is written as columns, and gets the code that gives the values of each object to them. What the source
 /// generator writes for a type uses it, and nothing at run time looks at the type: no reflection, and no code is compiled. Not for use in
 /// code you write yourself.
 /// </summary>
+/// <remarks>
+/// The properties are described in the order of their columns, depth first: <see cref="Leaf{TValue}"/> for one that is a column of its
+/// own, and for an object, a collection or a dictionary a Begin call, what is inside it, and <see cref="End"/>. In a collection the
+/// element is described, and in a dictionary the key and then the value; they have no names.
+/// </remarks>
 public sealed class WriteMappingBuilder<TRow>
 {
-    private readonly List<PropertyShredder> _properties = [];
-    private readonly List<LeafInfo> _columns = [];
-    private readonly List<string> _descriptions = [];
+    private readonly List<LeafInfo> _leaves = [];
+    private readonly Stack<WriteScope> _scopes = new();
 
-    /// <summary>Adds the next column, in the order of the numbers the code passed to <see cref="RowSink"/> uses.</summary>
-    /// <param name="name">The name of the column in the file.</param>
-    /// <param name="description">What the column is, for messages: "Property 'Order.Id'".</param>
-    public WriteMappingBuilder<TRow> Column<TValue>(string name, string description, bool optional, ColumnSettings? settings = null, ParquetEncoding? encoding = null, DictionarySettings? dictionary = null)
+    /// <param name="shred">Gives the properties of a row to what was described for them.</param>
+    public WriteMappingBuilder(ShredRow<TRow> shred)
     {
-        ArgumentNullException.ThrowIfNull(name);
-        ArgumentNullException.ThrowIfNull(description);
+        ArgumentNullException.ThrowIfNull(shred);
+        _scopes.Push(new ObjectWriteScope<TRow>(name: null, path: "", $"Row type '{typeof(TRow).Name}'", optional: false, new Position(0, 0), firstColumn: 0, shred));
+    }
+
+    /// <summary>Describes a property, or an element, a key or a value, that is a column of its own.</summary>
+    /// <param name="name">The name of the column in the file; null for an element, a key or a value.</param>
+    /// <param name="description">What it is, for messages: "Property 'Order.Id'"; null for an element, a key or a value.</param>
+    public WriteMappingBuilder<TRow> Leaf<TValue>(string? name, string? description, bool optional, ColumnSettings? settings = null, ParquetEncoding? encoding = null, DictionarySettings? dictionary = null)
+    {
+        var scope = _scopes.Peek();
+        string path = scope.ChildPath(name);
+        string described = scope.ChildDescription(description);
+        var position = scope.ChildPosition;
         var type = ColumnTypeRegistry.Get<TValue>().Configure(settings ?? new ColumnSettings());
-        _properties.Add(new PropertyShredder<TValue>(name, new LeafShredder<TValue>(_columns.Count, optional, type, description), property: null, nullable: false));
-        _columns.Add(new LeafInfo(name, encoding, dictionary, capacity => new LeafBuffer<TValue>(optional, hasRepetitionLevels: false, type, capacity)));
-        _descriptions.Add(description);
+        bool definitionLevels = (optional ? position.Definition + 1 : position.Definition) > 0;
+        bool repetitionLevels = position.Repetition > 0;
+        int column = _leaves.Count;
+        _leaves.Add(new LeafInfo(path, encoding, dictionary, capacity => new LeafBuffer<TValue>(definitionLevels, repetitionLevels, type, capacity)));
+        scope.Accept(name, new LeafShredder<TValue>(column, optional, type, described));
         return this;
     }
 
-    /// <param name="shred">Gives the values of a row to the columns.</param>
-    /// <exception cref="InvalidOperationException">No column was added.</exception>
-    public WriteMapping<TRow> Build(ShredRow<TRow> shred)
+    /// <summary>Begins describing a property, element, key or value that is an object, until <see cref="End"/>.</summary>
+    /// <param name="shred">Gives the properties of the object to what is described inside it.</param>
+    public WriteMappingBuilder<TRow> BeginObject<TValue>(string? name, string? description, bool optional, ShredRow<TValue> shred)
     {
         ArgumentNullException.ThrowIfNull(shred);
-        if (_columns.Count == 0)
+        var parent = _scopes.Peek();
+        _scopes.Push(new ObjectWriteScope<TValue>(name, parent.ChildPath(name), parent.ChildDescription(description), optional, parent.ChildPosition, _leaves.Count, shred));
+        return this;
+    }
+
+    /// <summary>Begins describing a collection whose elements cannot be null, until <see cref="End"/>, with the element described inside.</summary>
+    public WriteMappingBuilder<TRow> BeginList<TCollection, TElement>(string? name, string? description, bool optional)
+        where TCollection : class, IEnumerable<TElement>
+    {
+        var parent = _scopes.Peek();
+        _scopes.Push(new ListWriteScope<TCollection, TElement, TElement>(name, parent.ChildPath(name), parent.ChildDescription(description), optional, parent.ChildPosition, _leaves.Count, Getters.DirectItem<TElement>()));
+        return this;
+    }
+
+    /// <summary>Begins describing a collection of <see cref="Nullable{T}"/>s, until <see cref="End"/>, with the element described inside.</summary>
+    public WriteMappingBuilder<TRow> BeginNullableList<TCollection, TElement>(string? name, string? description, bool optional)
+        where TCollection : class, IEnumerable<TElement?>
+        where TElement : struct
+    {
+        var parent = _scopes.Peek();
+        _scopes.Push(new ListWriteScope<TCollection, TElement?, TElement>(name, parent.ChildPath(name), parent.ChildDescription(description), optional, parent.ChildPosition, _leaves.Count, Getters.NullableItem<TElement>()));
+        return this;
+    }
+
+    /// <summary>Begins describing a dictionary, until <see cref="End"/>, with the key and then the value described inside.</summary>
+    public WriteMappingBuilder<TRow> BeginMap<TMap, TKey, TValue>(string? name, string? description, bool optional)
+        where TMap : class, IEnumerable<KeyValuePair<TKey, TValue>>
+        where TKey : notnull
+    {
+        var parent = _scopes.Peek();
+        _scopes.Push(new MapWriteScope<TMap, TKey, TValue, TValue>(name, parent.ChildPath(name), parent.ChildDescription(description), optional, parent.ChildPosition, _leaves.Count, Getters.DirectItem<TValue>()));
+        return this;
+    }
+
+    /// <summary>Begins describing a dictionary whose values are <see cref="Nullable{T}"/>s, until <see cref="End"/>, with the key and then the value described inside.</summary>
+    public WriteMappingBuilder<TRow> BeginMapOfNullable<TMap, TKey, TValue>(string? name, string? description, bool optional)
+        where TMap : class, IEnumerable<KeyValuePair<TKey, TValue?>>
+        where TKey : notnull
+        where TValue : struct
+    {
+        var parent = _scopes.Peek();
+        _scopes.Push(new MapWriteScope<TMap, TKey, TValue?, TValue>(name, parent.ChildPath(name), parent.ChildDescription(description), optional, parent.ChildPosition, _leaves.Count, Getters.NullableItem<TValue>()));
+        return this;
+    }
+
+    /// <summary>Ends the object, collection or dictionary that was begun last.</summary>
+    public WriteMappingBuilder<TRow> End()
+    {
+        if (_scopes.Count < 2)
+        {
+            throw new InvalidOperationException("End was called with nothing begun.");
+        }
+
+        var scope = _scopes.Pop();
+        _scopes.Peek().Accept(scope.Name, scope.Finish(_leaves.Count - scope.FirstColumn));
+        return this;
+    }
+
+    /// <exception cref="InvalidOperationException">Something was begun and not ended, or no column was described.</exception>
+    public WriteMapping<TRow> Build()
+    {
+        if (_scopes.Count != 1)
+        {
+            throw new InvalidOperationException("Something was begun and not ended.");
+        }
+
+        if (_leaves.Count == 0)
         {
             throw new InvalidOperationException($"{typeof(TRow).Name} has no columns to write.");
         }
 
-        var descriptions = _descriptions.ToArray();
-        var root = new StructShredder<TRow>(
-            optional: false,
-            firstColumn: 0,
-            _columns.Count,
-            $"Row type '{typeof(TRow).Name}'",
-            _properties.ToArray(),
-            (row, definition, repetition, buffers) => shred(row, new RowSink(buffers, descriptions, definition, repetition)));
-        return new WriteMapping<TRow>(new RowModel<TRow>(root, _columns.ToArray()));
+        var root = (StructShredder<TRow>)_scopes.Peek().Finish(_leaves.Count);
+        return new WriteMapping<TRow>(new RowModel<TRow>(root, _leaves.ToArray()));
     }
 }

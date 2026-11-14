@@ -52,7 +52,8 @@ namespace ParquetNeo.Generator
 
         private static void Emit(SourceProductionContext output, ImmutableArray<EquatableArray<AnalysisResult>> all)
         {
-            var models = new SortedDictionary<string, MappingModel>(System.StringComparer.Ordinal);
+            var roots = new SortedDictionary<string, MappingModel>(System.StringComparer.Ordinal);
+            var objects = new Dictionary<string, ObjectModel>(System.StringComparer.Ordinal);
             foreach (var result in all.SelectMany(group => group))
             {
                 foreach (var diagnostic in result.Diagnostics)
@@ -60,15 +61,21 @@ namespace ParquetNeo.Generator
                     output.ReportDiagnostic(diagnostic.ToDiagnostic());
                 }
 
-                if (result.Model is { } model && !models.ContainsKey(model.TypeName))
+                if (result.Model is { } model && !roots.ContainsKey(model.Type))
                 {
-                    models.Add(model.TypeName, model);
+                    roots.Add(model.Type, model);
+                    foreach (var type in model.Objects.Where(type => !objects.ContainsKey(type.Type)))
+                    {
+                        objects.Add(type.Type, type);
+                    }
                 }
             }
 
-            if (models.Count > 0)
+            if (roots.Count > 0)
             {
-                output.AddSource("ParquetNeo.Mappings.g.cs", SourceText.From(MappingWriter.Write(models.Values.ToList()), Encoding.UTF8));
+                var rootObjects = roots.Values.Select(model => objects[model.Type]).ToList();
+                string code = MappingWriter.Write(rootObjects, objects.Values.ToList());
+                output.AddSource("ParquetNeo.Mappings.g.cs", SourceText.From(code, Encoding.UTF8));
             }
         }
     }

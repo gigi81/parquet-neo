@@ -8,8 +8,9 @@ namespace ParquetNeo.DataModel;
 /// safe with trimming or Native AOT.
 /// </summary>
 /// <remarks>
-/// The same properties are columns as without it, with the same attributes. A type the generator cannot map yet (a property that
-/// is an object or a collection, or a type built by a constructor with parameters) gets a warning and is left to reflection.
+/// The same properties are columns as without it, with the same attributes; the objects, collections and dictionaries inside the type
+/// need no attribute of their own. A type the generator cannot map yet (a type built by a constructor with parameters, or one with a
+/// property that is not stored as columns) gets a warning and is left to reflection.
 /// </remarks>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
 public sealed class ParquetSerializableAttribute : Attribute

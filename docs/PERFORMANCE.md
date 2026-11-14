@@ -258,6 +258,25 @@ With a destination that takes no time the gain comes from the pooled staging (97
 overlap: a file of a single row group has nothing to overlap, so `RowGroupSize` should be a fraction of the rows for a slow
 destination. `AsyncWriteComparison` reproduces it with BenchmarkDotNet.
 
+### Generated mappings
+
+`[ParquetSerializable]` (step 14) gives a type a mapping written at build time, for trimming and Native AOT. It must not cost time
+at run time, which `GeneratedMappingWriteBenchmarks` and `GeneratedMappingReadBenchmarks` check: the same 100,000 rows as a type
+with a generated mapping and as a twin left to reflection, flat (eight columns of numbers, text, a date, an enum) and nested (objects,
+lists, an array and a dictionary inside), to a memory stream and back. Linux x64, one run:
+
+| | reflection | generated | ratio |
+|---|---:|---:|---:|
+| write, flat | 24.0 ms | 25.4 ms | 1.06 |
+| write, nested | 70.0 ms | 68.3 ms | 0.98 |
+| read, flat | 18.4 ms | 17.3 ms | 0.94 |
+| read, nested | 116.1 ms | 116.0 ms | 1.00 |
+
+The differences are inside the error of the runs (the standard deviation of the nested read is 20 ms, since it allocates 92 MB of
+rows and the time depends on when the garbage collector runs), and the allocation is the same to the byte. The generated code is the
+same straight-line code the expression compiler made, so parity is the expected result; what the generated mapping removes is the
+reflection and the compilation when a type is first used, and the need for either with Native AOT.
+
 ## Not done yet
 
 Left for a follow-up, with what is known so far:
