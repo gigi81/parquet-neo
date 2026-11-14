@@ -88,6 +88,39 @@ footer, and no more.
 All three are set with `RangeReadStreamOptions` (`TailSize`, `BlockSize`, `CachedBlocks`), which the storage classes take as their last argument.
 Make the blocks bigger for files read in long runs, and the tail bigger for files with a big footer (thousands of row groups and columns).
 
+## How much was read
+
+A storage is paid for by the request and by the byte, so it is worth seeing what a query costs. `ReadStatistics` counts the objects that
+were opened, the listings, the requests made to the storage and the bytes they asked for.
+
+**For a dataset**, the statistics are a property of it, and they add up over its queries:
+
+```csharp
+var people = ParquetDataset.Open<Person>(storage, "people/2024/");
+
+people.ReadStatistics.Reset();
+var rows = people.Where(p => p.Id >= 1_000_000 && p.Id < 1_000_100).ToList();
+
+Console.WriteLine(people.ReadStatistics);   // 2,345,678 bytes in 41 requests, 12 objects opened, 1 listings
+```
+
+To measure one query, reset before it and read after it, with no other query of the dataset running (the counts are for the dataset, not for a query).
+`Explain()` reads the footers of the files to make its plan, which counts too.
+
+**For a single file, or for any code that reads a storage**, wrap the storage in a `MeteredStorage`:
+
+```csharp
+var metered = new MeteredStorage(storage);
+await using var stream = await metered.OpenReadAsync("people/2024/part-0.parquet");
+var rows = await ParquetSerializer.DeserializeAsync<Person>(stream, options);
+
+ReadStatisticsSnapshot read = metered.Statistics.Snapshot();   // an immutable copy: BytesRead, Requests, ObjectsOpened, Listings
+```
+
+The numbers are those of the network: a read that a kept block answers is not a request, and a request that gets more than the code asked for
+(a block, the end of the file) counts all its bytes. For the files of a disk, a request is a read of the file. The counts are safe to read while
+files are being read on several threads.
+
 ## Things to keep in mind
 
 - **Requests cost time and money.** A file is read with a handful of requests, plus one per column chunk of a row group that is read. Row

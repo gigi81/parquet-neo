@@ -13,13 +13,21 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
 
     public ParquetDatasetOptions Options { get; } = options;
 
+    /// <summary>What was read from the files and the storage by every query of the dataset.</summary>
+    public ReadStatistics Statistics { get; } = new();
+
+    private IParquetStorage? _metered;
+
+    /// <summary>What files are opened and listed through: the storage, or the disk, counting what is read from it.</summary>
+    private IParquetStorage Metered => _metered ??= new MeteredStorage(storage ?? new PathStorage(), Statistics);
+
     /// <summary>The files, in the order of their names.</summary>
     /// <exception cref="FileNotFoundException">The path is neither a file nor a directory.</exception>
     public IReadOnlyList<string> Files()
     {
         if (storage is not null)
         {
-            return StorageFiles(storage);
+            return StorageFiles(Metered);
         }
 
         if (File.Exists(Path))
@@ -38,8 +46,7 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
     }
 
     /// <summary>Opens a file of the list of <see cref="Files"/> for reading, from the disk or from the storage.</summary>
-    public Stream OpenFile(string file) =>
-        storage is null ? File.OpenRead(file) : storage.OpenReadAsync(file).AsTask().GetAwaiter().GetResult();
+    public Stream OpenFile(string file) => Metered.OpenReadAsync(file).AsTask().GetAwaiter().GetResult();
 
     /// <summary>The keys below the prefix that match the search pattern (and are not in a folder below it, when the dataset does not look there), in the order of their names.</summary>
     private List<string> StorageFiles(IParquetStorage source)
@@ -174,5 +181,15 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
 
             yield return enumerator.Current;
         }
+    }
+
+    /// <summary>The files of a disk, by their paths, to be counted like those of a storage.</summary>
+    private sealed class PathStorage : IParquetStorage
+    {
+        public IAsyncEnumerable<StorageObject> ListAsync(string prefix, CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException("The files of a disk are listed by the dataset.");
+
+        public ValueTask<Stream> OpenReadAsync(string key, CancellationToken cancellationToken = default) =>
+            ValueTask.FromResult<Stream>(File.OpenRead(key));
     }
 }

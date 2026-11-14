@@ -31,6 +31,9 @@ public abstract class RangeReadStream : Stream
         _cachedBlocks = options.CachedBlocks;
     }
 
+    /// <summary>Where the requests made to the storage are counted, when something is counting them (a <see cref="MeteredStorage"/>).</summary>
+    internal ReadStatistics? Statistics { get; set; }
+
     public override bool CanRead => true;
 
     public override bool CanSeek => true;
@@ -152,6 +155,7 @@ public abstract class RangeReadStream : Stream
                 throw EndedEarly(start + done);
             }
 
+            Statistics?.AddRequest(read);
             done += read;
         }
     }
