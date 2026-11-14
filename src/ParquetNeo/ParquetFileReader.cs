@@ -1,7 +1,9 @@
 using System.Buffers;
 using System.Buffers.Binary;
+using ParquetNeo.Core;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
+using ParquetNeo.Metadata.Headers;
 using ParquetNeo.Schema;
 
 namespace ParquetNeo;
@@ -87,20 +89,55 @@ public sealed class ParquetFileReader : IDisposable, IAsyncDisposable
     /// row groups that are kept.
     /// </summary>
     /// <exception cref="ArgumentException">The filter compares a column with a value of a type that does not suit the column.</exception>
-    public IReadOnlyList<int> GetMatchingRowGroups(ParquetFilter filter)
+    public IReadOnlyList<int> GetMatchingRowGroups(ParquetFilter filter) => GetMatchingRowGroups(filter, useBloomFilters: true);
+
+    /// <param name="useBloomFilters">Whether bloom filters, which are read from the stream, are used as well as the statistics.</param>
+    internal IReadOnlyList<int> GetMatchingRowGroups(ParquetFilter filter, bool useBloomFilters)
     {
         EnsureOpen();
         ArgumentNullException.ThrowIfNull(filter);
         var matching = new List<int>(RowGroupCount);
         for (int index = 0; index < RowGroupCount; index++)
         {
-            if (filter.MayMatch(Schema, Metadata.ColumnOrders, Metadata.RowGroups[index]))
+            if (filter.MayMatch(Schema, Metadata.ColumnOrders, Metadata.RowGroups[index], useBloomFilters ? ReadBloomFilter : null))
             {
                 matching.Add(index);
             }
         }
 
         return matching;
+    }
+
+    /// <summary>More than the header of a bloom filter takes: about a dozen bytes.</summary>
+    private const int BloomHeaderPrefetch = 64;
+
+    /// <summary>The bloom filter of a column chunk, or null when it has none or it cannot be read: a filter that cannot be used proves nothing, and is left alone.</summary>
+    internal BloomFilter? ReadBloomFilter(ColumnChunk chunk)
+    {
+        if (chunk.MetaData is not { BloomFilterOffset: { } offset } meta || offset < 4 || offset >= FileLength)
+        {
+            return null;
+        }
+
+        try
+        {
+            var prefix = new byte[(int)Math.Min(meta.BloomFilterLength ?? BloomHeaderPrefetch, Math.Min(BloomHeaderPrefetch, FileLength - offset))];
+            ReadAt(offset, prefix);
+            var header = BloomFilterHeader.Deserialize(prefix, out int headerLength);
+            long end = offset + headerLength + (long)header.NumBytes;
+            if (!header.IsSupported || header.NumBytes <= 0 || header.NumBytes > Options.MaxPageSize || end > FileLength)
+            {
+                return null;
+            }
+
+            var bits = new byte[header.NumBytes];
+            ReadAt(offset + headerLength, bits);
+            return BloomFilter.FromBytes(bits);
+        }
+        catch (ParquetException)
+        {
+            return null;
+        }
     }
 
     public void Dispose()

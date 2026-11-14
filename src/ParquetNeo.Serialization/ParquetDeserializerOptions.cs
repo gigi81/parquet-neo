@@ -12,5 +12,9 @@ public sealed record ParquetDeserializerOptions
     /// of the row groups that are read are all returned, whether they satisfy the condition or not, so filter them as well when the
     /// result must hold exactly. All the row groups are read when it is not set.
     /// </summary>
+    /// <remarks>
+    /// Equality conditions are also checked against the bloom filters of the columns, which the file may have, by the synchronous
+    /// methods; the asynchronous ones fetch only the byte ranges of the footer and of the columns they read, and check the statistics.
+    /// </remarks>
     public ParquetFilter? RowGroupFilter { get; init; }
 }

@@ -51,6 +51,24 @@ public sealed record ParquetWriterOptions
     public bool StatisticsEnabled { get; init; } = true;
 
     /// <summary>
+    /// Whether the header of every page carries the CRC-32 of the page as it is written (after compression), so that a reader can
+    /// tell that the bytes were damaged. Computing it costs about 1 second per GB of page bytes: noticeable (tens of percent) when
+    /// writing uncompressed pages, negligible next to a compression codec. Off by default.
+    /// </summary>
+    public bool WritePageChecksums { get; init; }
+
+    /// <summary>
+    /// The columns that get a bloom filter in every row group, keyed by column path with dots (<c>address.city</c>). A bloom
+    /// filter tells a reader that a value is certainly not in a row group (it is wrong the other way a small share of the time, see
+    /// <see cref="BloomFilterSettings.FalsePositiveRate"/>), which the minimum and the maximum cannot when the values are spread
+    /// widely, as ids and names are. Each takes room in the file, about a byte for every few different values. Hashing and counting
+    /// the values makes writing the column several times slower when the pages are not compressed, and little slower when they are.
+    /// Booleans and INT96 cannot have one.
+    /// </summary>
+    /// <exception cref="ArgumentException">Reported when the writer is created: a column that does not exist or cannot have a filter, or settings that make no sense.</exception>
+    public IReadOnlyDictionary<string, BloomFilterSettings>? ColumnBloomFilters { get; init; }
+
+    /// <summary>
     /// The longest minimum or maximum, in bytes, kept for string and binary columns. Longer ones are shortened to a
     /// bound (a prefix for a minimum, an increased prefix for a maximum) and marked as not exact. Defaults to 64.
     /// </summary>

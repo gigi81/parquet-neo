@@ -88,6 +88,8 @@ public sealed partial class ColumnWriter
     private int _plainPages;
     private readonly ParquetEncoding _valueEncoding; // for the pages that are not dictionary encoded
     private readonly bool _dataPageV2;
+    private readonly bool _checksums;
+    private readonly BloomFilterBuilder? _bloom;
     private int _pageRecords; // rows that start in the page being filled
     private int _pageNullCount;
     private int _levelRepetitionBytes; // of the page being flushed (data page v2 states the lengths of its level sections)
@@ -120,6 +122,8 @@ public sealed partial class ColumnWriter
         _statistics = StatisticsFactory.Create(column, options);
         _valueEncoding = ValueEncodingRules.For(column, options.ColumnEncodings);
         _dataPageV2 = options.DataPageVersion == DataPageVersion.V2;
+        _checksums = options.WritePageChecksums;
+        _bloom = BloomFilterBuilder.Create(column, options.ColumnBloomFilters);
         _buffers.Reset();
     }
 
@@ -420,6 +424,7 @@ public sealed partial class ColumnWriter
             pageStats.Add(new PageEncodingStats { PageType = _dataPageV2 ? PageType.DataPageV2 : PageType.DataPage, Encoding = _valueEncoding, Count = _plainPages });
         }
 
+        BloomFilter = _bloom?.Build();
         return new ColumnChunk
         {
             FileOffset = 0, // deprecated; 0 when no ColumnMetaData is written outside the footer
@@ -439,6 +444,9 @@ public sealed partial class ColumnWriter
             },
         };
     }
+
+    /// <summary>The bloom filter of the chunk, which the row group writes after its columns; null when the column has none. Available once the chunk is complete.</summary>
+    internal BloomFilter? BloomFilter { get; private set; }
 
     internal long TotalUncompressedSize => _totalUncompressed;
 
@@ -880,6 +888,7 @@ public sealed partial class ColumnWriter
         }
 
         var values = _buffers.Values.WrittenSpan;
+        _bloom?.Add(values);
         if (_valueEncoding != ParquetEncoding.Plain)
         {
             values = ConvertValues(values);
@@ -905,7 +914,8 @@ public sealed partial class ColumnWriter
         if (_codec.Id == CompressionCodec.Uncompressed)
         {
             // No copy needed: the three parts go straight to the stream.
-            int headerLength = WriteHeader(PageType.DataPage, _pageLevelCount, _valueEncoding, uncompressedSize, uncompressedSize);
+            int? crc = _checksums ? (int)Crc32.Append(Crc32.Append(Crc32.Compute(levelPrefix), levelData), values) : null;
+            int headerLength = WriteHeader(PageType.DataPage, _pageLevelCount, _valueEncoding, uncompressedSize, uncompressedSize, crc);
             _sink.Write(_buffers.Header.WrittenSpan);
             _sink.Write(levelPrefix);
             _sink.Write(levelData);
@@ -960,6 +970,7 @@ public sealed partial class ColumnWriter
     {
         _buffers.Values.ResetWrittenCount();
         _dictionary!.WritePlain(_buffers.Values);
+        _bloom?.Add(_buffers.Values.WrittenSpan);
         var dictionaryPage = BuildPage(PageType.DictionaryPage, _dictionary.Count, ParquetEncoding.Plain, default, default, _buffers.Values.WrittenSpan);
 
         _firstPageOffset = _dictionaryPageOffset = _sink.Position;
@@ -1017,7 +1028,15 @@ public sealed partial class ColumnWriter
             }
         }
 
-        int headerLength = WriteHeader(type, numValues, encoding, uncompressedSize, compressedSize);
+        int? crc = null;
+        if (_checksums)
+        {
+            crc = (int)(compressed is null
+                ? Crc32.Append(Crc32.Append(Crc32.Compute(levelPrefix), levelData), values)
+                : Crc32.Compute(compressed.AsSpan(0, compressedSize)));
+        }
+
+        int headerLength = WriteHeader(type, numValues, encoding, uncompressedSize, compressedSize, crc);
         byte[] page = pool.Rent(headerLength + compressedSize);
         _buffers.Header.WrittenSpan.CopyTo(page);
         if (compressed is null)
@@ -1049,7 +1068,13 @@ public sealed partial class ColumnWriter
 
         int uncompressedSize = levels.Length + values.Length;
         int compressedSize = levels.Length + storedLength;
-        int headerLength = WriteHeader(PageType.DataPage, numValues, encoding, uncompressedSize, compressedSize);
+        int? crc = null;
+        if (_checksums)
+        {
+            crc = (int)Crc32.Append(Crc32.Compute(levels), compressed is null ? values : compressed.AsSpan(0, storedLength));
+        }
+
+        int headerLength = WriteHeader(PageType.DataPage, numValues, encoding, uncompressedSize, compressedSize, crc);
         byte[] page = pool.Rent(headerLength + compressedSize);
         _buffers.Header.WrittenSpan.CopyTo(page);
         levels.CopyTo(page.AsSpan(headerLength));
@@ -1073,7 +1098,7 @@ public sealed partial class ColumnWriter
         ArrayPool<byte>.Shared.Return(page.Buffer);
     }
 
-    private int WriteHeader(PageType type, int numValues, ParquetEncoding encoding, int uncompressedSize, int compressedSize)
+    private int WriteHeader(PageType type, int numValues, ParquetEncoding encoding, int uncompressedSize, int compressedSize, int? crc = null)
     {
         _buffers.Header.ResetWrittenCount();
         var header = new PageHeader
@@ -1081,6 +1106,7 @@ public sealed partial class ColumnWriter
             Type = type,
             UncompressedPageSize = uncompressedSize,
             CompressedPageSize = compressedSize,
+            Crc = crc,
         };
 
         if (type == PageType.DictionaryPage)

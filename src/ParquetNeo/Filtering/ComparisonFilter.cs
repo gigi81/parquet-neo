@@ -1,3 +1,5 @@
+using ParquetNeo.Core;
+
 namespace ParquetNeo.Filtering;
 
 /// <summary>A column is compared with a value; a null is neither less nor equal nor greater.</summary>
@@ -32,7 +34,7 @@ internal sealed class ComparisonFilter(string[] path, ComparisonKind kind, objec
         bool exact = statistics?.IsMinExact == true && statistics.IsMaxExact == true;
         int lowToValue = low is null ? 0 : domain.Compare(low, key);
         int highToValue = high is null ? 0 : domain.Compare(high, key);
-        return kind switch
+        var outcome = kind switch
         {
             ComparisonKind.GreaterThan => Decide(none: high is not null && highToValue <= 0, all: low is not null && lowToValue > 0 && allHaveValues),
             ComparisonKind.GreaterThanOrEqual => Decide(none: high is not null && highToValue < 0, all: low is not null && lowToValue >= 0 && allHaveValues),
@@ -42,6 +44,24 @@ internal sealed class ComparisonFilter(string[] path, ComparisonKind kind, objec
                 none: (low is not null && lowToValue > 0) || (high is not null && highToValue < 0),
                 all: low is not null && high is not null && lowToValue == 0 && highToValue == 0 && exact && allHaveValues),
         };
+
+        // The statistics cannot rule out a value inside the range of the column; a bloom filter can.
+        return outcome != FilterOutcome.None && kind == ComparisonKind.Equal && IsCertainlyAbsent(column, domain, key) ? FilterOutcome.None : outcome;
+    }
+
+    /// <summary>Whether the bloom filter of the column chunk shows that no value is the one asked for.</summary>
+    private static bool IsCertainlyAbsent(ColumnInfo column, ValueDomain domain, object key)
+    {
+        var plain = domain.GetPlainValue(key, column.Column);
+        switch (plain.Kind)
+        {
+            case PlainValueKind.NotStorable:
+                return true;
+            case PlainValueKind.Bytes:
+                return column.GetBloomFilter() is { } filter && !filter.MightContain(BloomFilter.HashOf(plain.Bytes!));
+            default:
+                return false;
+        }
     }
 
     internal override void CollectColumns(List<IReadOnlyList<string>> paths) => paths.Add(path);

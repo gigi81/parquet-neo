@@ -1,3 +1,4 @@
+using ParquetNeo.Core;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
@@ -6,7 +7,8 @@ using ParquetNeo.Statistics;
 namespace ParquetNeo.Filtering;
 
 /// <summary>The row group a filter is evaluated for: finds its columns by path and keeps what it works out of them.</summary>
-internal sealed class FilterContext(ParquetSchema schema, IReadOnlyList<ColumnOrder>? columnOrders, RowGroup rowGroup)
+/// <param name="bloomFilters">Reads the bloom filter of a column chunk; null when filters are not to be read.</param>
+internal sealed class FilterContext(ParquetSchema schema, IReadOnlyList<ColumnOrder>? columnOrders, RowGroup rowGroup, Func<ColumnChunk, BloomFilter?>? bloomFilters = null)
 {
     private readonly Dictionary<string, ColumnInfo?> _columns = new(StringComparer.Ordinal);
 
@@ -23,7 +25,7 @@ internal sealed class FilterContext(ParquetSchema schema, IReadOnlyList<ColumnOr
         if (schema.FindColumn(path) is { } column && column.ColumnIndex < rowGroup.Columns.Count)
         {
             var chunk = rowGroup.Columns[column.ColumnIndex];
-            info = new ColumnInfo(column, ValueDomain.For(column), Decode(column, chunk), chunk.MetaData?.NumValues ?? 0);
+            info = new ColumnInfo(column, ValueDomain.For(column), Decode(column, chunk), chunk.MetaData?.NumValues ?? 0, bloomFilters is null ? null : () => bloomFilters(chunk));
         }
 
         _columns.Add(key, info);

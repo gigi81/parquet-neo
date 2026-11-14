@@ -1,3 +1,5 @@
+using ParquetNeo.Serialization;
+
 namespace ParquetNeo.Linq.Tests;
 
 /// <summary>What queries read of the dataset: which files and row groups are skipped, and which columns are read.</summary>
@@ -169,5 +171,40 @@ public class QueryPlanTests
     public async Task ExplainingAQueryThatIsNotOfADataset_IsAMistake()
     {
         await Assert.That(() => new[] { 1, 2 }.AsQueryable().Explain()).Throws<ArgumentException>();
+    }
+
+    [Test]
+    public async Task TheBloomFiltersOfTheFiles_SkipRowGroupsTheStatisticsCannot()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "parquet-neo-bloom-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        try
+        {
+            // The ids of a row group are spread over the whole range, so their minimum and maximum rule nothing out.
+            var rows = Enumerable.Range(0, 500).OrderBy(i => i % 5).ThenBy(i => i).Select(TestDataset.Make).ToList();
+            var options = new ParquetSerializerOptions
+            {
+                RowGroupSize = 100,
+                Writer = new ParquetWriterOptions { ColumnBloomFilters = new Dictionary<string, BloomFilterSettings> { ["Id"] = new() { FalsePositiveRate = 0.0001 } } },
+            };
+            using (var stream = File.Create(Path.Combine(directory, "spread.parquet")))
+            {
+                ParquetSerializer.Serialize(rows, stream, options);
+            }
+
+            var dataset = ParquetDataset.Open<Person>(directory);
+            var query = dataset.Where(p => p.Id == 233);
+
+            var plan = query.Explain();
+
+            await Assert.That(plan.RowGroups).IsEqualTo(5);
+            await Assert.That(plan.RowGroupsSkipped).IsEqualTo(4);
+            await Assert.That(query.Select(p => p.Id).ToList().Count(id => id == 233)).IsEqualTo(1);
+            await Assert.That(dataset.Where(p => p.Id == 1_000_000).Explain().FilesSkipped).IsEqualTo(1);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
     }
 }

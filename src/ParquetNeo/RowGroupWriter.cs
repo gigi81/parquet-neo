@@ -1,7 +1,9 @@
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Runtime.ExceptionServices;
 using ParquetNeo.Core;
 using ParquetNeo.Metadata;
+using ParquetNeo.Metadata.Headers;
 
 namespace ParquetNeo;
 
@@ -15,6 +17,7 @@ public sealed class RowGroupWriter : IDisposable
     private readonly ParquetFileWriter _file;
     private readonly int _ordinal;
     private readonly List<ColumnChunk> _chunks = new();
+    private readonly List<(ColumnMetaData Metadata, BloomFilter Filter)> _bloomFilters = [];
     private ColumnWriter? _current;
     private int _nextColumn;
     private long _rows = -1;
@@ -186,6 +189,7 @@ public sealed class RowGroupWriter : IDisposable
         }
 
         _closed = true;
+        WriteBloomFilters();
         _file.OnRowGroupClosed(new RowGroup
         {
             Columns = _chunks,
@@ -226,6 +230,22 @@ public sealed class RowGroupWriter : IDisposable
         _file.Abandon();
     }
 
+    /// <summary>Writes the bloom filters of the columns after the columns of the group, each as its header and its bits, and records where.</summary>
+    private void WriteBloomFilters()
+    {
+        foreach (var (metadata, filter) in _bloomFilters)
+        {
+            var header = new ArrayBufferWriter<byte>();
+            new BloomFilterHeader { NumBytes = filter.ByteCount }.Serialize(header);
+            var bits = new byte[filter.ByteCount];
+            filter.CopyTo(bits);
+            metadata.BloomFilterOffset = _file.Position;
+            _file.Write(header.WrittenSpan);
+            _file.Write(bits);
+            metadata.BloomFilterLength = header.WrittenCount + bits.Length;
+        }
+    }
+
     private void CompleteCurrent()
     {
         if (_current is null)
@@ -253,6 +273,11 @@ public sealed class RowGroupWriter : IDisposable
         }
 
         _chunks.Add(chunk);
+        if (column.BloomFilter is { } filter)
+        {
+            _bloomFilters.Add((chunk.MetaData!, filter));
+        }
+
         _totalUncompressed += column.TotalUncompressedSize;
         _totalCompressed += column.TotalCompressedSize;
     }

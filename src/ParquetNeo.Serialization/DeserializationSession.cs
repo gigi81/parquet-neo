@@ -19,10 +19,11 @@ internal sealed class DeserializationSession<TRow>
 
     /// <param name="filter">When there is one, the row groups it rules out by their statistics are left out of <see cref="RowGroups"/>.</param>
     /// <exception cref="Exceptions.SchemaMismatchException">The file does not have the columns the row type needs, or has them as other types.</exception>
-    public DeserializationSession(ParquetFileReader reader, ParquetFilter? filter = null)
+    /// <param name="useBloomFilters">Whether bloom filters are read from the stream to rule out row groups: not when only some byte ranges of it have been loaded.</param>
+    public DeserializationSession(ParquetFileReader reader, ParquetFilter? filter = null, bool useBloomFilters = true)
     {
         _reader = reader;
-        RowGroups = filter is null ? Enumerable.Range(0, reader.RowGroupCount).ToArray() : reader.GetMatchingRowGroups(filter);
+        RowGroups = filter is null ? Enumerable.Range(0, reader.RowGroupCount).ToArray() : reader.GetMatchingRowGroups(filter, useBloomFilters);
         RowCount = RowGroups.Sum(group => reader.Metadata.RowGroups[group].NumRows);
         _plan = _model.Bind(reader.Schema);
         _context = _model.CreateContext(_plan);
