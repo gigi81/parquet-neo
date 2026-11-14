@@ -45,6 +45,14 @@ jobs:
             echo "Line coverage (${{ matrix.os }}): $(awk "BEGIN { printf \"%.1f%%\", $rate * 100 }")" >> "$GITHUB_STEP_SUMMARY"
           done
 
+      - name: Upload coverage to Codecov
+        if: always() && runner.os == 'Linux'
+        uses: codecov/codecov-action@v7
+        with:
+          files: TestResults/*.cobertura.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v7

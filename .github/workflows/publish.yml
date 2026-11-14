@@ -45,7 +45,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write # to trade for a temporary nuget.org key
-      contents: write # for the release
     steps:
       - uses: actions/download-artifact@v8
         with:
@@ -68,10 +67,22 @@ jobs:
           dotnet nuget push "packages/*.snupkg" --source https://api.nuget.org/v3/index.json
           --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --skip-duplicate
 
+  release:
+    # Right after the packages are published: a GitHub release of the tag, with the packages and the notes of what changed since the last release.
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: packages
+          path: packages
+
       - name: Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           flags=""
           case "$GITHUB_REF_NAME" in *-*) flags="--prerelease" ;; esac
-          gh release create "$GITHUB_REF_NAME" packages/*.nupkg --repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --generate-notes $flags
+          gh release create "$GITHUB_REF_NAME" packages/*.nupkg packages/*.snupkg --repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --generate-notes $flags
