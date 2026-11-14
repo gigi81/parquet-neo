@@ -6,7 +6,7 @@
 [![Coverage](https://codecov.io/gh/gigi81/parquet-neo/branch/main/graph/badge.svg)](https://codecov.io/gh/gigi81/parquet-neo)
 [![Docs](https://img.shields.io/badge/docs-gigi81.github.io-blue)](https://gigi81.github.io/parquet-neo/)
 [![License: MIT](https://img.shields.io/github/license/gigi81/parquet-neo)](LICENSE.md)
-![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet)
+![.NET 10 | 11](https://img.shields.io/badge/.NET-10%20%7C%2011-512BD4?logo=dotnet)
 ![Native AOT](https://img.shields.io/badge/Native%20AOT-ready-brightgreen)
 
 A high-performance .NET library for reading and writing [Apache Parquet](https://parquet.apache.org/) files.
@@ -241,7 +241,7 @@ The format is specified at [parquet.apache.org](https://parquet.apache.org/docs/
 
 ## Building and testing
 
-Requires the .NET 10 SDK. The version of the packages comes from the latest git tag `v1.2.3` (MinVer): push such a tag and the
+Requires the .NET 11 SDK (and the .NET 10 runtime to run the tests of the `net10.0` build). The packages support `net10.0` and `net11.0`. The version of the packages comes from the latest git tag `v1.2.3` (MinVer): push such a tag and the
 `Publish` workflow tests, packs, checks the packages in a new Native AOT program and publishes them (nuget.org Trusted Publishing,
 so no API key). `build/verify-packages.sh <folder> <version>` makes that check locally.
 
