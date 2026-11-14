@@ -271,8 +271,9 @@ lists, an array and a dictionary inside), to a memory stream and back. Linux x64
 | write, nested | 70.0 ms | 68.3 ms | 0.98 |
 | read, flat | 18.4 ms | 17.3 ms | 0.94 |
 | read, nested | 116.1 ms | 116.0 ms | 1.00 |
+| read, flat record | 47.5 ms | 20.2 ms | 0.43 |
 
-The differences are inside the error of the runs (the standard deviation of the nested read is 20 ms, since it allocates 92 MB of
+The record row (the same eight columns, created by a constructor with parameters) is the exception, and the one place the generated code is faster: the reflection path holds the values in boxed slots until the constructor is called (35 MB allocated for 100,000 rows), where the generated code calls the constructor with the values straight from the columns (19 MB, the same as for a class). The other differences are inside the error of the runs (the standard deviation of the nested read is 20 ms, since it allocates 92 MB of
 rows and the time depends on when the garbage collector runs), and the allocation is the same to the byte. The generated code is the
 same straight-line code the expression compiler made, so parity is the expected result; what the generated mapping removes is the
 reflection and the compilation when a type is first used, and the need for either with Native AOT.
@@ -281,9 +282,10 @@ reflection and the compilation when a type is first used, and the need for eithe
 
 Left for a follow-up, with what is known so far:
 
-- **Rows built by a constructor.** Types that are created by a constructor with parameters (records, for example) still read through
-  the general path, which holds the values in boxed slots until the constructor is called; the compiled function could call the
-  constructor with the values straight from the columns.
+- **Rows built by a constructor, without a generated mapping.** Types that are created by a constructor with parameters (records,
+  for example) still read through the general path when they have no `[ParquetSerializable]`, which holds the values in boxed slots
+  until the constructor is called; a generated mapping calls the constructor with the values straight from the columns (see
+  Generated mappings), and the reflection path could do the same with a compiled function.
 - **Collections and dictionaries inside rows** are walked by their shredders and assemblers (a virtual call for each element); only
   the properties around them are compiled. Maps are still created empty and added to.
 - **Encoding strings further.** The dictionary encoded string column is still the slowest column to write (about 24 ms of the

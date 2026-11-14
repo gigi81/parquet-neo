@@ -131,6 +131,30 @@ foreach (var codec in new[] { CompressionCodec.Uncompressed, CompressionCodec.Gz
     }
 }
 
+// Records, which are created by their constructors.
+Invoice[] invoices =
+[
+    new(1, "Ada", 12.5m, [new InvoiceLine("a", 1), new InvoiceLine("b", 2)]) { Note = "first" },
+    new(2, "Alan", null, []),
+];
+
+foreach (var codec in new[] { CompressionCodec.Uncompressed, CompressionCodec.Gzip, CompressionCodec.Brotli })
+{
+    var file = new MemoryStream();
+    ParquetSerializer.Serialize(invoices, file, new ParquetSerializerOptions { Writer = new ParquetWriterOptions { Compression = codec } });
+    file.Position = 0;
+    var read = ParquetSerializer.Deserialize<Invoice>(file);
+    bool same = read.Count == 2
+        && read[0].Number == 1 && read[0].Customer == "Ada" && read[0].Total == 12.5m && read[0].Note == "first"
+        && read[0].Lines.Count == 2 && read[0].Lines[1] == new InvoiceLine("b", 2)
+        && read[1].Total is null && read[1].Note is null && read[1].Lines.Count == 0;
+    if (!same)
+    {
+        Console.WriteLine($"{codec}: the invoices differ");
+        return 1;
+    }
+}
+
 // A type with no mapping is refused with an explanation, not a crash from the trimmer.
 try
 {

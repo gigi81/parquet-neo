@@ -43,10 +43,11 @@ is used, which neither trimming nor Native AOT allows. Put `[ParquetSerializable
 `[assembly: ParquetSerializable(typeof(TheirType))]`) and the source generator writes the mapping when you build, so nothing is
 looked at or compiled at run time; the serializer is called as before. The generator handles properties that are single columns
 (numbers, strings, dates, `Guid`, enums, byte arrays and their nullable forms), objects and structs (nested to any depth), and
-arrays, lists, sets and dictionaries of any of them. For a type it cannot map yet (one built by a constructor with parameters, so a
-record with a primary constructor, or one with a property of a type that is not stored as columns) it reports a warning and the type
-keeps working through reflection; a type it can write but not read gets a warning of its own. In a Native AOT program a type with
-no generated mapping is refused with an explanation.
+arrays, lists, sets and dictionaries of any of them. A type created with a constructor without parameters is read with the
+setters of its properties; one without, such as a record, is read by calling its constructor with the values of the properties it
+names as parameters. For a type it cannot map (a property of a type that is not stored as columns, or no constructor that fits) it
+reports a warning and the type keeps working through reflection; a type it can write but not read gets a warning of its own. In a
+Native AOT program a type with no generated mapping is refused with an explanation.
 
 ### Low-level API
 

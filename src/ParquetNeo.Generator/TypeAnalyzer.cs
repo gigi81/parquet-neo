@@ -70,8 +70,9 @@ namespace ParquetNeo.Generator
             RequireMappable(type);
             _stack.Add(type);
             var properties = new List<PropertyModel>();
+            var discovered = Discover(type);
             var names = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var property in Discover(type))
+            foreach (var property in discovered)
             {
                 var column = CreateProperty(property);
                 if (!names.Add(column.Name))
@@ -88,7 +89,7 @@ namespace ParquetNeo.Generator
                 throw new UnmappableTypeException($"{type.Name} has no public properties to write as columns");
             }
 
-            string? readProblem = WhyNotReadable(type, properties);
+            string? readProblem = PlanRead(type, discovered, properties);
             var model = new ObjectModel(text, new EquatableArray<PropertyModel>(properties.ToImmutableArray()), readProblem);
             _objects.Add(text, model);
             _ordered.Add(model);
@@ -128,28 +129,53 @@ namespace ParquetNeo.Generator
             }
         }
 
-        /// <summary>Why rows of the object cannot be created by generated code, or null: it includes why the objects inside it cannot.</summary>
-        private static string? WhyNotReadable(INamedTypeSymbol type, List<PropertyModel> properties)
+        /// <summary>
+        /// Decides how rows of the object are created, as the reflection path does: with its constructor without parameters and the
+        /// setters of the properties, or, when there is none, with the public constructor that has the most parameters that are all
+        /// properties of the same names and types (as a record has), and the setters of the properties that are not parameters. Marks
+        /// in <paramref name="properties"/> which parameter takes each property. Returns why rows cannot be created, or null: it
+        /// includes why the objects inside it cannot.
+        /// </summary>
+        private static string? PlanRead(INamedTypeSymbol type, List<IPropertySymbol> discovered, List<PropertyModel> properties)
         {
-            var settable = properties.Where(p => p.CanSet).ToList();
-            if (settable.Count == 0)
-            {
-                return $"{type.Name} has no public properties with a setter to read into";
-            }
-
             if (type.IsAbstract)
             {
                 return $"{type.Name} is abstract";
             }
 
-            if (type.TypeKind == TypeKind.Class
-                && !type.InstanceConstructors.Any(c => c.Parameters.Length == 0 && c.DeclaredAccessibility == Accessibility.Public))
+            bool direct = type.TypeKind == TypeKind.Class
+                ? type.InstanceConstructors.Any(c => c.Parameters.Length == 0 && c.DeclaredAccessibility == Accessibility.Public)
+                : properties.Any(p => p.CanSet);
+            if (!direct)
             {
-                return $"{type.Name} has no public constructor without parameters (a type built by a constructor is not supported yet)";
+                var constructor = ChooseConstructor(type, discovered);
+                if (constructor == null)
+                {
+                    return $"{type.Name} has no public constructor without parameters and none whose parameters are all properties of the same names and types, so rows cannot be created";
+                }
+
+                for (int i = 0; i < constructor.Parameters.Length; i++)
+                {
+                    int index = discovered.FindIndex(p => string.Equals(p.Name, constructor.Parameters[i].Name, StringComparison.OrdinalIgnoreCase));
+                    properties[index] = properties[index] with { Parameter = i };
+                }
             }
 
-            return settable.Select(p => p.Shape.ReadProblem).FirstOrDefault(problem => problem != null);
+            var read = properties.Where(p => p.Read).ToList();
+            if (read.Count == 0)
+            {
+                return $"{type.Name} has no public properties with a setter to read into";
+            }
+
+            return read.Select(p => p.Shape.ReadProblem).FirstOrDefault(problem => problem != null);
         }
+
+        private static IMethodSymbol? ChooseConstructor(INamedTypeSymbol type, List<IPropertySymbol> discovered) =>
+            type.InstanceConstructors
+                .Where(c => c.DeclaredAccessibility == Accessibility.Public)
+                .OrderByDescending(c => c.Parameters.Length)
+                .FirstOrDefault(c => c.Parameters.Length > 0 && c.Parameters.All(parameter => discovered.Any(property =>
+                    string.Equals(property.Name, parameter.Name, StringComparison.OrdinalIgnoreCase) && SymbolEqualityComparer.Default.Equals(property.Type, parameter.Type))));
 
         private bool IsAccessible(ISymbol symbol) => _compilation.IsSymbolAccessibleWithin(symbol, _compilation.Assembly);
 
@@ -159,7 +185,7 @@ namespace ParquetNeo.Generator
             string described = $"Property '{property.ContainingType.Name}.{property.Name}'";
             var shape = BuildShape(property.Type, property.Type.NullableAnnotation, attributes, described, lenient: false);
             bool canSet = property.SetMethod != null && property.SetMethod.DeclaredAccessibility == Accessibility.Public;
-            return new PropertyModel(attributes.Name ?? property.Name, property.Name, described, canSet, shape);
+            return new PropertyModel(attributes.Name ?? property.Name, property.Name, described, canSet, -1, shape);
         }
 
         /// <summary>The shape of a value of a type, whatever kind of column or columns it is stored as.</summary>

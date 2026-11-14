@@ -20,6 +20,7 @@ public class GeneratedMappingReadBenchmarks
     private const int Rows = 100_000;
     private byte[] _flatFile = [];
     private byte[] _nestedFile = [];
+    private byte[] _recordFile = [];
 
     [GlobalSetup]
     public void Setup()
@@ -31,6 +32,9 @@ public class GeneratedMappingReadBenchmarks
         output.SetLength(0);
         ParquetSerializer.Serialize(Enumerable.Range(0, Rows).Select(i => GeneratedRowData.FillNested(new GeneratedNestedRow(), i)).ToArray(), output, options);
         _nestedFile = output.ToArray();
+        output.SetLength(0);
+        ParquetSerializer.Serialize(Enumerable.Range(0, Rows).Select(GeneratedRowData.Record).ToArray(), output, options);
+        _recordFile = output.ToArray();
         GC.Collect();
     }
 
@@ -39,6 +43,12 @@ public class GeneratedMappingReadBenchmarks
 
     [Benchmark, BenchmarkCategory("Flat")]
     public int FlatGenerated() => ParquetSerializer.Deserialize<GeneratedFlatRow>(new MemoryStream(_flatFile)).Count;
+
+    [Benchmark(Baseline = true), BenchmarkCategory("Record")]
+    public int RecordReflection() => ParquetSerializer.Deserialize<ReflectedRecordRow>(new MemoryStream(_recordFile)).Count;
+
+    [Benchmark, BenchmarkCategory("Record")]
+    public int RecordGenerated() => ParquetSerializer.Deserialize<GeneratedRecordRow>(new MemoryStream(_recordFile)).Count;
 
     [Benchmark(Baseline = true), BenchmarkCategory("Nested")]
     public int NestedReflection() => ParquetSerializer.Deserialize<ReflectedNestedRow>(new MemoryStream(_nestedFile)).Count;

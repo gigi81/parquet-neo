@@ -53,3 +53,13 @@ public sealed class Customer
 
     public Dictionary<string, Address?> Places { get; set; } = new();
 }
+
+/// <summary>A record inside a row: it is created by its constructor.</summary>
+public sealed record InvoiceLine(string Sku, int Quantity);
+
+/// <summary>A row that is a record with a record inside a list: with Native AOT the constructors are called by generated code.</summary>
+[ParquetSerializable]
+public sealed record Invoice(int Number, string Customer, decimal? Total, List<InvoiceLine> Lines)
+{
+    public string? Note { get; init; }
+}
