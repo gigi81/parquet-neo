@@ -22,7 +22,7 @@ public static class ParquetNeoServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
         services.AddMetrics();
-        services.TryAddSingleton(provider => new ParquetNeoMetrics(provider.GetRequiredService<IMeterFactory>()));
+        services.TryAddSingleton<ParquetNeoMetrics>();   // its constructor takes the IMeterFactory of the container
         return services;
     }
 }
