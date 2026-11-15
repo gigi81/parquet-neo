@@ -245,4 +245,29 @@ public class RowGroupFilterTests
 
         await Assert.That(rows.Count).IsEqualTo(5000);
     }
+
+    [Test]
+    public async Task TheRowGroupsReadAndSkipped_AndTheRowsThePageIndexSkips_AreRecordedAsMetrics()
+    {
+        using var metrics = new ParquetNeo.Diagnostics.ParquetNeoMetrics();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.MetricRecorder(metrics.Meter);
+        var options = new ParquetDeserializerOptions
+        {
+            Reader = new ParquetReaderOptions { Metrics = metrics },
+            RowGroupFilter = ParquetFilter.Column("Id").Equal(2500),
+        };
+        var file = new MemoryStream();
+        ParquetSerializer.Serialize(
+            Enumerable.Range(0, 5000).Select(i => new Reading { Id = i, Name = $"name-{i}", Value = i }).ToList(),
+            file,
+            new ParquetSerializerOptions { RowGroupSize = 1000, Writer = new ParquetWriterOptions { WritePageIndex = true, DataPageSize = 600 } });
+
+        var rows = ParquetSerializer.Deserialize<Reading>(new MemoryStream(file.ToArray()), options);
+
+        await Assert.That(rows.Any(r => r.Id == 2500)).IsTrue();
+        await Assert.That(recorder.Sum("parquetneo.row_groups.read")).IsEqualTo(1);
+        await Assert.That(recorder.Sum("parquetneo.row_groups.skipped")).IsEqualTo(4);
+        await Assert.That(recorder.Sum("parquetneo.rows.skipped")).IsEqualTo(1000 - rows.Count);
+        await Assert.That(recorder.Sum("parquetneo.rows.skipped")).IsGreaterThan(0);
+    }
 }

@@ -26,6 +26,7 @@ internal sealed class DeserializationSession<TRow>
         _reader = reader;
         _pageFilter = useFileIndexes ? filter : null;
         RowGroups = filter is null ? Enumerable.Range(0, reader.RowGroupCount).ToArray() : reader.GetMatchingRowGroups(filter, useFileIndexes);
+        reader.Options.Metrics?.RecordRowGroups(RowGroups.Count, reader.RowGroupCount - RowGroups.Count);
         RowCount = RowGroups.Sum(group => reader.Metadata.RowGroups[group].NumRows);
         _plan = _model.Bind(reader.Schema);
         _context = _model.CreateContext(_plan);

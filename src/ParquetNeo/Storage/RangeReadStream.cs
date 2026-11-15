@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using ParquetNeo.Diagnostics;
+
 namespace ParquetNeo.Storage;
 
 /// <summary>
@@ -11,6 +14,7 @@ public abstract class RangeReadStream : Stream
 {
     private readonly int _blockSize;
     private readonly int _cachedBlocks;
+    private readonly ParquetNeoMetrics? _metrics;
     private readonly long _tailStart;
     private byte[]? _tail;
     private readonly List<(long Index, byte[] Data)> _blocks = [];
@@ -27,6 +31,7 @@ public abstract class RangeReadStream : Stream
         ArgumentOutOfRangeException.ThrowIfNegative(options.TailSize);
         Length = length;
         _tailStart = options.TailSize == 0 ? length : Math.Max(0, length - options.TailSize);
+        _metrics = options.Metrics;
         _blockSize = options.BlockSize;
         _cachedBlocks = options.CachedBlocks;
     }
@@ -51,6 +56,9 @@ public abstract class RangeReadStream : Stream
             _position = value;
         }
     }
+
+    /// <summary>The kind of storage, for the tag of the metrics: <c>aws_s3</c>, <c>azure_blob</c>, and so on. <c>other</c> when not said.</summary>
+    protected virtual string StorageSystem => "other";
 
     /// <summary>
     /// Reads bytes of the object from <paramref name="offset"/>, as many as fit in <paramref name="destination"/>, which is never longer than
@@ -144,12 +152,35 @@ public abstract class RangeReadStream : Stream
         return buffer.Length;
     }
 
+    /// <summary>A request to the storage, timed and counted when something records the metrics.</summary>
+    private async ValueTask<int> RequestAsync(long offset, Memory<byte> destination, CancellationToken cancellationToken)
+    {
+        if (_metrics is null)
+        {
+            return await ReadRangeAsync(offset, destination, cancellationToken).ConfigureAwait(false);
+        }
+
+        long started = Stopwatch.GetTimestamp();
+        int read = 0;
+        bool succeeded = false;
+        try
+        {
+            read = await ReadRangeAsync(offset, destination, cancellationToken).ConfigureAwait(false);
+            succeeded = true;
+            return read;
+        }
+        finally
+        {
+            _metrics.RecordStorageRequest(StorageSystem, read, ParquetNeoMetrics.SecondsSince(started), succeeded);
+        }
+    }
+
     private async ValueTask ReadFullyAsync(long start, Memory<byte> destination, CancellationToken cancellationToken)
     {
         int done = 0;
         while (done < destination.Length)
         {
-            int read = await ReadRangeAsync(start + done, destination[done..], cancellationToken).ConfigureAwait(false);
+            int read = await RequestAsync(start + done, destination[done..], cancellationToken).ConfigureAwait(false);
             if (read <= 0)
             {
                 throw EndedEarly(start + done);

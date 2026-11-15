@@ -34,6 +34,7 @@ public sealed class AzureBlobParquetStorage(BlobContainerClient container, Range
         try
         {
             var properties = (await blob.GetPropertiesAsync(cancellationToken: cancellationToken).ConfigureAwait(false)).Value;
+            options?.Metrics?.RecordObjectOpened(AzureBlobRangeStream.System);
             return new AzureBlobRangeStream(blob, properties.ContentLength, properties.ETag, options);
         }
         catch (RequestFailedException exception) when (exception.Status == 404)
@@ -44,6 +45,7 @@ public sealed class AzureBlobParquetStorage(BlobContainerClient container, Range
 
     private async IAsyncEnumerable<StorageObject> ListBlobsAsync(string prefix, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
+        options?.Metrics?.RecordListing(AzureBlobRangeStream.System);
         await foreach (var item in _container.GetBlobsAsync(BlobTraits.None, BlobStates.None, prefix, cancellationToken).ConfigureAwait(false))
         {
             yield return new StorageObject(item.Name, item.Properties.ContentLength ?? 0);

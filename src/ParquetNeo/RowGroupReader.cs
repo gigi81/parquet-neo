@@ -95,7 +95,14 @@ public sealed class RowGroupReader
         }
 
         var ranges = PageSelector.Select(filter, _file.Schema, _file.Metadata.ColumnOrders, Metadata, _file.ReadBloomFilter, PagesOf);
-        return ranges is null ? null : new RowSelection(ranges);
+        if (ranges is null)
+        {
+            return null;
+        }
+
+        var selection = new RowSelection(ranges);
+        _file.Options.Metrics?.RecordRowsSkipped(RowCount - selection.RowCount);
+        return selection;
     }
 
     private ColumnPages? PagesOf(int column)

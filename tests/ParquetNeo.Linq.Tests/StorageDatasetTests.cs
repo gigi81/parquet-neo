@@ -213,6 +213,61 @@ public class StorageDatasetTests
         await Assert.That(people.ReadStatistics.Listings).IsEqualTo(0);
     }
 
+    [Test]
+    public async Task AQuery_IsRecordedAsMetrics_WithTheRowsItReadAndWhetherItWasFiltered()
+    {
+        using var metrics = new ParquetNeo.Diagnostics.ParquetNeoMetrics();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.MetricRecorder(metrics.Meter);
+        var storage = Setup(new RangeReadStreamOptions { BlockSize = 2 * 1024, TailSize = 6 * 1024, Metrics = metrics });
+        var people = ParquetDataset.Open<Person>(storage, "people/", new ParquetDatasetOptions { Metrics = metrics });
+
+        var filtered = people.Where(p => p.Id >= 2000 && p.Id < 2150).Select(p => p.Id).ToList();
+        var all = people.Select(p => p.Id).ToList();
+
+        await Assert.That(recorder.Count("parquetneo.query.duration")).IsEqualTo(2);
+        await Assert.That(recorder.Count("parquetneo.query.duration", (ParquetNeo.Diagnostics.ParquetNeoMetrics.FilteredTag, true))).IsEqualTo(1);
+        await Assert.That(recorder.Count("parquetneo.query.duration", (ParquetNeo.Diagnostics.ParquetNeoMetrics.FilteredTag, false))).IsEqualTo(1);
+        await Assert.That(recorder.Sum("parquetneo.query.rows", (ParquetNeo.Diagnostics.ParquetNeoMetrics.FilteredTag, true))).IsGreaterThanOrEqualTo(filtered.Count);
+        await Assert.That(recorder.Sum("parquetneo.query.rows", (ParquetNeo.Diagnostics.ParquetNeoMetrics.FilteredTag, false))).IsEqualTo(all.Count);
+
+        // The row groups the filtered query read are those of one file, and the ones of the others were skipped; the query of everything read all of them.
+        await Assert.That(recorder.Sum("parquetneo.row_groups.read")).IsGreaterThan(Files * 4);
+        await Assert.That(recorder.Sum("parquetneo.row_groups.skipped")).IsGreaterThan(0);
+
+        // And the requests to the storage are the ones the storage saw.
+        await Assert.That(recorder.Sum("parquetneo.storage.requests")).IsEqualTo(storage.Requests.Count);
+        await Assert.That(recorder.Sum("parquetneo.storage.bytes_read")).IsEqualTo(storage.BytesRead);
+    }
+
+    [Test]
+    public async Task ACountFromTheFooters_AndAQueryThatStopsEarly_AreRecorded()
+    {
+        using var metrics = new ParquetNeo.Diagnostics.ParquetNeoMetrics();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.MetricRecorder(metrics.Meter);
+        var storage = Setup();
+        var people = ParquetDataset.Open<Person>(storage, "people/", new ParquetDatasetOptions { Metrics = metrics });
+
+        int count = people.Count();
+        var few = people.Take(3).ToList();
+
+        await Assert.That(count).IsEqualTo(Files * RowsPerFile);
+        await Assert.That(few.Count).IsEqualTo(3);
+        await Assert.That(recorder.Count("parquetneo.query.duration")).IsEqualTo(2);
+        await Assert.That(recorder.Of("parquetneo.query.rows").Min(m => m.Value)).IsEqualTo(0);
+        await Assert.That(recorder.Of("parquetneo.query.rows").Max(m => m.Value)).IsGreaterThanOrEqualTo(3);
+    }
+
+    [Test]
+    public async Task ADatasetWithoutMetrics_RecordsNothing()
+    {
+        using var metrics = new ParquetNeo.Diagnostics.ParquetNeoMetrics();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.MetricRecorder(metrics.Meter);
+
+        ParquetDataset.Open<Person>(Setup(), "people/").Where(p => p.Id < 10).ToList();
+
+        await Assert.That(recorder.All.Count).IsEqualTo(0);
+    }
+
     private static byte[] ReadAll(InMemoryStorage storage, string key)
     {
         using var stream = storage.OpenReadAsync(key).AsTask().GetAwaiter().GetResult();

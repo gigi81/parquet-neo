@@ -14,6 +14,8 @@
   href: linq.md
 - name: Reading from S3 and Azure
   href: object-storage.md
+- name: Metrics
+  href: metrics.md
 - name: GraphQL with Hot Chocolate
   href: graphql.md
 - name: Low-level API
