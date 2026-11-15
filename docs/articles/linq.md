@@ -32,6 +32,9 @@ int count = people.Count();                            // from the footers: no d
 await foreach (var row in people.Where(p => p.Id > 5000).AsAsyncEnumerable()) { }
 ```
 
+`people.ReadStatistics` says how many files were opened, how many requests were made and how many bytes were read by the queries of a
+dataset (see [Reading from S3 and Azure](object-storage.md#how-much-was-read)).
+
 `AsAsyncEnumerable`, `ToListAsync`, `ToArrayAsync`, `FirstAsync`, `FirstOrDefaultAsync`, `CountAsync` and `AnyAsync` run the query on
 another thread and do not block the caller.
 

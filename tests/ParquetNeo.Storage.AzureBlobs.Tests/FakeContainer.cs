@@ -12,15 +12,20 @@ namespace ParquetNeo.Storage.AzureBlobs.Tests;
 public sealed class FakeContainer : BlobContainerClient
 {
     private readonly Dictionary<string, (byte[] Data, ETag ETag)> _blobs = new(StringComparer.Ordinal);
+    private readonly Lock _lock = new();
 
     public int PageSize { get; set; } = 1000;
 
     /// <summary>The ranges that were asked for, with the ETag the request was tied to.</summary>
     public List<(string Key, long Offset, long Length, ETag? IfMatch)> Ranges { get; } = [];
 
-    public int Listings { get; private set; }
+    private int _listings;
 
-    public int PropertyCalls { get; private set; }
+    public int Listings => Volatile.Read(ref _listings);
+
+    private int _propertyCalls;
+
+    public int PropertyCalls => Volatile.Read(ref _propertyCalls);
 
     public string? LastPrefix { get; private set; }
 
@@ -36,7 +41,7 @@ public sealed class FakeContainer : BlobContainerClient
 
     public override AsyncPageable<BlobItem> GetBlobsAsync(BlobTraits traits = BlobTraits.None, BlobStates states = BlobStates.None, string? prefix = null, CancellationToken cancellationToken = default)
     {
-        Listings++;
+        Interlocked.Increment(ref _listings);
         LastPrefix = prefix;
         var matching = _blobs.Where(pair => pair.Key.StartsWith(prefix ?? "", StringComparison.Ordinal)).OrderBy(pair => pair.Key, StringComparer.Ordinal).ToList();
         var pages = new List<Page<BlobItem>>();
@@ -61,7 +66,7 @@ public sealed class FakeContainer : BlobContainerClient
 
         public override Task<Response<BlobProperties>> GetPropertiesAsync(BlobRequestConditions? conditions = null, CancellationToken cancellationToken = default)
         {
-            container.PropertyCalls++;
+            Interlocked.Increment(ref container._propertyCalls);
             var (data, etag) = Find();
             return Task.FromResult(Response.FromValue(BlobsModelFactory.BlobProperties(contentLength: data.Length, eTag: etag), new FakeResponse(200)));
         }
@@ -71,7 +76,11 @@ public sealed class FakeContainer : BlobContainerClient
             var (data, etag) = Find();
             long offset = options?.Range.Offset ?? 0;
             long length = options?.Range.Length ?? data.Length - offset;
-            container.Ranges.Add((key, offset, length, options?.Conditions?.IfMatch));
+            lock (container._lock)
+            {
+                container.Ranges.Add((key, offset, length, options?.Conditions?.IfMatch));
+            }
+
             if (options?.Conditions?.IfMatch is { } ifMatch && ifMatch != etag)
             {
                 throw new RequestFailedException(412, "The condition specified using HTTP conditional header(s) is not met.", "ConditionNotMet", null);

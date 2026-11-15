@@ -147,6 +147,72 @@ public class StorageDatasetTests
         await Assert.That(() => ParquetDataset.Open<Person>(null!, "people/")).Throws<ArgumentNullException>();
     }
 
+    [Test]
+    public async Task TheReadStatistics_AreWhatWasAskedOfTheStorage()
+    {
+        var storage = Setup();
+        var people = ParquetDataset.Open<Person>(storage, "people/");
+
+        var rows = people.Where(p => p.Id >= 2000 && p.Id < 2150).Select(p => p.Id).ToList();
+
+        var statistics = people.ReadStatistics;
+        await Assert.That(rows.Count).IsEqualTo(150);
+        await Assert.That(statistics.Requests).IsEqualTo(storage.Requests.Count);
+        await Assert.That(statistics.BytesRead).IsEqualTo(storage.BytesRead);
+        await Assert.That(statistics.Listings).IsEqualTo(storage.Listings);
+        await Assert.That(statistics.ObjectsOpened).IsEqualTo(Files);
+        await Assert.That(statistics.BytesRead).IsLessThan(FilesSize(storage) / 2);
+    }
+
+    [Test]
+    public async Task AQueryThatReadsMore_CountsMore_AndResetMeasuresOneQuery()
+    {
+        var storage = Setup();
+        var people = ParquetDataset.Open<Person>(storage, "people/");
+
+        people.Where(p => p.Id >= 2000 && p.Id < 2010).ToList();
+        long narrow = people.ReadStatistics.BytesRead;
+        people.ReadStatistics.Reset();
+        await Assert.That(people.ReadStatistics.BytesRead).IsEqualTo(0);
+
+        people.ToList();
+        long everything = people.ReadStatistics.BytesRead;
+        people.ReadStatistics.Reset();
+        people.Count();
+
+        await Assert.That(narrow).IsGreaterThan(0);
+        await Assert.That(everything).IsGreaterThan(narrow);
+        await Assert.That(people.ReadStatistics.BytesRead).IsLessThan(everything / 2);
+    }
+
+    [Test]
+    public async Task TheCountsAddUp_OverQueries_AndExplainReadsFootersWhichCount()
+    {
+        var storage = Setup();
+        var people = ParquetDataset.Open<Person>(storage, "people/");
+
+        people.Where(p => p.Id == 1).ToList();
+        long afterQuery = people.ReadStatistics.BytesRead;
+        people.Where(p => p.Id == 1).Explain();
+
+        await Assert.That(people.ReadStatistics.BytesRead).IsGreaterThan(afterQuery);
+        await Assert.That(people.ReadStatistics.BytesRead).IsEqualTo(storage.BytesRead);
+    }
+
+    [Test]
+    public async Task ADatasetOfADirectory_CountsTheFilesItReads()
+    {
+        using var data = new TestDataset();
+        var people = data.Open();
+
+        var ids = people.Where(p => p.Id >= 2000 && p.Id < 2010).Select(p => p.Id).ToList();
+
+        await Assert.That(ids.Count).IsEqualTo(10);
+        await Assert.That(people.ReadStatistics.ObjectsOpened).IsGreaterThan(0);
+        await Assert.That(people.ReadStatistics.BytesRead).IsGreaterThan(0);
+        await Assert.That(people.ReadStatistics.Listings).IsEqualTo(0);
+    }
+
     private static byte[] ReadAll(InMemoryStorage storage, string key)
     {
         using var stream = storage.OpenReadAsync(key).AsTask().GetAwaiter().GetResult();
