@@ -1,7 +1,6 @@
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.DependencyInjection;
 using ParquetNeo.Diagnostics;
-using ParquetNeo.Extensions.DependencyInjection;
 using ParquetNeo.Storage;
 using ParquetNeo.Tests.Diagnostics;
 using ParquetNeo.Tests.Storage;

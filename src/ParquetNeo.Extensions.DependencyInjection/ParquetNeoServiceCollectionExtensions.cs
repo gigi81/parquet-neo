@@ -1,9 +1,10 @@
 using System.Diagnostics.Metrics;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ParquetNeo.Diagnostics;
 
-namespace ParquetNeo.Extensions.DependencyInjection;
+// In the namespace of the container, as the extension methods of Microsoft.Extensions.DependencyInjection are, so that a host that
+// builds its services finds AddParquetNeoMetrics() without another using.
+namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>Registers ParquetNeo with a service collection.</summary>
 public static class ParquetNeoServiceCollectionExtensions

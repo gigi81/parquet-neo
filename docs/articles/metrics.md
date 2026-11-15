@@ -12,9 +12,8 @@ Add the package `ParquetNeo.Extensions.DependencyInjection` (it is in `ParquetNe
 
 ```csharp
 using ParquetNeo.Diagnostics;
-using ParquetNeo.Extensions.DependencyInjection;
 
-builder.Services.AddParquetNeoMetrics();
+builder.Services.AddParquetNeoMetrics();     // an extension of IServiceCollection, in the namespace Microsoft.Extensions.DependencyInjection, which a host already uses
 
 builder.Services.AddOpenTelemetry()
     .WithMetrics(metrics => metrics
