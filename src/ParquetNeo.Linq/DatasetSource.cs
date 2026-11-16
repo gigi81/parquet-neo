@@ -124,7 +124,7 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
         foreach (string file in Files())
         {
             using var stream = OpenFile(file);
-            using var reader = new ParquetFileReader(stream, Options.Deserializer.Reader, leaveOpen: true);
+            using var reader = ParquetFileReader.Open(stream, Options.Deserializer.Reader, leaveOpen: true);
             rows += reader.RowCount;
         }
 
@@ -141,7 +141,7 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
         foreach (string file in files)
         {
             using var stream = OpenFile(file);
-            using var reader = new ParquetFileReader(stream, Options.Deserializer.Reader, leaveOpen: true);
+            using var reader = ParquetFileReader.Open(stream, Options.Deserializer.Reader, leaveOpen: true);
             int kept = MatchingRowGroups(reader, filter).Count;
             if (kept == 0)
             {
@@ -180,7 +180,7 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
         ParquetFilter? effective = filter;
         if (filter is not null)
         {
-            using var reader = new ParquetFileReader(stream, Options.Deserializer.Reader, leaveOpen: true);
+            using var reader = ParquetFileReader.Open(stream, Options.Deserializer.Reader, leaveOpen: true);
             if (MatchingRowGroups(reader, filter).Count == 0)
             {
                 yield break;

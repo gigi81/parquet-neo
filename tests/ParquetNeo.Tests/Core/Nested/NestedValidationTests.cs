@@ -9,7 +9,7 @@ public class NestedValidationTests
 
     private static (ColumnWriter Column, RowGroupWriter Group, ParquetFileWriter File) Open(ParquetSchema? schema = null)
     {
-        var file = new ParquetFileWriter(new MemoryStream(), schema ?? ListSchema(), leaveOpen: true);
+        var file = ParquetFileWriter.Create(new MemoryStream(), schema ?? ListSchema(), leaveOpen: true);
         var group = file.AppendRowGroup();
         return (group.NextColumn(), group, file);
     }
@@ -96,7 +96,7 @@ public class NestedValidationTests
             NestedDataset.ListOf("a", FieldRepetitionType.Optional, new PrimitiveNode("element", PhysicalType.Int32, FieldRepetitionType.Optional)),
             NestedDataset.ListOf("b", FieldRepetitionType.Optional, new PrimitiveNode("element", PhysicalType.Int32, FieldRepetitionType.Optional)),
         ]);
-        var file = new ParquetFileWriter(new MemoryStream(), schema, leaveOpen: true);
+        var file = ParquetFileWriter.Create(new MemoryStream(), schema, leaveOpen: true);
         using var group = file.AppendRowGroup();
 
         group.NextColumn().WriteBatch([1, 2, 3], [3, 3, 3], [0, 1, 1]); // 1 row, 3 entries
@@ -114,7 +114,7 @@ public class NestedValidationTests
             NestedDataset.ListOf("b", FieldRepetitionType.Optional, new PrimitiveNode("element", PhysicalType.Int32, FieldRepetitionType.Optional)),
         ]);
         var stream = new MemoryStream();
-        using (var file = new ParquetFileWriter(stream, schema, leaveOpen: true))
+        using (var file = ParquetFileWriter.Create(stream, schema, leaveOpen: true))
         using (var group = file.AppendRowGroup())
         {
             group.NextColumn().WriteBatch([1, 2, 3], [3, 3, 3], [0, 1, 1]);

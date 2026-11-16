@@ -44,47 +44,55 @@ public sealed class ParquetDataReader : DbDataReader
     private int _row = -1;
     private bool _closed;
 
+    /// <summary>Takes the opened file and the row groups to read; uses no stream, which <see cref="Open"/> and <see cref="OpenAsync"/> do before.</summary>
+    private ParquetDataReader(ParquetFileReader file, ParquetDataReaderOptions options, IReadOnlyList<int> rowGroups)
+    {
+        _file = file;
+        _filter = options.RowGroupFilter;
+        _rowGroups = rowGroups;
+        options.Reader.Metrics?.RecordRowGroups(_rowGroups.Count, _file.RowGroupCount - _rowGroups.Count);
+        _nodes = SelectColumns(_file.Schema, options.Columns);
+        _columns = new ColumnData[_nodes.Length];
+        _types = new Type[_nodes.Length];
+        _ordinals = new Dictionary<string, int>(_nodes.Length, StringComparer.Ordinal);
+        for (int i = 0; i < _nodes.Length; i++)
+        {
+            var node = _nodes[i];
+            var type = FileColumnTypes.Choose(node)
+                ?? throw new NotSupportedException($"Column '{node.Name}' is stored as {ColumnProblems.Describe(node)}, which no .NET type fits; leave it out with {nameof(ParquetDataReaderOptions)}.{nameof(ParquetDataReaderOptions.Columns)}.");
+            _types[i] = type.ValueType;
+            _columns[i] = type.Accept(new ColumnDataFactory(node.Name));
+            _ordinals.TryAdd(node.Name, i);
+        }
+    }
+
+    /// <summary>
+    /// Opens a file, reading its footer and, for a row group filter, the bloom filters it needs. Constructors do not use streams, so this
+    /// is the way to open one; <see cref="OpenAsync"/> reads with asynchronous reads, and so does <see cref="ReadAsync"/> for each row group.
+    /// </summary>
     /// <param name="input">A readable, seekable stream holding the whole file.</param>
     /// <param name="options">Which columns to read, and the codecs and limits; <c>null</c> for all and the defaults.</param>
     /// <param name="leaveOpen">Whether to keep <paramref name="input"/> open when the reader is closed.</param>
     /// <exception cref="ArgumentException">A column named in the options is not a column of the file that holds a single value per row.</exception>
     /// <exception cref="NotSupportedException">A column has no .NET type that fits it.</exception>
-    public ParquetDataReader(Stream input, ParquetDataReaderOptions? options = null, bool leaveOpen = false)
-        : this(new ParquetFileReader(input, options?.Reader, leaveOpen), options ?? new ParquetDataReaderOptions(), rowGroups: null)
+    public static ParquetDataReader Open(Stream input, ParquetDataReaderOptions? options = null, bool leaveOpen = false)
     {
-    }
-
-    private ParquetDataReader(ParquetFileReader file, ParquetDataReaderOptions options, IReadOnlyList<int>? rowGroups)
-    {
-        _file = file;
+        options ??= new ParquetDataReaderOptions();
+        var file = ParquetFileReader.Open(input, options.Reader, leaveOpen);
         try
         {
-            _filter = options.RowGroupFilter;
-            _rowGroups = rowGroups ?? (_filter is { } filter ? _file.GetMatchingRowGroups(filter) : Enumerable.Range(0, _file.RowGroupCount).ToArray());
-            options.Reader.Metrics?.RecordRowGroups(_rowGroups.Count, _file.RowGroupCount - _rowGroups.Count);
-            _nodes = SelectColumns(_file.Schema, options.Columns);
-            _columns = new ColumnData[_nodes.Length];
-            _types = new Type[_nodes.Length];
-            _ordinals = new Dictionary<string, int>(_nodes.Length, StringComparer.Ordinal);
-            for (int i = 0; i < _nodes.Length; i++)
-            {
-                var node = _nodes[i];
-                var type = FileColumnTypes.Choose(node)
-                    ?? throw new NotSupportedException($"Column '{node.Name}' is stored as {ColumnProblems.Describe(node)}, which no .NET type fits; leave it out with {nameof(ParquetDataReaderOptions)}.{nameof(ParquetDataReaderOptions.Columns)}.");
-                _types[i] = type.ValueType;
-                _columns[i] = type.Accept(new ColumnDataFactory(node.Name));
-                _ordinals.TryAdd(node.Name, i);
-            }
+            var rowGroups = options.RowGroupFilter is { } filter ? file.GetMatchingRowGroups(filter) : Enumerable.Range(0, file.RowGroupCount).ToArray();
+            return new ParquetDataReader(file, options, rowGroups);
         }
         catch
         {
-            _file.Dispose();
+            file.Dispose();
             throw;
         }
     }
 
     /// <summary>
-    /// Opens a file like the constructor does, reading its footer, and the bloom filters the row group filter needs, with asynchronous
+    /// Opens a file like <see cref="Open"/>, reading its footer, and the bloom filters the row group filter needs, with asynchronous
     /// reads. <see cref="ReadAsync"/> then reads each row group the same way.
     /// </summary>
     /// <exception cref="ArgumentException">A column named in the options is not a column of the file that holds a single value per row.</exception>

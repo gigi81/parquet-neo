@@ -178,7 +178,7 @@ public class FlatReaderTests
     {
         var schema = new ParquetSchema([new PrimitiveNode("n", PhysicalType.Int64, FieldRepetitionType.Optional)]);
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch([42L], [1]);
@@ -189,7 +189,7 @@ public class FlatReaderTests
         await Assert.That(ReadHelper.ReadColumn(reader, 0, 0, 10)).IsEquivalentTo(new object?[] { 42L });
 
         var empty = new MemoryStream();
-        using (new ParquetFileWriter(empty, schema, leaveOpen: true))
+        using (ParquetFileWriter.Create(empty, schema, leaveOpen: true))
         {
         }
 
@@ -210,7 +210,7 @@ public class FlatReaderTests
         var levels = Enumerable.Range(0, rows).Select(i => i % 3 == 0 ? 0 : 1).ToArray();
         var values = Enumerable.Range(0, rows).Where(i => i % 3 != 0).Select(i => i / 7.0).ToArray();
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(ids);
@@ -256,7 +256,7 @@ public class FlatReaderTests
         var schema = new ParquetSchema([new PrimitiveNode("n", PhysicalType.Int32, FieldRepetitionType.Optional)]);
         int rows = 2_500_000;
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(ReadOnlySpan<int>.Empty, new int[rows]);

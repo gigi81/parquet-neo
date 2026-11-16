@@ -21,11 +21,15 @@ internal sealed class DeserializationSession<TRow>
     /// <param name="filter">When there is one, the row groups it rules out by their statistics are left out of <see cref="RowGroups"/>.</param>
     /// <exception cref="Exceptions.SchemaMismatchException">The file does not have the columns the row type needs, or has them as other types.</exception>
     /// <param name="useFileIndexes">Whether bloom filters and the page index are read from the stream to rule out row groups and pages: not when only some byte ranges of it have been loaded.</param>
-    public DeserializationSession(ParquetFileReader reader, ParquetFilter? filter = null, bool useFileIndexes = true)
+    /// <summary>Works out the row groups to read, which can read bloom filters from the stream: a constructor does not do that.</summary>
+    public static DeserializationSession<TRow> Create(ParquetFileReader reader, ParquetFilter? filter = null, bool useFileIndexes = true) =>
+        new(reader, filter, useFileIndexes, filter is null ? Enumerable.Range(0, reader.RowGroupCount).ToArray() : reader.GetMatchingRowGroups(filter, useFileIndexes));
+
+    private DeserializationSession(ParquetFileReader reader, ParquetFilter? filter, bool useFileIndexes, IReadOnlyList<int> rowGroups)
     {
         _reader = reader;
         _pageFilter = useFileIndexes ? filter : null;
-        RowGroups = filter is null ? Enumerable.Range(0, reader.RowGroupCount).ToArray() : reader.GetMatchingRowGroups(filter, useFileIndexes);
+        RowGroups = rowGroups;
         reader.Options.Metrics?.RecordRowGroups(RowGroups.Count, reader.RowGroupCount - RowGroups.Count);
         RowCount = RowGroups.Sum(group => reader.Metadata.RowGroups[group].NumRows);
         _plan = _model.Bind(reader.Schema);

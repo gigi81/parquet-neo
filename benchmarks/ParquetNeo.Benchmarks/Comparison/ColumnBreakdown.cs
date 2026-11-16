@@ -47,7 +47,7 @@ public class ColumnBreakdown
     private void WriteColumn(int column)
     {
         _output.SetLength(0);
-        using var writer = new ParquetFileWriter(_output, _schemas[column], new ParquetWriterOptions(), leaveOpen: true);
+        using var writer = ParquetFileWriter.Create(_output, _schemas[column], new ParquetWriterOptions(), leaveOpen: true);
         using (var group = writer.AppendRowGroup())
         {
             var w = group.NextColumn();
@@ -76,7 +76,7 @@ public class ColumnBreakdown
 
     private int ReadColumn(int column)
     {
-        using var file = new ParquetFileReader(new MemoryStream(_files[column]));
+        using var file = ParquetFileReader.Open(new MemoryStream(_files[column]));
         using var reader = file.OpenRowGroup(0).OpenColumn(0);
         switch (column)
         {

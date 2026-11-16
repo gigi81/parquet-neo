@@ -36,7 +36,7 @@ public class AsyncWriterTests
     private static byte[] Synchronous(int groups)
     {
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, Schema, Options, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, Schema, Options, leaveOpen: true))
         {
             for (int g = 0; g < groups; g++)
             {
@@ -106,7 +106,7 @@ public class AsyncWriterTests
         }
 
         memory.Position = 0;
-        using var reader = new ParquetFileReader(memory);
+        using var reader = ParquetFileReader.Open(memory);
         using var column = reader.OpenRowGroup(0).OpenColumn(0);
         var read = new long[Rows];
         await Assert.That(column.ReadBatch(read).Entries).IsEqualTo(Rows);
@@ -123,7 +123,7 @@ public class AsyncWriterTests
             await group.WriteColumnsAsync(Columns);
         }
 
-        using var reader = new ParquetFileReader(new MemoryStream(memory.ToArray()));
+        using var reader = ParquetFileReader.Open(new MemoryStream(memory.ToArray()));
         await Assert.That(reader.Metadata.RowGroups[0].Columns[0].OffsetIndexOffset).IsNotNull();
         await Assert.That(reader.Metadata.RowGroups[0].Columns[0].MetaData!.BloomFilterOffset).IsNotNull();
     }

@@ -19,7 +19,7 @@ int[] nameLevels = [1, 1, 0, 1];
 double[] scores = [0.5, 1.5, 2.5, 3.5];
 
 var stream = new MemoryStream();
-using (var writer = new ParquetFileWriter(stream, schema, leaveOpen: true))
+using (var writer = ParquetFileWriter.Create(stream, schema, leaveOpen: true))
 {
     for (int group = 0; group < 2; group++)
     {
@@ -31,7 +31,7 @@ using (var writer = new ParquetFileWriter(stream, schema, leaveOpen: true))
 }
 
 stream.Position = 0;
-using var reader = new ParquetFileReader(stream);
+using var reader = ParquetFileReader.Open(stream);
 for (int group = 0; group < reader.RowGroupCount; group++)
 {
     var rowGroup = reader.OpenRowGroup(group);

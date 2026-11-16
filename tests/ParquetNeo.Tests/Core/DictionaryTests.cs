@@ -13,7 +13,7 @@ public class DictionaryTests
     {
         var schema = new ParquetSchema([new PrimitiveNode("c", type, repetition, typeLength: typeLength)]);
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, options, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, options, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             var column = group.NextColumn();
@@ -280,7 +280,7 @@ public class DictionaryTests
         string[] strings = ["alpha", "", "δelta", "alpha", "", "a much longer string than the others, repeated", "δelta", "alpha", "a much longer string than the others, repeated"];
         var schema = new ParquetSchema([new PrimitiveNode("s", PhysicalType.ByteArray, FieldRepetitionType.Required, LogicalType.String)]);
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, Options(), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, Options(), leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteStrings(strings);
@@ -299,7 +299,7 @@ public class DictionaryTests
     {
         var schema = new ParquetSchema([new PrimitiveNode("b", PhysicalType.ByteArray, FieldRepetitionType.Required)]);
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, Options(), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, Options(), leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             var column = group.NextColumn();
@@ -319,7 +319,7 @@ public class DictionaryTests
         byte[] values = [1, 2, 3, 4, 2, 3, 4, 1, 1, 2, 3, 4, 0, 0, 0, 0, 2, 3, 4, 1];
         var schema = new ParquetSchema([new PrimitiveNode("f", PhysicalType.FixedLenByteArray, FieldRepetitionType.Required, typeLength: 4)]);
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, Options(), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, Options(), leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteFixedLengthByteArrays(values);
@@ -340,7 +340,7 @@ public class DictionaryTests
     {
         var schema = new ParquetSchema([new PrimitiveNode("n", PhysicalType.Int64, FieldRepetitionType.Optional)]);
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, Options(), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, Options(), leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(ReadOnlySpan<long>.Empty, new int[1000]);
@@ -390,7 +390,7 @@ public class DictionaryTests
         string[] values = Enumerable.Range(0, 600).Select(i => "value-" + i % 5).ToArray();
         var schema = new ParquetSchema([new PrimitiveNode("s", PhysicalType.ByteArray, FieldRepetitionType.Required, LogicalType.String)]);
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, Options(pageSize: 200), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, Options(pageSize: 200), leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteStrings(values);

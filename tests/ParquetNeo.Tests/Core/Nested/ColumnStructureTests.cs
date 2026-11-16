@@ -159,7 +159,7 @@ public class ColumnStructureTests
         var rows = NestedDataset.Rows().ToArray();
         var shredded = ReferenceShredder.Shred(schema, rows);
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             foreach (var column in shredded)
@@ -193,7 +193,7 @@ public class ColumnStructureTests
         var schema = NestedDataset.Schema();
         var rows = NestedDataset.Rows().ToArray();
         var structure = ReferenceStructure.Build(schema.Columns[1], rows);
-        var file = new ParquetFileWriter(new MemoryStream(), schema, leaveOpen: true);
+        var file = ParquetFileWriter.Create(new MemoryStream(), schema, leaveOpen: true);
         using var group = file.AppendRowGroup();
         group.NextColumn().WriteBatch([1L, 2L], default(ReadOnlySpan<int>), default); // the id column
 

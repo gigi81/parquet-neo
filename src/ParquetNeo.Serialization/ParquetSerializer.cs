@@ -73,6 +73,7 @@ public static partial class ParquetSerializer
         RequireWritable(destination);
         // The synchronous serializer has nothing to gain from staging the file in memory: the pages go straight to the stream.
         using var session = new SerializationSession<TRow>(options, rows.TryGetNonEnumeratedCount(out int count) ? count : null, destination);
+        session.Start();
         foreach (var row in rows)
         {
             session.Add(row);
@@ -97,6 +98,7 @@ public static partial class ParquetSerializer
         RequireWritable(destination);
         await using var pipeline = new PipelinedWriter(destination, cancellationToken);
         using var session = new SerializationSession<TRow>(options, rows.TryGetNonEnumeratedCount(out int count) ? count : null);
+        session.Start();
         await pipeline.WriteAsync(session.TakeStaged()).ConfigureAwait(false);
         foreach (var row in rows)
         {
@@ -124,6 +126,7 @@ public static partial class ParquetSerializer
         RequireWritable(destination);
         await using var pipeline = new PipelinedWriter(destination, cancellationToken);
         using var session = new SerializationSession<TRow>(options);
+        session.Start();
         await pipeline.WriteAsync(session.TakeStaged()).ConfigureAwait(false);
         await foreach (var row in rows.WithCancellation(cancellationToken).ConfigureAwait(false))
         {

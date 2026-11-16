@@ -76,6 +76,9 @@ internal sealed class DataWriteSession : IDisposable
     public bool IsFull => _rowsInGroup >= _rowGroupSize;
 
     /// <summary>The bytes of the file encoded so far, which the caller writes and then disposes; the next bytes go to a new buffer.</summary>
+    /// <summary>Writes the start of the file, to the destination or to the staging area. The constructor does not, so that it uses no stream.</summary>
+    public void Start() => _writer.Start();
+
     public StagedBytes TakeStaged() => _staging.Take();
 
     public void Add(IDataRecord row)

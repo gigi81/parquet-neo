@@ -132,7 +132,7 @@ public class LogicalTypeTests
     private static byte[] WritePhysical(PrimitiveNode node, Action<ColumnWriter> write)
     {
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, new ParquetSchema([node]), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, new ParquetSchema([node]), leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             write(group.NextColumn());
@@ -192,7 +192,7 @@ public class LogicalTypeTests
     {
         var nanoseconds = new PrimitiveNode("t", PhysicalType.Int64, FieldRepetitionType.Required, LogicalType.Timestamp(true, TimeUnit.Nanos));
         var schema = new ParquetSchema([nanoseconds]);
-        using var file = new ParquetFileWriter(new MemoryStream(), schema, leaveOpen: true);
+        using var file = ParquetFileWriter.Create(new MemoryStream(), schema, leaveOpen: true);
         using var group = file.AppendRowGroup();
         var column = group.NextColumn();
 
@@ -214,7 +214,7 @@ public class LogicalTypeTests
         await Assert.That(() => uint8.ReadBatch(new ushort[1])).Throws<ArgumentException>();
 
         var schema = LogicalDataset.Schema(optional: false);
-        using var writerFile = new ParquetFileWriter(new MemoryStream(), schema, leaveOpen: true);
+        using var writerFile = ParquetFileWriter.Create(new MemoryStream(), schema, leaveOpen: true);
         using var group = writerFile.AppendRowGroup();
         var int8 = group.NextColumn();
         await Assert.That(() => int8.WriteBatch([(byte)1])).Throws<ArgumentException>();
@@ -296,7 +296,7 @@ public class LogicalTypeTests
         var schema = new ParquetSchema([node]);
         var stream = new MemoryStream();
         DateOnly[] dates = [new(2024, 1, 1), new(2024, 1, 2), new(2025, 3, 4)];
-        using (var writer = new ParquetFileWriter(stream, schema, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             // rows: [d1, null, d2], [], null, [d3]

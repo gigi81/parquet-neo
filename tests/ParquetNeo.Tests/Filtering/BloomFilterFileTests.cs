@@ -191,7 +191,7 @@ public class BloomFilterFileTests
             (group, writer) => writer.NextColumn().WriteBatch(Enumerable.Range(group * 100, 100).Select(i => i * 2).ToArray()),
             new ParquetWriterOptions { ColumnBloomFilters = new Dictionary<string, BloomFilterSettings> { ["v"] = Exact } });
         long offset;
-        using (var reader = new ParquetFileReader(new MemoryStream(bytes)))
+        using (var reader = ParquetFileReader.Open(new MemoryStream(bytes)))
         {
             offset = reader.Metadata.RowGroups[0].Columns[0].MetaData!.BloomFilterOffset!.Value;
         }
@@ -200,7 +200,7 @@ public class BloomFilterFileTests
         var damaged = (byte[])bytes.Clone();
         damaged[offset] = 0xFF;
         damaged[offset + 1] = 0xFF;
-        using var broken = new ParquetFileReader(new MemoryStream(damaged));
+        using var broken = ParquetFileReader.Open(new MemoryStream(damaged));
 
         // 19 is not in the first group; the statistics cannot say (the range is 0 to 198), and the filter that could is unreadable.
         await Assert.That(broken.GetMatchingRowGroups(ParquetFilter.Column("v").Equal(19)).ToArray()).IsEquivalentTo(new[] { 0 });
@@ -213,7 +213,7 @@ public class BloomFilterFileTests
         var schema = new ParquetSchema([FilterFile.Column<int>("a"), FilterFile.Column<bool>("flag")]);
 
         Action<IReadOnlyDictionary<string, BloomFilterSettings>> create = settings =>
-            new ParquetFileWriter(new MemoryStream(), schema, new ParquetWriterOptions { ColumnBloomFilters = settings }).Dispose();
+            ParquetFileWriter.Create(new MemoryStream(), schema, new ParquetWriterOptions { ColumnBloomFilters = settings }).Dispose();
 
         await Assert.That(() => create(new Dictionary<string, BloomFilterSettings> { ["missing"] = new() })).Throws<ArgumentException>();
         await Assert.That(() => create(new Dictionary<string, BloomFilterSettings> { ["flag"] = new() })).Throws<ArgumentException>();

@@ -13,8 +13,8 @@ public static partial class ParquetSerializer
     {
         RequireReadable(source);
         options ??= new ParquetDeserializerOptions();
-        using var reader = new ParquetFileReader(source, options.Reader, leaveOpen: true);
-        var session = new DeserializationSession<TRow>(reader, options.RowGroupFilter);
+        using var reader = ParquetFileReader.Open(source, options.Reader, leaveOpen: true);
+        var session = DeserializationSession<TRow>.Create(reader, options.RowGroupFilter);
         var rows = new List<TRow>(DeserializationSession<TRow>.PreallocatedRows(session.RowCount));
         foreach (int group in session.RowGroups)
         {
@@ -64,8 +64,8 @@ public static partial class ParquetSerializer
 
     private static IEnumerable<TRow> ReadAll<TRow>(Stream source, ParquetDeserializerOptions options)
     {
-        using var reader = new ParquetFileReader(source, options.Reader, leaveOpen: true);
-        var session = new DeserializationSession<TRow>(reader, options.RowGroupFilter);
+        using var reader = ParquetFileReader.Open(source, options.Reader, leaveOpen: true);
+        var session = DeserializationSession<TRow>.Create(reader, options.RowGroupFilter);
         foreach (int group in session.RowGroups)
         {
             foreach (var row in session.ReadRowGroup(group))
@@ -79,8 +79,8 @@ public static partial class ParquetSerializer
     {
         var prefetched = new PrefetchedStream(source.Length);
         await LoadFooterAsync(source, prefetched, options, cancellationToken).ConfigureAwait(false);
-        using var reader = new ParquetFileReader(prefetched, options.Reader, leaveOpen: true);
-        var session = new DeserializationSession<TRow>(reader, options.RowGroupFilter, useFileIndexes: false);
+        await using var reader = await ParquetFileReader.OpenAsync(prefetched, options.Reader, leaveOpen: true, cancellationToken).ConfigureAwait(false);
+        var session = DeserializationSession<TRow>.Create(reader, options.RowGroupFilter, useFileIndexes: false);
         foreach (int group in session.RowGroups)
         {
             cancellationToken.ThrowIfCancellationRequested();

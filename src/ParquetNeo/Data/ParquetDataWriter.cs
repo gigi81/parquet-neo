@@ -28,6 +28,7 @@ public static class ParquetDataWriter
         RequireWritable(destination);
         // The synchronous writer has nothing to gain from staging the file in memory: the pages go straight to the stream.
         using var session = new DataWriteSession(source, options, destination);
+        session.Start();
         while (source.Read())
         {
             session.Add(source);
@@ -50,6 +51,7 @@ public static class ParquetDataWriter
         RequireWritable(destination);
         await using var pipeline = new PipelinedWriter(destination, cancellationToken);
         using var session = new DataWriteSession(source, options);
+        session.Start();
         await pipeline.WriteAsync(session.TakeStaged()).ConfigureAwait(false);
         while (await source.ReadAsync(cancellationToken).ConfigureAwait(false))
         {

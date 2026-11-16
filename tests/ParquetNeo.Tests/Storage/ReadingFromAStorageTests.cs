@@ -20,7 +20,7 @@ public class ReadingFromAStorageTests
         var (storage, file) = Setup();
 
         await using var stream = await storage.OpenReadAsync("data.parquet");
-        using var reader = new ParquetFileReader(stream, leaveOpen: true);
+        using var reader = ParquetFileReader.Open(stream, leaveOpen: true);
 
         await Assert.That(reader.RowGroupCount).IsEqualTo(Groups);
         await Assert.That(reader.RowCount).IsEqualTo(Groups * Rows);
@@ -34,7 +34,7 @@ public class ReadingFromAStorageTests
         var (storage, file) = Setup();
 
         await using var stream = await storage.OpenReadAsync("data.parquet");
-        using var reader = new ParquetFileReader(stream, leaveOpen: true);
+        using var reader = ParquetFileReader.Open(stream, leaveOpen: true);
         var ids = new int[Rows];
         using (var column = reader.OpenRowGroup(7).OpenColumn("Id"))
         {
@@ -54,7 +54,7 @@ public class ReadingFromAStorageTests
         int wanted = (11 * Rows) + 700;
 
         await using var stream = await storage.OpenReadAsync("data.parquet");
-        using var reader = new ParquetFileReader(stream, leaveOpen: true);
+        using var reader = ParquetFileReader.Open(stream, leaveOpen: true);
         var filter = ParquetFilter.Column("Id").Equal(wanted);
         var groups = reader.GetMatchingRowGroups(filter);
         await Assert.That(groups).IsEquivalentTo(new[] { 11 });
@@ -84,7 +84,7 @@ public class ReadingFromAStorageTests
         storage.MaxBytesPerRead = 777;
 
         await using var stream = await storage.OpenReadAsync("data.parquet");
-        using var reader = new ParquetFileReader(stream, leaveOpen: true);
+        using var reader = ParquetFileReader.Open(stream, leaveOpen: true);
         var names = new List<string>();
         using (var column = reader.OpenRowGroup(3).OpenColumn("Name"))
         {

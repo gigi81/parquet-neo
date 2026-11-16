@@ -19,7 +19,7 @@ var schema = new ParquetSchema(
 ]);
 
 using var file = File.Create("people.parquet");
-using var writer = new ParquetFileWriter(file, schema);
+using var writer = ParquetFileWriter.Create(file, schema);
 using (var group = writer.AppendRowGroup())
 {
     group.NextColumn().WriteBatch([1L, 2L, 3L]);
@@ -42,6 +42,9 @@ using (var group = writer.AppendRowGroup())
 ```
 
 The footer is written when the writer is disposed.
+
+As a rule, constructors in ParquetNeo do not touch a stream or a file. A file is started with `ParquetFileWriter.Create` (or
+`CreateAsync`) and opened with `ParquetFileReader.Open` (or `OpenAsync`), which are where the first bytes are written or read.
 
 ### Without blocking a thread
 
@@ -66,7 +69,7 @@ CPU work and runs on the calling thread (or, for `WriteColumnsAsync`, on pool th
 ## Reading
 
 ```csharp
-using var reader = new ParquetFileReader(stream);
+using var reader = ParquetFileReader.Open(stream);
 var group = reader.OpenRowGroup(0);
 using var column = group.OpenColumn("id");
 

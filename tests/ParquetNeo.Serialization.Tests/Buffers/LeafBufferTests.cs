@@ -13,7 +13,7 @@ public class LeafBufferTests
     private static byte[] Write(params LeafBuffer<long>[] groups)
     {
         var stream = new MemoryStream();
-        using var writer = new ParquetFileWriter(stream, OptionalLong, leaveOpen: true);
+        using var writer = ParquetFileWriter.Create(stream, OptionalLong, leaveOpen: true);
         foreach (var buffer in groups)
         {
             using var group = writer.AppendRowGroup();
@@ -61,7 +61,7 @@ public class LeafBufferTests
 
         // The first group is written from the buffer; what the second group holds must not include any of it.
         var first = new MemoryStream();
-        using (var writer = new ParquetFileWriter(first, OptionalLong, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(first, OptionalLong, leaveOpen: true))
         {
             using (var group = writer.AppendRowGroup())
             {

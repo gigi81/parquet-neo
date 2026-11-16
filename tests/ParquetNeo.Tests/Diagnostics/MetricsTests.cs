@@ -98,7 +98,7 @@ public class MetricsTests
         using var recorder = new MetricRecorder(metrics.Meter);
         var file = StorageSampleFile.Create(rowGroups: 10, rowsPerGroup: 500);
 
-        using (var reader = new ParquetDataReader(new MemoryStream(file), new ParquetDataReaderOptions
+        using (var reader = ParquetDataReader.Open(new MemoryStream(file), new ParquetDataReaderOptions
         {
             Reader = new ParquetReaderOptions { Metrics = metrics },
             RowGroupFilter = ParquetFilter.Column("Id").GreaterThanOrEqual(3000) & ParquetFilter.Column("Id").LessThan(4000),
@@ -125,7 +125,7 @@ public class MetricsTests
         using var recorder = new MetricRecorder(metrics.Meter);
         var file = StorageSampleFile.Create(rowGroups: 1, rowsPerGroup: 20_000);
 
-        using var reader = new ParquetFileReader(new MemoryStream(file), new ParquetReaderOptions { Metrics = metrics });
+        using var reader = ParquetFileReader.Open(new MemoryStream(file), new ParquetReaderOptions { Metrics = metrics });
         var group = reader.OpenRowGroup(0);
         var selection = group.SelectRows(ParquetFilter.Column("Id").Equal(12_345), [0, 1])!;
 

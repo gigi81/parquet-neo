@@ -163,7 +163,7 @@ public class EncodingFileTests
     {
         var schema = new ParquetNeo.Schema.ParquetSchema([new ParquetNeo.Schema.PrimitiveNode("d", PhysicalType.Double, FieldRepetitionType.Required)]);
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, new ParquetWriterOptions { DictionaryEnabled = false }, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, new ParquetWriterOptions { DictionaryEnabled = false }, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(new double[100]);
@@ -185,10 +185,10 @@ public class EncodingFileTests
     {
         var schema = EncodingDataset.Schema(optional: false);
 
-        await Assert.That(() => new ParquetFileWriter(new MemoryStream(), schema, new ParquetWriterOptions { ColumnEncodings = new Dictionary<string, ParquetEncoding> { ["split_float"] = ParquetEncoding.DeltaBinaryPacked } })).Throws<ArgumentException>();
-        await Assert.That(() => new ParquetFileWriter(new MemoryStream(), EncodingDataset.Schema(false), new ParquetWriterOptions { ColumnEncodings = new Dictionary<string, ParquetEncoding> { ["delta_int32"] = ParquetEncoding.DeltaByteArray } })).Throws<ArgumentException>();
-        await Assert.That(() => new ParquetFileWriter(new MemoryStream(), EncodingDataset.Schema(false), new ParquetWriterOptions { ColumnEncodings = new Dictionary<string, ParquetEncoding> { ["delta_int32"] = ParquetEncoding.RleDictionary } })).Throws<ArgumentException>();
-        await Assert.That(() => new ParquetFileWriter(new MemoryStream(), EncodingDataset.Schema(false), new ParquetWriterOptions { ColumnEncodings = new Dictionary<string, ParquetEncoding> { ["nope"] = ParquetEncoding.Plain } })).Throws<ArgumentException>();
+        await Assert.That(() => ParquetFileWriter.Create(new MemoryStream(), schema, new ParquetWriterOptions { ColumnEncodings = new Dictionary<string, ParquetEncoding> { ["split_float"] = ParquetEncoding.DeltaBinaryPacked } })).Throws<ArgumentException>();
+        await Assert.That(() => ParquetFileWriter.Create(new MemoryStream(), EncodingDataset.Schema(false), new ParquetWriterOptions { ColumnEncodings = new Dictionary<string, ParquetEncoding> { ["delta_int32"] = ParquetEncoding.DeltaByteArray } })).Throws<ArgumentException>();
+        await Assert.That(() => ParquetFileWriter.Create(new MemoryStream(), EncodingDataset.Schema(false), new ParquetWriterOptions { ColumnEncodings = new Dictionary<string, ParquetEncoding> { ["delta_int32"] = ParquetEncoding.RleDictionary } })).Throws<ArgumentException>();
+        await Assert.That(() => ParquetFileWriter.Create(new MemoryStream(), EncodingDataset.Schema(false), new ParquetWriterOptions { ColumnEncodings = new Dictionary<string, ParquetEncoding> { ["nope"] = ParquetEncoding.Plain } })).Throws<ArgumentException>();
     }
 
     // ---- golden file ----

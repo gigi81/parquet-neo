@@ -14,7 +14,7 @@ namespace ParquetNeo;
 /// </summary>
 /// <example>
 /// <code>
-/// using var reader = new ParquetFileReader(stream);
+/// using var reader = ParquetFileReader.Open(stream);
 /// using var column = reader.OpenRowGroup(0).OpenColumn(0);
 /// var values = new long[1000];
 /// BatchRead read;
@@ -32,36 +32,6 @@ public sealed class ParquetFileReader : IDisposable, IAsyncDisposable
     private readonly List<PrefetchedRange> _prefetched = [];
     private bool _disposed;
 
-    /// <param name="input">A readable, seekable stream holding the whole file.</param>
-    /// <param name="options">Codecs and safety limits; <c>null</c> for the defaults.</param>
-    /// <param name="leaveOpen">Whether to keep <paramref name="input"/> open when the reader is disposed.</param>
-    /// <exception cref="ParquetFormatException">The footer is missing or malformed.</exception>
-    /// <exception cref="NotSupportedException">The file is encrypted.</exception>
-    public ParquetFileReader(Stream input, ParquetReaderOptions? options = null, bool leaveOpen = false)
-    {
-        ArgumentNullException.ThrowIfNull(input);
-        if (!input.CanRead || !input.CanSeek)
-        {
-            throw new ArgumentException("The stream must be readable and seekable.", nameof(input));
-        }
-
-        _input = input;
-        _leaveOpen = leaveOpen;
-        Options = options ?? new ParquetReaderOptions();
-        try
-        {
-            FileLength = input.Length;
-            Metadata = ReadFooter();
-            Schema = ParquetSchema.FromElements(Metadata.Schema);
-            ValidateRowGroups();
-        }
-        catch
-        {
-            Release();
-            throw;
-        }
-    }
-
     private ParquetFileReader(Stream input, ParquetReaderOptions options, bool leaveOpen, long fileLength, FileMetaData metadata)
     {
         _input = input;
@@ -74,7 +44,36 @@ public sealed class ParquetFileReader : IDisposable, IAsyncDisposable
     }
 
     /// <summary>
-    /// Opens a file like the constructor does, reading its footer with asynchronous reads so that no thread waits for the stream.
+    /// Opens a file, reading its footer. Constructors do not use streams, so this is the way to open a file; use <see cref="OpenAsync"/>
+    /// to read the footer without blocking.
+    /// </summary>
+    /// <param name="input">A readable, seekable stream holding the whole file.</param>
+    /// <param name="options">Codecs and safety limits; <c>null</c> for the defaults.</param>
+    /// <param name="leaveOpen">Whether to keep <paramref name="input"/> open when the reader is disposed.</param>
+    /// <exception cref="ParquetFormatException">The footer is missing or malformed.</exception>
+    /// <exception cref="NotSupportedException">The file is encrypted.</exception>
+    public static ParquetFileReader Open(Stream input, ParquetReaderOptions? options = null, bool leaveOpen = false)
+    {
+        RequireSeekable(input);
+        options ??= new ParquetReaderOptions();
+        try
+        {
+            long length = input.Length;
+            return new ParquetFileReader(input, options, leaveOpen, length, ReadFooter(input, length, options));
+        }
+        catch
+        {
+            if (!leaveOpen)
+            {
+                input.Dispose();
+            }
+
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Opens a file like <see cref="Open"/>, reading its footer with asynchronous reads so that no thread waits for the stream.
     /// The rows are read with the methods of <see cref="RowGroupReader"/>; <see cref="RowGroupReader.OpenColumnAsync(int, CancellationToken)"/>
     /// reads a column chunk the same way.
     /// </summary>
@@ -82,12 +81,7 @@ public sealed class ParquetFileReader : IDisposable, IAsyncDisposable
     /// <exception cref="NotSupportedException">The file is encrypted.</exception>
     public static async ValueTask<ParquetFileReader> OpenAsync(Stream input, ParquetReaderOptions? options = null, bool leaveOpen = false, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(input);
-        if (!input.CanRead || !input.CanSeek)
-        {
-            throw new ArgumentException("The stream must be readable and seekable.", nameof(input));
-        }
-
+        RequireSeekable(input);
         options ??= new ParquetReaderOptions();
         try
         {
@@ -120,6 +114,15 @@ public sealed class ParquetFileReader : IDisposable, IAsyncDisposable
             }
 
             throw;
+        }
+    }
+
+    private static void RequireSeekable(Stream input)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+        if (!input.CanRead || !input.CanSeek)
+        {
+            throw new ArgumentException("The stream must be readable and seekable.", nameof(input));
         }
     }
 
@@ -317,10 +320,15 @@ public sealed class ParquetFileReader : IDisposable, IAsyncDisposable
             }
         }
 
-        _input.Seek(position, SeekOrigin.Begin);
+        ReadExactlyAt(_input, position, destination);
+    }
+
+    private static void ReadExactlyAt(Stream input, long position, Span<byte> destination)
+    {
+        input.Seek(position, SeekOrigin.Begin);
         try
         {
-            _input.ReadExactly(destination);
+            input.ReadExactly(destination);
         }
         catch (EndOfStreamException)
         {
@@ -436,22 +444,22 @@ public sealed class ParquetFileReader : IDisposable, IAsyncDisposable
         }
     }
 
-    private FileMetaData ReadFooter()
+    private static FileMetaData ReadFooter(Stream input, long fileLength, ParquetReaderOptions options)
     {
         // Layout at the end of the file: footer | 4-byte footer length | "PAR1".
         Span<byte> head = stackalloc byte[4];
         Span<byte> tail = stackalloc byte[8];
-        if (FileLength >= 12)
+        if (fileLength >= 12)
         {
-            ReadAt(0, head);
-            ReadAt(FileLength - 8, tail);
+            ReadExactlyAt(input, 0, head);
+            ReadExactlyAt(input, fileLength - 8, tail);
         }
 
-        int footerLength = CheckTail(FileLength, head, tail, Options);
+        int footerLength = CheckTail(fileLength, head, tail, options);
         var footer = ArrayPool<byte>.Shared.Rent(footerLength);
         try
         {
-            ReadAt(FileLength - 8 - footerLength, footer.AsSpan(0, footerLength));
+            ReadExactlyAt(input, fileLength - 8 - footerLength, footer.AsSpan(0, footerLength));
             return FileMetaData.Deserialize(footer.AsSpan(0, footerLength));
         }
         finally

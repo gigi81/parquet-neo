@@ -54,7 +54,7 @@ public class AsyncReaderTests
     public async Task OpenColumnAsync_WithASelectionFromAFileWithoutAPageIndex_Throws()
     {
         var memory = new MemoryStream();
-        using (var writer = new ParquetFileWriter(memory, new ParquetSchema([new PrimitiveNode("a", PhysicalType.Int32, FieldRepetitionType.Required)]), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(memory, new ParquetSchema([new PrimitiveNode("a", PhysicalType.Int32, FieldRepetitionType.Required)]), leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(new[] { 1, 2, 3 });
@@ -82,7 +82,7 @@ public class AsyncReaderTests
 
         var matching = await reader.GetMatchingRowGroupsAsync(filter);
 
-        await Assert.That(matching.SequenceEqual(new ParquetFileReader(new MemoryStream(File)).GetMatchingRowGroups(filter))).IsTrue();
+        await Assert.That(matching.SequenceEqual(ParquetFileReader.Open(new MemoryStream(File)).GetMatchingRowGroups(filter))).IsTrue();
         await Assert.That(matching.Count).IsEqualTo(1);
     }
 
@@ -94,7 +94,7 @@ public class AsyncReaderTests
 
         var selection = await reader.OpenRowGroup(0).SelectRowsAsync(filter, [0, 1]);
 
-        using var other = new ParquetFileReader(new MemoryStream(File));
+        using var other = ParquetFileReader.Open(new MemoryStream(File));
         var expected = other.OpenRowGroup(0).SelectRows(filter, [0, 1]);
         await Assert.That(selection).IsNotNull();
         await Assert.That(selection!.Ranges.SequenceEqual(expected!.Ranges)).IsTrue();

@@ -8,7 +8,7 @@ namespace ParquetNeo.Tests.Data;
 public class DataReaderTests
 {
     private static ParquetDataReader OpenFixture(string name, ParquetDataReaderOptions? options = null) =>
-        new(new MemoryStream(File.ReadAllBytes(TestBytes.FixturePath(name))), (options ?? new ParquetDataReaderOptions()) with { Reader = new ParquetReaderOptions { Codecs = TestParquetFile.Registry } });
+        ParquetDataReader.Open(new MemoryStream(File.ReadAllBytes(TestBytes.FixturePath(name))), (options ?? new ParquetDataReaderOptions()) with { Reader = new ParquetReaderOptions { Codecs = TestParquetFile.Registry } });
 
     // ---- types and values of files other tools wrote ----
 
@@ -162,7 +162,7 @@ public class DataReaderTests
         var stream = new MemoryStream();
         ParquetDataWriter.Write(table.CreateDataReader(), stream);
         stream.Position = 0;
-        return new ParquetDataReader(stream);
+        return ParquetDataReader.Open(stream);
     }
 
     [Test]
@@ -340,8 +340,8 @@ public class DataReaderTests
     [Test]
     public async Task ANonSeekableOrUnreadableStream_IsRefused()
     {
-        await Assert.That(() => new ParquetDataReader(null!)).Throws<ArgumentNullException>();
-        await Assert.That(() => new ParquetDataReader(new MemoryStream(new byte[1], writable: false))).Throws<Exception>();
+        await Assert.That(() => ParquetDataReader.Open(null!)).Throws<ArgumentNullException>();
+        await Assert.That(() => ParquetDataReader.Open(new MemoryStream(new byte[1], writable: false))).Throws<Exception>();
     }
 
     [Test]
@@ -354,7 +354,7 @@ public class DataReaderTests
         ParquetDataWriter.Write(table.CreateDataReader(), stream);
         stream.Position = 0;
 
-        using (var reader = new ParquetDataReader(stream, leaveOpen: true))
+        using (var reader = ParquetDataReader.Open(stream, leaveOpen: true))
         {
             reader.Read();
         }

@@ -96,7 +96,7 @@ public class ReadComparison
     public long ParquetNeoColumns()
     {
         const int Rows = ComparisonData.Rows;
-        using var file = new ParquetFileReader(new MemoryStream(_file), _options);
+        using var file = ParquetFileReader.Open(new MemoryStream(_file), _options);
         var group = file.OpenRowGroup(0);
         var ids = new long[Rows];
         var customers = new string[Rows];
