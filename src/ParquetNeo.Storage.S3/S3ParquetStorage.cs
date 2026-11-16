@@ -31,6 +31,7 @@ public sealed class S3ParquetStorage(IAmazonS3 client, string bucket, RangeReadS
 
     private async IAsyncEnumerable<StorageObject> ListObjectsAsync(string prefix, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
+        options?.Metrics?.RecordListing(S3RangeStream.System);
         var request = new ListObjectsV2Request { BucketName = _bucket, Prefix = prefix };
         ListObjectsV2Response response;
         do
@@ -59,6 +60,7 @@ public sealed class S3ParquetStorage(IAmazonS3 client, string bucket, RangeReadS
             throw new FileNotFoundException($"There is no object '{key}' in the bucket '{_bucket}'.", key, exception);
         }
 
+        options?.Metrics?.RecordObjectOpened(S3RangeStream.System);
         return new S3RangeStream(_client, _bucket, key, metadata.ContentLength, metadata.ETag, options);
     }
 }

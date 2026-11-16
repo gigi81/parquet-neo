@@ -1,4 +1,5 @@
 using ParquetNeo.Compression;
+using ParquetNeo.Diagnostics;
 
 namespace ParquetNeo;
 
@@ -13,6 +14,11 @@ public sealed record ParquetReaderOptions
     /// <see cref="Exceptions.CorruptColumnException"/>. Pages with none are read as they are. Off by default.
     /// </summary>
     public bool VerifyPageChecksums { get; init; }
+
+    /// <summary>
+    /// Where the row groups that are read and skipped (and the rows that the page index of a file skips) are counted. Nothing is recorded when not set.
+    /// </summary>
+    public ParquetNeoMetrics? Metrics { get; init; }
 
     /// <summary>The largest footer that is read, in bytes. Defaults to 256 MiB.</summary>
     public int MaxFooterSize { get; init; } = 256 * 1024 * 1024;

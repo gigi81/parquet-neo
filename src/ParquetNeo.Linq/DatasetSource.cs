@@ -1,5 +1,7 @@
 using System.Runtime.ExceptionServices;
+using System.Diagnostics;
 using System.IO.Enumeration;
+using ParquetNeo.Diagnostics;
 using ParquetNeo.Serialization;
 using ParquetNeo.Storage;
 
@@ -45,6 +47,10 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
         return files;
     }
 
+    /// <summary>The options of the readers of the files that are read: those of the dataset, with the metrics of the dataset when it has some.</summary>
+    private ParquetReaderOptions ReaderOptions =>
+        Options.Metrics is null ? Options.Deserializer.Reader : Options.Deserializer.Reader with { Metrics = Options.Metrics };
+
     /// <summary>Opens a file of the list of <see cref="Files"/> for reading, from the disk or from the storage.</summary>
     public Stream OpenFile(string file) => Metered.OpenReadAsync(file).AsTask().GetAwaiter().GetResult();
 
@@ -68,6 +74,34 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
 
     /// <summary>The rows of the row groups of the files that the filter does not rule out, files in parallel.</summary>
     public IEnumerable<TRow> Read<TRow>(ParquetFilter? filter)
+    {
+        var rows = ReadFiles<TRow>(filter);
+        return Options.Metrics is { } metrics ? Measured(rows, metrics, filter is not null) : rows;
+    }
+
+    /// <summary>
+    /// The rows, counting them and timing the query from the first row asked for until the last one is given or the enumeration is disposed
+    /// (a query that takes the first rows ends there), into the metrics.
+    /// </summary>
+    internal static IEnumerable<TRow> Measured<TRow>(IEnumerable<TRow> rows, ParquetNeoMetrics metrics, bool filtered)
+    {
+        long started = Stopwatch.GetTimestamp();
+        long count = 0;
+        try
+        {
+            foreach (var row in rows)
+            {
+                count++;
+                yield return row;
+            }
+        }
+        finally
+        {
+            metrics.RecordQuery(Stopwatch.GetElapsedTime(started).TotalSeconds, count, filtered);
+        }
+    }
+
+    private IEnumerable<TRow> ReadFiles<TRow>(ParquetFilter? filter)
     {
         var files = Files();
         int degree = Math.Min(Options.MaxDegreeOfParallelism, files.Count);
@@ -155,7 +189,7 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
             stream.Position = 0;
         }
 
-        foreach (var row in ParquetSerializer.DeserializeAll<TRow>(stream, Options.Deserializer with { RowGroupFilter = effective }))
+        foreach (var row in ParquetSerializer.DeserializeAll<TRow>(stream, Options.Deserializer with { RowGroupFilter = effective, Reader = ReaderOptions }))
         {
             yield return row;
         }

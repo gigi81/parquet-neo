@@ -166,4 +166,28 @@ public class AzureBlobParquetStorageTests
         await Assert.That(plan.FilesSkipped).IsEqualTo(3);
         await Assert.That(rows.Order()).IsEquivalentTo(Enumerable.Range(200_000, 10).Select(i => $"name-{i}").Order());
     }
+
+    [Test]
+    public async Task ListingsObjectsAndRequests_AreRecordedAsMetricsOfTheKindOfStorage()
+    {
+        using var metrics = new ParquetNeo.Diagnostics.ParquetNeoMetrics();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.MetricRecorder(metrics.Meter);
+        var container = new FakeContainer().Put("people/a.parquet", Bytes(5000));
+        var storage = new AzureBlobParquetStorage(container, new RangeReadStreamOptions { BlockSize = 1000, TailSize = 0, Metrics = metrics });
+
+        await List(storage, "people/");
+        await using (var stream = await storage.OpenReadAsync("people/a.parquet"))
+        {
+            await stream.ReadExactlyAsync(new byte[10]);
+            stream.Position = 3000;
+            await stream.ReadExactlyAsync(new byte[2000]);
+        }
+
+        string system = ParquetNeo.Diagnostics.ParquetNeoMetrics.StorageSystemTag;
+        await Assert.That(recorder.Sum("parquetneo.storage.listings", (system, "azure_blob"))).IsEqualTo(1);
+        await Assert.That(recorder.Sum("parquetneo.storage.objects_opened", (system, "azure_blob"))).IsEqualTo(1);
+        await Assert.That(recorder.Sum("parquetneo.storage.requests", (system, "azure_blob"), (ParquetNeo.Diagnostics.ParquetNeoMetrics.OutcomeTag, "ok"))).IsEqualTo(2);
+        await Assert.That(recorder.Sum("parquetneo.storage.bytes_read", (system, "azure_blob"))).IsEqualTo(1000 + 2000);
+        await Assert.That(recorder.Count("parquetneo.storage.request.duration", (system, "azure_blob"))).IsEqualTo(2);
+    }
 }

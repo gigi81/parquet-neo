@@ -1,3 +1,5 @@
+using ParquetNeo.Diagnostics;
+
 namespace ParquetNeo.Storage;
 
 /// <summary>How a <see cref="RangeReadStream"/> reads: in blocks of what size, and how many it keeps.</summary>
@@ -18,4 +20,7 @@ public sealed record RangeReadStreamOptions
     /// and not three. 64 KiB when not set; 0 turns it off. An object that is not longer than this is read whole at the first read of its end.
     /// </summary>
     public int TailSize { get; init; } = 64 * 1024;
+
+    /// <summary>Where the requests to the storage, how long they took and how many bytes they got, and the objects that are opened and listed, are counted. Nothing is recorded when not set.</summary>
+    public ParquetNeoMetrics? Metrics { get; init; }
 }

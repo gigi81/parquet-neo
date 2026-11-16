@@ -12,6 +12,7 @@ Every package has the version of the release, and a package that depends on anot
 | `ParquetNeo.Compression.Snappy` | Snappy, through the managed Snappier library | yes | `ParquetNeo` |
 | `ParquetNeo.Compression.Lz4` | LZ4_RAW | yes | `ParquetNeo` |
 | `ParquetNeo.Compression.Zstd` | Zstandard, through the managed ZstdSharp library | yes | `ParquetNeo` |
+| `ParquetNeo.Extensions.DependencyInjection` | `AddParquetNeoMetrics()` for `Microsoft.Extensions.DependencyInjection` (the metrics themselves are in `ParquetNeo`) | no | `ParquetNeo`, `Microsoft.Extensions.DependencyInjection.Abstractions`, `Microsoft.Extensions.Diagnostics` |
 | `ParquetNeo.Storage.S3` | Reading from Amazon S3 and S3 compatible storage (AWS SDK) | no | `ParquetNeo`, `AWSSDK.S3` |
 | `ParquetNeo.Storage.AzureBlobs` | Reading from Azure Blob Storage (Azure SDK) | no | `ParquetNeo`, `Azure.Storage.Blobs` |
 

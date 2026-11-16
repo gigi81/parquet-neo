@@ -1,6 +1,8 @@
 using System.Linq.Expressions;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using ParquetNeo.Diagnostics;
 
 namespace ParquetNeo.Linq;
 
@@ -32,7 +34,10 @@ internal sealed class ParquetQueryProvider(DatasetSource source) : IQueryProvide
         var plan = QueryPlan.Analyze(source, expression);
         if (plan.FooterAnswer is { } answer)
         {
-            return (TResult)AnswerFromFooters(answer);
+            long started = Stopwatch.GetTimestamp();
+            var result = (TResult)AnswerFromFooters(answer);
+            source.Options.Metrics?.RecordQuery(Stopwatch.GetElapsedTime(started).TotalSeconds, 0, filtered: false);
+            return result;
         }
 
         var rows = Read(plan);

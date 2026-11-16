@@ -9,6 +9,11 @@ namespace ParquetNeo.Storage.S3;
 internal sealed class S3RangeStream(IAmazonS3 client, string bucket, string key, long length, string? etag, RangeReadStreamOptions? options)
     : RangeReadStream(length, options)
 {
+    /// <summary>The value of the storage tag of the metrics.</summary>
+    internal const string System = "aws_s3";
+
+    protected override string StorageSystem => System;
+
     protected override async ValueTask<int> ReadRangeAsync(long offset, Memory<byte> destination, CancellationToken cancellationToken)
     {
         var request = new GetObjectRequest

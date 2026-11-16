@@ -10,6 +10,11 @@ namespace ParquetNeo.Storage.AzureBlobs;
 internal sealed class AzureBlobRangeStream(BlobClient blob, long length, ETag etag, RangeReadStreamOptions? options)
     : RangeReadStream(length, options)
 {
+    /// <summary>The value of the storage tag of the metrics.</summary>
+    internal const string System = "azure_blob";
+
+    protected override string StorageSystem => System;
+
     protected override async ValueTask<int> ReadRangeAsync(long offset, Memory<byte> destination, CancellationToken cancellationToken)
     {
         var request = new BlobDownloadOptions

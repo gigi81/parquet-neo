@@ -46,6 +46,8 @@ public sealed class InMemoryStorage : IParquetStorage
 
     private sealed class ObjectStream(InMemoryStorage storage, string key, byte[] data) : RangeReadStream(data.Length, storage.Options)
     {
+        protected override string StorageSystem => "memory";
+
         protected override ValueTask<int> ReadRangeAsync(long offset, Memory<byte> destination, CancellationToken cancellationToken)
         {
             int count = Math.Min(destination.Length, storage.MaxBytesPerRead ?? int.MaxValue);

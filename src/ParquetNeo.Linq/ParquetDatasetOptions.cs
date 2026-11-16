@@ -1,3 +1,4 @@
+using ParquetNeo.Diagnostics;
 using ParquetNeo.Serialization;
 
 namespace ParquetNeo.Linq;
@@ -20,4 +21,10 @@ public sealed record ParquetDatasetOptions
 
     /// <summary>The codecs and limits the files are read with. Its <see cref="ParquetDeserializerOptions.RowGroupFilter"/> is left to the query.</summary>
     public ParquetDeserializerOptions Deserializer { get; init; } = new();
+
+    /// <summary>
+    /// Where the queries of the dataset are counted and timed, and the row groups it reads and skips: the same metrics as the readers, which are
+    /// given to the readers of the dataset's files. Nothing is recorded when not set. The requests to a storage are recorded by the options of the storage.
+    /// </summary>
+    public ParquetNeoMetrics? Metrics { get; init; }
 }

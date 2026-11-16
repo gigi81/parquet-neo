@@ -57,6 +57,7 @@ public sealed class ParquetDataReader : DbDataReader
         {
             _filter = options.RowGroupFilter;
             _rowGroups = _filter is { } filter ? _file.GetMatchingRowGroups(filter) : Enumerable.Range(0, _file.RowGroupCount).ToArray();
+            options.Reader.Metrics?.RecordRowGroups(_rowGroups.Count, _file.RowGroupCount - _rowGroups.Count);
             _nodes = SelectColumns(_file.Schema, options.Columns);
             _columns = new ColumnData[_nodes.Length];
             _types = new Type[_nodes.Length];
