@@ -43,6 +43,26 @@ using (var group = writer.AppendRowGroup())
 
 The footer is written when the writer is disposed.
 
+### Without blocking a thread
+
+Every operation that touches the stream has an asynchronous form, so that a slow stream (a network, an object store upload) does not
+hold a thread. `ParquetFileWriter.CreateAsync` starts the file, `RowGroupWriter.WriteColumnsAsync` (all the columns, encoded in
+parallel on the thread pool) or `WriteColumnAsync` (one column at a time, which holds only one encoded column in memory) write the
+columns, and `CloseAsync` or `DisposeAsync` finish the group and the file, including the bloom filters, the page indexes and the
+footer. The files are the same, byte for byte, as the ones the synchronous methods make:
+
+```csharp
+await using var writer = await ParquetFileWriter.CreateAsync(stream, schema);
+await using (var group = writer.AppendRowGroup())
+{
+    await group.WriteColumnAsync(column => column.WriteBatch([1L, 2L, 3L]));
+    await group.WriteColumnAsync(column => column.WriteStrings(["Ada", "Alan", "Grace"]));
+}
+```
+
+`NextColumn` is the synchronous way: it encodes and writes each page as it goes, so it blocks on the stream. The encoding itself is
+CPU work and runs on the calling thread (or, for `WriteColumnsAsync`, on pool threads).
+
 ## Reading
 
 ```csharp
@@ -72,3 +92,21 @@ Memory is bounded by the largest page: pages are read one at a time and their bu
 
 `ParquetReaderOptions` has limits that bound what a corrupt or hostile file can make the reader allocate (for example `MaxPageSize`). A damaged file throws a
 `ParquetException` that says what is wrong.
+
+### Without blocking a thread
+
+Reading works from the stream synchronously, one page at a time. The asynchronous forms read what is needed first, with
+asynchronous reads, and then decode it from memory: `ParquetFileReader.OpenAsync` reads the footer, `RowGroupReader.OpenColumnAsync`
+reads the whole column chunk (or, given a `RowSelection`, its page index and the pages that hold the selected rows), and
+`GetMatchingRowGroupsAsync` and `SelectRowsAsync` read the bloom filters and page indexes they need. The chunk stays in memory until
+the `ColumnReader` is disposed, so the memory is the compressed size of the column chunk: use the synchronous methods for a chunk too
+big to hold.
+
+```csharp
+await using var reader = await ParquetFileReader.OpenAsync(stream);
+using var column = await reader.OpenRowGroup(0).OpenColumnAsync("id");
+var values = new long[1000];
+var read = column.ReadBatch(values); // no wait for the stream: the chunk is in memory
+```
+
+`ParquetDataReader.OpenAsync` and `ReadAsync` (ADO.NET) do the same for each row group.

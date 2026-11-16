@@ -27,7 +27,7 @@ namespace ParquetNeo;
 /// </remarks>
 public sealed partial class ColumnReader : IDisposable
 {
-    private const int HeaderPrefetch = 8 * 1024;
+    internal const int HeaderPrefetch = 8 * 1024;
     private const int MaxHeaderSize = 4 * 1024 * 1024;
 
     private readonly ParquetFileReader _file;
@@ -70,6 +70,7 @@ public sealed partial class ColumnReader : IDisposable
     private int _valuePosition;
     private int _valueEnd;
     private bool _disposed;
+    private IDisposable? _prefetched;
 
     internal ColumnReader(ParquetFileReader file, PrimitiveNode column, ColumnChunk chunk, long rowCount)
     {
@@ -108,6 +109,15 @@ public sealed partial class ColumnReader : IDisposable
     }
 
     public PrimitiveNode Column { get; }
+
+    /// <summary>Where the column chunk starts in the file: its dictionary page if it has one, else its first data page.</summary>
+    internal long ChunkStart => _chunkEnd - _meta.TotalCompressedSize;
+
+    /// <summary>The position in the file after the last byte of the column chunk.</summary>
+    internal long ChunkEnd => _chunkEnd;
+
+    /// <summary>Makes the reader responsible for releasing what was prefetched for it (see <see cref="ParquetFileReader"/>), when it is disposed.</summary>
+    internal void Own(IDisposable prefetched) => _prefetched = prefetched;
 
     /// <summary>
     /// The number of level entries in this column chunk, as recorded in its metadata: one per value, null, empty list and
@@ -320,6 +330,8 @@ public sealed partial class ColumnReader : IDisposable
         }
 
         _disposed = true;
+        _prefetched?.Dispose();
+        _prefetched = null;
         Return(ref _headerBuffer);
         Return(ref _compressed);
         Return(ref _page);

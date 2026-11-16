@@ -44,6 +44,11 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
     /// <param name="leaveOpen">Whether to keep <paramref name="output"/> open when the writer is closed.</param>
     /// <exception cref="NotSupportedException">The schema has an INT96 column, or the compression codec is not registered.</exception>
     public ParquetFileWriter(Stream output, ParquetSchema schema, ParquetWriterOptions? options = null, bool leaveOpen = false)
+        : this(output, schema, options, leaveOpen, writeMagic: true)
+    {
+    }
+
+    private ParquetFileWriter(Stream output, ParquetSchema schema, ParquetWriterOptions? options, bool leaveOpen, bool writeMagic)
     {
         ArgumentNullException.ThrowIfNull(output);
         ArgumentNullException.ThrowIfNull(schema);
@@ -72,7 +77,32 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
         Schema = schema;
         _codec = _options.Codecs.Get(_options.Compression);
 
-        Write(Magic);
+        if (writeMagic)
+        {
+            Write(Magic);
+        }
+    }
+
+    /// <summary>
+    /// Creates a writer like the constructor does, writing the start of the file with an asynchronous write. Write the row groups with
+    /// <see cref="RowGroupWriter.WriteColumnAsync"/> or <see cref="RowGroupWriter.WriteColumnsAsync(IReadOnlyList{Action{ColumnWriter}}, CancellationToken)"/>,
+    /// finish them with <see cref="RowGroupWriter.CloseAsync"/> and the file with <see cref="CloseAsync"/>, and no write to the stream blocks a thread.
+    /// </summary>
+    /// <exception cref="NotSupportedException">The schema has an INT96 column, or the compression codec is not registered.</exception>
+    public static async ValueTask<ParquetFileWriter> CreateAsync(Stream output, ParquetSchema schema, ParquetWriterOptions? options = null, bool leaveOpen = false, CancellationToken cancellationToken = default)
+    {
+        var writer = new ParquetFileWriter(output, schema, options, leaveOpen, writeMagic: false);
+        try
+        {
+            await writer.WriteAsync(Magic, cancellationToken).ConfigureAwait(false);
+            return writer;
+        }
+        catch
+        {
+            writer.Abandon(); // no footer for a file that could not be started
+            await writer.DisposeAsync().ConfigureAwait(false);
+            throw;
+        }
     }
 
     public ParquetSchema Schema { get; }
@@ -100,9 +130,47 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
     /// <exception cref="InvalidOperationException">A row group is still open, or the file was abandoned after an incomplete row group.</exception>
     public void Close()
     {
-        if (_closed)
+        if (!BeginClose())
         {
             return;
+        }
+
+        WritePageIndexes();
+        WriteFooter();
+        _output.Flush();
+        ReleaseStream();
+    }
+
+    /// <summary>
+    /// Writes the footer without blocking and, unless asked to leave it open, closes the stream. The page indexes, the footer and the
+    /// flush are written to the stream with asynchronous calls, so the thread is free while they are on their way.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">A row group is still open, or the file was abandoned after an incomplete row group.</exception>
+    public async ValueTask CloseAsync(CancellationToken cancellationToken = default)
+    {
+        if (!BeginClose())
+        {
+            return;
+        }
+
+        try
+        {
+            await WritePageIndexesAsync(cancellationToken).ConfigureAwait(false);
+            await WriteFooterAsync(cancellationToken).ConfigureAwait(false);
+            await _output.FlushAsync(cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            await ReleaseStreamAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Checks that the file can be closed; returns false when it is closed already, and marks it closed otherwise.</summary>
+    private bool BeginClose()
+    {
+        if (_closed)
+        {
+            return false;
         }
 
         if (_abandoned)
@@ -116,10 +184,7 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
         }
 
         _closed = true;
-        WritePageIndexes();
-        WriteFooter();
-        _output.Flush();
-        ReleaseStream();
+        return true;
     }
 
     /// <summary>Completes the file if possible. It does not throw for a file that was abandoned (for example after an exception).</summary>
@@ -140,19 +205,12 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
         Close();
     }
 
+    /// <summary>Completes the file like <see cref="CloseAsync"/> if possible; it does not throw for a file that was abandoned.</summary>
     public async ValueTask DisposeAsync()
     {
         if (!_closed && !_abandoned && _openGroup is null)
         {
-            _closed = true;
-            WriteFooter();
-            await _output.FlushAsync().ConfigureAwait(false);
-            Buffers.Dispose();
-            if (!_leaveOpen)
-            {
-                await _output.DisposeAsync().ConfigureAwait(false);
-            }
-
+            await CloseAsync().ConfigureAwait(false);
             return;
         }
 
@@ -199,10 +257,43 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
         Position += bytes.Length;
     }
 
+    internal async ValueTask WriteAsync(ReadOnlyMemory<byte> bytes, CancellationToken cancellationToken)
+    {
+        await _output.WriteAsync(bytes, cancellationToken).ConfigureAwait(false);
+        Position += bytes.Length;
+    }
+
     /// <summary>Writes the column indexes of all the columns, then their offset indexes, and records where each is in its column chunk.</summary>
     private void WritePageIndexes()
     {
         var buffer = new ArrayBufferWriter<byte>();
+        foreach (var write in PageIndexParts(buffer))
+        {
+            write();
+            Write(buffer.WrittenSpan);
+        }
+
+        _pageIndexes.Clear();
+    }
+
+    private async ValueTask WritePageIndexesAsync(CancellationToken cancellationToken)
+    {
+        var buffer = new ArrayBufferWriter<byte>();
+        foreach (var write in PageIndexParts(buffer))
+        {
+            write();
+            await WriteAsync(buffer.WrittenMemory, cancellationToken).ConfigureAwait(false);
+        }
+
+        _pageIndexes.Clear();
+    }
+
+    /// <summary>
+    /// The page index structures in the order they are written. Running each step serializes one of them into <paramref name="buffer"/>
+    /// and records its position and length in the column chunk, so the caller writes the buffer right after.
+    /// </summary>
+    private IEnumerable<Action> PageIndexParts(ArrayBufferWriter<byte> buffer)
+    {
         foreach (var (chunk, index) in _pageIndexes)
         {
             if (index.Columns is null)
@@ -210,26 +301,38 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
                 continue;
             }
 
-            buffer.ResetWrittenCount();
-            index.Columns.Serialize(buffer);
-            chunk.ColumnIndexOffset = Position;
-            chunk.ColumnIndexLength = buffer.WrittenCount;
-            Write(buffer.WrittenSpan);
+            yield return () =>
+            {
+                buffer.ResetWrittenCount();
+                index.Columns.Serialize(buffer);
+                chunk.ColumnIndexOffset = Position;
+                chunk.ColumnIndexLength = buffer.WrittenCount;
+            };
         }
 
         foreach (var (chunk, index) in _pageIndexes)
         {
-            buffer.ResetWrittenCount();
-            index.Offsets.Serialize(buffer);
-            chunk.OffsetIndexOffset = Position;
-            chunk.OffsetIndexLength = buffer.WrittenCount;
-            Write(buffer.WrittenSpan);
+            yield return () =>
+            {
+                buffer.ResetWrittenCount();
+                index.Offsets.Serialize(buffer);
+                chunk.OffsetIndexOffset = Position;
+                chunk.OffsetIndexLength = buffer.WrittenCount;
+            };
         }
-
-        _pageIndexes.Clear();
     }
 
     private void WriteFooter()
+    {
+        var footer = SerializeFooter();
+        Write(footer);
+    }
+
+    private async ValueTask WriteFooterAsync(CancellationToken cancellationToken) =>
+        await WriteAsync(SerializeFooter(), cancellationToken).ConfigureAwait(false);
+
+    /// <summary>The footer, its length and the closing magic, as one block of bytes.</summary>
+    private byte[] SerializeFooter()
     {
         var metadata = new FileMetaData
         {
@@ -244,12 +347,11 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
 
         var buffer = new ArrayBufferWriter<byte>();
         metadata.Serialize(buffer);
-        Write(buffer.WrittenSpan);
-
-        Span<byte> length = stackalloc byte[sizeof(int)];
-        BinaryPrimitives.WriteInt32LittleEndian(length, buffer.WrittenCount);
-        Write(length);
-        Write(Magic);
+        var bytes = new byte[buffer.WrittenCount + sizeof(int) + Magic.Length];
+        buffer.WrittenSpan.CopyTo(bytes);
+        BinaryPrimitives.WriteInt32LittleEndian(bytes.AsSpan(buffer.WrittenCount), buffer.WrittenCount);
+        Magic.CopyTo(bytes, buffer.WrittenCount + sizeof(int));
+        return bytes;
     }
 
     private void ReleaseStream()
@@ -258,6 +360,15 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
         if (!_leaveOpen)
         {
             _output.Dispose();
+        }
+    }
+
+    private async ValueTask ReleaseStreamAsync()
+    {
+        Buffers.Dispose();
+        if (!_leaveOpen)
+        {
+            await _output.DisposeAsync().ConfigureAwait(false);
         }
     }
 

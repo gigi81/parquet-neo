@@ -50,13 +50,17 @@ public sealed class ParquetDataReader : DbDataReader
     /// <exception cref="ArgumentException">A column named in the options is not a column of the file that holds a single value per row.</exception>
     /// <exception cref="NotSupportedException">A column has no .NET type that fits it.</exception>
     public ParquetDataReader(Stream input, ParquetDataReaderOptions? options = null, bool leaveOpen = false)
+        : this(new ParquetFileReader(input, options?.Reader, leaveOpen), options ?? new ParquetDataReaderOptions(), rowGroups: null)
     {
-        options ??= new ParquetDataReaderOptions();
-        _file = new ParquetFileReader(input, options.Reader, leaveOpen);
+    }
+
+    private ParquetDataReader(ParquetFileReader file, ParquetDataReaderOptions options, IReadOnlyList<int>? rowGroups)
+    {
+        _file = file;
         try
         {
             _filter = options.RowGroupFilter;
-            _rowGroups = _filter is { } filter ? _file.GetMatchingRowGroups(filter) : Enumerable.Range(0, _file.RowGroupCount).ToArray();
+            _rowGroups = rowGroups ?? (_filter is { } filter ? _file.GetMatchingRowGroups(filter) : Enumerable.Range(0, _file.RowGroupCount).ToArray());
             options.Reader.Metrics?.RecordRowGroups(_rowGroups.Count, _file.RowGroupCount - _rowGroups.Count);
             _nodes = SelectColumns(_file.Schema, options.Columns);
             _columns = new ColumnData[_nodes.Length];
@@ -75,6 +79,30 @@ public sealed class ParquetDataReader : DbDataReader
         catch
         {
             _file.Dispose();
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Opens a file like the constructor does, reading its footer, and the bloom filters the row group filter needs, with asynchronous
+    /// reads. <see cref="ReadAsync"/> then reads each row group the same way.
+    /// </summary>
+    /// <exception cref="ArgumentException">A column named in the options is not a column of the file that holds a single value per row.</exception>
+    /// <exception cref="NotSupportedException">A column has no .NET type that fits it.</exception>
+    public static async Task<ParquetDataReader> OpenAsync(Stream input, ParquetDataReaderOptions? options = null, bool leaveOpen = false, CancellationToken cancellationToken = default)
+    {
+        options ??= new ParquetDataReaderOptions();
+        var file = await ParquetFileReader.OpenAsync(input, options.Reader, leaveOpen, cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var rowGroups = options.RowGroupFilter is { } filter
+                ? await file.GetMatchingRowGroupsAsync(filter, cancellationToken).ConfigureAwait(false)
+                : Enumerable.Range(0, file.RowGroupCount).ToArray();
+            return new ParquetDataReader(file, options, rowGroups);
+        }
+        catch
+        {
+            await file.DisposeAsync().ConfigureAwait(false);
             throw;
         }
     }
@@ -109,6 +137,23 @@ public sealed class ParquetDataReader : DbDataReader
         return true;
     }
 
+    /// <summary>Moves to the next row like <see cref="Read"/>; when the next row group has to be loaded, its pages are read with asynchronous reads.</summary>
+    public override async Task<bool> ReadAsync(CancellationToken cancellationToken)
+    {
+        EnsureOpen();
+        while (_row + 1 >= _rowsInGroup)
+        {
+            if (!await LoadNextRowGroupAsync(cancellationToken).ConfigureAwait(false))
+            {
+                _row = _rowsInGroup;
+                return false;
+            }
+        }
+
+        _row++;
+        return true;
+    }
+
     public override bool NextResult() => false;
 
     public override void Close()
@@ -118,6 +163,21 @@ public sealed class ParquetDataReader : DbDataReader
             _closed = true;
             _file.Dispose();
         }
+    }
+
+    public override async Task CloseAsync()
+    {
+        if (!_closed)
+        {
+            _closed = true;
+            await _file.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    public override async ValueTask DisposeAsync()
+    {
+        await CloseAsync().ConfigureAwait(false);
+        GC.SuppressFinalize(this);
     }
 
     public override string GetName(int ordinal) => _nodes[ordinal].Name;
@@ -298,6 +358,38 @@ public sealed class ParquetDataReader : DbDataReader
             for (int i = 0; i < _columns.Length; i++)
             {
                 using var reader = selection is null ? group.OpenColumn(_nodes[i].ColumnIndex) : group.OpenColumn(_nodes[i].ColumnIndex, selection);
+                _columns[i].Fill(reader, rows);
+            }
+
+            _rowsInGroup = rows;
+            _row = -1;
+            return true;
+        }
+
+        _rowsInGroup = 0;
+        return false;
+    }
+
+    private async ValueTask<bool> LoadNextRowGroupAsync(CancellationToken cancellationToken)
+    {
+        while (++_rowGroup < _rowGroups.Count)
+        {
+            var group = _file.OpenRowGroup(_rowGroups[_rowGroup]);
+            var selection = _filter is null || group.RowCount == 0
+                ? null
+                : await group.SelectRowsAsync(_filter, _nodes.Select(node => node.ColumnIndex), cancellationToken).ConfigureAwait(false);
+            long selected = selection?.RowCount ?? group.RowCount;
+            if (selected == 0)
+            {
+                continue;
+            }
+
+            int rows = checked((int)selected);
+            for (int i = 0; i < _columns.Length; i++)
+            {
+                using var reader = selection is null
+                    ? await group.OpenColumnAsync(_nodes[i].ColumnIndex, cancellationToken).ConfigureAwait(false)
+                    : await group.OpenColumnAsync(_nodes[i].ColumnIndex, selection, cancellationToken).ConfigureAwait(false);
                 _columns[i].Fill(reader, rows);
             }
 

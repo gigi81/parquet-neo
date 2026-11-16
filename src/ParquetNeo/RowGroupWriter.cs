@@ -12,7 +12,7 @@ namespace ParquetNeo;
 /// Create it with <see cref="ParquetFileWriter.AppendRowGroup"/>, call <see cref="NextColumn"/> once per column,
 /// and dispose it (or call <see cref="Close"/>) to finish the group.
 /// </summary>
-public sealed class RowGroupWriter : IDisposable
+public sealed class RowGroupWriter : IDisposable, IAsyncDisposable
 {
     private readonly ParquetFileWriter _file;
     private readonly int _ordinal;
@@ -92,6 +92,139 @@ public sealed class RowGroupWriter : IDisposable
     /// <exception cref="InvalidOperationException">A column has been started already, there is not one action per column, or the columns have different row counts.</exception>
     public void WriteColumns(IReadOnlyList<Action<ColumnWriter>> columns, int maxDegreeOfParallelism, CancellationToken cancellationToken = default)
     {
+        ValidateColumns(columns, maxDegreeOfParallelism);
+        int count = columns.Count;
+        var encoded = new Encoded?[count];
+        var spare = new ConcurrentBag<WriterBuffers>();
+        try
+        {
+            try
+            {
+                Parallel.For(0, count, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism, CancellationToken = cancellationToken }, i =>
+                    encoded[i] = Encode(i, columns[i], spare));
+            }
+            catch (AggregateException exception) when (exception.InnerExceptions.Count > 0)
+            {
+                ExceptionDispatchInfo.Capture(exception.InnerExceptions[0]).Throw();
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                long start = _file.Position;
+                _file.Write(encoded[i]!.Sink.Written);
+                RecordEncoded(encoded[i]!, start);
+                encoded[i]!.Sink.Dispose();
+                encoded[i] = null;
+            }
+        }
+        finally
+        {
+            ReleaseEncoded(encoded, spare);
+        }
+
+        _nextColumn = count;
+        _allColumnsWritten = true;
+    }
+
+    /// <summary>
+    /// Writes every column of the group like <see cref="WriteColumns(IReadOnlyList{Action{ColumnWriter}}, CancellationToken)"/>, on as many
+    /// threads as the machine has processors, and without blocking while the columns are written to the stream.
+    /// </summary>
+    public ValueTask WriteColumnsAsync(IReadOnlyList<Action<ColumnWriter>> columns, CancellationToken cancellationToken = default) =>
+        WriteColumnsAsync(columns, Environment.ProcessorCount, cancellationToken);
+
+    /// <summary>
+    /// Writes every column of the group like <see cref="WriteColumns(IReadOnlyList{Action{ColumnWriter}}, int, CancellationToken)"/>, with
+    /// the same rules and the same file, but the columns are encoded on the thread pool without holding the caller's thread, and are
+    /// written to the stream with asynchronous writes, so a slow stream does not block a thread either.
+    /// </summary>
+    /// <remarks>
+    /// The encoded columns of the group are held in memory until all of them are done, as with the synchronous method. Use
+    /// <see cref="WriteColumnAsync"/> for a group that is too big to hold: it holds one column at a time.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException"><paramref name="columns"/> is null.</exception>
+    /// <exception cref="ArgumentException">An action is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxDegreeOfParallelism"/> is below 1.</exception>
+    /// <exception cref="InvalidOperationException">A column has been started already, there is not one action per column, or the columns have different row counts.</exception>
+    /// <exception cref="OperationCanceledException">The token was cancelled; the group is not complete and disposing it abandons the file.</exception>
+    public async ValueTask WriteColumnsAsync(IReadOnlyList<Action<ColumnWriter>> columns, int maxDegreeOfParallelism, CancellationToken cancellationToken = default)
+    {
+        ValidateColumns(columns, maxDegreeOfParallelism);
+        int count = columns.Count;
+        var encoded = new Encoded?[count];
+        var spare = new ConcurrentBag<WriterBuffers>();
+        try
+        {
+            await Parallel.ForAsync(0, count, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism, CancellationToken = cancellationToken }, (i, _) =>
+            {
+                encoded[i] = Encode(i, columns[i], spare);
+                return ValueTask.CompletedTask;
+            }).ConfigureAwait(false);
+
+            for (int i = 0; i < count; i++)
+            {
+                long start = _file.Position;
+                await _file.WriteAsync(encoded[i]!.Sink.WrittenMemory, cancellationToken).ConfigureAwait(false);
+                RecordEncoded(encoded[i]!, start);
+                encoded[i]!.Sink.Dispose();
+                encoded[i] = null;
+            }
+        }
+        finally
+        {
+            ReleaseEncoded(encoded, spare);
+        }
+
+        _nextColumn = count;
+        _allColumnsWritten = true;
+    }
+
+    /// <summary>
+    /// Writes the next column of the group: <paramref name="write"/> puts its values in the <see cref="ColumnWriter"/>, which encodes
+    /// them into memory, and the encoded column is then written to the stream with an asynchronous write. So, unlike
+    /// <see cref="NextColumn"/>, no write to the stream blocks the thread, and the group needs the memory of one encoded column.
+    /// The column is complete when this returns, and the file is the same as <see cref="NextColumn"/> makes.
+    /// </summary>
+    /// <param name="write">Writes the values of the column. It must not keep the <see cref="ColumnWriter"/> after it returns. It runs on the calling thread.</param>
+    /// <exception cref="InvalidOperationException">All columns have been written, the group is closed, or the column has another row count than the ones before.</exception>
+    public async ValueTask WriteColumnAsync(Action<ColumnWriter> write, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(write);
+        EnsureOpen();
+        CompleteCurrent();
+        int ordinal = _nextColumn;
+        if (ordinal >= _file.Schema.Columns.Count)
+        {
+            throw new InvalidOperationException($"All {_file.Schema.Columns.Count} columns of this row group have been written.");
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+        var spare = new ConcurrentBag<WriterBuffers>();
+        Encoded? encoded = null;
+        try
+        {
+            encoded = Encode(ordinal, write, spare);
+            long start = _file.Position;
+            await _file.WriteAsync(encoded.Sink.WrittenMemory, cancellationToken).ConfigureAwait(false);
+            RecordEncoded(encoded, start);
+            _nextColumn = ordinal + 1;
+            if (_nextColumn == _file.Schema.Columns.Count)
+            {
+                _allColumnsWritten = true;
+            }
+        }
+        finally
+        {
+            encoded?.Sink.Dispose();
+            foreach (var buffers in spare)
+            {
+                buffers.Dispose();
+            }
+        }
+    }
+
+    private void ValidateColumns(IReadOnlyList<Action<ColumnWriter>> columns, int maxDegreeOfParallelism)
+    {
         ArgumentNullException.ThrowIfNull(columns);
         ArgumentOutOfRangeException.ThrowIfLessThan(maxDegreeOfParallelism, 1);
         if (columns.Any(action => action is null))
@@ -106,80 +239,98 @@ public sealed class RowGroupWriter : IDisposable
         {
             throw new InvalidOperationException($"All {schemaColumns.Count} columns must be written at once, into a row group that has none yet.");
         }
+    }
 
-        int count = columns.Count;
-        var sinks = new DetachedColumnSink?[count];
-        var writers = new ColumnWriter?[count];
-        var chunks = new ColumnChunk?[count];
-        var spare = new ConcurrentBag<WriterBuffers>();
+    /// <summary>Encodes one column into a buffer of its own, reusing the buffers of a column that is done when there are any. Can run on any thread.</summary>
+    private Encoded Encode(int ordinal, Action<ColumnWriter> write, ConcurrentBag<WriterBuffers> spare)
+    {
+        if (!spare.TryTake(out var buffers))
+        {
+            buffers = new WriterBuffers();
+        }
+
+        var sink = new DetachedColumnSink();
         try
         {
-            try
-            {
-                Parallel.For(0, count, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism, CancellationToken = cancellationToken }, i =>
-                {
-                    if (!spare.TryTake(out var buffers))
-                    {
-                        buffers = new WriterBuffers();
-                    }
-
-                    var sink = new DetachedColumnSink();
-                    sinks[i] = sink;
-                    var writer = _file.CreateDetachedColumnWriter(schemaColumns[i], sink, buffers);
-                    columns[i](writer);
-                    chunks[i] = writer.Complete();
-                    writers[i] = writer;
-                    spare.Add(buffers);
-                });
-            }
-            catch (AggregateException exception) when (exception.InnerExceptions.Count > 0)
-            {
-                ExceptionDispatchInfo.Capture(exception.InnerExceptions[0]).Throw();
-            }
-
-            for (int i = 0; i < count; i++)
-            {
-                long start = _file.Position;
-                _file.Write(sinks[i]!.Written);
-                var chunk = chunks[i]!;
-                var metadata = chunk.MetaData!;
-                metadata.DataPageOffset += start;
-                if (metadata.DictionaryPageOffset is { } dictionaryOffset)
-                {
-                    metadata.DictionaryPageOffset = dictionaryOffset + start;
-                }
-
-                writers[i]!.PageIndex?.Shift(start);
-                Record(writers[i]!, chunk, writers[i]!.FirstPageOffset + start);
-                sinks[i]!.Dispose();
-                sinks[i] = null;
-            }
+            var writer = _file.CreateDetachedColumnWriter(_file.Schema.Columns[ordinal], sink, buffers);
+            write(writer);
+            var chunk = writer.Complete();
+            return new Encoded(sink, writer, chunk);
+        }
+        catch
+        {
+            sink.Dispose();
+            throw;
         }
         finally
         {
-            // Whatever happened, the storage of the buffers goes back to the pool.
-            foreach (var buffers in spare)
-            {
-                buffers.Dispose();
-            }
+            spare.Add(buffers);
+        }
+    }
 
-            foreach (var sink in sinks)
-            {
-                sink?.Dispose();
-            }
+    /// <summary>Adds an encoded column, now written to the file from <paramref name="start"/>, to the group, moving its offsets from the start of the chunk to the file.</summary>
+    private void RecordEncoded(Encoded encoded, long start)
+    {
+        var (_, writer, chunk) = encoded;
+        var metadata = chunk.MetaData!;
+        metadata.DataPageOffset += start;
+        if (metadata.DictionaryPageOffset is { } dictionaryOffset)
+        {
+            metadata.DictionaryPageOffset = dictionaryOffset + start;
         }
 
-        _nextColumn = count;
-        _allColumnsWritten = true;
+        writer.PageIndex?.Shift(start);
+        Record(writer, chunk, writer.FirstPageOffset + start);
     }
+
+    /// <summary>Whatever happened, the storage of the buffers and of the columns that are not written goes back to the pool.</summary>
+    private static void ReleaseEncoded(Encoded?[] encoded, ConcurrentBag<WriterBuffers> spare)
+    {
+        foreach (var buffers in spare)
+        {
+            buffers.Dispose();
+        }
+
+        foreach (var column in encoded)
+        {
+            column?.Sink.Dispose();
+        }
+    }
+
+    private sealed record Encoded(DetachedColumnSink Sink, ColumnWriter Writer, ColumnChunk Chunk);
 
     /// <summary>Finishes the group and records it in the file.</summary>
     /// <exception cref="InvalidOperationException">Columns are missing, or the columns have different row counts.</exception>
     public void Close()
     {
-        if (_closed)
+        if (!BeginClose())
         {
             return;
+        }
+
+        WriteBloomFilters();
+        EndClose();
+    }
+
+    /// <summary>Finishes the group like <see cref="Close"/>, writing its bloom filters to the stream without blocking.</summary>
+    /// <exception cref="InvalidOperationException">Columns are missing, or the columns have different row counts.</exception>
+    public async ValueTask CloseAsync(CancellationToken cancellationToken = default)
+    {
+        if (!BeginClose())
+        {
+            return;
+        }
+
+        await WriteBloomFiltersAsync(cancellationToken).ConfigureAwait(false);
+        EndClose();
+    }
+
+    /// <summary>Checks that the group can be closed; returns false when it is closed already, and marks it closed otherwise.</summary>
+    private bool BeginClose()
+    {
+        if (_closed)
+        {
+            return false;
         }
 
         EnsureOpen();
@@ -191,7 +342,11 @@ public sealed class RowGroupWriter : IDisposable
         }
 
         _closed = true;
-        WriteBloomFilters();
+        return true;
+    }
+
+    private void EndClose()
+    {
         _file.AddPageIndexes(_pageIndexes);
         _file.OnRowGroupClosed(new RowGroup
         {
@@ -212,41 +367,83 @@ public sealed class RowGroupWriter : IDisposable
     /// </summary>
     public void Dispose()
     {
-        if (_closed || !_file.IsUsable)
+        if (CanFinishOnDispose())
         {
-            return;
-        }
-
-        try
-        {
-            if ((_current is not null || _allColumnsWritten) && _nextColumn == _file.Schema.Columns.Count)
+            try
             {
                 Close();
                 return;
             }
-        }
-        catch (InvalidOperationException)
-        {
-            // fall through: the group is incomplete or inconsistent
-        }
+            catch (InvalidOperationException)
+            {
+                // fall through: the group is incomplete or inconsistent
+            }
 
-        _file.Abandon();
+            _file.Abandon();
+        }
+        else if (!_closed && _file.IsUsable)
+        {
+            _file.Abandon();
+        }
     }
+
+    /// <summary>Finishes the group like <see cref="Dispose"/>, with <see cref="CloseAsync"/>, so its bloom filters are written without blocking.</summary>
+    public async ValueTask DisposeAsync()
+    {
+        if (CanFinishOnDispose())
+        {
+            try
+            {
+                await CloseAsync().ConfigureAwait(false);
+                return;
+            }
+            catch (InvalidOperationException)
+            {
+                // fall through: the group is incomplete or inconsistent
+            }
+
+            _file.Abandon();
+        }
+        else if (!_closed && _file.IsUsable)
+        {
+            _file.Abandon();
+        }
+    }
+
+    private bool CanFinishOnDispose() =>
+        !_closed && _file.IsUsable && (_current is not null || _allColumnsWritten) && _nextColumn == _file.Schema.Columns.Count;
 
     /// <summary>Writes the bloom filters of the columns after the columns of the group, each as its header and its bits, and records where.</summary>
     private void WriteBloomFilters()
     {
         foreach (var (metadata, filter) in _bloomFilters)
         {
-            var header = new ArrayBufferWriter<byte>();
-            new BloomFilterHeader { NumBytes = filter.ByteCount }.Serialize(header);
-            var bits = new byte[filter.ByteCount];
-            filter.CopyTo(bits);
+            var bytes = SerializeBloomFilter(filter);
             metadata.BloomFilterOffset = _file.Position;
-            _file.Write(header.WrittenSpan);
-            _file.Write(bits);
-            metadata.BloomFilterLength = header.WrittenCount + bits.Length;
+            metadata.BloomFilterLength = bytes.Length;
+            _file.Write(bytes);
         }
+    }
+
+    private async ValueTask WriteBloomFiltersAsync(CancellationToken cancellationToken)
+    {
+        foreach (var (metadata, filter) in _bloomFilters)
+        {
+            var bytes = SerializeBloomFilter(filter);
+            metadata.BloomFilterOffset = _file.Position;
+            metadata.BloomFilterLength = bytes.Length;
+            await _file.WriteAsync(bytes, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private static byte[] SerializeBloomFilter(BloomFilter filter)
+    {
+        var header = new ArrayBufferWriter<byte>();
+        new BloomFilterHeader { NumBytes = filter.ByteCount }.Serialize(header);
+        var bytes = new byte[header.WrittenCount + filter.ByteCount];
+        header.WrittenSpan.CopyTo(bytes);
+        filter.CopyTo(bytes.AsSpan(header.WrittenCount));
+        return bytes;
     }
 
     private void CompleteCurrent()

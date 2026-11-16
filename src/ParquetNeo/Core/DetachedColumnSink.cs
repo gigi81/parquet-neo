@@ -15,6 +15,9 @@ internal sealed class DetachedColumnSink : IColumnSink, IDisposable
     /// <summary>What has been written.</summary>
     public ReadOnlySpan<byte> Written => _bytes.WrittenSpan;
 
+    /// <summary>What has been written, as memory, for writing to a stream without blocking.</summary>
+    public ReadOnlyMemory<byte> WrittenMemory => _bytes.WrittenMemory;
+
     public void Write(ReadOnlySpan<byte> bytes) => _bytes.Write(bytes);
 
     public void EnsureUsable()
