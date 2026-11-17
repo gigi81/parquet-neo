@@ -226,7 +226,7 @@ public class ColumnSelectionTests
     {
         var ids = Enumerable.Range(0, Rows).Select(i => (long)i).ToArray();
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Create(stream, new ParquetSchema([FilterFile.Column<long>("a"), FilterFile.Column<long>("b")]), Options(true), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Open(stream, new ParquetSchema([FilterFile.Column<long>("a"), FilterFile.Column<long>("b")]), Options(true), leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.WriteColumns([w => w.WriteBatch(ids), w => w.WriteBatch(ids.Select(i => i * 2).ToArray())]);

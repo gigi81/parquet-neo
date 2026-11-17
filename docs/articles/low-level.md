@@ -19,7 +19,7 @@ var schema = new ParquetSchema(
 ]);
 
 using var file = File.Create("people.parquet");
-using var writer = ParquetFileWriter.Create(file, schema);
+using var writer = ParquetFileWriter.Open(file, schema);
 using (var group = writer.AppendRowGroup())
 {
     group.NextColumn().WriteBatch([1L, 2L, 3L]);
@@ -43,19 +43,19 @@ using (var group = writer.AppendRowGroup())
 
 The footer is written when the writer is disposed.
 
-As a rule, constructors in ParquetNeo do not touch a stream or a file. A file is started with `ParquetFileWriter.Create` (or
-`CreateAsync`) and opened with `ParquetFileReader.Open` (or `OpenAsync`), which are where the first bytes are written or read.
+As a rule, constructors in ParquetNeo do not touch a stream or a file. A file is started with `ParquetFileWriter.Open` (or
+`OpenAsync`) and opened with `ParquetFileReader.Open` (or `OpenAsync`), which are where the first bytes are written or read.
 
 ### Without blocking a thread
 
 Every operation that touches the stream has an asynchronous form, so that a slow stream (a network, an object store upload) does not
-hold a thread. `ParquetFileWriter.CreateAsync` starts the file, `RowGroupWriter.WriteColumnsAsync` (all the columns, encoded in
+hold a thread. `ParquetFileWriter.OpenAsync` starts the file, `RowGroupWriter.WriteColumnsAsync` (all the columns, encoded in
 parallel on the thread pool) or `WriteColumnAsync` (one column at a time, which holds only one encoded column in memory) write the
 columns, and `CloseAsync` or `DisposeAsync` finish the group and the file, including the bloom filters, the page indexes and the
 footer. The files are the same, byte for byte, as the ones the synchronous methods make:
 
 ```csharp
-await using var writer = await ParquetFileWriter.CreateAsync(stream, schema);
+await using var writer = await ParquetFileWriter.OpenAsync(stream, schema);
 await using (var group = writer.AppendRowGroup())
 {
     await group.WriteColumnAsync(column => column.WriteBatch([1L, 2L, 3L]));

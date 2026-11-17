@@ -36,7 +36,7 @@ public class AsyncWriterTests
     private static byte[] Synchronous(int groups)
     {
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Create(stream, Schema, Options, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Open(stream, Schema, Options, leaveOpen: true))
         {
             for (int g = 0; g < groups; g++)
             {
@@ -57,7 +57,7 @@ public class AsyncWriterTests
         var memory = new MemoryStream();
         var stream = new AsyncOnlyStream(memory);
 
-        var writer = await ParquetFileWriter.CreateAsync(stream, Schema, Options, leaveOpen: true);
+        var writer = await ParquetFileWriter.OpenAsync(stream, Schema, Options, leaveOpen: true);
         for (int g = 0; g < 3; g++)
         {
             await using var group = writer.AppendRowGroup();
@@ -76,7 +76,7 @@ public class AsyncWriterTests
         var memory = new MemoryStream();
         var stream = new AsyncOnlyStream(memory);
 
-        await using (var writer = await ParquetFileWriter.CreateAsync(stream, Schema, Options, leaveOpen: true))
+        await using (var writer = await ParquetFileWriter.OpenAsync(stream, Schema, Options, leaveOpen: true))
         {
             for (int g = 0; g < 2; g++)
             {
@@ -99,7 +99,7 @@ public class AsyncWriterTests
     public async Task TheFileThatIsWrittenAsynchronously_IsRead()
     {
         var memory = new MemoryStream();
-        await using (var writer = await ParquetFileWriter.CreateAsync(memory, Schema, Options, leaveOpen: true))
+        await using (var writer = await ParquetFileWriter.OpenAsync(memory, Schema, Options, leaveOpen: true))
         {
             await using var group = writer.AppendRowGroup();
             await group.WriteColumnsAsync(Columns, maxDegreeOfParallelism: 2);
@@ -117,7 +117,7 @@ public class AsyncWriterTests
     public async Task DisposeAsyncOfTheWriter_WritesThePageIndexes()
     {
         var memory = new MemoryStream();
-        await using (var writer = await ParquetFileWriter.CreateAsync(memory, Schema, Options, leaveOpen: true))
+        await using (var writer = await ParquetFileWriter.OpenAsync(memory, Schema, Options, leaveOpen: true))
         {
             await using var group = writer.AppendRowGroup();
             await group.WriteColumnsAsync(Columns);
@@ -132,7 +132,7 @@ public class AsyncWriterTests
     public async Task WriteColumnsAsync_WhenAnActionThrows_ThrowsItAndDisposingTheGroupAbandonsTheFile()
     {
         var memory = new MemoryStream();
-        var writer = await ParquetFileWriter.CreateAsync(memory, Schema, Options, leaveOpen: true);
+        var writer = await ParquetFileWriter.OpenAsync(memory, Schema, Options, leaveOpen: true);
         var group = writer.AppendRowGroup();
         Action<ColumnWriter>[] broken = [Columns[0], _ => throw new FormatException("boom"), Columns[2]];
 
@@ -146,7 +146,7 @@ public class AsyncWriterTests
     [Test]
     public async Task WriteColumnsAsync_WhenCancelled_ThrowsOperationCanceled()
     {
-        var writer = await ParquetFileWriter.CreateAsync(new MemoryStream(), Schema, Options);
+        var writer = await ParquetFileWriter.OpenAsync(new MemoryStream(), Schema, Options);
         var group = writer.AppendRowGroup();
         using var cancelled = new CancellationTokenSource();
         await cancelled.CancelAsync();
@@ -159,7 +159,7 @@ public class AsyncWriterTests
     [Test]
     public async Task WriteColumnAsync_AfterTheLastColumn_Throws()
     {
-        await using var writer = await ParquetFileWriter.CreateAsync(new MemoryStream(), Schema, Options);
+        await using var writer = await ParquetFileWriter.OpenAsync(new MemoryStream(), Schema, Options);
         await using var group = writer.AppendRowGroup();
         foreach (var write in Columns)
         {
@@ -173,7 +173,7 @@ public class AsyncWriterTests
     [Test]
     public async Task WriteColumnAsync_WithDifferentRowCounts_Throws()
     {
-        await using var writer = await ParquetFileWriter.CreateAsync(new MemoryStream(), Schema, Options);
+        await using var writer = await ParquetFileWriter.OpenAsync(new MemoryStream(), Schema, Options);
         var group = writer.AppendRowGroup();
         await group.WriteColumnAsync(Columns[0]);
 
@@ -184,7 +184,7 @@ public class AsyncWriterTests
     [Test]
     public async Task CloseAsync_WhileARowGroupIsOpen_Throws_AndAfterClosingDoesNothing()
     {
-        var writer = await ParquetFileWriter.CreateAsync(new MemoryStream(), Schema, Options);
+        var writer = await ParquetFileWriter.OpenAsync(new MemoryStream(), Schema, Options);
         var group = writer.AppendRowGroup();
         await Assert.That(async () => await writer.CloseAsync()).Throws<InvalidOperationException>();
 
@@ -198,7 +198,7 @@ public class AsyncWriterTests
     [Test]
     public async Task DisposeAsyncOfAnIncompleteGroup_AbandonsTheFile()
     {
-        var writer = await ParquetFileWriter.CreateAsync(new MemoryStream(), Schema, Options);
+        var writer = await ParquetFileWriter.OpenAsync(new MemoryStream(), Schema, Options);
         var group = writer.AppendRowGroup();
         await group.WriteColumnAsync(Columns[0]);
 
@@ -212,7 +212,7 @@ public class AsyncWriterTests
     [Test]
     public async Task WriteColumnAsync_WhenTheColumnThrows_ThrowsIt()
     {
-        await using var writer = await ParquetFileWriter.CreateAsync(new MemoryStream(), Schema, Options);
+        await using var writer = await ParquetFileWriter.OpenAsync(new MemoryStream(), Schema, Options);
         var group = writer.AppendRowGroup();
 
         await Assert.That(async () => await group.WriteColumnAsync(_ => throw new FormatException("boom"))).Throws<FormatException>();
@@ -220,9 +220,9 @@ public class AsyncWriterTests
     }
 
     [Test]
-    public async Task CreateAsync_WhenTheStreamFails_Throws()
+    public async Task OpenAsync_WhenTheStreamFails_Throws()
     {
-        await Assert.That(async () => await ParquetFileWriter.CreateAsync(new FailingStream(), Schema, Options)).Throws<IOException>();
+        await Assert.That(async () => await ParquetFileWriter.OpenAsync(new FailingStream(), Schema, Options)).Throws<IOException>();
     }
 
     private sealed class FailingStream : MemoryStream

@@ -112,7 +112,7 @@ public class NestedWriterTests
         var schema = NestedDataset.Schema();
         var shredded = ReferenceShredder.Shred(schema, AllRows);
         var stream = new MemoryStream();
-        using var writer = ParquetFileWriter.Create(stream, schema, leaveOpen: true);
+        using var writer = ParquetFileWriter.Open(stream, schema, leaveOpen: true);
         using var group = writer.AppendRowGroup();
 
         var column = group.NextColumn();

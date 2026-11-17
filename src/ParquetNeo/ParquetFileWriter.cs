@@ -14,7 +14,7 @@ namespace ParquetNeo;
 /// </summary>
 /// <example>
 /// <code>
-/// using var writer = ParquetFileWriter.Create(stream, schema);
+/// using var writer = ParquetFileWriter.Open(stream, schema);
 /// using (var group = writer.AppendRowGroup())
 /// {
 ///     group.NextColumn().WriteBatch(ids);
@@ -38,7 +38,7 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
     private bool _closed;
     private bool _abandoned;
 
-    /// <summary>Validates the arguments; the stream is not touched until <see cref="Start"/>, which is what <see cref="Create"/> and <see cref="CreateAsync"/> do.</summary>
+    /// <summary>Validates the arguments; the stream is not touched until <see cref="Start"/>, which is what <see cref="Open"/> and <see cref="OpenAsync"/> do.</summary>
     internal ParquetFileWriter(Stream output, ParquetSchema schema, ParquetWriterOptions? options, bool leaveOpen)
     {
         ArgumentNullException.ThrowIfNull(output);
@@ -70,15 +70,15 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
     }
 
     /// <summary>
-    /// Creates a writer and writes the start of the file to the stream. Constructors do not use streams, so this is the way to start a file;
-    /// use <see cref="CreateAsync"/> to write it without blocking.
+    /// Opens a writer and writes the start of the file to the stream. Constructors do not use streams, so this is the way to start a file;
+    /// use <see cref="OpenAsync"/> to write it without blocking.
     /// </summary>
     /// <param name="output">A writable stream, positioned where the file should start.</param>
     /// <param name="schema">The schema. Its leaf columns are written in depth-first order.</param>
     /// <param name="options">Compression, page size and footer settings; <c>null</c> for the defaults.</param>
     /// <param name="leaveOpen">Whether to keep <paramref name="output"/> open when the writer is closed.</param>
     /// <exception cref="NotSupportedException">The schema has an INT96 column, or the compression codec is not registered.</exception>
-    public static ParquetFileWriter Create(Stream output, ParquetSchema schema, ParquetWriterOptions? options = null, bool leaveOpen = false)
+    public static ParquetFileWriter Open(Stream output, ParquetSchema schema, ParquetWriterOptions? options = null, bool leaveOpen = false)
     {
         var writer = new ParquetFileWriter(output, schema, options, leaveOpen);
         writer.Start();
@@ -86,12 +86,12 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
     }
 
     /// <summary>
-    /// Creates a writer like <see cref="Create"/>, writing the start of the file with an asynchronous write. Write the row groups with
+    /// Opens a writer like <see cref="Open"/>, writing the start of the file with an asynchronous write. Write the row groups with
     /// <see cref="RowGroupWriter.WriteColumnAsync"/> or <see cref="RowGroupWriter.WriteColumnsAsync(IReadOnlyList{Action{ColumnWriter}}, CancellationToken)"/>,
     /// finish them with <see cref="RowGroupWriter.CloseAsync"/> and the file with <see cref="CloseAsync"/>, and no write to the stream blocks a thread.
     /// </summary>
     /// <exception cref="NotSupportedException">The schema has an INT96 column, or the compression codec is not registered.</exception>
-    public static async ValueTask<ParquetFileWriter> CreateAsync(Stream output, ParquetSchema schema, ParquetWriterOptions? options = null, bool leaveOpen = false, CancellationToken cancellationToken = default)
+    public static async ValueTask<ParquetFileWriter> OpenAsync(Stream output, ParquetSchema schema, ParquetWriterOptions? options = null, bool leaveOpen = false, CancellationToken cancellationToken = default)
     {
         var writer = new ParquetFileWriter(output, schema, options, leaveOpen);
         try
@@ -107,7 +107,7 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
         }
     }
 
-    /// <summary>Writes the start of the file. Called once, by <see cref="Create"/> and by the sessions that stage the file in memory.</summary>
+    /// <summary>Writes the start of the file. Called once, by <see cref="Open"/> and by the sessions that stage the file in memory.</summary>
     internal void Start() => Write(Magic);
 
     public ParquetSchema Schema { get; }

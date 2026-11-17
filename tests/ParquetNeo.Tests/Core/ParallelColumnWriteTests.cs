@@ -37,7 +37,7 @@ public class ParallelColumnWriteTests
     private static byte[] OneColumnAtATime(int groups, CompressionCodec codec)
     {
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Create(stream, Schema, Options(codec), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Open(stream, Schema, Options(codec), leaveOpen: true))
         {
             for (int g = 0; g < groups; g++)
             {
@@ -55,7 +55,7 @@ public class ParallelColumnWriteTests
     private static byte[] AllAtOnce(int groups, CompressionCodec codec, Action<RowGroupWriter> write)
     {
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Create(stream, Schema, Options(codec), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Open(stream, Schema, Options(codec), leaveOpen: true))
         {
             for (int g = 0; g < groups; g++)
             {
@@ -104,7 +104,7 @@ public class ParallelColumnWriteTests
             column.WriteBatch(Ids);
         })).ToArray();
         var schema = new ParquetSchema(Enumerable.Range(0, 3).Select(i => new PrimitiveNode("c" + i, PhysicalType.Int64, FieldRepetitionType.Required)).ToArray());
-        using var writer = ParquetFileWriter.Create(new MemoryStream(), schema, leaveOpen: true);
+        using var writer = ParquetFileWriter.Open(new MemoryStream(), schema, leaveOpen: true);
         using var group = writer.AppendRowGroup();
 
         group.WriteColumns(waiting, maxDegreeOfParallelism: 3);
@@ -130,7 +130,7 @@ public class ParallelColumnWriteTests
             column.WriteBatch(Ids);
         })).ToArray();
         var schema = new ParquetSchema(Enumerable.Range(0, 4).Select(i => new PrimitiveNode("c" + i, PhysicalType.Int64, FieldRepetitionType.Required)).ToArray());
-        using var writer = ParquetFileWriter.Create(new MemoryStream(), schema, leaveOpen: true);
+        using var writer = ParquetFileWriter.Open(new MemoryStream(), schema, leaveOpen: true);
         using var group = writer.AppendRowGroup();
 
         group.WriteColumns(counting, maxDegreeOfParallelism: 2);
@@ -142,7 +142,7 @@ public class ParallelColumnWriteTests
     [Test]
     public async Task BadArguments_AreRefusedBeforeAnythingIsWritten()
     {
-        using var writer = ParquetFileWriter.Create(new MemoryStream(), Schema, leaveOpen: true);
+        using var writer = ParquetFileWriter.Open(new MemoryStream(), Schema, leaveOpen: true);
         using var group = writer.AppendRowGroup();
 
         await Assert.That(() => group.WriteColumns(null!, 2)).Throws<ArgumentNullException>();
@@ -157,7 +157,7 @@ public class ParallelColumnWriteTests
     [Test]
     public async Task AGroupThatHasStarted_IsRefused()
     {
-        using var writer = ParquetFileWriter.Create(new MemoryStream(), Schema, leaveOpen: true);
+        using var writer = ParquetFileWriter.Open(new MemoryStream(), Schema, leaveOpen: true);
         using var group = writer.AppendRowGroup();
         Actions[0](group.NextColumn());
 
@@ -168,7 +168,7 @@ public class ParallelColumnWriteTests
     public async Task AnActionThatThrows_ThrowsFromHere_AndWritesNothingOfTheGroup()
     {
         var stream = new MemoryStream();
-        using var writer = ParquetFileWriter.Create(stream, Schema, leaveOpen: true);
+        using var writer = ParquetFileWriter.Open(stream, Schema, leaveOpen: true);
         long before = stream.Length;
         var group = writer.AppendRowGroup();
         Action<ColumnWriter>[] failing = [Actions[0], _ => throw new FormatException("the second column"), Actions[2], Actions[3]];
@@ -184,7 +184,7 @@ public class ParallelColumnWriteTests
     [Test]
     public async Task ColumnsWithDifferentRowCounts_AreRefused()
     {
-        using var writer = ParquetFileWriter.Create(new MemoryStream(), Schema, leaveOpen: true);
+        using var writer = ParquetFileWriter.Open(new MemoryStream(), Schema, leaveOpen: true);
         using var group = writer.AppendRowGroup();
         Action<ColumnWriter>[] uneven = [Actions[0], Actions[1], Actions[2], column => column.WriteBatch(Counts.AsSpan(0, 10))];
 
@@ -196,7 +196,7 @@ public class ParallelColumnWriteTests
     {
         using var cancellation = new CancellationTokenSource();
         await cancellation.CancelAsync();
-        using var writer = ParquetFileWriter.Create(new MemoryStream(), Schema, leaveOpen: true);
+        using var writer = ParquetFileWriter.Open(new MemoryStream(), Schema, leaveOpen: true);
         using var group = writer.AppendRowGroup();
 
         await Assert.That(() => group.WriteColumns(Actions, 2, cancellation.Token)).Throws<OperationCanceledException>();

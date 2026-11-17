@@ -18,7 +18,7 @@ public class ColumnTypeTests
     private static byte[] Write(PrimitiveNode node, Action<ColumnWriter> write)
     {
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Create(stream, new ParquetSchema([node]), options: null, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Open(stream, new ParquetSchema([node]), options: null, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             write(group.NextColumn());

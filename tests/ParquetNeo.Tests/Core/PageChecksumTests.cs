@@ -21,7 +21,7 @@ public class PageChecksumTests
             new PrimitiveNode("Id", PhysicalType.Int64, FieldRepetitionType.Required),
             new PrimitiveNode("Name", PhysicalType.ByteArray, FieldRepetitionType.Optional, LogicalType.String),
         ]);
-        using (var writer = ParquetFileWriter.Create(stream, schema, options, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Open(stream, schema, options, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(Enumerable.Range(0, rows).Select(i => (long)i * 31).ToArray());

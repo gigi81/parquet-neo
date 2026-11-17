@@ -54,7 +54,7 @@ public class AsyncReaderTests
     public async Task OpenColumnAsync_WithASelectionFromAFileWithoutAPageIndex_Throws()
     {
         var memory = new MemoryStream();
-        using (var writer = ParquetFileWriter.Create(memory, new ParquetSchema([new PrimitiveNode("a", PhysicalType.Int32, FieldRepetitionType.Required)]), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Open(memory, new ParquetSchema([new PrimitiveNode("a", PhysicalType.Int32, FieldRepetitionType.Required)]), leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(new[] { 1, 2, 3 });

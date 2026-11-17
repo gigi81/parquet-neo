@@ -15,7 +15,7 @@ internal static class NestedFile
         int batchEntries = int.MaxValue)
     {
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Create(stream, schema, options, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Open(stream, schema, options, leaveOpen: true))
         {
             for (int start = 0; start < rows.Count; start += rowsPerGroup)
             {

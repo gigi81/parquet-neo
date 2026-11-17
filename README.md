@@ -176,7 +176,7 @@ var schema = new ParquetSchema(
 ]);
 
 using var file = File.Create("people.parquet");
-using var writer = ParquetFileWriter.Create(file, schema);
+using var writer = ParquetFileWriter.Open(file, schema);
 using (var group = writer.AppendRowGroup())
 {
     group.NextColumn().WriteBatch([1L, 2L, 3L]);
