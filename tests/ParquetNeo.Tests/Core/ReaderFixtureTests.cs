@@ -167,7 +167,7 @@ public class ReaderFixtureTests
     public async Task ACodecThatIsNotRegistered_IsReportedWhenTheColumnIsOpened()
     {
         var bytes = File.ReadAllBytes(TestBytes.FixturePath("pyarrow-codec-snappy-v1.parquet"));
-        using var reader = new ParquetFileReader(new MemoryStream(bytes)); // default registry: no Snappy
+        using var reader = ParquetFileReader.Open(new MemoryStream(bytes)); // default registry: no Snappy
 
         var exception = Assert.Throws<NotSupportedException>(() => reader.OpenRowGroup(0).OpenColumn(0));
 

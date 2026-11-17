@@ -55,7 +55,7 @@ public class AsyncDataWriterTests
 
         ParquetDataWriter.Write(table.CreateDataReader(), destination, Options);
 
-        using var reader = new ParquetDataReader(new MemoryStream(destination.Bytes));
+        using var reader = ParquetDataReader.Open(new MemoryStream(destination.Bytes));
         int rows = 0;
         while (reader.Read())
         {

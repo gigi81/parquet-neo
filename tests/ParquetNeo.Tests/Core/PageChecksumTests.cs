@@ -21,7 +21,7 @@ public class PageChecksumTests
             new PrimitiveNode("Id", PhysicalType.Int64, FieldRepetitionType.Required),
             new PrimitiveNode("Name", PhysicalType.ByteArray, FieldRepetitionType.Optional, LogicalType.String),
         ]);
-        using (var writer = new ParquetFileWriter(stream, schema, options, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, options, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(Enumerable.Range(0, rows).Select(i => (long)i * 31).ToArray());
@@ -34,7 +34,7 @@ public class PageChecksumTests
 
     private static (long[] Ids, string[] Names) Read(byte[] file, ParquetReaderOptions? options)
     {
-        using var reader = new ParquetFileReader(new MemoryStream(file), options);
+        using var reader = ParquetFileReader.Open(new MemoryStream(file), options);
         var group = reader.OpenRowGroup(0);
         var ids = new long[(int)group.RowCount];
         using (var column = group.OpenColumn(0))
@@ -75,7 +75,7 @@ public class PageChecksumTests
     /// <summary>The page headers of a column chunk, in order, and where each page body starts.</summary>
     private static List<(PageHeader Header, long BodyStart)> Pages(byte[] file, int column)
     {
-        using var reader = new ParquetFileReader(new MemoryStream(file));
+        using var reader = ParquetFileReader.Open(new MemoryStream(file));
         var meta = reader.Metadata.RowGroups[0].Columns[column].MetaData!;
         long start = meta.DictionaryPageOffset is > 0 ? meta.DictionaryPageOffset.Value : meta.DataPageOffset;
         long end = start + meta.TotalCompressedSize;

@@ -11,7 +11,7 @@ using var output = File.Create("orders.parquet");
 ParquetDataWriter.Write(query, output);
 
 using var input = File.OpenRead("orders.parquet");
-using var reader = new ParquetDataReader(input);
+using var reader = ParquetDataReader.Open(input);
 while (reader.Read())
 {
     Console.WriteLine($"{reader.GetInt64(0)} {reader.GetString(1)}");

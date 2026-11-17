@@ -1,6 +1,15 @@
 # Coverage varies a little from run to run (some tests depend on timing and on how work is scheduled), so a small drop is not
 # a failure: the project check fails when coverage falls by more than a point. The code that a pull request adds or changes (the
 # patch) has to be covered at 90% or more; below that the patch check fails.
+#
+# Only the library, in src, is measured: the tests, the benchmarks and the build scripts are not part of the product, so their
+# lines (a test helper with a branch no test takes) say nothing about it, and are left out of the report and of both checks.
+ignore:
+  - "tests/**/*"
+  - "benchmarks/**/*"
+  - "build/**/*"
+  - "docs/**/*"
+
 coverage:
   status:
     project:

@@ -226,14 +226,14 @@ public class ColumnSelectionTests
     {
         var ids = Enumerable.Range(0, Rows).Select(i => (long)i).ToArray();
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, new ParquetSchema([FilterFile.Column<long>("a"), FilterFile.Column<long>("b")]), Options(true), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, new ParquetSchema([FilterFile.Column<long>("a"), FilterFile.Column<long>("b")]), Options(true), leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.WriteColumns([w => w.WriteBatch(ids), w => w.WriteBatch(ids.Select(i => i * 2).ToArray())]);
         }
 
         stream.Position = 0;
-        using var file = new ParquetFileReader(stream);
+        using var file = ParquetFileReader.Open(stream);
         var rows = file.OpenRowGroup(0);
         var selection = rows.SelectRows(ParquetFilter.Column("b").GreaterThanOrEqual(4000L) & ParquetFilter.Column("b").LessThan(4100L), [0, 1])!;
         await Assert.That(selection.RowCount).IsLessThan(Rows / 4);
@@ -269,20 +269,20 @@ public class ColumnSelectionTests
             1,
             (_, writer) => writer.NextColumn().WriteBatch(Enumerable.Range(0, Rows).Select(i => (long)i).ToArray()),
             Options(true));
-        using (var clean = new ParquetFileReader(new MemoryStream(bytes)))
+        using (var clean = ParquetFileReader.Open(new MemoryStream(bytes)))
         {
             await Assert.That(clean.OpenRowGroup(0).SelectRows(ParquetFilter.Column("v").Equal(5L), [0])).IsNotNull();
         }
 
         // Damage the offset index (bytes of the page index lie between the last page and the footer).
-        var chunk = new ParquetFileReader(new MemoryStream(bytes)).Metadata.RowGroups[0].Columns[0];
+        var chunk = ParquetFileReader.Open(new MemoryStream(bytes)).Metadata.RowGroups[0].Columns[0];
         var damaged = bytes.ToArray();
         for (int i = 0; i < chunk.OffsetIndexLength; i++)
         {
             damaged[chunk.OffsetIndexOffset!.Value + i] = 0xFF;
         }
 
-        using var file = new ParquetFileReader(new MemoryStream(damaged));
+        using var file = ParquetFileReader.Open(new MemoryStream(damaged));
         var group = file.OpenRowGroup(0);
         await Assert.That(group.SelectRows(ParquetFilter.Column("v").Equal(5L), [0])).IsNull();
         await Assert.That(ReadAll(group, 0, null).Values.Count).IsEqualTo(Rows);

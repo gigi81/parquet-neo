@@ -13,7 +13,7 @@ internal sealed class AssemblerHarness : IDisposable
 {
     private readonly ParquetFileReader _reader;
 
-    private AssemblerHarness(byte[] bytes) => _reader = new ParquetFileReader(new MemoryStream(bytes));
+    private AssemblerHarness(byte[] bytes) => _reader = ParquetFileReader.Open(new MemoryStream(bytes));
 
     public static AssemblerHarness Write<TRow>(IEnumerable<TRow> rows, int rowGroupSize = int.MaxValue)
     {

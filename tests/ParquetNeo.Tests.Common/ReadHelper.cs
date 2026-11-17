@@ -138,7 +138,7 @@ internal static class ReadHelper
     }
 
     public static ParquetFileReader Open(byte[] bytes, ParquetReaderOptions? options = null) =>
-        new(new MemoryStream(bytes), options ?? new ParquetReaderOptions { Codecs = TestParquetFile.Registry });
+        ParquetFileReader.Open(new MemoryStream(bytes), options ?? new ParquetReaderOptions { Codecs = TestParquetFile.Registry });
 
     public static ParquetFileReader OpenFixture(string name, ParquetReaderOptions? options = null) =>
         Open(File.ReadAllBytes(TestBytes.FixturePath(name)), options);

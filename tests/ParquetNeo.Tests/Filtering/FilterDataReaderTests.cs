@@ -14,7 +14,7 @@ public class FilterDataReaderTests
 
     private static List<long> ReadIds(ParquetDataReaderOptions? options)
     {
-        using var reader = new ParquetDataReader(new MemoryStream(Ids()), options);
+        using var reader = ParquetDataReader.Open(new MemoryStream(Ids()), options);
         var ids = new List<long>();
         while (reader.Read())
         {
@@ -71,7 +71,7 @@ public class FilterDataReaderTests
                 writer.NextColumn().WriteBatch(Enumerable.Range(0, 4000).Select(i => i * 2).ToArray());
             },
             new ParquetWriterOptions { WritePageIndex = true, DataPageSize = 500 });
-        using var reader = new ParquetDataReader(new MemoryStream(bytes), new ParquetDataReaderOptions { RowGroupFilter = ParquetFilter.Column("Id").Equal(1234L) });
+        using var reader = ParquetDataReader.Open(new MemoryStream(bytes), new ParquetDataReaderOptions { RowGroupFilter = ParquetFilter.Column("Id").Equal(1234L) });
         var rows = new List<(long Id, int Group)>();
         while (reader.Read())
         {

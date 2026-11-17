@@ -100,9 +100,9 @@ public class ReaderRobustnessTests
     [Test]
     public async Task ANonSeekableOrUnreadableStream_IsRejected()
     {
-        await Assert.That(() => new ParquetFileReader(null!)).Throws<ArgumentNullException>();
-        await Assert.That(() => new ParquetFileReader(new WriteOnlyStream())).Throws<ArgumentException>();
-        await Assert.That(() => new ParquetFileReader(new NonSeekableStream(ValidFile()))).Throws<ArgumentException>();
+        await Assert.That(() => ParquetFileReader.Open(null!)).Throws<ArgumentNullException>();
+        await Assert.That(() => ParquetFileReader.Open(new WriteOnlyStream())).Throws<ArgumentException>();
+        await Assert.That(() => ParquetFileReader.Open(new NonSeekableStream(ValidFile()))).Throws<ArgumentException>();
     }
 
     // ---- metadata that contradicts the file ----
@@ -254,7 +254,7 @@ public class ReaderRobustnessTests
     {
         var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.Int32, FieldRepetitionType.Required)]);
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, new ParquetWriterOptions { Compression = codec, Codecs = TestParquetFile.Registry }, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, new ParquetWriterOptions { Compression = codec, Codecs = TestParquetFile.Registry }, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(Enumerable.Range(0, 300).Select(i => i % 3).ToArray());
@@ -343,7 +343,7 @@ public class ReaderRobustnessTests
     {
         var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.ByteArray, FieldRepetitionType.Required, LogicalType.String)]);
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteStrings(Enumerable.Range(0, 300).Select(i => "value" + i % 3).ToArray());
@@ -358,7 +358,7 @@ public class ReaderRobustnessTests
         // A plain file whose second page claims to be a dictionary page.
         var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.Int32, FieldRepetitionType.Required)]);
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, new ParquetWriterOptions { DictionaryEnabled = false, DataPageSize = 400 }, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, new ParquetWriterOptions { DictionaryEnabled = false, DataPageSize = 400 }, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(Enumerable.Range(0, 300).ToArray());
@@ -471,7 +471,7 @@ public class ReaderRobustnessTests
     {
         var schema = new ParquetSchema([new PrimitiveNode("b", PhysicalType.Boolean, FieldRepetitionType.Required)]);
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, schema, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(new bool[40]);
@@ -610,11 +610,11 @@ public class ReaderRobustnessTests
         var bytes = ValidFile();
 
         var kept = new TrackingStream(bytes);
-        new ParquetFileReader(kept, new ParquetReaderOptions { Codecs = TestParquetFile.Registry }, leaveOpen: true).Dispose();
+        ParquetFileReader.Open(kept, new ParquetReaderOptions { Codecs = TestParquetFile.Registry }, leaveOpen: true).Dispose();
         var closed = new TrackingStream(bytes);
-        new ParquetFileReader(closed, new ParquetReaderOptions { Codecs = TestParquetFile.Registry }).Dispose();
+        ParquetFileReader.Open(closed, new ParquetReaderOptions { Codecs = TestParquetFile.Registry }).Dispose();
         var failed = new TrackingStream([1, 2, 3]);
-        Assert.Throws<ParquetFormatException>(() => new ParquetFileReader(failed));
+        Assert.Throws<ParquetFormatException>(() => ParquetFileReader.Open(failed));
 
         await Assert.That(kept.IsDisposed).IsFalse();
         await Assert.That(closed.IsDisposed).IsTrue();
@@ -626,7 +626,7 @@ public class ReaderRobustnessTests
     {
         var stream = new TrackingStream(ValidFile());
 
-        await using (new ParquetFileReader(stream, new ParquetReaderOptions { Codecs = TestParquetFile.Registry }))
+        await using (ParquetFileReader.Open(stream, new ParquetReaderOptions { Codecs = TestParquetFile.Registry }))
         {
         }
 
@@ -670,7 +670,7 @@ public class ReaderRobustnessTests
         try
         {
             var options = new ParquetReaderOptions { Codecs = TestParquetFile.Registry, MaxPageSize = 1 << 20, MaxRowsPerPage = 1 << 18, MaxFooterSize = 1 << 20 };
-            using var reader = new ParquetFileReader(new MemoryStream(bytes), options);
+            using var reader = ParquetFileReader.Open(new MemoryStream(bytes), options);
             for (int g = 0; g < reader.RowGroupCount; g++)
             {
                 for (int c = 0; c < reader.Schema.Columns.Count; c++)

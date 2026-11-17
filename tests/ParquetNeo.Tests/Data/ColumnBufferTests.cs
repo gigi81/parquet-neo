@@ -52,7 +52,7 @@ public class ColumnBufferTests
         var table = Table(10_500, Sparse);
         var bytes = Write(table, rowGroupSize: 1_000);
 
-        using var reader = new ParquetDataReader(new MemoryStream(bytes));
+        using var reader = ParquetDataReader.Open(new MemoryStream(bytes));
         int rows = 0;
         while (reader.Read())
         {

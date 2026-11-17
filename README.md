@@ -176,7 +176,7 @@ var schema = new ParquetSchema(
 ]);
 
 using var file = File.Create("people.parquet");
-using var writer = new ParquetFileWriter(file, schema);
+using var writer = ParquetFileWriter.Create(file, schema);
 using (var group = writer.AppendRowGroup())
 {
     group.NextColumn().WriteBatch([1L, 2L, 3L]);
@@ -198,7 +198,7 @@ using (var group = writer.AppendRowGroup())
 ```
 
 The footer is written when the writer is disposed. Read a column back with
-`new ParquetFileReader(stream).OpenRowGroup(0).OpenColumn("id").ReadBatch(values)`.
+`ParquetFileReader.Open(stream).OpenRowGroup(0).OpenColumn("id").ReadBatch(values)`.
 
 ## ADO.NET
 
@@ -212,7 +212,7 @@ using var output = File.Create("orders.parquet");
 ParquetDataWriter.Write(query, output);
 
 using var input = File.OpenRead("orders.parquet");
-using var reader = new ParquetDataReader(input);
+using var reader = ParquetDataReader.Open(input);
 while (reader.Read())
 {
     Console.WriteLine($"{reader.GetInt64(0)} {reader.GetString(1)}");

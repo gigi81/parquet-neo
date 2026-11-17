@@ -48,7 +48,7 @@ public class DataWriterTests
 
         var bytes = Write(table.CreateDataReader());
 
-        using var reader = new ParquetDataReader(new MemoryStream(bytes));
+        using var reader = ParquetDataReader.Open(new MemoryStream(bytes));
         await Assert.That(reader.FieldCount).IsEqualTo(table.Columns.Count);
         int row = 0;
         while (reader.Read())
@@ -133,7 +133,7 @@ public class DataWriterTests
 
         var bytes = Write(table.CreateDataReader(), new ParquetDataWriterOptions { RowGroupSize = 4_000 });
 
-        using var reader = new ParquetDataReader(new MemoryStream(bytes));
+        using var reader = ParquetDataReader.Open(new MemoryStream(bytes));
         long expected = 0;
         while (reader.Read())
         {
@@ -169,7 +169,7 @@ public class DataWriterTests
 
         var bytes = Write(table.CreateDataReader());
 
-        using var reader = new ParquetDataReader(new MemoryStream(bytes));
+        using var reader = ParquetDataReader.Open(new MemoryStream(bytes));
         await Assert.That(reader.HasRows).IsFalse();
         await Assert.That(reader.Read()).IsFalse();
         await Assert.That(reader.FieldCount).IsEqualTo(1);
@@ -206,7 +206,7 @@ public class DataWriterTests
         await Assert.That(file.Schema.Columns[1].Type).IsEqualTo(PhysicalType.Int32);
         await Assert.That(file.Schema.Columns[1].LogicalType!.Precision).IsEqualTo(9);
         await Assert.That(file.Schema.Columns[1].LogicalType!.Scale).IsEqualTo(2);
-        using var reader = new ParquetDataReader(new MemoryStream(bytes));
+        using var reader = ParquetDataReader.Open(new MemoryStream(bytes));
         reader.Read();
         await Assert.That(reader.GetDecimal(0)).IsEqualTo(1.5m);
         await Assert.That(reader.GetDecimal(1)).IsEqualTo(0.25m);
@@ -275,7 +275,7 @@ public class DataWriterTests
 
         using var file = ReadHelper.Open(bytes);
         await Assert.That(file.Metadata.RowGroups[0].Columns[0].MetaData!.Codec).IsEqualTo(CompressionCodec.Gzip);
-        using var reader = new ParquetDataReader(new MemoryStream(bytes));
+        using var reader = ParquetDataReader.Open(new MemoryStream(bytes));
         await Assert.That(reader.Read()).IsTrue();
     }
 }

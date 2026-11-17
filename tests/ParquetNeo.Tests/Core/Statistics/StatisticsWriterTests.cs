@@ -133,7 +133,7 @@ public class StatisticsWriterTests
     private static byte[] WriteOne(PrimitiveNode column, Action<ColumnWriter> write, ParquetWriterOptions? options = null)
     {
         var stream = new MemoryStream();
-        using (var writer = new ParquetFileWriter(stream, new ParquetSchema([column]), options, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, new ParquetSchema([column]), options, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             write(group.NextColumn());
