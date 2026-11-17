@@ -67,17 +67,26 @@ internal sealed class QueryPlan
         return new QueryPlan(source, elementType, calls, filter, narrow, narrowedCalls, columns);
     }
 
-    /// <summary>The query with <paramref name="root"/>, the rows that are read, in place of the dataset.</summary>
-    public Expression Build(Expression root)
+    /// <summary>The number of operators of the query.</summary>
+    public int CallCount => _calls.Count;
+
+    /// <summary>The query with <paramref name="root"/>, the rows that are read, in place of the dataset; from the operator at <paramref name="from"/> on, when the ones before it are done already.</summary>
+    public Expression Build(Expression root, int from = 0)
     {
         var current = root;
-        for (int index = 0; index < _calls.Count; index++)
+        for (int index = from; index < _calls.Count; index++)
         {
-            var call = _calls[index];
-            current = index < _narrowedCalls ? Narrowed(call, current) : Expression.Call(call.Method, new[] { current }.Concat(call.Arguments.Skip(1)));
+            current = CallOn(index, current);
         }
 
         return current;
+    }
+
+    /// <summary>The operator at <paramref name="index"/> applied to <paramref name="source"/>, for the type the rows are read as.</summary>
+    public MethodCallExpression CallOn(int index, Expression source)
+    {
+        var call = _calls[index];
+        return index < _narrowedCalls ? Narrowed(call, source) : Expression.Call(call.Method, new[] { source }.Concat(call.Arguments.Skip(1)));
     }
 
     /// <summary>
@@ -173,7 +182,7 @@ internal sealed class QueryPlan
         && property.GetCustomAttribute<ParquetIgnoreAttribute>() is null
         && property.GetIndexParameters().Length == 0;
 
-    private Expression Narrowed(MethodCallExpression call, Expression source)
+    private MethodCallExpression Narrowed(MethodCallExpression call, Expression source)
     {
         var arguments = call.Method.GetGenericArguments();
         arguments[0] = _narrow!;

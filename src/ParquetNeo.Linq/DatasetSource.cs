@@ -1,6 +1,8 @@
 using System.Runtime.ExceptionServices;
 using System.Diagnostics;
 using System.IO.Enumeration;
+using System.Runtime.CompilerServices;
+using System.Threading.Channels;
 using ParquetNeo.Diagnostics;
 using ParquetNeo.Serialization;
 using ParquetNeo.Storage;
@@ -25,13 +27,29 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
 
     /// <summary>The files, in the order of their names.</summary>
     /// <exception cref="FileNotFoundException">The path is neither a file nor a directory.</exception>
-    public IReadOnlyList<string> Files()
+    public IReadOnlyList<string> Files() => storage is not null ? StorageFiles(Metered) : LocalFiles();
+
+    /// <summary>The files, in the order of their names, listing a storage without blocking the caller.</summary>
+    /// <exception cref="FileNotFoundException">The path is neither a file nor a directory.</exception>
+    public async ValueTask<IReadOnlyList<string>> FilesAsync(CancellationToken cancellationToken)
     {
-        if (storage is not null)
+        if (storage is null)
         {
-            return StorageFiles(Metered);
+            return LocalFiles(); // the disk has no asynchronous listing
         }
 
+        var keys = new List<string>();
+        await foreach (string key in Metered.ListAsync(Path, cancellationToken).Select(storageObject => storageObject.Key).Where(Matches).ConfigureAwait(false))
+        {
+            keys.Add(key);
+        }
+
+        keys.Sort(StringComparer.Ordinal);
+        return keys;
+    }
+
+    private IReadOnlyList<string> LocalFiles()
+    {
         if (File.Exists(Path))
         {
             return [Path];
@@ -54,22 +72,27 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
     /// <summary>Opens a file of the list of <see cref="Files"/> for reading, from the disk or from the storage.</summary>
     public Stream OpenFile(string file) => Metered.OpenReadAsync(file).AsTask().GetAwaiter().GetResult();
 
+    private ValueTask<Stream> OpenFileAsync(string file, CancellationToken cancellationToken) => Metered.OpenReadAsync(file, cancellationToken);
+
     /// <summary>The keys below the prefix that match the search pattern (and are not in a folder below it, when the dataset does not look there), in the order of their names.</summary>
     private List<string> StorageFiles(IParquetStorage source)
     {
         var keys = new List<string>();
-        foreach (string key in source.ListAsync(Path).Select(storageObject => storageObject.Key).ToBlockingEnumerable())
+        foreach (string key in source.ListAsync(Path).Select(storageObject => storageObject.Key).Where(Matches).ToBlockingEnumerable())
         {
-            string name = key[(key.LastIndexOf('/') + 1)..];
-            bool inFolder = key.AsSpan(Path.Length).Contains('/');
-            if (FileSystemName.MatchesSimpleExpression(Options.SearchPattern, name) && (Options.Recursive || !inFolder))
-            {
-                keys.Add(key);
-            }
+            keys.Add(key);
         }
 
         keys.Sort(StringComparer.Ordinal);
         return keys;
+    }
+
+    /// <summary>Whether a key below the prefix is a file of the dataset: its name matches the search pattern, and it is not in a folder below the prefix when the dataset does not look there.</summary>
+    private bool Matches(string key)
+    {
+        string name = key[(key.LastIndexOf('/') + 1)..];
+        bool inFolder = key.AsSpan(Path.Length).Contains('/');
+        return FileSystemName.MatchesSimpleExpression(Options.SearchPattern, name) && (Options.Recursive || !inFolder);
     }
 
     /// <summary>The rows of the row groups of the files that the filter does not rule out, files in parallel.</summary>
@@ -115,6 +138,163 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
             .WithDegreeOfParallelism(degree)
             .WithMergeOptions(ParallelMergeOptions.NotBuffered)
             .SelectMany(file => ReadFile<TRow>(file, filter)));
+    }
+
+    /// <summary>
+    /// The rows of the row groups of the files that the filter does not rule out, like <see cref="Read{TRow}"/> but read with asynchronous
+    /// calls: no thread waits for a file. The files are read by up to <see cref="ParquetDatasetOptions.MaxDegreeOfParallelism"/> readers at a time,
+    /// whose rows go through a channel of a bounded size, so a slow consumer holds the readers back; stopping the enumeration stops them.
+    /// </summary>
+    public IAsyncEnumerable<TRow> ReadAsync<TRow>(ParquetFilter? filter, CancellationToken cancellationToken = default)
+    {
+        var rows = ReadFilesAsync<TRow>(filter, cancellationToken);
+        return Options.Metrics is { } metrics ? MeasuredAsync(rows, metrics, filter is not null, cancellationToken) : rows;
+    }
+
+    /// <summary>The asynchronous form of <see cref="Measured{TRow}"/>.</summary>
+    internal static async IAsyncEnumerable<TRow> MeasuredAsync<TRow>(IAsyncEnumerable<TRow> rows, ParquetNeoMetrics metrics, bool filtered, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        long started = Stopwatch.GetTimestamp();
+        long count = 0;
+        try
+        {
+            await foreach (var row in rows.WithCancellation(cancellationToken).ConfigureAwait(false))
+            {
+                count++;
+                yield return row;
+            }
+        }
+        finally
+        {
+            metrics.RecordQuery(Stopwatch.GetElapsedTime(started).TotalSeconds, count, filtered);
+        }
+    }
+
+    private async IAsyncEnumerable<TRow> ReadFilesAsync<TRow>(ParquetFilter? filter, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        var files = await FilesAsync(cancellationToken).ConfigureAwait(false);
+        int degree = Math.Max(1, Math.Min(Options.MaxDegreeOfParallelism, files.Count));
+        var channel = Channel.CreateBounded<TRow>(new BoundedChannelOptions(1024) { SingleReader = true });
+        using var stop = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        ExceptionDispatchInfo? failure = null;
+        int next = -1;
+        var readers = new Task[degree];
+        for (int reader = 0; reader < degree; reader++)
+        {
+            readers[reader] = Task.Run(
+                async () =>
+                {
+                    try
+                    {
+                        int index;
+                        while ((index = Interlocked.Increment(ref next)) < files.Count)
+                        {
+                            await foreach (var row in ReadFileAsync<TRow>(files[index], filter, stop.Token).ConfigureAwait(false))
+                            {
+                                await channel.Writer.WriteAsync(row, stop.Token).ConfigureAwait(false);
+                            }
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        Interlocked.CompareExchange(ref failure, ExceptionDispatchInfo.Capture(exception), null);
+                        await stop.CancelAsync().ConfigureAwait(false);
+                    }
+                },
+                CancellationToken.None);
+        }
+
+        var finished = Task.WhenAll(readers).ContinueWith(_ => channel.Writer.Complete(failure?.SourceException), TaskScheduler.Default);
+        try
+        {
+            await foreach (var row in channel.Reader.ReadAllAsync(cancellationToken).ConfigureAwait(false))
+            {
+                yield return row;
+            }
+        }
+        finally
+        {
+            await stop.CancelAsync().ConfigureAwait(false);
+            await finished.ConfigureAwait(false);
+        }
+    }
+
+    private async IAsyncEnumerable<TRow> ReadFileAsync<TRow>(string file, ParquetFilter? filter, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        await using var stream = await OpenFileAsync(file, cancellationToken).ConfigureAwait(false);
+        if (filter is not null)
+        {
+            await using (var reader = await ParquetFileReader.OpenAsync(stream, Options.Deserializer.Reader, leaveOpen: true, cancellationToken).ConfigureAwait(false))
+            {
+                if ((await MatchingRowGroupsAsync(reader, filter, cancellationToken).ConfigureAwait(false)).Count == 0)
+                {
+                    yield break;
+                }
+            }
+
+            stream.Position = 0;
+        }
+
+        await foreach (var row in ParquetSerializer.DeserializeAllAsync<TRow>(stream, Options.Deserializer with { RowGroupFilter = filter, Reader = ReaderOptions }, cancellationToken).ConfigureAwait(false))
+        {
+            yield return row;
+        }
+    }
+
+    /// <summary>The number of rows in all the files, from their footers, read without blocking.</summary>
+    public async ValueTask<long> CountRowsAsync(CancellationToken cancellationToken)
+    {
+        long rows = 0;
+        foreach (string file in await FilesAsync(cancellationToken).ConfigureAwait(false))
+        {
+            await using var stream = await OpenFileAsync(file, cancellationToken).ConfigureAwait(false);
+            await using var reader = await ParquetFileReader.OpenAsync(stream, Options.Deserializer.Reader, leaveOpen: true, cancellationToken).ConfigureAwait(false);
+            rows += reader.RowCount;
+        }
+
+        return rows;
+    }
+
+    /// <summary>How many files and row groups a filter rules out, read without blocking.</summary>
+    public async ValueTask<(int Files, int FilesSkipped, int RowGroups, int RowGroupsSkipped)> InspectAsync(ParquetFilter? filter, CancellationToken cancellationToken)
+    {
+        var files = await FilesAsync(cancellationToken).ConfigureAwait(false);
+        int skippedFiles = 0;
+        int groups = 0;
+        int skippedGroups = 0;
+        foreach (string file in files)
+        {
+            await using var stream = await OpenFileAsync(file, cancellationToken).ConfigureAwait(false);
+            await using var reader = await ParquetFileReader.OpenAsync(stream, Options.Deserializer.Reader, leaveOpen: true, cancellationToken).ConfigureAwait(false);
+            int kept = (await MatchingRowGroupsAsync(reader, filter, cancellationToken).ConfigureAwait(false)).Count;
+            if (kept == 0)
+            {
+                skippedFiles++;
+                continue;
+            }
+
+            groups += reader.RowGroupCount;
+            skippedGroups += reader.RowGroupCount - kept;
+        }
+
+        return (files.Count, skippedFiles, groups, skippedGroups);
+    }
+
+    private static async ValueTask<IReadOnlyList<int>> MatchingRowGroupsAsync(ParquetFileReader reader, ParquetFilter? filter, CancellationToken cancellationToken)
+    {
+        if (filter is not null)
+        {
+            try
+            {
+                return await reader.GetMatchingRowGroupsAsync(filter, cancellationToken).ConfigureAwait(false);
+            }
+            catch (ArgumentException)
+            {
+                // A value that does not suit the column decides nothing; the rows are checked as they are read.
+            }
+        }
+
+        return Enumerable.Range(0, reader.RowGroupCount).ToArray();
     }
 
     /// <summary>The number of rows in all the files, from their footers.</summary>
