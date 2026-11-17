@@ -77,7 +77,7 @@ public class WriteComparison
     public long ParquetNeoColumns()
     {
         _output.SetLength(0);
-        using var writer = ParquetFileWriter.Open(_output, _schema, _options, leaveOpen: true);
+        using var writer = ParquetFileWriter.Create(_output, _schema, _options, leaveOpen: true);
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(_data.Ids);
@@ -96,7 +96,7 @@ public class WriteComparison
     public long ParquetNeoColumnsInParallel()
     {
         _output.SetLength(0);
-        using var writer = ParquetFileWriter.Open(_output, _schema, _options, leaveOpen: true);
+        using var writer = ParquetFileWriter.Create(_output, _schema, _options, leaveOpen: true);
         using (var group = writer.AppendRowGroup())
         {
             group.WriteColumns(
@@ -122,7 +122,7 @@ public class WriteComparison
     public long ParquetNeoColumnsPlain()
     {
         _output.SetLength(0);
-        using var writer = ParquetFileWriter.Open(_output, _schema, _plainOptions, leaveOpen: true);
+        using var writer = ParquetFileWriter.Create(_output, _schema, _plainOptions, leaveOpen: true);
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(_data.Ids);
@@ -141,7 +141,7 @@ public class WriteComparison
     public long ParquetNeoColumnsAdaptive()
     {
         _output.SetLength(0);
-        using var writer = ParquetFileWriter.Open(_output, _schema, _adaptiveOptions, leaveOpen: true);
+        using var writer = ParquetFileWriter.Create(_output, _schema, _adaptiveOptions, leaveOpen: true);
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(_data.Ids);

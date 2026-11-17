@@ -590,7 +590,7 @@ public class NestedDeserializerShapeTests
         var keysOnly = new MemoryStream();
         var map = new GroupNode("m", FieldRepetitionType.Optional,
             [new GroupNode("key_value", FieldRepetitionType.Repeated, [new PrimitiveNode("key", PhysicalType.ByteArray, FieldRepetitionType.Required, LogicalType.String)])], LogicalType.Map);
-        using (var writer = ParquetFileWriter.Open(keysOnly, new ParquetSchema([map]), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(keysOnly, new ParquetSchema([map]), leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteStrings(["a"], [2], [0]);
@@ -598,7 +598,7 @@ public class NestedDeserializerShapeTests
 
         var repeated = new MemoryStream();
         var bare = new GroupNode("g", FieldRepetitionType.Repeated, [new PrimitiveNode("a", PhysicalType.Int32, FieldRepetitionType.Required)]);
-        using (var writer = ParquetFileWriter.Open(repeated, new ParquetSchema([bare]), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(repeated, new ParquetSchema([bare]), leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch([1, 2], [1, 1], [0, 1]);

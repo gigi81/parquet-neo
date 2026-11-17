@@ -97,7 +97,7 @@ public class NestedBenchmarks
     private long WriteTo(Stream stream)
     {
         _schema = new ParquetSchema([NestedSchema.List("l", FieldRepetitionType.Optional, new PrimitiveNode("element", PhysicalType.Int32, FieldRepetitionType.Optional))]);
-        using var writer = ParquetFileWriter.Open(stream, _schema, leaveOpen: true);
+        using var writer = ParquetFileWriter.Create(stream, _schema, leaveOpen: true);
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(_values, _definitionLevels, _repetitionLevels);

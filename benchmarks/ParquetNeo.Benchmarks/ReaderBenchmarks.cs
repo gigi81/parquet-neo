@@ -43,7 +43,7 @@ public class ReaderBenchmarks
         var names = Enumerable.Range(0, Rows).Where(i => i % 10 != 0).Select(i => "customer-" + (i % 5000)).ToArray();
 
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, schema, new ParquetWriterOptions { Compression = Compression, Codecs = registry, DictionaryEnabled = Dictionary }, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, new ParquetWriterOptions { Compression = Compression, Codecs = registry, DictionaryEnabled = Dictionary }, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(ids);

@@ -254,7 +254,7 @@ public class ReaderRobustnessTests
     {
         var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.Int32, FieldRepetitionType.Required)]);
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, schema, new ParquetWriterOptions { Compression = codec, Codecs = TestParquetFile.Registry }, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, new ParquetWriterOptions { Compression = codec, Codecs = TestParquetFile.Registry }, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(Enumerable.Range(0, 300).Select(i => i % 3).ToArray());
@@ -343,7 +343,7 @@ public class ReaderRobustnessTests
     {
         var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.ByteArray, FieldRepetitionType.Required, LogicalType.String)]);
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, schema, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteStrings(Enumerable.Range(0, 300).Select(i => "value" + i % 3).ToArray());
@@ -358,7 +358,7 @@ public class ReaderRobustnessTests
         // A plain file whose second page claims to be a dictionary page.
         var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.Int32, FieldRepetitionType.Required)]);
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, schema, new ParquetWriterOptions { DictionaryEnabled = false, DataPageSize = 400 }, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, new ParquetWriterOptions { DictionaryEnabled = false, DataPageSize = 400 }, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(Enumerable.Range(0, 300).ToArray());
@@ -471,7 +471,7 @@ public class ReaderRobustnessTests
     {
         var schema = new ParquetSchema([new PrimitiveNode("b", PhysicalType.Boolean, FieldRepetitionType.Required)]);
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, schema, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(new bool[40]);

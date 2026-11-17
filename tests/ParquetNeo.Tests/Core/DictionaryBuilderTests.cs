@@ -269,7 +269,7 @@ public class DictionaryBuilderTests
                 new PrimitiveNode("id", PhysicalType.Int64, FieldRepetitionType.Required),
                 new PrimitiveNode("name", PhysicalType.ByteArray, FieldRepetitionType.Required, LogicalType.String),
             ]);
-            using (var writer = ParquetFileWriter.Open(stream, schema, new ParquetWriterOptions { DataPageSize = 20_000 }, leaveOpen: true))
+            using (var writer = ParquetFileWriter.Create(stream, schema, new ParquetWriterOptions { DataPageSize = 20_000 }, leaveOpen: true))
             using (var group = writer.AppendRowGroup())
             {
                 group.NextColumn().WriteBatch(ids);

@@ -8,7 +8,7 @@ public class DictionaryModeTests
     {
         var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.Int64, FieldRepetitionType.Required)]);
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, schema, options, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, options, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             var column = group.NextColumn();
@@ -111,7 +111,7 @@ public class DictionaryModeTests
         var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.Int64, FieldRepetitionType.Required)]);
         var options = new ParquetWriterOptions { ColumnDictionaries = new Dictionary<string, DictionarySettings> { ["nope"] = DictionaryMode.Disabled } };
 
-        var exception = Assert.Throws<ArgumentException>(() => ParquetFileWriter.Open(new MemoryStream(), schema, options));
+        var exception = Assert.Throws<ArgumentException>(() => ParquetFileWriter.Create(new MemoryStream(), schema, options));
 
         await Assert.That(exception.Message).Contains("nope");
     }
@@ -122,7 +122,7 @@ public class DictionaryModeTests
         var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.Int64, FieldRepetitionType.Required)]);
         var options = new ParquetWriterOptions { ColumnDictionaries = new Dictionary<string, DictionarySettings> { ["c"] = (DictionaryMode)7 } };
 
-        var exception = Assert.Throws<ArgumentException>(() => ParquetFileWriter.Open(new MemoryStream(), schema, options));
+        var exception = Assert.Throws<ArgumentException>(() => ParquetFileWriter.Create(new MemoryStream(), schema, options));
 
         await Assert.That(exception.Message).Contains("'c'");
     }
@@ -168,7 +168,7 @@ public class DictionaryModeTests
     {
         var schema = new ParquetSchema([new PrimitiveNode("c", PhysicalType.Int64, FieldRepetitionType.Required)]);
 
-        var exception = Assert.Throws<ArgumentException>(() => ParquetFileWriter.Open(new MemoryStream(), schema, Limits(null, 0)));
+        var exception = Assert.Throws<ArgumentException>(() => ParquetFileWriter.Create(new MemoryStream(), schema, Limits(null, 0)));
 
         await Assert.That(exception.Message).Contains("size limit");
     }

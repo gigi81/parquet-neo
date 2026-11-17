@@ -82,7 +82,7 @@ public class GoldenFileTests
         };
 
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, schema, options, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, options, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch([1L, 2, 3, 4, 5, 6, 7]);

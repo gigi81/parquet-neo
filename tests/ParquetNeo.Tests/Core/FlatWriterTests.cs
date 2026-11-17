@@ -82,7 +82,7 @@ public class FlatWriterTests
         byte[] Write(Action<ColumnWriter, ColumnWriter> fill)
         {
             var stream = new MemoryStream();
-            using (var writer = ParquetFileWriter.Open(stream, schema, new ParquetWriterOptions { CreatedBy = "test" }, leaveOpen: true))
+            using (var writer = ParquetFileWriter.Create(stream, schema, new ParquetWriterOptions { CreatedBy = "test" }, leaveOpen: true))
             using (var group = writer.AppendRowGroup())
             {
                 var first = group.NextColumn();
@@ -127,7 +127,7 @@ public class FlatWriterTests
             new PrimitiveNode("noNull", PhysicalType.Int32, FieldRepetitionType.Optional),
         ]);
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, schema, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(ReadOnlySpan<int>.Empty, new int[100]);
@@ -277,7 +277,7 @@ public class FlatWriterTests
         var reference = SampleFile.Build(optional: true, rows: 1500, groups: 2);
         var target = new MemoryStream();
         using (var forwardOnly = new ForwardOnlyStream(target))
-        using (var writer = ParquetFileWriter.Open(forwardOnly, SampleFile.Schema(FieldRepetitionType.Optional), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(forwardOnly, SampleFile.Schema(FieldRepetitionType.Optional), leaveOpen: true))
         {
             SampleFile.WriteGroup(writer, true, 0, 750);
             SampleFile.WriteGroup(writer, true, 750, 750);
@@ -292,14 +292,14 @@ public class FlatWriterTests
         var schema = new ParquetSchema([new PrimitiveNode("n", PhysicalType.Int32, FieldRepetitionType.Required)]);
 
         var kept = new TrackingStream();
-        using (var writer = ParquetFileWriter.Open(kept, schema, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(kept, schema, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch([1, 2, 3]);
         }
 
         var closed = new TrackingStream();
-        using (var writer = ParquetFileWriter.Open(closed, schema))
+        using (var writer = ParquetFileWriter.Create(closed, schema))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch([1, 2, 3]);
@@ -314,7 +314,7 @@ public class FlatWriterTests
     {
         var schema = new ParquetSchema([new PrimitiveNode("n", PhysicalType.Int32, FieldRepetitionType.Required)]);
         var stream = new MemoryStream();
-        var writer = ParquetFileWriter.Open(stream, schema, leaveOpen: true);
+        var writer = ParquetFileWriter.Create(stream, schema, leaveOpen: true);
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch([1, 2, 3]);
@@ -335,7 +335,7 @@ public class FlatWriterTests
         var schema = new ParquetSchema([new PrimitiveNode("n", PhysicalType.Int64, FieldRepetitionType.Required)]);
         var stream = new MemoryStream();
 
-        await using (var writer = ParquetFileWriter.Open(stream, schema, leaveOpen: true))
+        await using (var writer = ParquetFileWriter.Create(stream, schema, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch([10L, 20L, 30L]);
@@ -350,7 +350,7 @@ public class FlatWriterTests
     {
         var schema = new ParquetSchema([new PrimitiveNode("n", PhysicalType.Int32, FieldRepetitionType.Optional)]);
         var stream = new MemoryStream();
-        using (ParquetFileWriter.Open(stream, schema, leaveOpen: true))
+        using (ParquetFileWriter.Create(stream, schema, leaveOpen: true))
         {
         }
 
@@ -374,7 +374,7 @@ public class FlatWriterTests
         var values = Enumerable.Range(0, rows).Where(i => i % 3 != 0).Select(i => i / 7.0).ToArray();
 
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, schema, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(ids);

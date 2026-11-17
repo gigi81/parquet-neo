@@ -86,7 +86,7 @@ internal static class SampleFile
     public static byte[] Build(bool optional, int rows, int groups = 1, ParquetWriterOptions? options = null)
     {
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, Schema(optional ? FieldRepetitionType.Optional : FieldRepetitionType.Required), options, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, Schema(optional ? FieldRepetitionType.Optional : FieldRepetitionType.Required), options, leaveOpen: true))
         {
             int per = rows / groups;
             for (int g = 0; g < groups; g++)

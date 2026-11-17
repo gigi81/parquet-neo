@@ -103,7 +103,7 @@ public class DecimalTextTests
     private static byte[] Write(PrimitiveNode node, Action<ColumnWriter> write, ParquetWriterOptions? options = null)
     {
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, new ParquetSchema([node]), options, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, new ParquetSchema([node]), options, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             write(group.NextColumn());
@@ -148,7 +148,7 @@ public class DecimalTextTests
                  })
         {
             var stream = new MemoryStream();
-            using var file = ParquetFileWriter.Open(stream, new ParquetSchema([node]), leaveOpen: true);
+            using var file = ParquetFileWriter.Create(stream, new ParquetSchema([node]), leaveOpen: true);
             using var group = file.AppendRowGroup();
             var column = group.NextColumn();
 
@@ -179,7 +179,7 @@ public class DecimalTextTests
         foreach (var node in new[] { plain, date, scale29, floating })
         {
             var stream = new MemoryStream();
-            using var file = ParquetFileWriter.Open(stream, new ParquetSchema([node]), leaveOpen: true);
+            using var file = ParquetFileWriter.Create(stream, new ParquetSchema([node]), leaveOpen: true);
             using var group = file.AppendRowGroup();
             var column = group.NextColumn();
 
@@ -276,7 +276,7 @@ public class DecimalTextTests
         {
             var node = new PrimitiveNode("s", PhysicalType.ByteArray, FieldRepetitionType.Required, logical);
             var stream = new MemoryStream();
-            using var file = ParquetFileWriter.Open(stream, new ParquetSchema([node]), leaveOpen: true);
+            using var file = ParquetFileWriter.Create(stream, new ParquetSchema([node]), leaveOpen: true);
             using var group = file.AppendRowGroup();
             var column = group.NextColumn();
 

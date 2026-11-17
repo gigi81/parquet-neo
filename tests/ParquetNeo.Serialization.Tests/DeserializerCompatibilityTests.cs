@@ -131,7 +131,7 @@ public class DeserializerCompatibilityTests
     {
         var stream = new MemoryStream();
         var node = new PrimitiveNode("d", PhysicalType.FixedLenByteArray, FieldRepetitionType.Required, LogicalType.Decimal(29, 38), typeLength: 16);
-        using (var writer = ParquetFileWriter.Open(stream, new ParquetSchema([node]), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, new ParquetSchema([node]), leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteFixedLengthByteArrays(new byte[16]);
@@ -153,7 +153,7 @@ public class DeserializerCompatibilityTests
     {
         var stream = new MemoryStream();
         var node = new PrimitiveNode("x", PhysicalType.Int32, FieldRepetitionType.Repeated);
-        using (var writer = ParquetFileWriter.Open(stream, new ParquetSchema([node]), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, new ParquetSchema([node]), leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch([1, 2, 3], [1, 1, 1], [0, 1, 0]);

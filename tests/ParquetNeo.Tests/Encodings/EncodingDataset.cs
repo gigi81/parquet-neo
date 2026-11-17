@@ -59,7 +59,7 @@ internal static class EncodingDataset
     public static byte[] Write(bool optional, ParquetWriterOptions options, int batchRows = RowCount)
     {
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, Schema(optional), options, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, Schema(optional), options, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             for (int column = 0; column < Columns.Length; column++)

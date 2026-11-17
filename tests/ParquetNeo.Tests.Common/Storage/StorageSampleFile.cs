@@ -16,7 +16,7 @@ public static class StorageSampleFile
             new PrimitiveNode("Score", PhysicalType.Double, FieldRepetitionType.Required),
         ]);
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, schema, new ParquetWriterOptions { WritePageIndex = true, DataPageSize = 4000 }, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, new ParquetWriterOptions { WritePageIndex = true, DataPageSize = 4000 }, leaveOpen: true))
         {
             for (int group = 0; group < rowGroups; group++)
             {

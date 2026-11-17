@@ -170,7 +170,7 @@ public class ParallelEncodingTests
     public async Task TheRowGroupWriter_RefusesAGroupThatHasStarted_AndAWrongNumberOfColumns()
     {
         var schema = Serializer<Sample>.Schema();
-        using var writer = ParquetFileWriter.Open(new MemoryStream(), schema, leaveOpen: true);
+        using var writer = ParquetFileWriter.Create(new MemoryStream(), schema, leaveOpen: true);
         using var group = writer.AppendRowGroup();
         group.NextColumn();
 

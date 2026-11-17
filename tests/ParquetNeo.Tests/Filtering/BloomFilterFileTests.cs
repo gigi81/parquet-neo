@@ -213,7 +213,7 @@ public class BloomFilterFileTests
         var schema = new ParquetSchema([FilterFile.Column<int>("a"), FilterFile.Column<bool>("flag")]);
 
         Action<IReadOnlyDictionary<string, BloomFilterSettings>> create = settings =>
-            ParquetFileWriter.Open(new MemoryStream(), schema, new ParquetWriterOptions { ColumnBloomFilters = settings }).Dispose();
+            ParquetFileWriter.Create(new MemoryStream(), schema, new ParquetWriterOptions { ColumnBloomFilters = settings }).Dispose();
 
         await Assert.That(() => create(new Dictionary<string, BloomFilterSettings> { ["missing"] = new() })).Throws<ArgumentException>();
         await Assert.That(() => create(new Dictionary<string, BloomFilterSettings> { ["flag"] = new() })).Throws<ArgumentException>();

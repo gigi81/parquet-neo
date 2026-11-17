@@ -119,7 +119,7 @@ internal static class LogicalDataset
     public static byte[] Write(bool optional, ParquetWriterOptions? options = null)
     {
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, Schema(optional), options, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, Schema(optional), options, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             for (int column = 0; column < Names.Length; column++)

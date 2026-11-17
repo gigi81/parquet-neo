@@ -13,7 +13,7 @@ internal static class FilterFile
     public static byte[] CreateBytes(IReadOnlyList<PrimitiveNode> columns, int rowGroups, Action<int, RowGroupWriter> fill, ParquetWriterOptions? options = null)
     {
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, new ParquetSchema(columns), options, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, new ParquetSchema(columns), options, leaveOpen: true))
         {
             for (int group = 0; group < rowGroups; group++)
             {

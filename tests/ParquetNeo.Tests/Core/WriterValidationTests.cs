@@ -18,7 +18,7 @@ public class WriterValidationTests
     [Test]
     public async Task ABatchOfTheWrongType_IsRejected()
     {
-        using var writer = ParquetFileWriter.Open(new MemoryStream(), TwoColumns());
+        using var writer = ParquetFileWriter.Create(new MemoryStream(), TwoColumns());
         using var group = writer.AppendRowGroup();
         var column = group.NextColumn();
 
@@ -32,7 +32,7 @@ public class WriterValidationTests
     [Test]
     public async Task ARequiredColumn_TakesNoDefinitionLevels()
     {
-        using var writer = ParquetFileWriter.Open(new MemoryStream(), TwoColumns());
+        using var writer = ParquetFileWriter.Create(new MemoryStream(), TwoColumns());
         using var group = writer.AppendRowGroup();
 
         await Assert.That(() => group.NextColumn().WriteBatch([1, 2], [1, 1])).Throws<ArgumentException>();
@@ -41,7 +41,7 @@ public class WriterValidationTests
     [Test]
     public async Task AnOptionalColumn_NeedsOneLevelPerRow()
     {
-        using var writer = ParquetFileWriter.Open(new MemoryStream(), TwoColumns());
+        using var writer = ParquetFileWriter.Create(new MemoryStream(), TwoColumns());
         using var group = writer.AppendRowGroup();
         group.NextColumn().WriteBatch([1, 2, 3]);
         var optional = group.NextColumn();
@@ -52,7 +52,7 @@ public class WriterValidationTests
     [Test]
     public async Task DefinitionLevels_MustMatchTheNumberOfValues_AndBeInRange()
     {
-        using var writer = ParquetFileWriter.Open(new MemoryStream(), TwoColumns());
+        using var writer = ParquetFileWriter.Create(new MemoryStream(), TwoColumns());
         using var group = writer.AppendRowGroup();
         group.NextColumn().WriteBatch([1, 2, 3]);
         var optional = group.NextColumn();
@@ -67,7 +67,7 @@ public class WriterValidationTests
     public async Task FixedLengthValues_MustBeAWholeNumberOfEntries()
     {
         var schema = new ParquetSchema([new PrimitiveNode("f", PhysicalType.FixedLenByteArray, Required, typeLength: 4)]);
-        using var writer = ParquetFileWriter.Open(new MemoryStream(), schema);
+        using var writer = ParquetFileWriter.Create(new MemoryStream(), schema);
         using var group = writer.AppendRowGroup();
         var column = group.NextColumn();
 
@@ -78,7 +78,7 @@ public class WriterValidationTests
     public async Task EmptyBatches_AreHarmless()
     {
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, TwoColumns(), leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, TwoColumns(), leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             var a = group.NextColumn();
@@ -101,7 +101,7 @@ public class WriterValidationTests
     [Test]
     public async Task ColumnsWithDifferentRowCounts_AreRejected()
     {
-        using var writer = ParquetFileWriter.Open(new MemoryStream(), TwoColumns());
+        using var writer = ParquetFileWriter.Create(new MemoryStream(), TwoColumns());
         using var group = writer.AppendRowGroup();
         group.NextColumn().WriteBatch([1, 2, 3]);
         group.NextColumn().WriteBatch([1, 2], [1, 1]);
@@ -112,7 +112,7 @@ public class WriterValidationTests
     [Test]
     public async Task ARowGroup_MustHaveEveryColumn()
     {
-        using var writer = ParquetFileWriter.Open(new MemoryStream(), TwoColumns());
+        using var writer = ParquetFileWriter.Create(new MemoryStream(), TwoColumns());
         var group = writer.AppendRowGroup();
         group.NextColumn().WriteBatch([1, 2, 3]);
 
@@ -122,7 +122,7 @@ public class WriterValidationTests
     [Test]
     public async Task NoMoreColumnsThanTheSchemaHas()
     {
-        using var writer = ParquetFileWriter.Open(new MemoryStream(), TwoColumns());
+        using var writer = ParquetFileWriter.Create(new MemoryStream(), TwoColumns());
         using var group = writer.AppendRowGroup();
         group.NextColumn().WriteBatch([1]);
         group.NextColumn().WriteBatch([1], [1]);
@@ -133,7 +133,7 @@ public class WriterValidationTests
     [Test]
     public async Task ARowGroup_NeedsAtLeastOneRow()
     {
-        using var writer = ParquetFileWriter.Open(new MemoryStream(), TwoColumns());
+        using var writer = ParquetFileWriter.Create(new MemoryStream(), TwoColumns());
         var group = writer.AppendRowGroup();
 
         await Assert.That(() => group.NextColumn().WriteBatch(ReadOnlySpan<int>.Empty)).ThrowsNothing();
@@ -143,7 +143,7 @@ public class WriterValidationTests
     [Test]
     public async Task OnlyOneRowGroupCanBeOpenAtATime()
     {
-        using var writer = ParquetFileWriter.Open(new MemoryStream(), TwoColumns());
+        using var writer = ParquetFileWriter.Create(new MemoryStream(), TwoColumns());
         using var first = writer.AppendRowGroup();
 
         await Assert.That(() => writer.AppendRowGroup()).Throws<InvalidOperationException>();
@@ -152,7 +152,7 @@ public class WriterValidationTests
     [Test]
     public async Task AColumnWriter_CannotBeUsedAfterMovingOn()
     {
-        using var writer = ParquetFileWriter.Open(new MemoryStream(), TwoColumns());
+        using var writer = ParquetFileWriter.Create(new MemoryStream(), TwoColumns());
         using var group = writer.AppendRowGroup();
         var first = group.NextColumn();
         first.WriteBatch([1, 2]);
@@ -165,7 +165,7 @@ public class WriterValidationTests
     public async Task ACompletedRowGroup_CannotBeReused()
     {
         var schema = new ParquetSchema([new PrimitiveNode("a", PhysicalType.Int32, Required)]);
-        using var writer = ParquetFileWriter.Open(new MemoryStream(), schema);
+        using var writer = ParquetFileWriter.Create(new MemoryStream(), schema);
         var group = writer.AppendRowGroup();
         group.NextColumn().WriteBatch([1]);
         group.Close();
@@ -179,7 +179,7 @@ public class WriterValidationTests
     [Test]
     public async Task ClosingTheFile_WhileAGroupIsOpen_IsRejected()
     {
-        var writer = ParquetFileWriter.Open(new MemoryStream(), TwoColumns());
+        var writer = ParquetFileWriter.Create(new MemoryStream(), TwoColumns());
         writer.AppendRowGroup();
 
         await Assert.That(() => writer.Close()).Throws<InvalidOperationException>();
@@ -189,7 +189,7 @@ public class WriterValidationTests
     public async Task AnAbandonedRowGroup_StopsTheFileFromBeingCompleted_WithoutHidingTheOriginalError()
     {
         var stream = new MemoryStream();
-        var writer = ParquetFileWriter.Open(stream, TwoColumns(), leaveOpen: true);
+        var writer = ParquetFileWriter.Create(stream, TwoColumns(), leaveOpen: true);
 
         // The caller's own exception happens while the group is open; disposing must not throw over it.
         Exception? original = null;
@@ -214,7 +214,7 @@ public class WriterValidationTests
     [Test]
     public async Task DisposingAGroupWhoseLastColumnHasNoValues_AbandonsTheFile_InsteadOfThrowing()
     {
-        var writer = ParquetFileWriter.Open(new MemoryStream(), TwoColumns());
+        var writer = ParquetFileWriter.Create(new MemoryStream(), TwoColumns());
         var group = writer.AppendRowGroup();
         group.NextColumn().WriteBatch([1, 2]);
         group.NextColumn(); // started, but nothing written
@@ -227,7 +227,7 @@ public class WriterValidationTests
     [Test]
     public async Task ClosingTheGroup_ReportsAColumnWithoutValues()
     {
-        using var writer = ParquetFileWriter.Open(new MemoryStream(), TwoColumns());
+        using var writer = ParquetFileWriter.Create(new MemoryStream(), TwoColumns());
         var group = writer.AppendRowGroup();
         group.NextColumn().WriteBatch([1, 2]);
         group.NextColumn();
@@ -238,7 +238,7 @@ public class WriterValidationTests
     [Test]
     public async Task UsingAClosedWriter_IsRejected()
     {
-        var writer = ParquetFileWriter.Open(new MemoryStream(), TwoColumns());
+        var writer = ParquetFileWriter.Create(new MemoryStream(), TwoColumns());
         writer.Close();
 
         await Assert.That(() => writer.AppendRowGroup()).Throws<InvalidOperationException>();
@@ -250,9 +250,9 @@ public class WriterValidationTests
         var int96 = new ParquetSchema([new PrimitiveNode("t", PhysicalType.Int96, Optional)]);
         var nestedInt96 = new ParquetSchema([new GroupNode("g", Optional, [new PrimitiveNode("t", PhysicalType.Int96, Optional)])]);
 
-        await Assert.That(() => ParquetFileWriter.Open(new MemoryStream(), int96)).Throws<NotSupportedException>();
-        await Assert.That(() => ParquetFileWriter.Open(new MemoryStream(), nestedInt96)).Throws<NotSupportedException>();
-        await Assert.That(() => ParquetFileWriter.Open(new MemoryStream(), new ParquetSchema([]))).Throws<ArgumentException>();
+        await Assert.That(() => ParquetFileWriter.Create(new MemoryStream(), int96)).Throws<NotSupportedException>();
+        await Assert.That(() => ParquetFileWriter.Create(new MemoryStream(), nestedInt96)).Throws<NotSupportedException>();
+        await Assert.That(() => ParquetFileWriter.Create(new MemoryStream(), new ParquetSchema([]))).Throws<ArgumentException>();
     }
 
     [Test]
@@ -261,7 +261,7 @@ public class WriterValidationTests
         var stream = new MemoryStream();
         var options = new ParquetWriterOptions { Compression = CompressionCodec.Snappy }; // an add-on, not registered by default
 
-        var exception = Assert.Throws<NotSupportedException>(() => ParquetFileWriter.Open(stream, TwoColumns(), options));
+        var exception = Assert.Throws<NotSupportedException>(() => ParquetFileWriter.Create(stream, TwoColumns(), options));
 
         await Assert.That(exception.Message).Contains("ParquetNeo.Compression.Snappy");
         await Assert.That(stream.Length).IsEqualTo(0L);
@@ -272,10 +272,10 @@ public class WriterValidationTests
     {
         var readOnly = new MemoryStream([], writable: false);
 
-        await Assert.That(() => ParquetFileWriter.Open(null!, TwoColumns())).Throws<ArgumentNullException>();
-        await Assert.That(() => ParquetFileWriter.Open(new MemoryStream(), null!)).Throws<ArgumentNullException>();
-        await Assert.That(() => ParquetFileWriter.Open(readOnly, TwoColumns())).Throws<ArgumentException>();
-        await Assert.That(() => ParquetFileWriter.Open(new MemoryStream(), TwoColumns(), new ParquetWriterOptions { DataPageSize = 0 }))
+        await Assert.That(() => ParquetFileWriter.Create(null!, TwoColumns())).Throws<ArgumentNullException>();
+        await Assert.That(() => ParquetFileWriter.Create(new MemoryStream(), null!)).Throws<ArgumentNullException>();
+        await Assert.That(() => ParquetFileWriter.Create(readOnly, TwoColumns())).Throws<ArgumentException>();
+        await Assert.That(() => ParquetFileWriter.Create(new MemoryStream(), TwoColumns(), new ParquetWriterOptions { DataPageSize = 0 }))
             .Throws<ArgumentOutOfRangeException>();
     }
 
@@ -283,7 +283,7 @@ public class WriterValidationTests
     public async Task NothingIsWrittenToTheStream_ButTheMagic_UntilDataArrives()
     {
         var stream = new MemoryStream();
-        using var writer = ParquetFileWriter.Open(stream, TwoColumns(), leaveOpen: true);
+        using var writer = ParquetFileWriter.Create(stream, TwoColumns(), leaveOpen: true);
 
         await Assert.That(stream.ToArray()).IsEquivalentTo("PAR1"u8.ToArray());
         await Assert.That(writer.Position).IsEqualTo(4L);

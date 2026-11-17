@@ -112,7 +112,7 @@ public class Int96Tests
     {
         var schema = new ParquetSchema([new PrimitiveNode("t", PhysicalType.Int96, FieldRepetitionType.Required)]);
 
-        await Assert.That(() => ParquetFileWriter.Open(new MemoryStream(), schema)).Throws<NotSupportedException>();
+        await Assert.That(() => ParquetFileWriter.Create(new MemoryStream(), schema)).Throws<NotSupportedException>();
     }
 
     [Test]

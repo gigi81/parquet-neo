@@ -40,7 +40,7 @@ public class ColumnTypeSerializerTests
             new PrimitiveNode("Optional", PhysicalType.FixedLenByteArray, FieldRepetitionType.Optional, typeLength: 2),
         ]);
         var stream = new MemoryStream();
-        using (var writer = ParquetFileWriter.Open(stream, schema, options: null, leaveOpen: true))
+        using (var writer = ParquetFileWriter.Create(stream, schema, options: null, leaveOpen: true))
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch([1, 2]);

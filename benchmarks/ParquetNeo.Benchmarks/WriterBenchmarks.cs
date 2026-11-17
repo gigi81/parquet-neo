@@ -48,7 +48,7 @@ public class WriterBenchmarks
     [Benchmark]
     public long WriteFile()
     {
-        using var writer = ParquetFileWriter.Open(Stream.Null, _schema, _options, leaveOpen: true);
+        using var writer = ParquetFileWriter.Create(Stream.Null, _schema, _options, leaveOpen: true);
         using (var group = writer.AppendRowGroup())
         {
             group.NextColumn().WriteBatch(_ids);
