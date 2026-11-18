@@ -26,7 +26,9 @@ internal static class ColumnStatisticsDecoder
 
         // The deprecated min/max fields are ignored: they were written with an ordering that is wrong for many types.
         // min_value/max_value are only meaningful for a column order this library understands.
-        bool orderKnown = columnOrders is not null && column.ColumnIndex < columnOrders.Count && IsSupported(column.Type, columnOrders[column.ColumnIndex]);
+        // The minimum and the maximum of a geometry or a geography mean nothing (the specification gives them no order): a writer that records them is not believed.
+        bool orderKnown = columnOrders is not null && column.ColumnIndex < columnOrders.Count && IsSupported(column.Type, columnOrders[column.ColumnIndex])
+            && column.LogicalType?.Kind is not (LogicalTypeKind.Geometry or LogicalTypeKind.Geography);
         object? min = orderKnown && raw.MinValue is not null ? DecodeValue(column, raw.MinValue, "minimum") : null;
         object? max = orderKnown && raw.MaxValue is not null ? DecodeValue(column, raw.MaxValue, "maximum") : null;
 

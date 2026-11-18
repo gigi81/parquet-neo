@@ -20,4 +20,10 @@ public enum LogicalTypeKind
     Bson = 13,
     Uuid = 14,
     Float16 = 15,
+
+    /// <summary>Features in the Well-Known Binary format on a plane (thrift <c>GEOMETRY</c>), in a BYTE_ARRAY column.</summary>
+    Geometry = 17,
+
+    /// <summary>Features in the Well-Known Binary format on an ellipsoid (thrift <c>GEOGRAPHY</c>), in a BYTE_ARRAY column.</summary>
+    Geography = 18,
 }

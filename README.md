@@ -135,6 +135,14 @@ rows of the pages it keeps, which still include rows it does not match. The low-
 columns)` gives the rows to read, and `OpenColumn(index, selection)` reads only those. The asynchronous methods of `ParquetSerializer`
 do not fetch the index.
 
+#### Geospatial columns
+
+A `byte[]` property marked `[ParquetGeometry]` or `[ParquetGeography]` is stored as a Parquet GEOMETRY or GEOGRAPHY column: the bytes are the
+feature in the Well-Known Binary format your geometry library reads and writes. The footer then holds the bounding box and the types of the
+features of every row group (for a geography, with great circle edges and the antimeridian taken into account), and
+`ParquetFilter.Column("Shape").IntersectsBox(xMin, yMin, xMax, yMax)` skips the row groups whose box does not meet a rectangle. See
+[Geospatial columns](docs/articles/geospatial.md).
+
 #### LINQ over files
 
 `ParquetNeo.Linq` queries a file, or all the files of a directory, with LINQ. A `Where` is turned into a filter that skips the files and

@@ -64,6 +64,18 @@ internal static class ThriftStruct
         return list;
     }
 
+    public static List<int> ReadI32List(ref ThriftCompactReader reader)
+    {
+        int count = reader.ReadListHeader(CompactType.I32);
+        var list = new List<int>(count);
+        for (int i = 0; i < count; i++)
+        {
+            list.Add(reader.ReadI32());
+        }
+
+        return list;
+    }
+
     /// <summary>Reads a list of i32-backed enum values; unknown values are preserved as-is.</summary>
     public static List<TEnum> ReadEnumList<TEnum>(ref ThriftCompactReader reader) where TEnum : unmanaged, Enum
     {
@@ -102,6 +114,15 @@ internal static class ThriftStruct
         foreach (var item in items)
         {
             writer.WriteI64(item);
+        }
+    }
+
+    public static void WriteI32List(ref ThriftCompactWriter writer, short id, List<int> items)
+    {
+        writer.BeginListField(id, CompactType.I32, items.Count);
+        foreach (var item in items)
+        {
+            writer.WriteI32(item);
         }
     }
 

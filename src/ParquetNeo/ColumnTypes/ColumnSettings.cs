@@ -18,4 +18,13 @@ public sealed record ColumnSettings
 
     /// <summary>Whether a time or timestamp is in UTC, as opposed to a reading of the clock on the wall.</summary>
     public bool? IsAdjustedToUtc { get; init; }
+
+    /// <summary>For a byte array: whether it holds geographies (true) or geometries (false) in Well-Known Binary; null for plain bytes.</summary>
+    public bool? IsGeography { get; init; }
+
+    /// <summary>The coordinate reference system of geometries or geographies; null for the default, <c>OGC:CRS84</c>.</summary>
+    public string? Crs { get; init; }
+
+    /// <summary>How the edges of geographies are interpolated; null for the default, <see cref="EdgeInterpolationAlgorithm.Spherical"/>.</summary>
+    public EdgeInterpolationAlgorithm? Algorithm { get; init; }
 }

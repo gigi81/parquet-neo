@@ -247,6 +247,21 @@ public sealed class RowGroupReader
     }
 
     /// <summary>
+    /// The bounding box and the geometry types of the features of a GEOMETRY or GEOGRAPHY column in this row group, as the writer recorded them;
+    /// null when it recorded none (or the column is of another type).
+    /// </summary>
+    public GeospatialStatistics? GetGeospatialStatistics(int index)
+    {
+        _file.EnsureOpen();
+        ArgumentOutOfRangeException.ThrowIfNegative(index);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, ColumnCount);
+        return Metadata.Columns[index].MetaData?.GeospatialStatistics;
+    }
+
+    /// <summary>The geospatial statistics of a top-level column by name; see <see cref="GetGeospatialStatistics(int)"/>.</summary>
+    public GeospatialStatistics? GetGeospatialStatistics(string name) => GetGeospatialStatistics(ColumnIndexOf(name));
+
+    /// <summary>
     /// Whether the row group can hold a row that satisfies the filter: false when the statistics of its columns show that none does.
     /// See <see cref="ParquetFilter"/> for what that means for the rows.
     /// </summary>

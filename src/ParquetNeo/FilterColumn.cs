@@ -54,6 +54,25 @@ public sealed class FilterColumn
         return ParquetFilter.AnyOf(values.Select(Equal).ToArray());
     }
 
+    /// <summary>
+    /// The features of a GEOMETRY or GEOGRAPHY column may have a point in the rectangle from (<paramref name="xMin"/>, <paramref name="yMin"/>) to
+    /// (<paramref name="xMax"/>, <paramref name="yMax"/>): the row groups whose bounding box does not meet it are skipped. Like every filter it only
+    /// prunes: the features of the row groups that are kept are not tested, so test them yourself for an exact answer. A column of another
+    /// type, or a row group without a recorded box, is kept. For a geography a rectangle with <paramref name="xMin"/> greater than
+    /// <paramref name="xMax"/> crosses the antimeridian.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">A coordinate is not a number, or <paramref name="yMin"/> is greater than <paramref name="yMax"/>.</exception>
+    public ParquetFilter IntersectsBox(double xMin, double yMin, double xMax, double yMax)
+    {
+        if (double.IsNaN(xMin) || double.IsNaN(yMin) || double.IsNaN(xMax) || double.IsNaN(yMax))
+        {
+            throw new ArgumentOutOfRangeException(nameof(xMin), "A coordinate of the rectangle is not a number.");
+        }
+
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(yMin, yMax);
+        return new BoundingBoxFilter(_path, xMin, yMin, xMax, yMax);
+    }
+
     /// <summary>The column is null.</summary>
     public ParquetFilter IsNull() => new NullFilter(_path, isNull: true);
 

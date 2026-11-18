@@ -1,4 +1,5 @@
 using ParquetNeo.Core;
+using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 using ParquetNeo.Statistics;
 
@@ -9,7 +10,8 @@ namespace ParquetNeo.Filtering;
 /// <param name="Statistics">What the writer recorded for the column chunk, or null when nothing usable.</param>
 /// <param name="NumValues">The number of values, nulls included, in the column chunk.</param>
 /// <param name="BloomFilterSource">Reads the bloom filter of the column chunk, or null when filters are not to be used.</param>
-internal sealed record ColumnInfo(PrimitiveNode Column, ValueDomain? Domain, ColumnStatistics? Statistics, long NumValues, Func<BloomFilter?>? BloomFilterSource = null)
+/// <param name="Geospatial">The bounding box and types of the features of the column chunk, when it holds geometries or geographies and the writer recorded them.</param>
+internal sealed record ColumnInfo(PrimitiveNode Column, ValueDomain? Domain, ColumnStatistics? Statistics, long NumValues, Func<BloomFilter?>? BloomFilterSource = null, GeospatialStatistics? Geospatial = null)
 {
     private BloomFilter? _bloomFilter;
     private bool _bloomFilterRead;

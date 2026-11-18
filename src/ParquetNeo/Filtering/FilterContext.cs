@@ -31,7 +31,7 @@ internal sealed class FilterContext(
         if (schema.FindColumn(path) is { } column && column.ColumnIndex < rowGroup.Columns.Count)
         {
             var chunk = rowGroup.Columns[column.ColumnIndex];
-            info = new ColumnInfo(column, ValueDomain.For(column), Decode(column, chunk), chunk.MetaData?.NumValues ?? 0, bloomFilters is null ? null : () => bloomFilters(chunk));
+            info = new ColumnInfo(column, ValueDomain.For(column), Decode(column, chunk), chunk.MetaData?.NumValues ?? 0, bloomFilters is null ? null : () => bloomFilters(chunk), chunk.MetaData?.GeospatialStatistics);
             if (pages is not null && pages.TryGetValue(column.ColumnIndex, out var page))
             {
                 info = info with { Statistics = page.Statistics, NumValues = page.NumValues };

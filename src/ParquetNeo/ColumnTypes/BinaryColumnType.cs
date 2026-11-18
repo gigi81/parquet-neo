@@ -5,21 +5,31 @@ using ParquetNeo.Schema;
 namespace ParquetNeo.ColumnTypes;
 
 /// <summary>
-/// A BYTE_ARRAY column, plain or annotated BSON, or a FIXED_LEN_BYTE_ARRAY column without an annotation, as a <see cref="byte"/>
-/// array. Reading copies the bytes out of the page. A fixed-length column holds values of exactly its length, so writing an array
-/// of another length to it is an <see cref="ArgumentOutOfRangeException"/>. The column it creates is a BYTE_ARRAY.
+/// A BYTE_ARRAY column, plain or annotated BSON, GEOMETRY or GEOGRAPHY (whose Well-Known Binary is the bytes), or a FIXED_LEN_BYTE_ARRAY
+/// column without an annotation, as a <see cref="byte"/> array. Reading copies the bytes out of the page. A fixed-length column holds values
+/// of exactly its length, so writing an array of another length to it is an <see cref="ArgumentOutOfRangeException"/>. The column it creates
+/// is a BYTE_ARRAY, annotated GEOMETRY or GEOGRAPHY when the settings say so.
 /// </summary>
-internal sealed class BinaryColumnType : ColumnType<byte[]>
+internal sealed class BinaryColumnType(LogicalType? annotation = null) : ColumnType<byte[]>
 {
     public override string Name => "byte[]";
 
-    public override PrimitiveNode CreateNode(string name, FieldRepetitionType repetition) => new(name, PhysicalType.ByteArray, repetition);
+    public override ColumnSettingKinds SupportedSettings => ColumnSettingKinds.Geospatial;
+
+    public override ColumnType<byte[]> Configure(ColumnSettings settings) => settings.IsGeography switch
+    {
+        null => this,
+        true => new BinaryColumnType(LogicalType.Geography(settings.Crs, settings.Algorithm)),
+        false => new BinaryColumnType(LogicalType.Geometry(settings.Crs)),
+    };
+
+    public override PrimitiveNode CreateNode(string name, FieldRepetitionType repetition) => new(name, PhysicalType.ByteArray, repetition, annotation);
 
     public override string? GetProblem(PrimitiveNode column)
     {
         bool fits = column.Type switch
         {
-            PhysicalType.ByteArray => column.LogicalType is null || column.LogicalType.Kind == LogicalTypeKind.Bson,
+            PhysicalType.ByteArray => column.LogicalType is null || column.LogicalType.Kind is LogicalTypeKind.Bson or LogicalTypeKind.Geometry or LogicalTypeKind.Geography,
             PhysicalType.FixedLenByteArray => column.LogicalType is null,
             _ => false,
         };

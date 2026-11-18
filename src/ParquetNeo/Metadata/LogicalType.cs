@@ -44,6 +44,15 @@ public sealed record LogicalType
 
     public bool IsSigned { get; private init; }
 
+    /// <summary>
+    /// The coordinate reference system of a geometry or geography, as the specification names them (<c>OGC:CRS84</c>, <c>EPSG:4326</c>, a PROJJSON
+    /// document, ...), or null for the default, <c>OGC:CRS84</c>: longitude and latitude on the WGS84 datum.
+    /// </summary>
+    public string? Crs { get; private init; }
+
+    /// <summary>How the edges of a geography are drawn between its vertices; null for the default, <see cref="EdgeInterpolationAlgorithm.Spherical"/>.</summary>
+    public EdgeInterpolationAlgorithm? Algorithm { get; private init; }
+
     public static LogicalType Decimal(int scale, int precision) =>
         new(LogicalTypeKind.Decimal) { Scale = scale, Precision = precision };
 
@@ -55,6 +64,16 @@ public sealed record LogicalType
 
     public static LogicalType Integer(int bitWidth, bool isSigned) =>
         new(LogicalTypeKind.Integer) { BitWidth = bitWidth, IsSigned = isSigned };
+
+    /// <summary>Features in the Well-Known Binary format whose edges are straight lines on a plane; for a BYTE_ARRAY column.</summary>
+    /// <param name="crs">The coordinate reference system; null for the default, <c>OGC:CRS84</c>.</param>
+    public static LogicalType Geometry(string? crs = null) => new(LogicalTypeKind.Geometry) { Crs = crs };
+
+    /// <summary>Features in the Well-Known Binary format whose edges follow an interpolation of an ellipsoid; for a BYTE_ARRAY column.</summary>
+    /// <param name="crs">The coordinate reference system, with longitudes from -180 to 180 and latitudes from -90 to 90; null for the default, <c>OGC:CRS84</c>.</param>
+    /// <param name="algorithm">How edges are interpolated; null for the default, <see cref="EdgeInterpolationAlgorithm.Spherical"/>.</param>
+    public static LogicalType Geography(string? crs = null, EdgeInterpolationAlgorithm? algorithm = null) =>
+        new(LogicalTypeKind.Geography) { Crs = crs, Algorithm = algorithm };
 
     internal static LogicalType Read(ref ThriftCompactReader reader)
     {
@@ -84,7 +103,9 @@ public sealed record LogicalType
                 case LogicalTypeKind.Time: result = ReadTime(ref reader, isTimestamp: false); break;
                 case LogicalTypeKind.Timestamp: result = ReadTime(ref reader, isTimestamp: true); break;
                 case LogicalTypeKind.Integer: result = ReadInteger(ref reader); break;
-                default: reader.Skip(type); break; // e.g. VARIANT, GEOMETRY: not supported yet
+                case LogicalTypeKind.Geometry: result = ReadGeospatial(ref reader, geography: false); break;
+                case LogicalTypeKind.Geography: result = ReadGeospatial(ref reader, geography: true); break;
+                default: reader.Skip(type); break; // e.g. VARIANT: not supported yet
             }
         }
 
@@ -117,9 +138,41 @@ public sealed record LogicalType
                 writer.WriteI8Field(1, (sbyte)BitWidth);
                 writer.WriteBoolField(2, IsSigned);
                 break;
+            case LogicalTypeKind.Geometry:
+            case LogicalTypeKind.Geography:
+                if (Crs is not null)
+                {
+                    writer.WriteStringField(1, Crs);
+                }
+
+                if (Algorithm is { } algorithm)
+                {
+                    writer.WriteI32Field(2, (int)algorithm);
+                }
+
+                break;
         }
 
         writer.EndStruct();
+    }
+
+    private static LogicalType ReadGeospatial(ref ThriftCompactReader reader, bool geography)
+    {
+        string? crs = null;
+        EdgeInterpolationAlgorithm? algorithm = null;
+        reader.BeginStruct();
+        while (reader.TryReadField(out short id, out var type))
+        {
+            switch (id)
+            {
+                case 1 when type == CompactType.Binary: crs = reader.ReadString(); break;
+                case 2 when type == CompactType.I32 && geography: algorithm = (EdgeInterpolationAlgorithm)reader.ReadI32(); break;
+                default: reader.Skip(type); break;
+            }
+        }
+
+        reader.EndStruct();
+        return geography ? Geography(crs, algorithm) : Geometry(crs);
     }
 
     private static LogicalType ReadDecimal(ref ThriftCompactReader reader)

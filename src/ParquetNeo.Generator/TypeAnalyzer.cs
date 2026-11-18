@@ -535,6 +535,8 @@ namespace ParquetNeo.Generator
                 Decimal = FindAttribute(property, "ParquetDecimalAttribute"),
                 Time = FindAttribute(property, "ParquetTimeAttribute"),
                 Timestamp = FindAttribute(property, "ParquetTimestampAttribute"),
+                Geometry = FindAttribute(property, "ParquetGeometryAttribute"),
+                Geography = FindAttribute(property, "ParquetGeographyAttribute"),
             };
             if (FindAttribute(property, "ParquetColumnAttribute") is { ConstructorArguments: { Length: 1 } } column)
             {
@@ -563,7 +565,17 @@ namespace ParquetNeo.Generator
                 return "ParquetDecimalAttribute";
             }
 
-            return attributes.Time != null ? "ParquetTimeAttribute" : "ParquetTimestampAttribute";
+            if (attributes.Time != null)
+            {
+                return "ParquetTimeAttribute";
+            }
+
+            if (attributes.Timestamp != null)
+            {
+                return "ParquetTimestampAttribute";
+            }
+
+            return attributes.Geometry != null ? "ParquetGeometryAttribute" : "ParquetGeographyAttribute";
         }
 
         /// <summary>Refuses a column attribute that suits none of the types a dictionary is made of, such as a decimal attribute on a dictionary of text.</summary>
@@ -608,6 +620,8 @@ namespace ParquetNeo.Generator
             yield return (attributes.Decimal, "ParquetDecimalAttribute", "a decimal", leaf => leaf == "System.Decimal");
             yield return (attributes.Time, "ParquetTimeAttribute", "a TimeOnly", leaf => leaf == "System.TimeOnly");
             yield return (attributes.Timestamp, "ParquetTimestampAttribute", "a DateTime or DateTimeOffset", leaf => leaf == "System.DateTime" || leaf == "System.DateTimeOffset");
+            yield return (attributes.Geometry, "ParquetGeometryAttribute", "a byte array", leaf => leaf == "System.Byte[]");
+            yield return (attributes.Geography, "ParquetGeographyAttribute", "a byte array", leaf => leaf == "System.Byte[]");
         }
 
         /// <summary>The code of the settings the attributes of the property give a column type, or null when there are none; refused when an attribute does not suit the type.</summary>
@@ -632,7 +646,13 @@ namespace ParquetNeo.Generator
                     throw new UnmappableTypeException(Misplaced(described, name, type.Name, needs));
                 }
 
-                settings = name == "ParquetDecimalAttribute" ? DecimalSettings(attribute, described) : TimeSettings(attribute, name == "ParquetTimestampAttribute");
+                settings = name switch
+                {
+                    "ParquetDecimalAttribute" => DecimalSettings(attribute, described),
+                    "ParquetGeometryAttribute" => GeospatialSettings(attribute, geography: false),
+                    "ParquetGeographyAttribute" => GeospatialSettings(attribute, geography: true),
+                    _ => TimeSettings(attribute, name == "ParquetTimestampAttribute"),
+                };
             }
 
             return settings == null ? null : $"new global::ParquetNeo.ColumnTypes.ColumnSettings {{ {settings} }}";
@@ -648,6 +668,23 @@ namespace ParquetNeo.Generator
             }
 
             return $"Precision = {Number(digits)}, Scale = {Number(scale)}";
+        }
+
+        private static string GeospatialSettings(AttributeData attribute, bool geography)
+        {
+            string settings = $"IsGeography = {(geography ? "true" : "false")}";
+            if (NamedArgument(attribute, "Crs") is { Value: string crs })
+            {
+                settings += $", Crs = {Microsoft.CodeAnalysis.CSharp.SymbolDisplay.FormatLiteral(crs, quote: true)}";
+            }
+
+            // Spherical, the default, is left unset, as the attribute of the reflection path does.
+            if (geography && NamedArgument(attribute, "Algorithm") is { Value: { } algorithm } && Convert.ToInt64(algorithm, CultureInfo.InvariantCulture) != 0)
+            {
+                settings += $", Algorithm = (global::ParquetNeo.EdgeInterpolationAlgorithm){Number(algorithm)}";
+            }
+
+            return settings;
         }
 
         private static string TimeSettings(AttributeData attribute, bool timestamp)

@@ -7,7 +7,8 @@ namespace ParquetNeo.Statistics;
 internal static class StatisticsFactory
 {
     /// <summary>Returns the collector for <paramref name="column"/>, or null when statistics are turned off.</summary>
-    public static StatisticsCollector? Create(PrimitiveNode column, ParquetWriterOptions options)
+    /// <param name="forPage">Whether the collector is for the pages of the chunk (for the page index) and not for the chunk: the features are not collected for a page.</param>
+    public static StatisticsCollector? Create(PrimitiveNode column, ParquetWriterOptions options, bool forPage = false)
     {
         if (!options.StatisticsEnabled)
         {
@@ -33,6 +34,7 @@ internal static class StatisticsFactory
                 null or LogicalTypeKind.Uuid or LogicalTypeKind.Bson => new BinaryStatistics(BinaryOrder.UnsignedBytes, utf8: false, truncate),
                 LogicalTypeKind.String or LogicalTypeKind.Enum or LogicalTypeKind.Json => new BinaryStatistics(BinaryOrder.UnsignedBytes, utf8: true, truncate),
                 LogicalTypeKind.Decimal => new BinaryStatistics(BinaryOrder.SignedBigEndian, utf8: false, truncate),
+                LogicalTypeKind.Geometry or LogicalTypeKind.Geography when !forPage => new GeospatialStatisticsCollector(logical!),
                 _ => new NullCountStatistics(), // FLOAT16 (compares by value) and types without a defined order
             },
             _ => new NullCountStatistics(),

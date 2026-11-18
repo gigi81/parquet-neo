@@ -14,4 +14,7 @@ public enum ColumnSettingKinds
 
     /// <summary>A unit and whether the values are in UTC, for a moment.</summary>
     Timestamp = 4,
+
+    /// <summary>A coordinate reference system, and for a geography the algorithm of its edges.</summary>
+    Geospatial = 8,
 }

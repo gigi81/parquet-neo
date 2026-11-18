@@ -13,10 +13,14 @@ namespace ParquetNeo.Generator
 
         public AttributeData? Timestamp { get; set; }
 
+        public AttributeData? Geometry { get; set; }
+
+        public AttributeData? Geography { get; set; }
+
         public string? Encoding { get; set; }
 
         public string? Dictionary { get; set; }
 
-        public bool AdjustsAColumn => Decimal != null || Time != null || Timestamp != null;
+        public bool AdjustsAColumn => Decimal != null || Time != null || Timestamp != null || Geometry != null || Geography != null;
     }
 }

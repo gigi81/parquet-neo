@@ -40,6 +40,20 @@ public partial class SpecEnumTests
     }
 
     [Test]
+    public async Task TheEdgeInterpolationAlgorithms_AreNumberedAsInTheSpecification()
+    {
+        var expected = ThriftEnum("EdgeInterpolationAlgorithm");
+
+        foreach (var value in Enum.GetValues<EdgeInterpolationAlgorithm>())
+        {
+            await Assert.That(expected.TryGetValue(Normalize(value.ToString()), out int id)).IsTrue().Because(value.ToString());
+            await Assert.That((int)value).IsEqualTo(id).Because(value.ToString());
+        }
+
+        await Assert.That(Enum.GetValues<EdgeInterpolationAlgorithm>().Length).IsEqualTo(expected.Count);
+    }
+
+    [Test]
     public async Task TheKindsOfLogicalType_AreTheFieldIdsOfTheUnion_ForTheOnesThatAreSupported()
     {
         var expected = ThriftUnion("LogicalType");
