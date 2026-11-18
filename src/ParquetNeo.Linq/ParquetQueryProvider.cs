@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using ParquetNeo.Diagnostics;
 
@@ -46,6 +47,65 @@ internal sealed class ParquetQueryProvider(DatasetSource source) : IQueryProvide
         return queryable.Provider.Execute<TResult>(query);
     }
 
+    /// <summary>The rows of a query, read without a thread waiting for the files; see <see cref="AsyncQueryRunner"/>.</summary>
+    public async IAsyncEnumerable<TElement> ExecuteSequenceAsync<TElement>(Expression expression, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        var plan = QueryPlan.Analyze(source, expression);
+        var result = await AsyncQueryRunner.RunAsync(source, plan, cancellationToken).ConfigureAwait(false);
+        if (result is IAsyncEnumerable<TElement> stream)
+        {
+            await foreach (var row in stream.WithCancellation(cancellationToken).ConfigureAwait(false))
+            {
+                yield return row;
+            }
+
+            yield break;
+        }
+
+        // The rows are in memory, and the operator that held them has still to run: its first row is where it does the work, so that is not done on the caller's thread.
+        using var enumerator = ((IEnumerable<TElement>)result!).GetEnumerator();
+        if (!await Task.Run(enumerator.MoveNext, cancellationToken).ConfigureAwait(false))
+        {
+            yield break;
+        }
+
+        do
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            yield return enumerator.Current;
+        }
+        while (enumerator.MoveNext());
+    }
+
+    /// <summary>The value of a query that gives one (<c>First</c>, <c>Count</c>, ...), read without a thread waiting for the files.</summary>
+    public async Task<TResult> ExecuteScalarAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+    {
+        var plan = QueryPlan.Analyze(source, expression);
+        if (plan.FooterAnswer is { } answer)
+        {
+            long started = Stopwatch.GetTimestamp();
+            long rows = await source.CountRowsAsync(cancellationToken).ConfigureAwait(false);
+            source.Options.Metrics?.RecordQuery(Stopwatch.GetElapsedTime(started).TotalSeconds, 0, filtered: false);
+            return (TResult)Answer(answer, rows);
+        }
+
+        return (TResult)(await AsyncQueryRunner.RunAsync(source, plan, cancellationToken).ConfigureAwait(false))!;
+    }
+
+    /// <summary>What a query reads of the dataset, from the footers of its files, read without blocking.</summary>
+    public async Task<ParquetQueryPlan> ExplainAsync(Expression expression, CancellationToken cancellationToken)
+    {
+        var plan = QueryPlan.Analyze(source, expression);
+        if (plan.FooterAnswer is not null)
+        {
+            int files = (await source.FilesAsync(cancellationToken).ConfigureAwait(false)).Count;
+            return new ParquetQueryPlan(files, 0, 0, 0, null, null, AnsweredFromMetadata: true);
+        }
+
+        var (total, skipped, groups, skippedGroups) = await source.InspectAsync(plan.Filter, cancellationToken).ConfigureAwait(false);
+        return new ParquetQueryPlan(total, skipped, groups, skippedGroups, plan.Filter?.ToString(), plan.Columns, AnsweredFromMetadata: false);
+    }
+
     /// <summary>What a query reads of the dataset, from the footers of its files.</summary>
     public ParquetQueryPlan Explain(Expression expression)
     {
@@ -60,16 +120,14 @@ internal sealed class ParquetQueryProvider(DatasetSource source) : IQueryProvide
         return new ParquetQueryPlan(total, skipped, groups, skippedGroups, plan.Filter?.ToString(), plan.Columns, AnsweredFromMetadata: false);
     }
 
-    private object AnswerFromFooters(string answer)
+    private object AnswerFromFooters(string answer) => Answer(answer, source.CountRows());
+
+    private static object Answer(string answer, long rows) => answer switch
     {
-        long rows = source.CountRows();
-        return answer switch
-        {
-            "Count" => checked((int)rows),
-            "LongCount" => rows,
-            _ => rows > 0,
-        };
-    }
+        "Count" => checked((int)rows),
+        "LongCount" => rows,
+        _ => rows > 0,
+    };
 
     private System.Collections.IEnumerable Read(QueryPlan plan)
     {

@@ -1,10 +1,10 @@
 namespace ParquetNeo.Tests;
 
 /// <summary>
-/// A stream over memory that only takes asynchronous reads and writes: a synchronous one is a failure, so that a test can show that
+/// A stream over another that only takes asynchronous reads and writes: a synchronous one is a failure, so that a test can show that
 /// a code path does not block on the stream. Seeking and the length are fine.
 /// </summary>
-public sealed class AsyncOnlyStream(MemoryStream inner) : Stream
+public sealed class AsyncOnlyStream(Stream inner) : Stream
 {
     public int AsyncReads { get; private set; }
 
@@ -42,20 +42,36 @@ public sealed class AsyncOnlyStream(MemoryStream inner) : Stream
     {
         await Task.Yield();
         AsyncReads++;
-        return inner.Read(buffer.Span);
+        return await inner.ReadAsync(buffer, cancellationToken);
     }
 
     public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
     {
         await Task.Yield();
         AsyncWrites++;
-        inner.Write(buffer.Span);
+        await inner.WriteAsync(buffer, cancellationToken);
     }
 
     public override async Task FlushAsync(CancellationToken cancellationToken)
     {
         await Task.Yield();
-        inner.Flush();
+        await inner.FlushAsync(cancellationToken);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            inner.Dispose();
+        }
+
+        base.Dispose(disposing);
+    }
+
+    public override async ValueTask DisposeAsync()
+    {
+        await inner.DisposeAsync();
+        await base.DisposeAsync();
     }
 
     private static NotSupportedException Blocked() => new("A synchronous read, write or flush: the code path blocks on the stream.");
