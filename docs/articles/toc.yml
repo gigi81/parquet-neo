@@ -10,6 +10,8 @@
   href: compression.md
 - name: Skipping what is not needed
   href: filtering.md
+- name: Geospatial columns
+  href: geospatial.md
 - name: LINQ over files
   href: linq.md
 - name: Reading from S3 and Azure

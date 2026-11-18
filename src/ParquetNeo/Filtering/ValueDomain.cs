@@ -29,7 +29,8 @@ internal abstract class ValueDomain
                 return new FloatingDomain();
             case PhysicalType.ByteArray:
             case PhysicalType.FixedLenByteArray:
-                return ForBytes(logical);
+                // Geometries and geographies have no order: a filter on them is a spatial one.
+                return logical?.Kind is LogicalTypeKind.Geometry or LogicalTypeKind.Geography ? null : ForBytes(logical);
             default:
                 return null;
         }

@@ -2,7 +2,7 @@ using ParquetNeo.Thrift;
 
 namespace ParquetNeo.Metadata;
 
-/// <summary>Metadata of one column chunk (thrift <c>ColumnMetaData</c>). Geospatial statistics are not read yet.</summary>
+/// <summary>Metadata of one column chunk (thrift <c>ColumnMetaData</c>).</summary>
 public sealed class ColumnMetaData : IThriftStruct<ColumnMetaData>
 {
     public PhysicalType Type { get; set; }
@@ -37,6 +37,9 @@ public sealed class ColumnMetaData : IThriftStruct<ColumnMetaData>
 
     public SizeStatistics? SizeStatistics { get; set; }
 
+    /// <summary>The bounding box and the types of the geometries of a GEOMETRY or GEOGRAPHY column chunk, when the writer recorded them.</summary>
+    public GeospatialStatistics? GeospatialStatistics { get; set; }
+
     static ColumnMetaData IThriftStruct<ColumnMetaData>.Read(ref ThriftCompactReader reader)
     {
         var m = new ColumnMetaData();
@@ -62,6 +65,7 @@ public sealed class ColumnMetaData : IThriftStruct<ColumnMetaData>
                 case 14 when type == CompactType.I64: m.BloomFilterOffset = reader.ReadI64(); break;
                 case 15 when type == CompactType.I32: m.BloomFilterLength = reader.ReadI32(); break;
                 case 16 when type == CompactType.Struct: m.SizeStatistics = ThriftStruct.ReadStruct<SizeStatistics>(ref reader); break;
+                case 17 when type == CompactType.Struct: m.GeospatialStatistics = ThriftStruct.ReadStruct<GeospatialStatistics>(ref reader); break;
                 default: reader.Skip(type); break;
             }
         }
@@ -106,6 +110,9 @@ public sealed class ColumnMetaData : IThriftStruct<ColumnMetaData>
 
         if (SizeStatistics is not null)
             ThriftStruct.WriteStructField(ref writer, 16, SizeStatistics);
+
+        if (GeospatialStatistics is not null)
+            ThriftStruct.WriteStructField(ref writer, 17, GeospatialStatistics);
 
         writer.EndStruct();
     }

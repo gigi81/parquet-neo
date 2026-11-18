@@ -29,4 +29,7 @@ internal abstract class StatisticsCollector
 
     /// <param name="nullCount">The number of null rows in the chunk.</param>
     public abstract Statistics Build(long nullCount);
+
+    /// <summary>The bounding box and the geometry types of the chunk, for a column of geometries or geographies that records them; null otherwise.</summary>
+    public virtual Metadata.GeospatialStatistics? BuildGeospatial() => null;
 }

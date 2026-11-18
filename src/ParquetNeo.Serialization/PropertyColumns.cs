@@ -15,6 +15,8 @@ internal static class PropertyColumns
         new(ColumnSettingKinds.Decimal, typeof(ParquetDecimalAttribute), "decimal", "a decimal"),
         new(ColumnSettingKinds.Time, typeof(ParquetTimeAttribute), "TimeOnly", "a TimeOnly"),
         new(ColumnSettingKinds.Timestamp, typeof(ParquetTimestampAttribute), "DateTime and DateTimeOffset", "a DateTime or DateTimeOffset"),
+        new(ColumnSettingKinds.Geospatial, typeof(ParquetGeometryAttribute), "byte[]", "a byte array"),
+        new(ColumnSettingKinds.Geospatial, typeof(ParquetGeographyAttribute), "byte[]", "a byte array"),
     ];
 
     /// <summary>The column type for <typeparamref name="TValue"/>, with the settings the attributes of the property give it.</summary>
@@ -49,6 +51,13 @@ internal static class PropertyColumns
                 ParquetDecimalAttribute decimalAttribute => settings with { Precision = decimalAttribute.Precision, Scale = decimalAttribute.Scale },
                 ParquetTimeAttribute time => settings with { Unit = time.Unit, IsAdjustedToUtc = time.IsAdjustedToUtc },
                 ParquetTimestampAttribute timestamp => settings with { Unit = timestamp.Unit, IsAdjustedToUtc = timestamp.IsAdjustedToUtc },
+                ParquetGeometryAttribute geometry => settings with { IsGeography = false, Crs = geometry.Crs },
+                ParquetGeographyAttribute geography => settings with
+                {
+                    IsGeography = true,
+                    Crs = geography.Crs,
+                    Algorithm = geography.Algorithm == EdgeInterpolationAlgorithm.Spherical ? null : geography.Algorithm,
+                },
                 _ => settings,
             };
         }

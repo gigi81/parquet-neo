@@ -233,6 +233,8 @@ public class Base { public int FromBase { get; set; } }
     [Test]
     [Arguments("[ParquetSerializable] public class Row { [ParquetDecimal(10, 2)] public int Count { get; set; } }", "ParquetDecimalAttribute")]
     [Arguments("[ParquetSerializable] public class Row { [ParquetTimestamp] public TimeOnly Clock { get; set; } }", "ParquetTimestampAttribute")]
+    [Arguments("[ParquetSerializable] public class Row { [ParquetGeometry] public string Text { get; set; } = \"\"; }", "ParquetGeometryAttribute")]
+    [Arguments("[ParquetSerializable] public class Row { [ParquetGeography] public int Value { get; set; } }", "ParquetGeographyAttribute")]
     [Arguments("[ParquetSerializable] public class Row { [ParquetDecimal(40, 2)] public decimal Money { get; set; } }", "not valid")]
     [Arguments("[ParquetSerializable] public class Row { [ParquetDecimal(10, 2)] public List<int> Values { get; set; } = new(); }", "ParquetDecimalAttribute")]
     [Arguments("public class Inner { public int X { get; set; } } [ParquetSerializable] public class Row { [ParquetDecimal(10, 2)] public Inner Child { get; set; } = new(); }", "ParquetDecimalAttribute")]
@@ -333,6 +335,27 @@ public class Names : List<string> { }
         await Assert.That(code).Contains("BeginMap<global::System.Collections.Generic.Dictionary<string, int>, string, int>(\"Counts\"");
         await Assert.That(code).Contains("BeginMapOfNullable<global::System.Collections.Generic.IReadOnlyDictionary<string, int?>, string, int>(\"Optionals\"");
         await Assert.That(code).Contains("create: static () => new global::System.Collections.Generic.Dictionary<string, int?>()");
+    }
+
+    [Test]
+    public async Task TheAttributesOfGeometriesAndGeographies_BecomeTheSettingsOfAByteArrayColumn()
+    {
+        var run = Run(@"
+[ParquetSerializable] public class Row
+{
+    [ParquetGeometry] public byte[]? Plain { get; set; }
+    [ParquetGeometry(Crs = ""EPSG:3857"")] public byte[] Projected { get; set; } = new byte[0];
+    [ParquetGeography] public byte[]? Round { get; set; }
+    [ParquetGeography(Crs = ""EPSG:4326"", Algorithm = EdgeInterpolationAlgorithm.Karney)] public byte[]? Exact { get; set; }
+}");
+
+        string code = run.Generated!;
+        await Assert.That(run.ReportedIds).IsEmpty();
+        await Assert.That(code).Contains("new global::ParquetNeo.ColumnTypes.ColumnSettings { IsGeography = false }");
+        await Assert.That(code).Contains("new global::ParquetNeo.ColumnTypes.ColumnSettings { IsGeography = false, Crs = \"EPSG:3857\" }");
+        await Assert.That(code).Contains("new global::ParquetNeo.ColumnTypes.ColumnSettings { IsGeography = true }");
+        await Assert.That(code).Contains("new global::ParquetNeo.ColumnTypes.ColumnSettings { IsGeography = true, Crs = \"EPSG:4326\", Algorithm = (global::ParquetNeo.EdgeInterpolationAlgorithm)4 }");
+        await Assert.That(run.CompileErrors).IsEmpty();
     }
 
     [Test]

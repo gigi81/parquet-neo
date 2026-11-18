@@ -93,6 +93,8 @@ internal static class LogicalTypeRules
             case LogicalTypeKind.Enum:
             case LogicalTypeKind.Json:
             case LogicalTypeKind.Bson:
+            case LogicalTypeKind.Geometry:
+            case LogicalTypeKind.Geography:
                 return physicalType == PhysicalType.ByteArray ? null : $"{logicalType.Kind} requires BYTE_ARRAY.";
             case LogicalTypeKind.Uuid:
                 return physicalType == PhysicalType.FixedLenByteArray && typeLength == 16

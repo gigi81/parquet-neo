@@ -129,7 +129,7 @@ public sealed partial class ColumnWriter
         _statistics = StatisticsFactory.Create(column, options);
         _options = options;
         _pageIndex = options.WritePageIndex;
-        _pageStatistics = _pageIndex ? StatisticsFactory.Create(column, options) : null;
+        _pageStatistics = _pageIndex ? StatisticsFactory.Create(column, options, forPage: true) : null;
         _valueEncoding = ValueEncodingRules.For(column, options.ColumnEncodings);
         _dataPageV2 = options.DataPageVersion == DataPageVersion.V2;
         _checksums = options.WritePageChecksums;
@@ -452,6 +452,7 @@ public sealed partial class ColumnWriter
                 DictionaryPageOffset = _dictionaryPageOffset >= 0 ? _dictionaryPageOffset : null,
                 EncodingStats = pageStats,
                 Statistics = _statistics?.Build(_entries - _valueCount),
+                GeospatialStatistics = _statistics?.BuildGeospatial(),
             },
         };
     }
@@ -851,7 +852,7 @@ public sealed partial class ColumnWriter
         };
         _pageEntries.Add(entry);
         _pageFirstRow += _pageRecords;
-        _pageStatistics = _statistics is null ? null : StatisticsFactory.Create(Column, _options);
+        _pageStatistics = _statistics is null ? null : StatisticsFactory.Create(Column, _options, forPage: true);
         return entry;
     }
 

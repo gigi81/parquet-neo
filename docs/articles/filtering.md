@@ -8,6 +8,7 @@ of it holds, and a `ParquetFilter` is checked against them:
 | Row group statistics | the smallest and largest value of each column of the row group, and how many are null | yes | whole row groups |
 | Page index | the same for every page of a column, and where the page is | no (`WritePageIndex`) | pages inside a row group |
 | Bloom filters | whether a value is *certainly not* in the column of a row group | no (`ColumnBloomFilters`) | row groups, for equality conditions |
+| Bounding boxes | the box and types of the features of a geometry or geography column ([geospatial columns](geospatial.md)) | yes | row groups, for `IntersectsBox` |
 | Page checksums | a CRC-32 of every page | no (`WritePageChecksums`) | nothing: they detect damaged pages |
 
 ## Filters
