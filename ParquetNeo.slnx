@@ -23,6 +23,7 @@
     <Project Path="tests/ParquetNeo.Enums.Tests/ParquetNeo.Enums.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Extensions.DependencyInjection.Tests/ParquetNeo.Extensions.DependencyInjection.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Generator.Tests/ParquetNeo.Generator.Tests.csproj" />
+    <Project Path="tests/ParquetNeo.IntegrationTests/ParquetNeo.IntegrationTests.csproj" />
     <Project Path="tests/ParquetNeo.Linq.Tests/ParquetNeo.Linq.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Serialization.Tests/ParquetNeo.Serialization.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Storage.AzureBlobs.Tests/ParquetNeo.Storage.AzureBlobs.Tests.csproj" />
