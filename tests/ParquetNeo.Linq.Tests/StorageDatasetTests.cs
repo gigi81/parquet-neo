@@ -275,4 +275,73 @@ public class StorageDatasetTests
         stream.ReadExactly(bytes);
         return bytes;
     }
+
+    [Test]
+    public async Task AQuery_IsASpan_WithTheRowGroupsAndTheRequestsItCausesBelowIt()
+    {
+        using var tracing = new ParquetNeo.Diagnostics.ParquetNeoTracing();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.TraceRecorder(tracing.Source);
+        var storage = Setup(new RangeReadStreamOptions { BlockSize = 2 * 1024, TailSize = 6 * 1024, Tracing = tracing });
+        var people = ParquetDataset.Open<Person>(storage, "people/", new ParquetDatasetOptions { Tracing = tracing, MaxDegreeOfParallelism = 1 });
+        using var own = new System.Diagnostics.ActivitySource("test.own");
+        using var ownRecorder = new ParquetNeo.Tests.Diagnostics.TraceRecorder(own);
+
+        List<int> ids;
+        using (var parent = own.StartActivity("mine"))
+        {
+            ids = people.Where(p => p.Id >= 2000 && p.Id < 2150).Select(p => p.Id).ToList();
+
+            await Assert.That(System.Diagnostics.Activity.Current).IsEqualTo(parent);
+        }
+
+        var query = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.QuerySpan).Single();
+        var groups = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.RowGroupSpan);
+        var requests = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageRequestSpan);
+        await Assert.That((bool)query.GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.FilteredTag)!).IsTrue();
+        await Assert.That((long)query.GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.QueryRowsTag)!).IsGreaterThanOrEqualTo(ids.Count);
+        await Assert.That(query.ParentSpanId).IsEqualTo(ownRecorder.Spans.Single().SpanId);
+        await Assert.That(groups.Count).IsGreaterThan(0);
+        await Assert.That(groups.All(span => span.ParentSpanId == query.SpanId)).IsTrue();
+        await Assert.That(requests.Count).IsEqualTo(storage.Requests.Count);
+        await Assert.That(requests.All(span => span.TraceId == query.TraceId)).IsTrue();
+    }
+
+    [Test]
+    public async Task AQueryThatStopsEarly_AndACountFromTheFooters_AreEachASpan()
+    {
+        using var tracing = new ParquetNeo.Diagnostics.ParquetNeoTracing();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.TraceRecorder(tracing.Source);
+        var people = ParquetDataset.Open<Person>(Setup(), "people/", new ParquetDatasetOptions { Tracing = tracing, MaxDegreeOfParallelism = 1 });
+
+        var few = people.Take(3).ToList();
+        int count = people.Count();
+        long counted = await people.CountAsync();
+
+        await Assert.That(few.Count).IsEqualTo(3);
+        await Assert.That(count).IsEqualTo(Files * RowsPerFile);
+        await Assert.That(counted).IsEqualTo(Files * RowsPerFile);
+        var queries = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.QuerySpan);
+        await Assert.That(queries.Count).IsEqualTo(3);
+        await Assert.That((long)queries[0].GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.QueryRowsTag)!).IsGreaterThanOrEqualTo(3);
+        await Assert.That(queries.All(span => (bool)span.GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.FilteredTag)! == false)).IsTrue();
+    }
+
+    [Test]
+    public async Task AQueryOverAFileThatCannotBeRead_IsASpanWithAnErrorStatus_WhateverWayItIsRun()
+    {
+        using var tracing = new ParquetNeo.Diagnostics.ParquetNeoTracing();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.TraceRecorder(tracing.Source);
+        var storage = new InMemoryStorage { Options = new RangeReadStreamOptions { BlockSize = 2 * 1024, TailSize = 6 * 1024 } };
+        storage.Put("broken/not-parquet.parquet", new byte[5000]);
+        var broken = ParquetDataset.Open<Person>(storage, "broken/", new ParquetDatasetOptions { Tracing = tracing, MaxDegreeOfParallelism = 1 });
+
+        await Assert.That(() => broken.Select(p => p.Id).ToList()).Throws<Exception>();
+        await Assert.That(async () => await broken.Select(p => p.Id).ToListAsync()).Throws<Exception>();
+        await Assert.That(() => broken.Count()).Throws<Exception>();
+        await Assert.That(async () => await broken.CountAsync()).Throws<Exception>();
+
+        var queries = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.QuerySpan);
+        await Assert.That(queries.Count).IsEqualTo(4);
+        await Assert.That(queries.All(span => span.Status == System.Diagnostics.ActivityStatusCode.Error && span.GetTagItem("error.type") is not null)).IsTrue();
+    }
 }

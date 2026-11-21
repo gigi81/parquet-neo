@@ -5,6 +5,9 @@ what it asks of a storage, how long that takes, how many row groups a filter ski
 collector of .NET metrics can read them: OpenTelemetry (and so Prometheus, Azure Monitor, Grafana, ...), `dotnet-counters`, or your own `MeterListener`.
 Nothing is exported by the library, and nothing is recorded unless you give it a `ParquetNeoMetrics`.
 
+The same events are also traced, as spans: see [Tracing](tracing.md). `ParquetNeo.OpenTelemetry` has `AddParquetNeoInstrumentation()` for the tracer provider
+and the meter provider of OpenTelemetry, which subscribes to both with one call.
+
 ## With dependency injection
 
 Add the package `ParquetNeo.Extensions.DependencyInjection` (it is in `ParquetNeo.All`) and register the metrics. Their meter comes from the
@@ -17,7 +20,7 @@ builder.Services.AddParquetNeoMetrics();     // an extension of IServiceCollecti
 
 builder.Services.AddOpenTelemetry()
     .WithMetrics(metrics => metrics
-        .AddMeter(ParquetNeoMetrics.MeterName)      // "ParquetNeo"
+        .AddMeter(ParquetNeoMetrics.MeterName)      // "ParquetNeo"; or .AddParquetNeoInstrumentation() of the package ParquetNeo.OpenTelemetry
         .AddPrometheusExporter());                  // or any other exporter
 ```
 

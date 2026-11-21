@@ -1,3 +1,4 @@
+using ParquetNeo.Diagnostics;
 using ParquetNeo.Exceptions;
 using ParquetNeo.Serialization.Assemblers;
 
@@ -67,6 +68,22 @@ internal sealed class DeserializationSession<TRow>
     }
 
     public List<TRow> ReadRowGroup(int rowGroup)
+    {
+        using var activity = _reader.Options.Tracing?.StartRowGroup(rowGroup);
+        try
+        {
+            var rows = ReadRowGroupRows(rowGroup);
+            activity?.SetTag(ParquetNeoTracing.RowGroupRowsTag, rows.Count);
+            return rows;
+        }
+        catch (Exception exception)
+        {
+            ParquetNeoTracing.RecordException(activity, exception);
+            throw;
+        }
+    }
+
+    private List<TRow> ReadRowGroupRows(int rowGroup)
     {
         var group = _reader.OpenRowGroup(rowGroup);
         var selection = _pageFilter is null ? null : group.SelectRows(_pageFilter, _plan.FileColumns.Where(column => column >= 0));

@@ -199,4 +199,52 @@ public class S3ParquetStorageTests
         await Assert.That(recorder.Sum("parquetneo.storage.bytes_read", (system, "aws_s3"))).IsEqualTo(1000 + 2000);
         await Assert.That(recorder.Count("parquetneo.storage.request.duration", (system, "aws_s3"))).IsEqualTo(2);
     }
+
+    [Test]
+    public async Task ListingsObjectsAndRequests_AreSpansOfTheKindOfStorage_AndAMissingObjectIsAnError()
+    {
+        using var tracing = new ParquetNeo.Diagnostics.ParquetNeoTracing();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.TraceRecorder(tracing.Source);
+        var (client, fake) = FakeS3.Create();
+        fake.Put("people/a.parquet", Bytes(5000));
+        var storage = new S3ParquetStorage(client, "b", new RangeReadStreamOptions { BlockSize = 1000, TailSize = 0, Tracing = tracing });
+
+        await List(storage, "people/");
+        await using (var stream = await storage.OpenReadAsync("people/a.parquet"))
+        {
+            await stream.ReadExactlyAsync(new byte[10]);
+            stream.Position = 3000;
+            await stream.ReadExactlyAsync(new byte[2000]);
+        }
+
+        await Assert.That(async () => await storage.OpenReadAsync("missing")).Throws<FileNotFoundException>();
+
+        string system = ParquetNeo.Diagnostics.ParquetNeoTracing.StorageSystemTag;
+        var list = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageListSpan);
+        var open = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageOpenSpan);
+        var requests = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageRequestSpan);
+        await Assert.That(list.Count).IsGreaterThanOrEqualTo(1);
+        await Assert.That(list.All(span => (string?)span.GetTagItem(system) == "aws_s3" && (string?)span.GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageKeyTag) == "people/")).IsTrue();
+        await Assert.That(open.Count).IsEqualTo(2);
+        await Assert.That(open.Count(span => span.Status == System.Diagnostics.ActivityStatusCode.Error)).IsEqualTo(1);
+        await Assert.That(open.Single(span => span.Status == System.Diagnostics.ActivityStatusCode.Error).GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageKeyTag)).IsEqualTo("missing");
+        await Assert.That(requests.Count).IsEqualTo(2);
+        await Assert.That(requests.All(span => (string?)span.GetTagItem(system) == "aws_s3")).IsTrue();
+    }
+
+    [Test]
+    public async Task AListingAndAnOpeningThatFail_AreSpansWithAnErrorStatus_AndTheErrorIsThrownAsItWas()
+    {
+        using var tracing = new ParquetNeo.Diagnostics.ParquetNeoTracing();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.TraceRecorder(tracing.Source);
+        var (client, fake) = FakeS3.Create();
+        fake.Failure = new Amazon.S3.AmazonS3Exception("down", Amazon.Runtime.ErrorType.Receiver, "InternalError", "request", System.Net.HttpStatusCode.InternalServerError);
+        var storage = new S3ParquetStorage(client, "b", new RangeReadStreamOptions { Tracing = tracing });
+
+        await Assert.That(async () => await List(storage, "people/")).Throws<Amazon.S3.AmazonS3Exception>();
+        await Assert.That(async () => await storage.OpenReadAsync("a")).Throws<Amazon.S3.AmazonS3Exception>();
+
+        await Assert.That(recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageListSpan).Single().Status).IsEqualTo(System.Diagnostics.ActivityStatusCode.Error);
+        await Assert.That(recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageOpenSpan).Single().Status).IsEqualTo(System.Diagnostics.ActivityStatusCode.Error);
+    }
 }

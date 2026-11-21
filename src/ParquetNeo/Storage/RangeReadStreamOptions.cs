@@ -23,4 +23,7 @@ public sealed record RangeReadStreamOptions
 
     /// <summary>Where the requests to the storage, how long they took and how many bytes they got, and the objects that are opened and listed, are counted. Nothing is recorded when not set.</summary>
     public ParquetNeoMetrics? Metrics { get; init; }
+
+    /// <summary>Where the requests to the storage, and the objects that are opened and listed, are traced, one span for each. Nothing is recorded when not set.</summary>
+    public ParquetNeoTracing? Tracing { get; init; }
 }
