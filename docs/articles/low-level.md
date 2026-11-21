@@ -9,14 +9,12 @@ Describe the columns in a schema, then write one batch of values per column for 
 
 ```csharp
 using ParquetNeo;
-using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-var schema = new ParquetSchema(
-[
-    new PrimitiveNode("id", PhysicalType.Int64, FieldRepetitionType.Required),
-    new PrimitiveNode("name", PhysicalType.ByteArray, FieldRepetitionType.Required, LogicalType.String),
-]);
+var schema = new ParquetSchemaBuilder()
+    .Int64("id")
+    .String("name")
+    .Build();
 
 using var file = File.Create("people.parquet");
 using var writer = ParquetFileWriter.Create(file, schema);
@@ -65,6 +63,36 @@ await using (var group = writer.AppendRowGroup())
 
 `NextColumn` is the synchronous way: it encodes and writes each page as it goes, so it blocks on the stream. The encoding itself is
 CPU work and runs on the calling thread (or, for `WriteColumnsAsync`, on pool threads).
+
+## Describing the schema
+
+`ParquetSchemaBuilder` adds the fields one by one. A field is required unless you say `optional: true`, which lets it hold nulls. The
+columns are the ones the serializer writes for the same .NET types: `Int8` is an `sbyte`, `Timestamp` a `DateTime`, `Decimal` a `decimal`, `Guid`
+a UUID, `Half` a FLOAT16, `Enum` a text annotated ENUM, and so on.
+
+```csharp
+using static ParquetNeo.Schema.SchemaField;
+
+var schema = new ParquetSchemaBuilder()
+    .Int64("Id")
+    .String("Name", optional: true)
+    .Decimal("Amount", precision: 18, scale: 4)                    // INT64 with the annotation of a decimal
+    .Timestamp("CreatedAt", TimeUnit.Millis, utc: true)             // microseconds and UTC when not said
+    .Struct("Address", optional: true, address => address
+        .String("City")
+        .Int32("Zip", optional: true))
+    .List("Tags", String())                                         // a list of text; String(optional: true) for text that can be null
+    .Map("Scores", String(), Int32(optional: true))                 // keys are never null
+    .Build();
+```
+
+`SchemaField` has the same types as methods without a name (`String()`, `Int32(optional: true)`, `Struct(...)`, `List(...)`, `Map(...)`): that is
+what a list or a map takes for its elements, keys and values, which are named by convention (`element`, `key`, `value`) in the standard layout. A
+field can also be kept and used for several names: `Field("Bid", price).Field("Ask", price)`.
+
+`Column(name, physicalType, logicalType, optional, typeLength)` makes a column of any type and annotation, and `Add(node)` adds a node made by hand
+(a repeated field, a field id, the legacy layout of a list). A builder makes a new schema each time it is built; the root of the schema is called
+`schema` unless `Build("name")` says another name.
 
 ## Reading
 
