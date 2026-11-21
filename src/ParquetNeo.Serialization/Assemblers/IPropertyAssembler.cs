@@ -11,6 +11,7 @@ internal interface IPropertyAssembler
     /// <summary>Matches the property to a child of the group of the file the object is read from, or to nothing when there is no such group.</summary>
     /// <param name="group">Null when the object itself is missing from the file.</param>
     /// <param name="where">Says which group it is, for messages.</param>
+    /// <param name="binder">Finds the column of the file for a column the rows need.</param>
     void Bind(GroupNode? group, string where, ReadBinder binder);
 
     void AddState(List<ILeafColumn> columns, List<object> objects);

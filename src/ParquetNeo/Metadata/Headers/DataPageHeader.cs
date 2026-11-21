@@ -2,16 +2,22 @@ using ParquetNeo.Thrift;
 
 namespace ParquetNeo.Metadata.Headers;
 
+/// <summary>The header of a data page of version 1 (thrift <c>DataPageHeader</c>).</summary>
 public sealed class DataPageHeader : IThriftStruct<DataPageHeader>
 {
+    /// <summary>The number of values in the page, nulls included.</summary>
     public int NumValues { get; set; }
 
+    /// <summary>The encoding of the values.</summary>
     public ParquetEncoding Encoding { get; set; }
 
+    /// <summary>The encoding of the definition levels.</summary>
     public ParquetEncoding DefinitionLevelEncoding { get; set; }
 
+    /// <summary>The encoding of the repetition levels.</summary>
     public ParquetEncoding RepetitionLevelEncoding { get; set; }
 
+    /// <summary>The statistics of the values of the page; null when the writer did not write them.</summary>
     public Statistics? Statistics { get; set; }
 
     static DataPageHeader IThriftStruct<DataPageHeader>.Read(ref ThriftCompactReader reader)

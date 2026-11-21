@@ -7,8 +7,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <!-- Public members that are not documented yet, and documentation that names only some of the parameters, are not errors. -->
-    <NoWarn>$(NoWarn);CS1591;CS1573</NoWarn>
+    <!-- Every public member has XML docs (CS1591), and a comment that documents some parameters documents all of them (CS1573): a missing one fails the build. -->
     <!-- The version of every package comes from the latest tag "v1.2.3" (a build after it is a prerelease of the next version). -->
     <MinVerTagPrefix>v</MinVerTagPrefix>
     <MinVerDefaultPreReleaseIdentifiers>preview.0</MinVerDefaultPreReleaseIdentifiers>

@@ -19,6 +19,7 @@ public sealed class ParquetTimestampAttribute : Attribute
         Unit = unit;
     }
 
+    /// <summary>The unit the moments are written in.</summary>
     public TimeUnit Unit { get; }
 
     /// <summary>

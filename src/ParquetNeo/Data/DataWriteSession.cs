@@ -25,6 +25,8 @@ internal sealed class DataWriteSession : IDisposable
     /// <exception cref="ArgumentException">The reader has no columns.</exception>
     /// <exception cref="NotSupportedException">A column has a type that cannot be written.</exception>
     /// <param name="destination">A stream to write the file to as it is encoded, when the caller does not need the pieces staged in memory; then <see cref="TakeStaged"/> is always empty.</param>
+    /// <param name="source">The reader that the rows are taken from.</param>
+    /// <param name="options">How the data is written; the defaults when null.</param>
     public DataWriteSession(IDataReader source, ParquetDataWriterOptions? options, Stream? destination = null)
     {
         options ??= new ParquetDataWriterOptions();

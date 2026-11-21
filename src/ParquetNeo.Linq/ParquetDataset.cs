@@ -14,6 +14,7 @@ public static class ParquetDataset
     /// </summary>
     /// <typeparam name="T">The type of a row, which the serializer reads: its properties are matched to the columns by name.</typeparam>
     /// <param name="path">A file, or a directory of files that all have the columns of <typeparamref name="T"/>.</param>
+    /// <param name="options">How the files are read; the defaults when null.</param>
     [RequiresUnreferencedCode("Queries are built from expression trees, and types of the columns they use are made at run time.")]
     [RequiresDynamicCode("Queries are built from expression trees, and types of the columns they use are made at run time.")]
     public static ParquetDataset<T> Open<T>(string path, ParquetDatasetOptions? options = null)
@@ -30,6 +31,7 @@ public static class ParquetDataset
     /// <typeparam name="T">The type of a row, which the serializer reads: its properties are matched to the columns by name.</typeparam>
     /// <param name="storage">Where the files are, for example an <c>S3ParquetStorage</c> or an <c>AzureBlobParquetStorage</c>.</param>
     /// <param name="prefix">The start of the keys of the files, such as <c>people/2024/</c>; empty for every file of the storage.</param>
+    /// <param name="options">How the files are read; the defaults when null.</param>
     [RequiresUnreferencedCode("Queries are built from expression trees, and types of the columns they use are made at run time.")]
     [RequiresDynamicCode("Queries are built from expression trees, and types of the columns they use are made at run time.")]
     public static ParquetDataset<T> Open<T>(IParquetStorage storage, string prefix = "", ParquetDatasetOptions? options = null)

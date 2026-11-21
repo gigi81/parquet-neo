@@ -38,6 +38,7 @@ public sealed class ReadStatistics
     /// <summary>The counts as they are now, which do not change after.</summary>
     public ReadStatisticsSnapshot Snapshot() => new(ObjectsOpened, Listings, Requests, BytesRead);
 
+    /// <summary>A one line description of the counts.</summary>
     public override string ToString() => Snapshot().ToString();
 
     internal void AddObjectOpened() => Interlocked.Increment(ref _objectsOpened);
@@ -54,6 +55,7 @@ public sealed class ReadStatistics
 /// <summary>The counts of a <see cref="ReadStatistics"/> at a moment.</summary>
 public readonly record struct ReadStatisticsSnapshot(long ObjectsOpened, long Listings, long Requests, long BytesRead)
 {
+    /// <summary>A one line description of the counts.</summary>
     public override string ToString() =>
         $"{BytesRead:N0} bytes in {Requests:N0} requests, {ObjectsOpened:N0} objects opened, {Listings:N0} listings";
 }

@@ -12,9 +12,11 @@ public sealed class BloomFilterHeader : IThriftStruct<BloomFilterHeader>
     /// <summary>Whether the algorithm, the hash and the compression are the ones this library knows: split block, xxHash64, none.</summary>
     public bool IsSupported { get; set; } = true;
 
+    /// <summary>Parses the Thrift-encoded header, and says how many bytes it took.</summary>
     public static BloomFilterHeader Deserialize(ReadOnlySpan<byte> data, out int bytesConsumed) =>
         ThriftStruct.Deserialize<BloomFilterHeader>(data, out bytesConsumed);
 
+    /// <summary>Writes the header in the Thrift compact protocol.</summary>
     public void Serialize(IBufferWriter<byte> output) => ThriftStruct.Serialize(this, output);
 
     static BloomFilterHeader IThriftStruct<BloomFilterHeader>.Read(ref ThriftCompactReader reader)

@@ -108,6 +108,7 @@ public sealed partial class ColumnReader : IDisposable
         _chunkEnd = start + _meta.TotalCompressedSize;
     }
 
+    /// <summary>The column this reader reads.</summary>
     public PrimitiveNode Column { get; }
 
     /// <summary>Where the column chunk starts in the file: its dictionary page if it has one, else its first data page.</summary>
@@ -128,18 +129,23 @@ public sealed partial class ColumnReader : IDisposable
     /// <summary>The number of level entries read so far.</summary>
     public long EntriesRead => _entriesRead;
 
+    /// <summary>Reads values of the type into <paramref name="values"/> together with their levels, up to what fits and what the column chunk has left, and says how many entries and values it read; see <see cref="BatchRead"/>. The level spans are needed when the column is optional or repeated, and each must be as long as <paramref name="values"/> or longer.</summary>
     public BatchRead ReadBatch(Span<int> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default) =>
         ReadFixedWidth<int, Int32Decoder>(PhysicalType.Int32, values, definitionLevels, repetitionLevels);
 
+    /// <summary>Reads values of the type into <paramref name="values"/> together with their levels, up to what fits and what the column chunk has left, and says how many entries and values it read; see <see cref="BatchRead"/>. The level spans are needed when the column is optional or repeated, and each must be as long as <paramref name="values"/> or longer.</summary>
     public BatchRead ReadBatch(Span<long> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default) =>
         ReadFixedWidth<long, Int64Decoder>(PhysicalType.Int64, values, definitionLevels, repetitionLevels);
 
+    /// <summary>Reads values of the type into <paramref name="values"/> together with their levels, up to what fits and what the column chunk has left, and says how many entries and values it read; see <see cref="BatchRead"/>. The level spans are needed when the column is optional or repeated, and each must be as long as <paramref name="values"/> or longer.</summary>
     public BatchRead ReadBatch(Span<float> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default) =>
         ReadFixedWidth<float, SingleDecoder>(PhysicalType.Float, values, definitionLevels, repetitionLevels);
 
+    /// <summary>Reads values of the type into <paramref name="values"/> together with their levels, up to what fits and what the column chunk has left, and says how many entries and values it read; see <see cref="BatchRead"/>. The level spans are needed when the column is optional or repeated, and each must be as long as <paramref name="values"/> or longer.</summary>
     public BatchRead ReadBatch(Span<double> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default) =>
         ReadFixedWidth<double, DoubleDecoder>(PhysicalType.Double, values, definitionLevels, repetitionLevels);
 
+    /// <summary>Reads values of the type into <paramref name="values"/> together with their levels, up to what fits and what the column chunk has left, and says how many entries and values it read; see <see cref="BatchRead"/>. The level spans are needed when the column is optional or repeated, and each must be as long as <paramref name="values"/> or longer.</summary>
     public BatchRead ReadBatch(Span<bool> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default)
     {
         int requested = PrepareBatch(PhysicalType.Boolean, values.Length, definitionLevels, repetitionLevels);
@@ -227,6 +233,7 @@ public sealed partial class ColumnReader : IDisposable
         return new BatchRead(entries, valuesRead);
     }
 
+    /// <summary>Reads BYTE_ARRAY or FIXED_LEN_BYTE_ARRAY values into <paramref name="values"/> together with their levels, as <c>ReadBatch</c> does. The values point into the memory of the page, and are valid until the next read.</summary>
     public BatchRead ReadByteArrays(Span<ReadOnlyMemory<byte>> values, Span<int> definitionLevels = default, Span<int> repetitionLevels = default)
     {
         int requested = PrepareBatch(PhysicalType.ByteArray, values.Length, definitionLevels, repetitionLevels);
@@ -322,6 +329,7 @@ public sealed partial class ColumnReader : IDisposable
         return new BatchRead(entries, valuesRead);
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         if (_disposed)

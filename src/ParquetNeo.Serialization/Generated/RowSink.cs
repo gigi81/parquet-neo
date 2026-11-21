@@ -46,6 +46,7 @@ public readonly struct RowSink
     /// <summary>Hands the value of a property that is an object, a collection or a dictionary to what was described for it.</summary>
     /// <param name="property">The place of the property among those of the object.</param>
     /// <param name="present">False for a null, which is refused when the property cannot be null.</param>
+    /// <param name="value">The value of the property.</param>
     public void Child<TValue>(int property, TValue value, bool present) =>
         Unsafe.As<Shredder<TValue>>(_frame.Children[property]).Shred(value, present, _definition, _repetition, _buffers);
 }

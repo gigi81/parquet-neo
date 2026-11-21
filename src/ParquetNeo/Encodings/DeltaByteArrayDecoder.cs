@@ -13,6 +13,10 @@ internal static class DeltaByteArrayDecoder
     /// </summary>
     /// <param name="maxOutputBytes">The most bytes the values may add up to: shared prefixes let a few bytes of input describe a lot of output.</param>
     /// <exception cref="EncodingException">The data is malformed, or the values would be longer than the limit.</exception>
+    /// <param name="source">The encoded bytes.</param>
+    /// <param name="count">The number of values to decode.</param>
+    /// <param name="fixedLength">The length of every value for a FIXED_LEN_BYTE_ARRAY column, or a negative number for BYTE_ARRAY.</param>
+    /// <param name="plain">Receives the decoded bytes of the values.</param>
     public static void Decode(ReadOnlySpan<byte> source, int count, int fixedLength, long maxOutputBytes, IBufferWriter<byte> plain)
     {
         var prefixes = new int[count];

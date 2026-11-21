@@ -7,10 +7,12 @@ namespace ParquetNeo.Exceptions;
 /// </summary>
 public abstract class ParquetException : Exception
 {
+    /// <summary>Makes the exception with a message.</summary>
     protected ParquetException(string message) : base(message)
     {
     }
 
+    /// <summary>Makes the exception with a message and the exception that caused it.</summary>
     protected ParquetException(string message, Exception? innerException) : base(message, innerException)
     {
     }

@@ -7,6 +7,13 @@ namespace ParquetNeo.Serialization.Assemblers;
 /// <summary>An object: built from the columns of its properties. The row itself is one, and is always there.</summary>
 /// <param name="node">The number of the node, for <see cref="ReadContext.Nodes"/>.</param>
 /// <param name="objectIndex">The index of the context of this type among <see cref="ReadContext.Objects"/>.</param>
+/// <param name="optional">Whether the value can be null: the field is optional.</param>
+/// <param name="firstColumn">The position of the first column of the object among the columns that are read or written.</param>
+/// <param name="columnCount">How many columns the object has.</param>
+/// <param name="description">Describes the column or property, for the messages of errors.</param>
+/// <param name="properties">The assemblers of the properties of the object, in order.</param>
+/// <param name="constructor">Creates the object from the values of its properties; null when the properties are set after it is created.</param>
+/// <param name="build">Builds the object once its properties are read.</param>
 internal sealed class StructAssembler<TValue>(
     int node,
     int objectIndex,

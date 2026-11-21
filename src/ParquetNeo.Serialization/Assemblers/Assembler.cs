@@ -20,6 +20,9 @@ internal abstract class Assembler(int firstColumn, int columnCount, string descr
     /// <exception cref="Exceptions.SchemaMismatchException">The node cannot be read as the part.</exception>
     /// <summary>The property of an object that has this part as its value, which has no <see cref="System.Reflection.PropertyInfo"/> when the code that sets it was generated.</summary>
     /// <param name="slot">The index of the property among those of the object.</param>
+    /// <param name="name">The name of the property.</param>
+    /// <param name="description">Describes the column or property, for the messages of errors.</param>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
     public abstract IPropertyAssembler CreateProperty(string name, string description, bool optional, int slot);
 
     public abstract void Bind(SchemaNode? file, ReadBinder binder);
