@@ -25,8 +25,17 @@ export PARQUETNEO_PYTHON_TESTS=1 PARQUETNEO_PYTHON="$PWD/.venv/bin/python"
 dotnet test --project tests/ParquetNeo.IntegrationTests -c Release
 ```
 
-`PARQUETNEO_PYTHON` names the interpreter (default `python3`, or `python` on Windows). pyarrow is pinned in `python/requirements.txt`;
-raise it on purpose to see what a new release changes.
+`PARQUETNEO_PYTHON` names the interpreter (default `python3`, or `python` on Windows). pyarrow is pinned in `python/requirements.txt`, so that a
+release of pyarrow does not make a push fail; raise it on purpose.
+
+## Against the latest pyarrow
+
+The workflow runs on pushes to `main` with the pinned pyarrow, and **every Monday with the latest release** (`pip install --upgrade pyarrow`), so that a new
+pyarrow, or a change in how it reads or writes Parquet, shows up as a failed scheduled run and not as a surprise. When it fails, the log says which file
+and which value differ; if the difference is in pyarrow and is as it should be, change the test, and when the run passes with the new release, raise the pin.
+
+To try a version by hand: Actions, Integration tests, Run workflow, and give `latest`, `pinned` or a version such as `27.0.0`. Locally,
+`pip install --upgrade pyarrow` in the virtual environment above does the same. The summary of every run says which pyarrow it used.
 
 ## Adding a case
 
