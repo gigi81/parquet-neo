@@ -101,6 +101,13 @@ jobs:
   s3-seaweedfs:
     name: s3 (seaweedfs)
     runs-on: ubuntu-latest
+    # The image starts a single node with S3 on 8333 by itself (its default command is "mini -dir=/data"), so GitHub starts it and removes it.
+    # It has no credentials configured, so it takes any.
+    services:
+      seaweedfs:
+        image: chrislusf/seaweedfs:latest
+        ports:
+          - 9000:8333
     env:
       # The backends that must be there: with this a server that is missing or does not answer is a failure, not a skipped test.
       PARQUETNEO_EMULATOR_TESTS: s3
@@ -115,15 +122,13 @@ jobs:
           global-json-file: global.json
           dotnet-version: 10.0.x
 
-      # Not a service container: SeaweedFS has to be started with a command (server -s3), which a service cannot be given.
-      - name: Start SeaweedFS
+      - name: Wait for the server
         run: |
-          docker run -d --name seaweedfs -p 9000:8333 chrislusf/seaweedfs:latest server -s3 -dir=/data
           for attempt in $(seq 1 60); do
             if curl -s -o /dev/null -m 2 http://127.0.0.1:9000/; then echo "the server answers"; sleep 3; exit 0; fi
             sleep 1
           done
-          echo "the server did not answer"; docker logs seaweedfs 2>&1 | tail -20
+          echo "the server did not answer"
           exit 1
 
       - name: Build

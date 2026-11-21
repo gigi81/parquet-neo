@@ -56,7 +56,7 @@ ones **must** be there, and then a missing server is a failure: the workflow set
 With Docker:
 
 ```bash
-docker run -d -p 9000:8333 chrislusf/seaweedfs:latest server -s3 -dir=/data      # or: docker run -d -p 9000:5000 motoserver/moto:5.2.5
+docker run -d -p 9000:8333 chrislusf/seaweedfs:latest      # or: docker run -d -p 9000:5000 motoserver/moto:5.2.5
 docker run -d -p 10000:10000 mcr.microsoft.com/azure-storage/azurite azurite-blob --blobHost 0.0.0.0 --skipApiVersionCheck
 export PARQUETNEO_EMULATOR_TESTS=s3,azure PARQUETNEO_S3_ENDPOINT=http://127.0.0.1:9000 PARQUETNEO_AZURE_CONNECTION_STRING=UseDevelopmentStorage=true
 dotnet test --project tests/ParquetNeo.IntegrationTests -c Release
@@ -66,7 +66,7 @@ Without Docker, `npm install --global azurite` and `pip install "moto[server]"` 
 Every run makes a bucket and a container of its own (`parquetneo-` and a random name) and leaves them: the servers are meant to be thrown away.
 `--skipApiVersionCheck` is needed because the version of the API that the SDK asks for can be newer than the one the emulator knows.
 
-The workflow has a job for each server. They also run on a pull request that changes the storages or these tests (the Python job does not).
+The workflow has a job for each server; the S3 servers run as service containers of their jobs (Azurite is started by its job, since it needs a command-line option). They also run on a pull request that changes the storages or these tests (the Python job does not).
 
 ## Against the latest pyarrow
 
