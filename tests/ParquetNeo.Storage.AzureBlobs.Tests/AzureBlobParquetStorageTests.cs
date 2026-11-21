@@ -190,4 +190,35 @@ public class AzureBlobParquetStorageTests
         await Assert.That(recorder.Sum("parquetneo.storage.bytes_read", (system, "azure_blob"))).IsEqualTo(1000 + 2000);
         await Assert.That(recorder.Count("parquetneo.storage.request.duration", (system, "azure_blob"))).IsEqualTo(2);
     }
+
+    [Test]
+    public async Task ListingsObjectsAndRequests_AreSpansOfTheKindOfStorage_AndAMissingObjectIsAnError()
+    {
+        using var tracing = new ParquetNeo.Diagnostics.ParquetNeoTracing();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.TraceRecorder(tracing.Source);
+        var container = new FakeContainer().Put("people/a.parquet", Bytes(5000));
+        var storage = new AzureBlobParquetStorage(container, new RangeReadStreamOptions { BlockSize = 1000, TailSize = 0, Tracing = tracing });
+
+        await List(storage, "people/");
+        await using (var stream = await storage.OpenReadAsync("people/a.parquet"))
+        {
+            await stream.ReadExactlyAsync(new byte[10]);
+            stream.Position = 3000;
+            await stream.ReadExactlyAsync(new byte[2000]);
+        }
+
+        await Assert.That(async () => await storage.OpenReadAsync("missing")).Throws<FileNotFoundException>();
+
+        string system = ParquetNeo.Diagnostics.ParquetNeoTracing.StorageSystemTag;
+        var list = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageListSpan);
+        var open = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageOpenSpan);
+        var requests = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageRequestSpan);
+        await Assert.That(list.Count).IsGreaterThanOrEqualTo(1);
+        await Assert.That(list.All(span => (string?)span.GetTagItem(system) == "azure_blob" && (string?)span.GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageKeyTag) == "people/")).IsTrue();
+        await Assert.That(open.Count).IsEqualTo(2);
+        await Assert.That(open.Count(span => span.Status == System.Diagnostics.ActivityStatusCode.Error)).IsEqualTo(1);
+        await Assert.That(open.Single(span => span.Status == System.Diagnostics.ActivityStatusCode.Error).GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageKeyTag)).IsEqualTo("missing");
+        await Assert.That(requests.Count).IsEqualTo(2);
+        await Assert.That(requests.All(span => (string?)span.GetTagItem(system) == "azure_blob")).IsTrue();
+    }
 }

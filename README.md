@@ -30,7 +30,8 @@ installs everything. To take less, install the packages you need (each brings th
 | `ParquetNeo.Linq` | LINQ over files and directories (not trim or Native AOT safe) |
 | `ParquetNeo.Compression.Snappy`, `.Lz4`, `.Zstd` | the codecs, one package each so that you only get the libraries you use |
 | `ParquetNeo.Storage.S3`, `ParquetNeo.Storage.AzureBlobs` | reading files from Amazon S3 and from Azure Blob Storage, requesting only the byte ranges that are needed |
-| `ParquetNeo.Extensions.DependencyInjection` | `AddParquetNeoMetrics()`: the metrics of ParquetNeo (`System.Diagnostics.Metrics`) from the container, for OpenTelemetry and `dotnet-counters` |
+| `ParquetNeo.Extensions.DependencyInjection` | `AddParquetNeoMetrics()` and `AddParquetNeoTracing()`: the metrics (`System.Diagnostics.Metrics`) and the traces (`ActivitySource`) of ParquetNeo from the container |
+| `ParquetNeo.OpenTelemetry` | `AddParquetNeoInstrumentation()`: subscribes an OpenTelemetry tracer provider and meter provider to ParquetNeo |
 | `ParquetNeo.All` | all of the above, in one package |
 
 ## Goals
@@ -228,7 +229,8 @@ while (reader.Read())
 | `src/ParquetNeo.All` | The `ParquetNeo.All` package: no code, it depends on all the packages below |
 | `src/ParquetNeo.Compression.Snappy`, `.Lz4`, `.Zstd` | The codecs, one package each |
 | `src/ParquetNeo.Storage.S3`, `src/ParquetNeo.Storage.AzureBlobs` | Reading files from Amazon S3 and Azure Blob Storage (they implement `IParquetStorage` of `ParquetNeo`) |
-| `src/ParquetNeo.Extensions.DependencyInjection` | `AddParquetNeoMetrics()` for dependency injection |
+| `src/ParquetNeo.Extensions.DependencyInjection` | `AddParquetNeoMetrics()` and `AddParquetNeoTracing()` for dependency injection |
+| `src/ParquetNeo.OpenTelemetry` | `AddParquetNeoInstrumentation()` for OpenTelemetry |
 | `src/ParquetNeo.Enums` | The enumerations (the types of the Parquet format, and the options that name a choice), all in the `ParquetNeo` namespace |
 | `tests/ParquetNeo.Tests` | Unit tests of `ParquetNeo` ([TUnit](https://tunit.dev/)) |
 | `tests/ParquetNeo.Linq.Tests` | Unit tests of `ParquetNeo.Linq`: results against LINQ to objects, random predicates, plans, directories |
@@ -236,7 +238,7 @@ while (reader.Read())
 | `tests/ParquetNeo.IntegrationTests` | ParquetNeo against pyarrow: files written by each are read by the other (off unless `PARQUETNEO_PYTHON_TESTS=1`; its own workflow) |
 | `tests/ParquetNeo.AotSmoke` | A program published with Native AOT in CI: it uses the serializer with a generated mapping |
 | `tests/ParquetNeo.Storage.S3.Tests`, `tests/ParquetNeo.Storage.AzureBlobs.Tests` | Unit tests of the storages against fakes of the AWS and Azure SDKs, and datasets and the serializer reading through them |
-| `tests/ParquetNeo.Extensions.DependencyInjection.Tests` | Unit tests of the registration of the metrics |
+| `tests/ParquetNeo.Extensions.DependencyInjection.Tests`, `tests/ParquetNeo.OpenTelemetry.Tests` | Unit tests of the registration of the metrics and the tracing, and of the OpenTelemetry helpers against an in-memory exporter |
 | `tests/ParquetNeo.Enums.Tests`, `tests/ParquetNeo.Generator.Tests`, `tests/ParquetNeo.Compression.*.Tests` | Each project has a test project of its own; the add-on codec projects run the shared codec checks of `tests/ParquetNeo.Tests.Common` |
 | `benchmarks/ParquetNeo.Benchmarks` | [BenchmarkDotNet](https://benchmarkdotnet.org/) benchmarks |
 | `docs` | The documentation site ([docfx](https://dotnet.github.io/docfx/); `dotnet tool restore && dotnet docfx docs/docfx.json` builds it into `docs/_site`), the performance report and the plan |

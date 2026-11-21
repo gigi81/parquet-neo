@@ -16,6 +16,8 @@
   href: object-storage.md
 - name: Metrics
   href: metrics.md
+- name: Tracing
+  href: tracing.md
 - name: GraphQL with Hot Chocolate
   href: graphql.md
 - name: Low-level API

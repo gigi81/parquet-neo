@@ -65,9 +65,15 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
         return files;
     }
 
-    /// <summary>The options of the readers of the files that are read: those of the dataset, with the metrics of the dataset when it has some.</summary>
+    /// <summary>The options of the readers of the files that are read: those of the dataset, with the metrics and the tracing of the dataset when it has some.</summary>
     private ParquetReaderOptions ReaderOptions =>
-        Options.Metrics is null ? Options.Deserializer.Reader : Options.Deserializer.Reader with { Metrics = Options.Metrics };
+        Options.Metrics is null && Options.Tracing is null
+            ? Options.Deserializer.Reader
+            : Options.Deserializer.Reader with
+            {
+                Metrics = Options.Metrics ?? Options.Deserializer.Reader.Metrics,
+                Tracing = Options.Tracing ?? Options.Deserializer.Reader.Tracing,
+            };
 
     /// <summary>Opens a file of the list of <see cref="Files"/> for reading, from the disk or from the storage.</summary>
     public Stream OpenFile(string file) => Metered.OpenReadAsync(file).AsTask().GetAwaiter().GetResult();
@@ -99,28 +105,61 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
     public IEnumerable<TRow> Read<TRow>(ParquetFilter? filter)
     {
         var rows = ReadFiles<TRow>(filter);
-        return Options.Metrics is { } metrics ? Measured(rows, metrics, filter is not null) : rows;
+        return Options.Metrics is null && Options.Tracing is null ? rows : Measured(rows, Options.Metrics, Options.Tracing, filter is not null);
     }
 
     /// <summary>
     /// The rows, counting them and timing the query from the first row asked for until the last one is given or the enumeration is disposed
-    /// (a query that takes the first rows ends there), into the metrics.
+    /// (a query that takes the first rows ends there), into the metrics and as a span. The span is the current one only while a row is being
+    /// asked for, so the row groups and the requests that the files cause are below it, and the code that holds the rows keeps its own.
     /// </summary>
-    internal static IEnumerable<TRow> Measured<TRow>(IEnumerable<TRow> rows, ParquetNeoMetrics metrics, bool filtered)
+    internal static IEnumerable<TRow> Measured<TRow>(IEnumerable<TRow> rows, ParquetNeoMetrics? metrics, ParquetNeoTracing? tracing, bool filtered)
     {
         long started = Stopwatch.GetTimestamp();
         long count = 0;
+        using var activity = tracing?.StartQuery(filtered);
         try
         {
-            foreach (var row in rows)
+            using var enumerator = rows.GetEnumerator();
+            while (true)
             {
+                var outer = Activity.Current;
+                if (activity is not null)
+                {
+                    Activity.Current = activity;
+                }
+
+                bool more;
+                try
+                {
+                    more = enumerator.MoveNext();
+                }
+                catch (Exception exception)
+                {
+                    ParquetNeoTracing.RecordException(activity, exception);
+                    throw;
+                }
+                finally
+                {
+                    if (activity is not null)
+                    {
+                        Activity.Current = outer;
+                    }
+                }
+
+                if (!more)
+                {
+                    break;
+                }
+
                 count++;
-                yield return row;
+                yield return enumerator.Current;
             }
         }
         finally
         {
-            metrics.RecordQuery(Stopwatch.GetElapsedTime(started).TotalSeconds, count, filtered);
+            activity?.SetTag(ParquetNeoTracing.QueryRowsTag, count);
+            metrics?.RecordQuery(Stopwatch.GetElapsedTime(started).TotalSeconds, count, filtered);
         }
     }
 
@@ -148,25 +187,57 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
     public IAsyncEnumerable<TRow> ReadAsync<TRow>(ParquetFilter? filter, CancellationToken cancellationToken = default)
     {
         var rows = ReadFilesAsync<TRow>(filter, cancellationToken);
-        return Options.Metrics is { } metrics ? MeasuredAsync(rows, metrics, filter is not null, cancellationToken) : rows;
+        return Options.Metrics is null && Options.Tracing is null ? rows : MeasuredAsync(rows, Options.Metrics, Options.Tracing, filter is not null, cancellationToken);
     }
 
     /// <summary>The asynchronous form of <see cref="Measured{TRow}"/>.</summary>
-    internal static async IAsyncEnumerable<TRow> MeasuredAsync<TRow>(IAsyncEnumerable<TRow> rows, ParquetNeoMetrics metrics, bool filtered, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    internal static async IAsyncEnumerable<TRow> MeasuredAsync<TRow>(IAsyncEnumerable<TRow> rows, ParquetNeoMetrics? metrics, ParquetNeoTracing? tracing, bool filtered, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         long started = Stopwatch.GetTimestamp();
         long count = 0;
+        using var activity = tracing?.StartQuery(filtered);
         try
         {
-            await foreach (var row in rows.WithCancellation(cancellationToken).ConfigureAwait(false))
+            await using var enumerator = rows.GetAsyncEnumerator(cancellationToken);
+            while (true)
             {
+                var outer = Activity.Current;
+                if (activity is not null)
+                {
+                    Activity.Current = activity;
+                }
+
+                bool more;
+                try
+                {
+                    more = await enumerator.MoveNextAsync().ConfigureAwait(false);
+                }
+                catch (Exception exception)
+                {
+                    ParquetNeoTracing.RecordException(activity, exception);
+                    throw;
+                }
+                finally
+                {
+                    if (activity is not null)
+                    {
+                        Activity.Current = outer;
+                    }
+                }
+
+                if (!more)
+                {
+                    break;
+                }
+
                 count++;
-                yield return row;
+                yield return enumerator.Current;
             }
         }
         finally
         {
-            metrics.RecordQuery(Stopwatch.GetElapsedTime(started).TotalSeconds, count, filtered);
+            activity?.SetTag(ParquetNeoTracing.QueryRowsTag, count);
+            metrics?.RecordQuery(Stopwatch.GetElapsedTime(started).TotalSeconds, count, filtered);
         }
     }
 

@@ -20,6 +20,9 @@ public sealed record ParquetReaderOptions
     /// </summary>
     public ParquetNeoMetrics? Metrics { get; init; }
 
+    /// <summary>Where the reading of row groups is traced: a span for each row group that the serializer reads. Nothing is recorded when not set.</summary>
+    public ParquetNeoTracing? Tracing { get; init; }
+
     /// <summary>The largest footer that is read, in bytes. Defaults to 256 MiB.</summary>
     public int MaxFooterSize { get; init; } = 256 * 1024 * 1024;
 

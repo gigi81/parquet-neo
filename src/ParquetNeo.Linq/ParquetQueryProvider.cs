@@ -36,9 +36,18 @@ internal sealed class ParquetQueryProvider(DatasetSource source) : IQueryProvide
         if (plan.FooterAnswer is { } answer)
         {
             long started = Stopwatch.GetTimestamp();
-            var result = (TResult)AnswerFromFooters(answer);
-            source.Options.Metrics?.RecordQuery(Stopwatch.GetElapsedTime(started).TotalSeconds, 0, filtered: false);
-            return result;
+            using var activity = source.Options.Tracing?.StartQuery(filtered: false);
+            try
+            {
+                var result = (TResult)AnswerFromFooters(answer);
+                source.Options.Metrics?.RecordQuery(Stopwatch.GetElapsedTime(started).TotalSeconds, 0, filtered: false);
+                return result;
+            }
+            catch (Exception exception)
+            {
+                ParquetNeoTracing.RecordException(activity, exception);
+                throw;
+            }
         }
 
         var rows = Read(plan);
@@ -84,9 +93,18 @@ internal sealed class ParquetQueryProvider(DatasetSource source) : IQueryProvide
         if (plan.FooterAnswer is { } answer)
         {
             long started = Stopwatch.GetTimestamp();
-            long rows = await source.CountRowsAsync(cancellationToken).ConfigureAwait(false);
-            source.Options.Metrics?.RecordQuery(Stopwatch.GetElapsedTime(started).TotalSeconds, 0, filtered: false);
-            return (TResult)Answer(answer, rows);
+            using var activity = source.Options.Tracing?.StartQuery(filtered: false);
+            try
+            {
+                long rows = await source.CountRowsAsync(cancellationToken).ConfigureAwait(false);
+                source.Options.Metrics?.RecordQuery(Stopwatch.GetElapsedTime(started).TotalSeconds, 0, filtered: false);
+                return (TResult)Answer(answer, rows);
+            }
+            catch (Exception exception)
+            {
+                ParquetNeoTracing.RecordException(activity, exception);
+                throw;
+            }
         }
 
         return (TResult)(await AsyncQueryRunner.RunAsync(source, plan, cancellationToken).ConfigureAwait(false))!;

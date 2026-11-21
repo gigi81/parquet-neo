@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using ParquetNeo.Diagnostics;
 using ParquetNeo.Storage;
 
 namespace ParquetNeo.Storage.AzureBlobs;
@@ -31,6 +32,7 @@ public sealed class AzureBlobParquetStorage(BlobContainerClient container, Range
     {
         ArgumentException.ThrowIfNullOrEmpty(key);
         var blob = _container.GetBlobClient(key);
+        using var activity = options?.Tracing?.StartStorageOpen(AzureBlobRangeStream.System, key);
         try
         {
             var properties = (await blob.GetPropertiesAsync(cancellationToken: cancellationToken).ConfigureAwait(false)).Value;
@@ -39,16 +41,53 @@ public sealed class AzureBlobParquetStorage(BlobContainerClient container, Range
         }
         catch (RequestFailedException exception) when (exception.Status == 404)
         {
+            ParquetNeoTracing.RecordException(activity, exception);
             throw new FileNotFoundException($"There is no blob '{key}' in the container '{_container.Name}'.", key, exception);
+        }
+        catch (Exception exception)
+        {
+            ParquetNeoTracing.RecordException(activity, exception);
+            throw;
         }
     }
 
     private async IAsyncEnumerable<StorageObject> ListBlobsAsync(string prefix, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         options?.Metrics?.RecordListing(AzureBlobRangeStream.System);
-        await foreach (var item in _container.GetBlobsAsync(BlobTraits.None, BlobStates.None, prefix, cancellationToken).ConfigureAwait(false))
+
+        // The pages of the listing are requested by the pager as the rows are asked for, so the span is of the work of the listing and not of its consumer:
+        // it is made from the blobs that are listed, which the pager takes a page at a time.
+        var listing = _container.GetBlobsAsync(BlobTraits.None, BlobStates.None, prefix, cancellationToken).GetAsyncEnumerator(cancellationToken);
+        try
         {
-            yield return new StorageObject(item.Name, item.Properties.ContentLength ?? 0);
+            while (true)
+            {
+                bool more;
+                using (var activity = options?.Tracing?.StartStorageList(AzureBlobRangeStream.System, prefix))
+                {
+                    try
+                    {
+                        more = await listing.MoveNextAsync().ConfigureAwait(false);
+                    }
+                    catch (Exception exception)
+                    {
+                        ParquetNeoTracing.RecordException(activity, exception);
+                        throw;
+                    }
+                }
+
+                if (!more)
+                {
+                    yield break;
+                }
+
+                var item = listing.Current;
+                yield return new StorageObject(item.Name, item.Properties.ContentLength ?? 0);
+            }
+        }
+        finally
+        {
+            await listing.DisposeAsync().ConfigureAwait(false);
         }
     }
 }

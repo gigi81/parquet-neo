@@ -258,6 +258,24 @@ public class AsyncQueryTests
         await Assert.That(recorder.Sum("parquetneo.query.rows", (ParquetNeo.Diagnostics.ParquetNeoMetrics.FilteredTag, false))).IsEqualTo(all.Count);
     }
 
+    [Test]
+    public async Task TheQueryIsASpanWithTheRowGroupsBelowIt_WhenRunAsynchronously()
+    {
+        using var tracing = new ParquetNeo.Diagnostics.ParquetNeoTracing();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.TraceRecorder(tracing.Source);
+        var people = ParquetDataset.Open<Person>(Setup(), "people/", new ParquetDatasetOptions { Tracing = tracing });
+        var before = System.Diagnostics.Activity.Current;
+
+        var filtered = await people.Where(p => p.Id >= 2000 && p.Id < 2150).Select(p => p.Id).ToListAsync();
+
+        var query = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.QuerySpan).Single();
+        var groups = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.RowGroupSpan);
+        await Assert.That((long)query.GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.QueryRowsTag)!).IsGreaterThanOrEqualTo(filtered.Count);
+        await Assert.That(groups.Count).IsGreaterThan(0);
+        await Assert.That(groups.All(span => span.TraceId == query.TraceId)).IsTrue();
+        await Assert.That(System.Diagnostics.Activity.Current).IsEqualTo(before);
+    }
+
     /// <summary>A storage whose streams fail on a synchronous read, so that a call that blocks on a file is a failure.</summary>
     private sealed class NoBlockingStorage(IParquetStorage inner) : IParquetStorage
     {

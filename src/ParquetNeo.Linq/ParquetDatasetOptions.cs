@@ -27,4 +27,10 @@ public sealed record ParquetDatasetOptions
     /// given to the readers of the dataset's files. Nothing is recorded when not set. The requests to a storage are recorded by the options of the storage.
     /// </summary>
     public ParquetNeoMetrics? Metrics { get; init; }
+
+    /// <summary>
+    /// Where the queries of the dataset are traced, with the row groups it reads as the spans below them: the same tracing as the readers, which is
+    /// given to the readers of the dataset's files. Nothing is recorded when not set. The requests to a storage are traced by the options of the storage.
+    /// </summary>
+    public ParquetNeoTracing? Tracing { get; init; }
 }
