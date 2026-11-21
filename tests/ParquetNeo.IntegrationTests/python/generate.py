@@ -21,7 +21,7 @@ MANIFEST = []
 SKIPPED = []
 
 
-def write(directory, name, table, kind="flat", **options):
+def write(directory, name, table, kind="flat", shape=None, **options):
     """Writes a table as <name>.parquet with the options of pyarrow, and records it in the manifest."""
     path = os.path.join(directory, name + ".parquet")
     try:
@@ -29,11 +29,18 @@ def write(directory, name, table, kind="flat", **options):
     except Exception as error:  # an option this version of pyarrow does not have: the case is left out and said so
         SKIPPED.append({"name": name, "reason": str(error)})
         return
-    parquet_file = pq.ParquetFile(path)
+    record(directory, name, table, kind, shape, "pyarrow", options)
+
+
+def record(directory, name, table, kind, shape, writer, options):
+    """Adds a file to the manifest: what is in it (the table it was made from), and what pyarrow reads of its metadata."""
+    parquet_file = pq.ParquetFile(os.path.join(directory, name + ".parquet"))
     MANIFEST.append({
         "name": name,
         "file": name + ".parquet",
         "kind": kind,
+        "shape": shape,
+        "writer": writer,
         "options": {k: v for k, v in options.items() if isinstance(v, (str, int, float, bool, list, dict))},
         "columns": normalize_table(table),
         "column_order": table.column_names,
@@ -177,8 +184,9 @@ def main(directory):
     write(directory, "logical_types_decimal_as_integer", logical, compression="zstd", store_decimal_as_integer=True)
 
     for name, table in nested_tables(300).items():
-        write(directory, name + "_v1", table, kind="nested", row_group_size=100)
-        write(directory, name + "_v2_zstd", table, kind="nested", data_page_version="2.0", compression="zstd", row_group_size=128, data_page_size=512)
+        shape = name[len("nested_"):]
+        write(directory, name + "_v1", table, kind="nested", shape=shape, row_group_size=100)
+        write(directory, name + "_v2_zstd", table, kind="nested", shape=shape, data_page_version="2.0", compression="zstd", row_group_size=128, data_page_size=512)
 
     ints = pa.table({
         "I32": pa.array([(i * 31) % 100000 - 50000 for i in range(4000)], pa.int32()),
@@ -226,9 +234,17 @@ def main(directory):
     fallback = pa.table({"Id": pa.array(range(20000), pa.int32()), "S": pa.array(["value %d" % (i * 7919 % 20011) if i > 5000 else "repeat %d" % (i % 4) for i in range(20000)], pa.string())})
     write(directory, "dictionary_fallback", fallback, dictionary_pagesize_limit=2048, data_page_size=4096)
 
+    versions = {"pyarrow": pa.__version__}
+    try:
+        import duckdb_cases
+    except ImportError as error:  # duckdb is not installed: the files of pyarrow are enough to run the tests that need only them
+        SKIPPED.append({"name": "duckdb", "reason": str(error)})
+    else:
+        versions["duckdb"] = duckdb_cases.generate(directory, record, SKIPPED)
+
     with open(os.path.join(directory, "manifest.json"), "w", encoding="utf-8") as stream:
-        json.dump({"pyarrow": pa.__version__, "cases": MANIFEST, "skipped": SKIPPED}, stream, allow_nan=False)
-    print("wrote %d files with pyarrow %s; %d skipped" % (len(MANIFEST), pa.__version__, len(SKIPPED)))
+        json.dump({"pyarrow": pa.__version__, "versions": versions, "cases": MANIFEST, "skipped": SKIPPED}, stream, allow_nan=False)
+    print("wrote %d files with %s; %d skipped" % (len(MANIFEST), ", ".join("%s %s" % kv for kv in versions.items()), len(SKIPPED)))
 
 
 if __name__ == "__main__":
