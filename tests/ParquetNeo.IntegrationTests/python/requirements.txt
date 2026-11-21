@@ -1,4 +1,6 @@
-# The reference implementation ParquetNeo is checked against: Apache Arrow's C++ Parquet, through its Python bindings.
-# Pinned so that a new release of pyarrow does not change what the tests see; raise it on purpose. The workflow also runs every week with the
-# latest release (see .github/workflows/integration-tests.yml): when that run passes after a new release, raise this pin to it.
+# The implementations ParquetNeo is checked against: Apache Arrow's C++ Parquet through its Python bindings (the reference), and DuckDB.
+# Pinned so that a new release does not change what the tests see; raise them on purpose. The workflow also runs every week with the latest releases
+# (see .github/workflows/integration-tests.yml): when that run passes after a new release, raise the pin to it.
 pyarrow==26.0.1
+# A second implementation: DuckDB reads the bloom filters and the page index, which pyarrow does not, and writes files of its own.
+duckdb==2.0.1

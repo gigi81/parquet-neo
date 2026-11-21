@@ -66,6 +66,25 @@ internal static class PythonEnvironment
         return document.RootElement.Clone();
     }
 
+    /// <summary>Reads a file with DuckDB, a second implementation, and gives what it found, normalized as for pyarrow: see <c>duckdb_dump.py</c>.</summary>
+    /// <param name="excluded">The columns DuckDB does not read as the file holds them (a time in milliseconds is microseconds for it), left out of the query.</param>
+    public static JsonElement DuckDbDump(string file, params string[] excluded)
+    {
+        var (output, _) = Run("duckdb_dump.py", file, string.Join(',', excluded));
+        using var document = JsonDocument.Parse(output);
+        return document.RootElement.Clone();
+    }
+
+    /// <summary>Asks DuckDB what it sees in the bloom filters and the page index of a file: see <c>duckdb_probe.py</c> for the request.</summary>
+    public static JsonElement DuckDbProbe(object request)
+    {
+        string path = NewFile("probe").Replace(".parquet", ".json");
+        File.WriteAllText(path, JsonSerializer.Serialize(request));
+        var (output, _) = Run("duckdb_probe.py", path);
+        using var document = JsonDocument.Parse(output);
+        return document.RootElement.Clone();
+    }
+
     private static GeneratedFiles Generate()
     {
         string directory = Path.Combine(Path.GetTempPath(), "parquetneo-python-" + Guid.NewGuid().ToString("N"));
@@ -75,7 +94,7 @@ internal static class PythonEnvironment
         return new GeneratedFiles(directory, manifest.RootElement.Clone());
     }
 
-    private static (string Output, string Error) Run(string script, string argument)
+    private static (string Output, string Error) Run(string script, params string[] arguments)
     {
         var start = new ProcessStartInfo(Interpreter)
         {
@@ -87,7 +106,10 @@ internal static class PythonEnvironment
             WorkingDirectory = ScriptDirectory,
         };
         start.ArgumentList.Add(Path.Combine(ScriptDirectory, script));
-        start.ArgumentList.Add(argument);
+        foreach (string argument in arguments)
+        {
+            start.ArgumentList.Add(argument);
+        }
         start.Environment["PYTHONIOENCODING"] = "utf-8";
 
         using var process = Process.Start(start) ?? throw new InvalidOperationException($"Could not start '{Interpreter}'.");
@@ -96,7 +118,7 @@ internal static class PythonEnvironment
         process.WaitForExit();
         if (process.ExitCode != 0)
         {
-            throw new InvalidOperationException($"{Interpreter} {script} {argument} failed with exit code {process.ExitCode}:{Environment.NewLine}{error.Result}");
+            throw new InvalidOperationException($"{Interpreter} {script} {string.Join(' ', arguments)} failed with exit code {process.ExitCode}:{Environment.NewLine}{error.Result}");
         }
 
         return (output, error.Result);

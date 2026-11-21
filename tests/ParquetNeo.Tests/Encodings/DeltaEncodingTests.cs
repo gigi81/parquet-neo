@@ -153,15 +153,30 @@ public class DeltaEncodingTests
     }
 
     [Test]
-    public async Task ABitWidthWiderThanTheType_IsRejected()
+    public async Task AMiniblockOfInt32WiderThan32Bits_IsDecodedWithTheValuesWrapping_AsDuckDbWritesThem()
     {
-        // Padded so that a 33-bit miniblock would have all its bytes: only the width itself can be what is wrong.
-        var bytes = Encode([7, 5, 3, 1, 2, 3, 4, 5]).Concat(new byte[200]).ToArray();
-        bytes[6] = 33; // the first miniblock width (after 5 header bytes and the minimum delta), too wide for INT32
+        // Some writers take the deltas of 32-bit values in 64 bits: from 3 000 000 000 (the bits of a negative int) to 0 and back is a step of 33 bits.
+        // The sum wraps, so the values come out as the ones that were written.
+        long[] wide = [3_000_000_000, 0, 3_000_000_000, 0, 3_000_000_000, 7, 3_000_000_000];
+        var bytes = Encode(wide);
+        var decoded = new int[wide.Length];
+
+        DeltaBinaryPackedDecoder.Decode(bytes, decoded);
+
+        await Assert.That(bytes[6]).IsGreaterThan((byte)32); // the miniblock is wider than the type
+        await Assert.That(decoded.SequenceEqual(wide.Select(v => unchecked((int)v)))).IsTrue();
+    }
+
+    [Test]
+    public async Task ABitWidthWiderThan64_IsRejected()
+    {
+        // Padded so that a 65-bit miniblock would have all its bytes: only the width itself can be what is wrong.
+        var bytes = Encode([7L, 5, 3, 1, 2, 3, 4, 5]).Concat(new byte[200]).ToArray();
+        bytes[6] = 65; // the first miniblock width (after 5 header bytes and the minimum delta)
 
         var exception = Assert.Throws<EncodingException>(() => DeltaBinaryPackedDecoder.Decode(bytes, new int[8]));
         await Assert.That(exception.Message).Contains("bit width");
-        await Assert.That(() => DeltaBinaryPackedDecoder.Decode(bytes, new long[8])).ThrowsNothing(); // 33 bits are fine for INT64
+        await Assert.That(() => DeltaBinaryPackedDecoder.Decode(bytes, new long[8])).Throws<EncodingException>();
     }
 
     // ---- the pieces ----

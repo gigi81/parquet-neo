@@ -90,13 +90,13 @@ public class PythonToParquetNeoTests
         string path = PythonEnvironment.Files.PathOf(name);
         var columns = entry.GetProperty("columns");
 
-        JsonElement rows = name[..name.LastIndexOf("_v", StringComparison.Ordinal)] switch
+        JsonElement rows = entry.GetProperty("shape").GetString() switch
         {
-            "nested_lists" => Read<ListsRow>(path),
-            "nested_struct" => Read<StructRow>(path),
-            "nested_map" => Read<MapRow>(path),
-            "nested_list_struct" => Read<ListStructRow>(path),
-            var other => throw new InvalidOperationException($"No class for {other}."),
+            "lists" => Read<ListsRow>(path),
+            "struct" => Read<StructRow>(path),
+            "map" => Read<MapRow>(path),
+            "list_struct" => Read<ListStructRow>(path),
+            var other => throw new InvalidOperationException($"No class for the shape {other}."),
         };
 
         int expectedRows = columns.EnumerateObject().First().Value.GetArrayLength();
@@ -117,19 +117,38 @@ public class PythonToParquetNeoTests
     }
 
     [Test]
-    public async Task ABloomFilterOfPython_RulesOutTheRowGroupsThatCannotHoldAValue()
+    [Arguments("bloom_filters")]
+    [Arguments("duckdb_bloom_filters")]
+    public async Task ABloomFilterOfAnotherWriter_RulesOutTheRowGroupsThatCannotHoldAValue(string name)
     {
         PythonEnvironment.SkipUnlessEnabled();
-        using var file = ParquetFileReader.Open(File.OpenRead(PythonEnvironment.Files.PathOf("bloom_filters")), Readers.Options);
-        var ids = PythonEnvironment.Files.Case("bloom_filters").GetProperty("columns").GetProperty("Id").EnumerateArray().Select(e => e.GetInt64()).ToArray();
+        var entry = PythonEnvironment.Files.Case(name);
+        using var file = ParquetFileReader.Open(File.OpenRead(PythonEnvironment.Files.PathOf(name)), Readers.Options);
+        var ids = entry.GetProperty("columns").GetProperty("Id").EnumerateArray().Select(e => e.GetInt64()).ToArray();
+        var groupSizes = entry.GetProperty("metadata").GetProperty("row_groups").EnumerateArray().Select(g => g.GetProperty("num_rows").GetInt32()).ToArray();
+        var firstRows = groupSizes.Select((_, g) => groupSizes.Take(g).Sum()).ToArray();
+
+        // The file has the filters: without them there is nothing to test, and the filters could not rule out anything.
+        foreach (var group in entry.GetProperty("metadata").GetProperty("row_groups").EnumerateArray())
+        {
+            foreach (var column in group.GetProperty("columns").EnumerateArray().Where(c => c.GetProperty("path").GetString() is "Id" or "Name"))
+            {
+                await Assert.That(column.GetProperty("has_bloom_filter").GetBoolean()).IsTrue().Because($"{name}, {column.GetProperty("path").GetString()}");
+            }
+        }
 
         // A value the file holds is never ruled out of the row group that holds it.
         int missed = 0;
-        for (int i = 0; i < ids.Length; i += 97)
+        for (int g = 0; g < groupSizes.Length; g++)
         {
-            if (!file.GetMatchingRowGroups(ParquetFilter.Column("Id").Equal(ids[i])).Contains(i / 500))
+            for (int i = firstRows[g]; i < firstRows[g] + groupSizes[g]; i += 97)
             {
-                missed++;
+                var matching = file.GetMatchingRowGroups(ParquetFilter.Column("Id").Equal(ids[i]));
+                var byName = file.GetMatchingRowGroups(ParquetFilter.Column("Name").Equal("name " + ids[i]));
+                if (!matching.Contains(g) || !byName.Contains(g))
+                {
+                    missed++;
+                }
             }
         }
 
@@ -181,6 +200,42 @@ public class PythonToParquetNeoTests
         await Assert.That(pairs["owner"]).IsEqualTo("tests");
         await Assert.That(pairs["note"]).IsEqualTo("héllo wörld");
         await Assert.That(file.Metadata.CreatedBy).StartsWith("parquet-cpp-arrow");
+    }
+
+    [Test]
+    public async Task TheKeyValueMetadataFieldIdsAndWriterName_AreThoseOfDuckDb()
+    {
+        PythonEnvironment.SkipUnlessEnabled();
+        using var file = ParquetFileReader.Open(File.OpenRead(PythonEnvironment.Files.PathOf("duckdb_kv_and_field_ids")), Readers.Options);
+
+        var pairs = file.Metadata.KeyValueMetadata!.ToDictionary(p => p.Key, p => p.Value);
+
+        await Assert.That(pairs["owner"]).IsEqualTo("tests");
+        await Assert.That(pairs["note"]).IsEqualTo("hello");
+        await Assert.That(file.Metadata.CreatedBy).StartsWith("DuckDB");
+        await Assert.That(file.Schema.FindColumn(["Id"])!.FieldId).IsEqualTo(5);
+        await Assert.That(file.Schema.FindColumn(["Name"])!.FieldId).IsEqualTo(9);
+    }
+
+    [Test]
+    public async Task TheEncodingsOfDuckDb_AreReadInDataPagesOfBothVersions()
+    {
+        PythonEnvironment.SkipUnlessEnabled();
+        var expectations = new (string Case, ParquetEncoding Encoding, string Column)[]
+        {
+            ("duckdb_basic_snappy_v1", ParquetEncoding.PlainDictionary, "I8"),
+            ("duckdb_basic_snappy_v2", ParquetEncoding.RleDictionary, "I8"),
+            ("duckdb_basic_snappy_v2", ParquetEncoding.DeltaBinaryPacked, "Id"),
+            ("duckdb_basic_zstd_v2", ParquetEncoding.DeltaLengthByteArray, "S"),
+        };
+
+        foreach (var (name, encoding, column) in expectations)
+        {
+            using var file = ParquetFileReader.Open(File.OpenRead(PythonEnvironment.Files.PathOf(name)), Readers.Options);
+            var chunk = file.OpenRowGroup(0).Metadata.Columns[file.Schema.FindColumn([column])!.ColumnIndex].MetaData!;
+
+            await Assert.That(chunk.Encodings).Contains(encoding).Because($"{name}, {column}");
+        }
     }
 
     [Test]
