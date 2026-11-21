@@ -166,14 +166,12 @@ Describe the columns in a schema, then write one batch of values per column for 
 
 ```csharp
 using ParquetNeo;
-using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-var schema = new ParquetSchema(
-[
-    new PrimitiveNode("id", PhysicalType.Int64, FieldRepetitionType.Required),
-    new PrimitiveNode("name", PhysicalType.ByteArray, FieldRepetitionType.Required, LogicalType.String),
-]);
+var schema = new ParquetSchemaBuilder()
+    .Int64("id")
+    .String("name")
+    .Build();
 
 using var file = File.Create("people.parquet");
 using var writer = ParquetFileWriter.Create(file, schema);
@@ -197,7 +195,7 @@ using (var group = writer.AppendRowGroup())
 }
 ```
 
-The footer is written when the writer is disposed. Read a column back with
+`ParquetSchemaBuilder` describes a schema with a chain of calls (see [Low-level API](docs/articles/low-level.md#describing-the-schema) for nested types, and for making the nodes by hand when the builder does not have what you need). The footer is written when the writer is disposed. Read a column back with
 `ParquetFileReader.Open(stream).OpenRowGroup(0).OpenColumn("id").ReadBatch(values)`.
 
 ## ADO.NET

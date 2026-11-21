@@ -9,14 +9,12 @@ Describe the columns in a schema, then write one batch of values per column for 
 
 ```csharp
 using ParquetNeo;
-using ParquetNeo.Metadata;
 using ParquetNeo.Schema;
 
-var schema = new ParquetSchema(
-[
-    new PrimitiveNode("id", PhysicalType.Int64, FieldRepetitionType.Required),
-    new PrimitiveNode("name", PhysicalType.ByteArray, FieldRepetitionType.Required, LogicalType.String),
-]);
+var schema = new ParquetSchemaBuilder()
+    .Int64("id")
+    .String("name")
+    .Build();
 
 using var file = File.Create("people.parquet");
 using var writer = ParquetFileWriter.Create(file, schema);
@@ -65,6 +63,61 @@ await using (var group = writer.AppendRowGroup())
 
 `NextColumn` is the synchronous way: it encodes and writes each page as it goes, so it blocks on the stream. The encoding itself is
 CPU work and runs on the calling thread (or, for `WriteColumnsAsync`, on pool threads).
+
+## Describing the schema
+
+`ParquetSchemaBuilder` adds the fields one by one. A field is required unless you say `optional: true`, which lets it hold nulls. The
+columns are the ones the serializer writes for the same .NET types: `Int8` is an `sbyte`, `Timestamp` a `DateTime`, `Decimal` a `decimal`, `Guid`
+a UUID, `Half` a FLOAT16, `Enum` a text annotated ENUM, and so on.
+
+```csharp
+using static ParquetNeo.Schema.SchemaField;
+
+var schema = new ParquetSchemaBuilder()
+    .Int64("Id")
+    .String("Name", optional: true)
+    .Decimal("Amount", precision: 18, scale: 4)                    // INT64 with the annotation of a decimal
+    .Timestamp("CreatedAt", TimeUnit.Millis, utc: true)             // microseconds and UTC when not said
+    .Struct("Address", optional: true, address => address
+        .String("City")
+        .Int32("Zip", optional: true))
+    .List("Tags", String())                                         // a list of text; String(optional: true) for text that can be null
+    .Map("Scores", String(), Int32(optional: true))                 // keys are never null
+    .Build();
+```
+
+`SchemaField` has the same types as methods without a name (`String()`, `Int32(optional: true)`, `Struct(...)`, `List(...)`, `Map(...)`): that is
+what a list or a map takes for its elements, keys and values, which are named by convention (`element`, `key`, `value`) in the standard layout. A
+field can also be kept and used for several names: `Field("Bid", price).Field("Ask", price)`.
+
+`Column(name, physicalType, logicalType, optional, typeLength)` makes a column of any type and annotation, and `Add(node)` adds a node made by hand.
+A builder makes a new schema each time it is built; the root of the schema is called `schema` unless `Build("name")` says another name.
+
+### What the builder does not cover
+
+The builder describes what the serializer writes: required and optional fields, and lists and maps in the standard layout. Files written by other
+tools have schemas that are not like that, and those fields are made by hand, with `PrimitiveNode`, `GroupNode` and `NestedSchema`, and added with `Add`:
+
+| What | Why the builder cannot | How |
+|---|---|---|
+| A **repeated** field (`repeated int32 Ids`), primitive or group | the fields are required or optional | `new PrimitiveNode("Ids", PhysicalType.Int32, FieldRepetitionType.Repeated)` |
+| A **field id** (Iceberg and others give every field one) | no method has a `fieldId` | `new PrimitiveNode("Id", PhysicalType.Int64, FieldRepetitionType.Required, fieldId: 7)`; `GroupNode` has the same parameter |
+| A list in a **legacy layout** (Hive and older Spark write a LIST group that holds a repeated primitive named `array`, or a repeated group of the fields of the element) | `List` writes the standard layout of three levels, with `list` and `element` | `new GroupNode("Tags", FieldRepetitionType.Optional, [new PrimitiveNode("array", PhysicalType.ByteArray, FieldRepetitionType.Repeated, LogicalType.String)], LogicalType.List)` |
+| A list or a map whose **repeated group has another name** (`bag`, `map`, `array`) or whose element, key or value has another name | the names are the conventional ones | `NestedSchema.List("Tags", FieldRepetitionType.Optional, element, repeatedName: "bag")` and `NestedSchema.Map(..., repeatedName: ...)`; name the element as you like |
+| A column **stored another way than the builder picks** (a decimal in a fixed length of 5 bytes as Impala writes it, or in a BYTE_ARRAY) | `Decimal` picks the smallest of INT32, INT64 and a fixed length | `.Column("Price", PhysicalType.FixedLenByteArray, LogicalType.Decimal(scale: 2, precision: 10), typeLength: 5)`: `Column` takes any physical type and annotation |
+
+```csharp
+var schema = new ParquetSchemaBuilder()
+    .Int64("Id")
+    .Add(new PrimitiveNode("Ids", PhysicalType.Int32, FieldRepetitionType.Repeated, fieldId: 7))
+    .Add(NestedSchema.List("Tags", FieldRepetitionType.Optional,
+        new PrimitiveNode("item", PhysicalType.ByteArray, FieldRepetitionType.Optional, LogicalType.String), repeatedName: "bag"))
+    .Column("Price", PhysicalType.FixedLenByteArray, LogicalType.Decimal(scale: 2, precision: 10), typeLength: 5)
+    .Build();
+```
+
+A node belongs to one schema, so a builder that was given nodes by hand builds one schema: use another builder for another schema. ParquetNeo reads all of these
+layouts (`NestedSchema.GetListLayout` tells them apart, see `ListStyle`), and the low-level writer writes any schema, with the definition and repetition levels of its columns.
 
 ## Reading
 
