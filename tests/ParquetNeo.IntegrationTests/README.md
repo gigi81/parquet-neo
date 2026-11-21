@@ -1,4 +1,4 @@
-# Integration tests against pyarrow and DuckDB
+# Integration tests: pyarrow, DuckDB, and object storage servers
 
 ParquetNeo reads and writes files that other implementations read and write. These tests check that with **pyarrow**, the Python bindings of
 Apache Arrow's C++ Parquet implementation, which is the reference most tools agree with, and with **DuckDB**, a second implementation with its own
@@ -35,6 +35,38 @@ dotnet test --project tests/ParquetNeo.IntegrationTests -c Release
 
 `PARQUETNEO_PYTHON` names the interpreter (default `python3`, or `python` on Windows). pyarrow is pinned in `python/requirements.txt`, so that a
 release of pyarrow does not make a push fail; raise it on purpose.
+
+## Object storage servers
+
+`Storage/StorageServerTests.cs` runs `S3ParquetStorage` and `AzureBlobParquetStorage` against **real servers**: an S3 server (SeaweedFS and moto in the
+workflow) and **Azurite**, the emulator of Azure Blob Storage. The unit tests of the storages use fakes of the SDKs, which only imitate how a server answers;
+these check what a fake cannot: how a server answers a request for a range (the first byte, the last, past the end), a listing that goes over more than one page
+(1 150 objects against the 1 000 of S3), a tag of version that no longer matches (the object changed while it was read), an object that is not there, a cancelled
+request; and that a Parquet file, and a dataset of files, are read through the storage and read little of it when a filter rules out row groups and files.
+Every scenario runs against both backends (`s3` and `azure`).
+
+The tests of a backend are skipped unless its server is set in the environment. `PARQUETNEO_EMULATOR_TESTS` (`s3`, `azure`, or both separated by a comma) says which
+ones **must** be there, and then a missing server is a failure: the workflow sets it.
+
+| Backend | Variables |
+|---|---|
+| `s3` | `PARQUETNEO_S3_ENDPOINT` (for example `http://127.0.0.1:9000`), `PARQUETNEO_S3_ACCESS_KEY` and `PARQUETNEO_S3_SECRET_KEY` (default `minioadmin`; the servers above take any) |
+| `azure` | `PARQUETNEO_AZURE_CONNECTION_STRING` (`UseDevelopmentStorage=true` for Azurite on its default ports) |
+
+With Docker:
+
+```bash
+docker run -d -p 9000:8333 chrislusf/seaweedfs:latest      # or: docker run -d -p 9000:5000 motoserver/moto:5.2.5
+docker run -d -p 10000:10000 mcr.microsoft.com/azure-storage/azurite azurite-blob --blobHost 0.0.0.0 --skipApiVersionCheck
+export PARQUETNEO_EMULATOR_TESTS=s3,azure PARQUETNEO_S3_ENDPOINT=http://127.0.0.1:9000 PARQUETNEO_AZURE_CONNECTION_STRING=UseDevelopmentStorage=true
+dotnet test --project tests/ParquetNeo.IntegrationTests -c Release
+```
+
+Without Docker, `npm install --global azurite` and `pip install "moto[server]"` give the same servers (`azurite-blob --skipApiVersionCheck`, `moto_server -p 9000`).
+Every run makes a bucket and a container of its own (`parquetneo-` and a random name) and leaves them: the servers are meant to be thrown away.
+`--skipApiVersionCheck` is needed because the version of the API that the SDK asks for can be newer than the one the emulator knows.
+
+The workflow has a job for each server; the S3 servers run as service containers of their jobs (Azurite is started by its job, since it needs a command-line option). They also run on a pull request that changes the storages or these tests (the Python job does not).
 
 ## Against the latest pyarrow
 
