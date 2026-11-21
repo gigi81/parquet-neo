@@ -5,9 +5,9 @@ name: Integration tests
 # See tests/ParquetNeo.IntegrationTests.
 
 on:
-  # FOR NOW the tests run on every push, to any branch, while they are being written.
-  # BEFORE MERGING, run them only on main: replace the line below with `branches: [main]`.
+  # Only on main (and by hand, from the Actions tab, for any branch): the suite needs Python and pyarrow, and is not part of the checks of a pull request.
   push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
