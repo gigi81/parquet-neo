@@ -18,10 +18,13 @@ public sealed class BrotliCodec : ICodec
         _quality = quality;
     }
 
+    /// <summary>The codec this class implements: <see cref="CompressionCodec.Brotli"/>.</summary>
     public CompressionCodec Id => CompressionCodec.Brotli;
 
+    /// <inheritdoc />
     public int GetMaxCompressedLength(int uncompressedLength) => BrotliEncoder.GetMaxCompressedLength(uncompressedLength);
 
+    /// <inheritdoc />
     public int Compress(ReadOnlySpan<byte> source, Span<byte> destination)
     {
         if (!BrotliEncoder.TryCompress(source, destination, out int written, _quality, DefaultWindowBits))
@@ -32,6 +35,7 @@ public sealed class BrotliCodec : ICodec
         return written;
     }
 
+    /// <inheritdoc />
     public void Decompress(ReadOnlySpan<byte> source, Span<byte> destination)
     {
         if (source.IsEmpty && destination.IsEmpty)

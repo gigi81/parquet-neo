@@ -17,10 +17,13 @@ public sealed class Lz4RawCodec : ICodec
         _level = level;
     }
 
+    /// <summary>The codec this class implements: <see cref="CompressionCodec.Lz4Raw"/>.</summary>
     public CompressionCodec Id => CompressionCodec.Lz4Raw;
 
+    /// <inheritdoc />
     public int GetMaxCompressedLength(int uncompressedLength) => LZ4Codec.MaximumOutputSize(uncompressedLength);
 
+    /// <inheritdoc />
     public int Compress(ReadOnlySpan<byte> source, Span<byte> destination)
     {
         if (source.IsEmpty)
@@ -39,6 +42,7 @@ public sealed class Lz4RawCodec : ICodec
         return written;
     }
 
+    /// <inheritdoc />
     public void Decompress(ReadOnlySpan<byte> source, Span<byte> destination)
     {
         if (destination.IsEmpty)
@@ -61,8 +65,10 @@ public sealed class Lz4RawCodec : ICodec
     }
 }
 
+/// <summary>Registers the LZ4_RAW codec of <c>ParquetNeo.Compression.Lz4</c> with a <see cref="CodecRegistry"/>.</summary>
 public static class Lz4RawCodecRegistryExtensions
 {
+    /// <summary>Adds the LZ4_RAW codec, compressing at the level given, to the registry, and returns the registry.</summary>
     public static CodecRegistry AddLz4Raw(this CodecRegistry registry, LZ4Level level = LZ4Level.L00_FAST) =>
         registry.Register(new Lz4RawCodec(level));
 }

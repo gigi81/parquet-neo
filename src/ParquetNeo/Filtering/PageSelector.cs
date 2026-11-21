@@ -16,6 +16,11 @@ internal static class PageSelector
     /// The runs of rows that may match, or null when that is all of them or the page index says nothing of the columns of the filter.
     /// </summary>
     /// <param name="pagesOf">The page index of a column of the row group, by its position in the schema; null when it has none.</param>
+    /// <param name="filter">The filter; a page or row group it rules out is not read.</param>
+    /// <param name="schema">The schema of the file.</param>
+    /// <param name="columnOrders">How the values of each column are ordered, as the file says; null when it does not.</param>
+    /// <param name="rowGroup">The metadata of the row group.</param>
+    /// <param name="bloomFilters">Reads the bloom filter of a column chunk; null when the file has none.</param>
     public static List<RowRange>? Select(
         ParquetFilter filter,
         ParquetSchema schema,

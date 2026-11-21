@@ -2,23 +2,31 @@ using ParquetNeo.Thrift;
 
 namespace ParquetNeo.Metadata.Headers;
 
+/// <summary>The header of a data page of version 2 (thrift <c>DataPageHeaderV2</c>).</summary>
 public sealed class DataPageV2Header : IThriftStruct<DataPageV2Header>
 {
+    /// <summary>The number of values in the page, nulls included.</summary>
     public int NumValues { get; set; }
 
+    /// <summary>The number of null values in the page.</summary>
     public int NumNulls { get; set; }
 
+    /// <summary>The number of rows in the page; a page of version 2 always starts at a row.</summary>
     public int NumRows { get; set; }
 
+    /// <summary>The encoding of the values.</summary>
     public ParquetEncoding Encoding { get; set; }
 
+    /// <summary>The size of the definition levels in bytes.</summary>
     public int DefinitionLevelsByteLength { get; set; }
 
+    /// <summary>The size of the repetition levels in bytes.</summary>
     public int RepetitionLevelsByteLength { get; set; }
 
     /// <summary>Whether the values section is compressed (levels never are). Defaults to true when absent.</summary>
     public bool IsCompressed { get; set; } = true;
 
+    /// <summary>The statistics of the values of the page; null when the writer did not write them.</summary>
     public Statistics? Statistics { get; set; }
 
     static DataPageV2Header IThriftStruct<DataPageV2Header>.Read(ref ThriftCompactReader reader)

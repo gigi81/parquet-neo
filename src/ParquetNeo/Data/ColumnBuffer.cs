@@ -25,6 +25,9 @@ internal sealed class ColumnBuffer<TValue> : IColumnBuffer
     private int _entries;
 
     /// <param name="optional">Whether the column can hold nulls.</param>
+    /// <param name="ordinal">The position of the column among the columns of the row.</param>
+    /// <param name="name">The name of the column.</param>
+    /// <param name="type">The type of the values of the column.</param>
     public ColumnBuffer(int ordinal, string name, ColumnType<TValue> type, bool optional)
     {
         _ordinal = ordinal;

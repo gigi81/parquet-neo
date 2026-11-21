@@ -8,16 +8,27 @@ namespace ParquetNeo.Metadata;
 /// </summary>
 public sealed record LogicalType
 {
+    /// <summary>A UTF-8 string.</summary>
     public static readonly LogicalType String = new(LogicalTypeKind.String);
+    /// <summary>A map.</summary>
     public static readonly LogicalType Map = new(LogicalTypeKind.Map);
+    /// <summary>A list.</summary>
     public static readonly LogicalType List = new(LogicalTypeKind.List);
+    /// <summary>An enumeration, as UTF-8 text.</summary>
     public static readonly LogicalType Enum = new(LogicalTypeKind.Enum);
+    /// <summary>A date.</summary>
     public static readonly LogicalType Date = new(LogicalTypeKind.Date);
+    /// <summary>A column that only has nulls.</summary>
     public static readonly LogicalType Null = new(LogicalTypeKind.Null);
+    /// <summary>A JSON document, as UTF-8 text.</summary>
     public static readonly LogicalType Json = new(LogicalTypeKind.Json);
+    /// <summary>A BSON document.</summary>
     public static readonly LogicalType Bson = new(LogicalTypeKind.Bson);
+    /// <summary>A UUID, in 16 bytes.</summary>
     public static readonly LogicalType Uuid = new(LogicalTypeKind.Uuid);
+    /// <summary>A half precision floating point number.</summary>
     public static readonly LogicalType Float16 = new(LogicalTypeKind.Float16);
+    /// <summary>A union member this library does not know.</summary>
     public static readonly LogicalType Unrecognized = new(LogicalTypeKind.Unrecognized);
 
     private LogicalType(LogicalTypeKind kind)
@@ -25,6 +36,7 @@ public sealed record LogicalType
         Kind = kind;
     }
 
+    /// <summary>Which logical type this is.</summary>
     public LogicalTypeKind Kind { get; private init; }
 
     /// <summary>Decimal scale (<see cref="LogicalTypeKind.Decimal"/>).</summary>
@@ -42,17 +54,22 @@ public sealed record LogicalType
     /// <summary>Integer width in bits: 8, 16, 32 or 64 (<see cref="LogicalTypeKind.Integer"/>).</summary>
     public int BitWidth { get; private init; }
 
+    /// <summary>Whether the integer is signed (<see cref="LogicalTypeKind.Integer"/>).</summary>
     public bool IsSigned { get; private init; }
 
+    /// <summary>A decimal with the scale and precision given.</summary>
     public static LogicalType Decimal(int scale, int precision) =>
         new(LogicalTypeKind.Decimal) { Scale = scale, Precision = precision };
 
+    /// <summary>A time of day with the unit given, in UTC or not.</summary>
     public static LogicalType Time(bool isAdjustedToUtc, TimeUnit unit) =>
         new(LogicalTypeKind.Time) { IsAdjustedToUtc = isAdjustedToUtc, Unit = unit };
 
+    /// <summary>A moment with the unit given, in UTC or not.</summary>
     public static LogicalType Timestamp(bool isAdjustedToUtc, TimeUnit unit) =>
         new(LogicalTypeKind.Timestamp) { IsAdjustedToUtc = isAdjustedToUtc, Unit = unit };
 
+    /// <summary>An integer of the width in bits given (8, 16, 32 or 64), signed or not.</summary>
     public static LogicalType Integer(int bitWidth, bool isSigned) =>
         new(LogicalTypeKind.Integer) { BitWidth = bitWidth, IsSigned = isSigned };
 

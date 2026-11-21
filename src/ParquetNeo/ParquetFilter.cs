@@ -41,10 +41,13 @@ public abstract class ParquetFilter
     /// <exception cref="ArgumentException">There are no filters.</exception>
     public static ParquetFilter AnyOf(params ParquetFilter[] filters) => Combine(filters, isAnd: false);
 
+    /// <summary>A condition that holds when both filters do.</summary>
     public static ParquetFilter operator &(ParquetFilter left, ParquetFilter right) => left.And(right);
 
+    /// <summary>A condition that holds when either filter does.</summary>
     public static ParquetFilter operator |(ParquetFilter left, ParquetFilter right) => left.Or(right);
 
+    /// <summary>A condition that holds when the filter does not.</summary>
     public static ParquetFilter operator !(ParquetFilter filter) => filter.Not();
 
     /// <summary>The columns the filter names, each as its path.</summary>

@@ -9,6 +9,8 @@ namespace ParquetNeo.Encodings;
 internal static class ByteStreamSplitEncoder
 {
     /// <param name="plain">The values back to back, <paramref name="valueWidth"/> bytes each.</param>
+    /// <param name="valueWidth">The width of a value in bytes.</param>
+    /// <param name="output">Where the encoded bytes are written.</param>
     public static void Encode(ReadOnlySpan<byte> plain, int valueWidth, IBufferWriter<byte> output)
     {
         int count = plain.Length / valueWidth;

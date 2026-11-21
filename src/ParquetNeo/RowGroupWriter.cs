@@ -187,6 +187,7 @@ public sealed class RowGroupWriter : IDisposable, IAsyncDisposable
     /// </summary>
     /// <param name="write">Writes the values of the column. It must not keep the <see cref="ColumnWriter"/> after it returns. It runs on the calling thread.</param>
     /// <exception cref="InvalidOperationException">All columns have been written, the group is closed, or the column has another row count than the ones before.</exception>
+    /// <param name="cancellationToken">A token that cancels the operation.</param>
     public async ValueTask WriteColumnAsync(Action<ColumnWriter> write, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(write);

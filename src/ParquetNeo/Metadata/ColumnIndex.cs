@@ -12,8 +12,10 @@ public sealed class ColumnIndex : IThriftStruct<ColumnIndex>
     /// <summary>Whether a page holds only nulls, in which case its bounds are empty.</summary>
     public List<bool> NullPages { get; set; } = new();
 
+    /// <summary>The smallest value of each page, encoded as the statistics of the column are; empty for a page of only nulls.</summary>
     public List<byte[]> MinValues { get; set; } = new();
 
+    /// <summary>The largest value of each page, encoded as the statistics of the column are; empty for a page of only nulls.</summary>
     public List<byte[]> MaxValues { get; set; } = new();
 
     /// <summary>The order of the bounds as the writer states it: 0 unordered, 1 ascending, 2 descending. Readers here do not use it.</summary>
@@ -22,8 +24,10 @@ public sealed class ColumnIndex : IThriftStruct<ColumnIndex>
     /// <summary>How many values of each page are null; absent when the writer did not say.</summary>
     public List<long>? NullCounts { get; set; }
 
+    /// <summary>Parses the Thrift-encoded column index.</summary>
     public static ColumnIndex Deserialize(ReadOnlySpan<byte> data) => ThriftStruct.Deserialize<ColumnIndex>(data, out _);
 
+    /// <summary>Writes the column index in the Thrift compact protocol.</summary>
     public void Serialize(IBufferWriter<byte> output) => ThriftStruct.Serialize(this, output);
 
     static ColumnIndex IThriftStruct<ColumnIndex>.Read(ref ThriftCompactReader reader)

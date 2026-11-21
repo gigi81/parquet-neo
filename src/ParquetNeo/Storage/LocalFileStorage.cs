@@ -6,12 +6,14 @@ public sealed class LocalFileStorage(string root) : IParquetStorage
 {
     private readonly string _root = Path.GetFullPath(root);
 
+    /// <inheritdoc />
     public IAsyncEnumerable<StorageObject> ListAsync(string prefix, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(prefix);
         return Objects(prefix).ToAsyncEnumerable();
     }
 
+    /// <inheritdoc />
     public ValueTask<Stream> OpenReadAsync(string key, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(key);

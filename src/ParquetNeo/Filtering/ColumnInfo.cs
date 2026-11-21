@@ -9,6 +9,7 @@ namespace ParquetNeo.Filtering;
 /// <param name="Statistics">What the writer recorded for the column chunk, or null when nothing usable.</param>
 /// <param name="NumValues">The number of values, nulls included, in the column chunk.</param>
 /// <param name="BloomFilterSource">Reads the bloom filter of the column chunk, or null when filters are not to be used.</param>
+/// <param name="Column">The column.</param>
 internal sealed record ColumnInfo(PrimitiveNode Column, ValueDomain? Domain, ColumnStatistics? Statistics, long NumValues, Func<BloomFilter?>? BloomFilterSource = null)
 {
     private BloomFilter? _bloomFilter;

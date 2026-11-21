@@ -52,6 +52,7 @@ public sealed class ParquetSchema
         _columns = columns.ToArray();
     }
 
+    /// <summary>The root of the schema, the group of the top level fields.</summary>
     public GroupNode Root { get; }
 
     /// <summary>The leaf columns, in depth-first order.</summary>

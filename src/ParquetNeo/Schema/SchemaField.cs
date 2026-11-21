@@ -100,6 +100,7 @@ public sealed class SchemaField
     /// <param name="unit">The resolution.</param>
     /// <param name="utc">Whether the time is in UTC, as opposed to a reading of the clock on the wall.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="unit"/> is not a unit.</exception>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
     public static SchemaField Time(TimeUnit unit = TimeUnit.Micros, bool utc = false, bool optional = false)
     {
         RequireUnit(unit);
@@ -110,6 +111,7 @@ public sealed class SchemaField
     /// <param name="unit">The resolution.</param>
     /// <param name="utc">Whether the moment is in UTC, as opposed to a reading of the clock on the wall.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="unit"/> is not a unit.</exception>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
     public static SchemaField Timestamp(TimeUnit unit = TimeUnit.Micros, bool utc = true, bool optional = false)
     {
         RequireUnit(unit);
@@ -123,6 +125,7 @@ public sealed class SchemaField
     /// <param name="precision">From 1 to 38.</param>
     /// <param name="scale">From 0 to the precision.</param>
     /// <exception cref="ArgumentOutOfRangeException">The precision or the scale is out of its range.</exception>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
     public static SchemaField Decimal(int precision, int scale = 0, bool optional = false)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(precision, 1);
@@ -154,12 +157,14 @@ public sealed class SchemaField
     /// <param name="logicalType">The annotation, or null for none.</param>
     /// <param name="typeLength">The length of the values of a FIXED_LEN_BYTE_ARRAY.</param>
     /// <exception cref="ArgumentException">At <see cref="ParquetSchemaBuilder.Build"/>: the annotation or the length does not suit the type.</exception>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
     public static SchemaField Column(PhysicalType type, LogicalType? logicalType = null, bool optional = false, int? typeLength = null) =>
         new(optional, (name, repetition) => new PrimitiveNode(name, type, repetition, logicalType, typeLength));
 
     /// <summary>A group of fields, written as the nested columns of a struct or an object.</summary>
     /// <param name="fields">Adds the fields of the struct to the builder it is given.</param>
     /// <exception cref="ArgumentNullException"><paramref name="fields"/> is null.</exception>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
     public static SchemaField Struct(Action<ParquetSchemaBuilder> fields, bool optional = false)
     {
         ArgumentNullException.ThrowIfNull(fields);
@@ -171,6 +176,7 @@ public sealed class SchemaField
     /// <summary>A list of <paramref name="element"/>, in the standard layout (a LIST group of a repeated group of the element).</summary>
     /// <param name="element">What the list holds. Make it optional for a list that can hold nulls.</param>
     /// <exception cref="ArgumentNullException"><paramref name="element"/> is null.</exception>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
     public static SchemaField List(SchemaField element, bool optional = false)
     {
         ArgumentNullException.ThrowIfNull(element);
@@ -182,6 +188,7 @@ public sealed class SchemaField
     /// <param name="value">What the values are; make it optional for values that can be null.</param>
     /// <exception cref="ArgumentNullException">The key or the value is null.</exception>
     /// <exception cref="ArgumentException">The key is optional.</exception>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
     public static SchemaField Map(SchemaField key, SchemaField value, bool optional = false)
     {
         ArgumentNullException.ThrowIfNull(key);

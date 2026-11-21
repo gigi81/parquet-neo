@@ -2,12 +2,16 @@ using ParquetNeo.Thrift;
 
 namespace ParquetNeo.Metadata.Headers;
 
+/// <summary>The header of a dictionary page (thrift <c>DictionaryPageHeader</c>).</summary>
 public sealed class DictionaryPageHeader : IThriftStruct<DictionaryPageHeader>
 {
+    /// <summary>The number of values in the dictionary.</summary>
     public int NumValues { get; set; }
 
+    /// <summary>The encoding of the values of the dictionary.</summary>
     public ParquetEncoding Encoding { get; set; }
 
+    /// <summary>Whether the values of the dictionary are sorted; null when the writer did not say.</summary>
     public bool? IsSorted { get; set; }
 
     static DictionaryPageHeader IThriftStruct<DictionaryPageHeader>.Read(ref ThriftCompactReader reader)

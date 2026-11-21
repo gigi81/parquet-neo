@@ -21,11 +21,13 @@ public sealed class GzipCodec : ICodec
 
     private readonly CompressionLevel _level;
 
+    /// <summary>Makes a Gzip codec that compresses at the level given.</summary>
     public GzipCodec(CompressionLevel level = CompressionLevel.Optimal)
     {
         _level = level;
     }
 
+    /// <summary>The codec this class implements: <see cref="CompressionCodec.Gzip"/>.</summary>
     public CompressionCodec Id => CompressionCodec.Gzip;
 
     /// <summary>
@@ -40,6 +42,7 @@ public sealed class GzipCodec : ICodec
         return bound > int.MaxValue ? throw new ArgumentOutOfRangeException(nameof(uncompressedLength)) : (int)bound;
     }
 
+    /// <inheritdoc />
     public int Compress(ReadOnlySpan<byte> source, Span<byte> destination)
     {
         int bound = GetMaxCompressedLength(source.Length);
@@ -84,6 +87,7 @@ public sealed class GzipCodec : ICodec
         }
     }
 
+    /// <inheritdoc />
     public void Decompress(ReadOnlySpan<byte> source, Span<byte> destination)
     {
         if (source.IsEmpty)

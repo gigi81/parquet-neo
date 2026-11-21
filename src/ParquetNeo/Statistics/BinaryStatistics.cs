@@ -28,6 +28,7 @@ internal sealed class BinaryStatistics : StatisticsCollector
 
     /// <param name="utf8">Whether the values are text, so that shortening must not split a character.</param>
     /// <param name="truncateLength">The longest minimum or maximum to keep; only applies to unsigned byte-wise order.</param>
+    /// <param name="order">How the byte arrays are compared: as unsigned bytes or as signed bytes.</param>
     public BinaryStatistics(BinaryOrder order, bool utf8, int truncateLength)
     {
         _order = order;

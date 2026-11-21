@@ -110,6 +110,9 @@ public sealed partial class ColumnWriter
 
     /// <param name="sink">Where the pages go.</param>
     /// <param name="buffers">The scratch buffers of the writer; one set can only be used by one column writer at a time.</param>
+    /// <param name="column">The column that is written.</param>
+    /// <param name="codec">The codec that compresses the pages.</param>
+    /// <param name="options">The options of the writer: sizes, encodings, statistics.</param>
     internal ColumnWriter(IColumnSink sink, WriterBuffers buffers, PrimitiveNode column, ICodec codec, ParquetWriterOptions options)
     {
         _sink = sink;
@@ -166,15 +169,19 @@ public sealed partial class ColumnWriter
     public void WriteBatch(ReadOnlySpan<int> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default) =>
         WriteFixedWidth<int, Int32Encoder>(PhysicalType.Int32, values, definitionLevels, repetitionLevels, sizeof(int));
 
+    /// <summary>Writes values of the type; see the class remarks for the levels.</summary>
     public void WriteBatch(ReadOnlySpan<long> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default) =>
         WriteFixedWidth<long, Int64Encoder>(PhysicalType.Int64, values, definitionLevels, repetitionLevels, sizeof(long));
 
+    /// <summary>Writes values of the type; see the class remarks for the levels.</summary>
     public void WriteBatch(ReadOnlySpan<float> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default) =>
         WriteFixedWidth<float, SingleEncoder>(PhysicalType.Float, values, definitionLevels, repetitionLevels, sizeof(float));
 
+    /// <summary>Writes values of the type; see the class remarks for the levels.</summary>
     public void WriteBatch(ReadOnlySpan<double> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default) =>
         WriteFixedWidth<double, DoubleEncoder>(PhysicalType.Double, values, definitionLevels, repetitionLevels, sizeof(double));
 
+    /// <summary>Writes values of the type; see the class remarks for the levels.</summary>
     public void WriteBatch(ReadOnlySpan<bool> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default)
     {
         int entries = PrepareBatch(PhysicalType.Boolean, values.Length, definitionLevels, repetitionLevels);
@@ -203,24 +210,28 @@ public sealed partial class ColumnWriter
         WriteBatch(values, definition, repetition);
     }
 
+    /// <summary>Writes values of the type, with the levels worked out from the structure (validity and offsets) of the column.</summary>
     public void WriteBatch(ReadOnlySpan<long> values, ColumnStructure structure)
     {
         var (definition, repetition) = LevelsOf(structure);
         WriteBatch(values, definition, repetition);
     }
 
+    /// <summary>Writes values of the type, with the levels worked out from the structure (validity and offsets) of the column.</summary>
     public void WriteBatch(ReadOnlySpan<float> values, ColumnStructure structure)
     {
         var (definition, repetition) = LevelsOf(structure);
         WriteBatch(values, definition, repetition);
     }
 
+    /// <summary>Writes values of the type, with the levels worked out from the structure (validity and offsets) of the column.</summary>
     public void WriteBatch(ReadOnlySpan<double> values, ColumnStructure structure)
     {
         var (definition, repetition) = LevelsOf(structure);
         WriteBatch(values, definition, repetition);
     }
 
+    /// <summary>Writes values of the type, with the levels worked out from the structure (validity and offsets) of the column.</summary>
     public void WriteBatch(ReadOnlySpan<bool> values, ColumnStructure structure)
     {
         var (definition, repetition) = LevelsOf(structure);
@@ -254,6 +265,7 @@ public sealed partial class ColumnWriter
         }
     }
 
+    /// <summary>Writes BYTE_ARRAY values, with the levels worked out from the structure of the column.</summary>
     public void WriteByteArrays(ReadOnlySpan<ReadOnlyMemory<byte>> values, ColumnStructure structure)
     {
         var (definition, repetition) = LevelsOf(structure);
@@ -267,6 +279,7 @@ public sealed partial class ColumnWriter
     public void WriteStrings(ReadOnlySpan<string> values, ReadOnlySpan<int> definitionLevels = default, ReadOnlySpan<int> repetitionLevels = default) =>
         ColumnTypeRegistry.Get<string>().Write(this, values, definitionLevels, repetitionLevels);
 
+    /// <summary>Writes BYTE_ARRAY values from strings, with the levels worked out from the structure of the column.</summary>
     public void WriteStrings(ReadOnlySpan<string> values, ColumnStructure structure)
     {
         var (definition, repetition) = LevelsOf(structure);
@@ -360,6 +373,7 @@ public sealed partial class ColumnWriter
         }
     }
 
+    /// <summary>Writes FIXED_LEN_BYTE_ARRAY values, which are all the bytes one after the other, with the levels worked out from the structure of the column.</summary>
     public void WriteFixedLengthByteArrays(ReadOnlySpan<byte> values, ColumnStructure structure)
     {
         var (definition, repetition) = LevelsOf(structure);
@@ -768,6 +782,7 @@ public sealed partial class ColumnWriter
     /// Whether the chunk ends the batch. Then it is not known whether the record continues in the next batch, so in a
     /// repeated column anything that would close the page waits until the next batch shows where the record ends.
     /// </param>
+    /// <param name="levelCount">The number of level entries of the page.</param>
     private void CompleteChunk(int levelCount, bool atBatchEnd)
     {
         _pageLevelCount += levelCount;

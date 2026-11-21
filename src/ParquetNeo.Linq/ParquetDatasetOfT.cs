@@ -26,14 +26,18 @@ public sealed class ParquetDataset<T> : IOrderedQueryable<T>, IDatasetRoot
     /// </summary>
     public ReadStatistics ReadStatistics => Source.Statistics;
 
+    /// <inheritdoc />
     public Type ElementType => typeof(T);
 
+    /// <inheritdoc />
     public Expression Expression { get; }
 
+    /// <inheritdoc />
     public IQueryProvider Provider { get; }
 
     internal DatasetSource Source { get; }
 
+    /// <inheritdoc />
     public IEnumerator<T> GetEnumerator() => Provider.Execute<IEnumerable<T>>(Expression).GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

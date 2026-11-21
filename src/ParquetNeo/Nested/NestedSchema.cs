@@ -15,6 +15,10 @@ public static class NestedSchema
     /// </summary>
     /// <param name="element">By convention named <c>element</c>.</param>
     /// <exception cref="ArgumentException"><paramref name="repetition"/> is repeated, or <paramref name="element"/> is repeated (use a list of lists).</exception>
+    /// <param name="name">The name of the list.</param>
+    /// <param name="repetition">Whether the group is required, optional (the whole value can be null) or repeated.</param>
+    /// <param name="repeatedName">The name of the repeated group inside the group; <c>list</c> or <c>key_value</c> by convention.</param>
+    /// <param name="fieldId">The identifier of the field, or null for none.</param>
     public static GroupNode List(string name, FieldRepetitionType repetition, SchemaNode element, string repeatedName = "list", int? fieldId = null)
     {
         ArgumentNullException.ThrowIfNull(element);
@@ -30,6 +34,10 @@ public static class NestedSchema
     /// <param name="key">Required; by convention named <c>key</c>.</param>
     /// <param name="value">Required or optional; by convention named <c>value</c>.</param>
     /// <exception cref="ArgumentException">The key is not required, or the map or the value is repeated.</exception>
+    /// <param name="name">The name of the map.</param>
+    /// <param name="repetition">Whether the group is required, optional (the whole value can be null) or repeated.</param>
+    /// <param name="repeatedName">The name of the repeated group inside the group; <c>list</c> or <c>key_value</c> by convention.</param>
+    /// <param name="fieldId">The identifier of the field, or null for none.</param>
     public static GroupNode Map(string name, FieldRepetitionType repetition, SchemaNode key, SchemaNode value, string repeatedName = "key_value", int? fieldId = null)
     {
         ArgumentNullException.ThrowIfNull(key);

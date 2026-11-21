@@ -22,6 +22,7 @@ public abstract class RangeReadStream : Stream
 
     /// <param name="length">The size of the object.</param>
     /// <exception cref="ArgumentOutOfRangeException">The length is negative, or the options are not a block of at least a byte and a block kept.</exception>
+    /// <param name="options">How the object is read in blocks, and what is recorded about it; the defaults when null.</param>
     protected RangeReadStream(long length, RangeReadStreamOptions? options = null)
     {
         options ??= new RangeReadStreamOptions();
@@ -39,14 +40,19 @@ public abstract class RangeReadStream : Stream
     /// <summary>Where the requests made to the storage are counted, when something is counting them (a <see cref="MeteredStorage"/>).</summary>
     internal ReadStatistics? Statistics { get; set; }
 
+    /// <inheritdoc />
     public override bool CanRead => true;
 
+    /// <inheritdoc />
     public override bool CanSeek => true;
 
+    /// <inheritdoc />
     public override bool CanWrite => false;
 
+    /// <inheritdoc />
     public override long Length { get; }
 
+    /// <inheritdoc />
     public override long Position
     {
         get => _position;
@@ -67,8 +73,10 @@ public abstract class RangeReadStream : Stream
     /// </summary>
     protected abstract ValueTask<int> ReadRangeAsync(long offset, Memory<byte> destination, CancellationToken cancellationToken);
 
+    /// <inheritdoc />
     public override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
 
+    /// <inheritdoc />
     public override int Read(Span<byte> buffer)
     {
         // The asynchronous read needs memory that can be held across an await; the bytes are copied from it.
@@ -85,9 +93,11 @@ public abstract class RangeReadStream : Stream
         }
     }
 
+    /// <inheritdoc />
     public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
         ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
 
+    /// <inheritdoc />
     public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
         if (buffer.IsEmpty || _position >= Length)
@@ -112,6 +122,7 @@ public abstract class RangeReadStream : Stream
         return read;
     }
 
+    /// <inheritdoc />
     public override long Seek(long offset, SeekOrigin origin)
     {
         long target = origin switch
@@ -130,12 +141,15 @@ public abstract class RangeReadStream : Stream
         return target;
     }
 
+    /// <inheritdoc />
     public override void Flush()
     {
     }
 
+    /// <inheritdoc />
     public override void SetLength(long value) => throw new NotSupportedException("The stream is read only.");
 
+    /// <inheritdoc />
     public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException("The stream is read only.");
 
     /// <summary>A read inside the last bytes of the object: from the tail, which the first such read takes from the storage in one request.</summary>

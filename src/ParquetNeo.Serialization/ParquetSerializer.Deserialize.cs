@@ -9,6 +9,7 @@ public static partial class ParquetSerializer
     /// <param name="source">A readable, seekable stream holding the whole file. It is not closed.</param>
     /// <exception cref="SchemaMismatchException">The file does not have a column for a property that cannot be null, or has it as a type the property cannot hold.</exception>
     /// <exception cref="ParquetException">The file is malformed.</exception>
+    /// <param name="options">How the file is read; the defaults when null.</param>
     public static List<TRow> Deserialize<TRow>(Stream source, ParquetDeserializerOptions? options = null)
     {
         RequireReadable(source);
@@ -31,6 +32,7 @@ public static partial class ParquetSerializer
     /// first row is asked for. Columns of the file that the row type has no property for are never read.
     /// </remarks>
     /// <param name="source">A readable, seekable stream holding the whole file. It is not closed.</param>
+    /// <param name="options">How the file is read; the defaults when null.</param>
     public static IEnumerable<TRow> DeserializeAll<TRow>(Stream source, ParquetDeserializerOptions? options = null)
     {
         RequireReadable(source);
@@ -40,6 +42,8 @@ public static partial class ParquetSerializer
     /// <summary>Reads all the rows of a Parquet file, without blocking while the stream is read.</summary>
     /// <param name="source">A readable, seekable stream holding the whole file. It is not closed.</param>
     /// <exception cref="SchemaMismatchException">The file does not have a column for a property that cannot be null, or has it as a type the property cannot hold.</exception>
+    /// <param name="options">How the file is read; the defaults when null.</param>
+    /// <param name="cancellationToken">A token that cancels the operation.</param>
     public static async Task<List<TRow>> DeserializeAsync<TRow>(Stream source, ParquetDeserializerOptions? options = null, CancellationToken cancellationToken = default)
     {
         var rows = new List<TRow>();
@@ -56,6 +60,8 @@ public static partial class ParquetSerializer
     /// Only the bytes of the footer and of the columns the row type needs are read from the stream.
     /// </summary>
     /// <param name="source">A readable, seekable stream holding the whole file. It is not closed.</param>
+    /// <param name="options">How the file is read; the defaults when null.</param>
+    /// <param name="cancellationToken">A token that cancels the operation.</param>
     public static IAsyncEnumerable<TRow> DeserializeAllAsync<TRow>(Stream source, ParquetDeserializerOptions? options = null, CancellationToken cancellationToken = default)
     {
         RequireReadable(source);

@@ -4,6 +4,7 @@ namespace ParquetNeo.DataModel;
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
 public sealed class ParquetColumnAttribute : Attribute
 {
+    /// <summary>Keeps the name of the property, and sets only the order.</summary>
     public ParquetColumnAttribute()
     {
     }

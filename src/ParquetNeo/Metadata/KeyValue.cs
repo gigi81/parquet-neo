@@ -2,10 +2,13 @@ using ParquetNeo.Thrift;
 
 namespace ParquetNeo.Metadata;
 
+/// <summary>A free key and value pair of the metadata of a file or a column chunk (thrift <c>KeyValue</c>).</summary>
 public sealed class KeyValue : IThriftStruct<KeyValue>
 {
+    /// <summary>The key.</summary>
     public string Key { get; set; } = string.Empty;
 
+    /// <summary>The value; null when there is none.</summary>
     public string? Value { get; set; }
 
     static KeyValue IThriftStruct<KeyValue>.Read(ref ThriftCompactReader reader)

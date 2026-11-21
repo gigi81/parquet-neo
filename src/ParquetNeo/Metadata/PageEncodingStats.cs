@@ -5,10 +5,13 @@ namespace ParquetNeo.Metadata;
 /// <summary>How many pages of a type used an encoding (thrift <c>PageEncodingStats</c>).</summary>
 public sealed class PageEncodingStats : IThriftStruct<PageEncodingStats>
 {
+    /// <summary>The kind of the pages that are counted.</summary>
     public PageType PageType { get; set; }
 
+    /// <summary>The encoding of the pages that are counted.</summary>
     public ParquetEncoding Encoding { get; set; }
 
+    /// <summary>The number of pages.</summary>
     public int Count { get; set; }
 
     static PageEncodingStats IThriftStruct<PageEncodingStats>.Read(ref ThriftCompactReader reader)
