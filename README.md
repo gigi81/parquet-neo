@@ -236,7 +236,7 @@ while (reader.Read())
 | `tests/ParquetNeo.IntegrationTests` | ParquetNeo against pyarrow: files written by each are read by the other (off unless `PARQUETNEO_PYTHON_TESTS=1`; its own workflow) |
 | `tests/ParquetNeo.AotSmoke` | A program published with Native AOT in CI: it uses the serializer with a generated mapping |
 | `tests/ParquetNeo.Storage.S3.Tests`, `tests/ParquetNeo.Storage.AzureBlobs.Tests` | Unit tests of the storages against fakes of the AWS and Azure SDKs, and datasets and the serializer reading through them |
-| `tests/ParquetNeo.Storage.EmulatorTests` | The same storages against real servers: MinIO and moto for S3, Azurite for Azure (skipped unless a server is set; its own workflow) |
+| `tests/ParquetNeo.Storage.EmulatorTests` | The same storages against real servers: SeaweedFS and moto for S3, Azurite for Azure (skipped unless a server is set; its own workflow) |
 | `tests/ParquetNeo.Extensions.DependencyInjection.Tests` | Unit tests of the registration of the metrics |
 | `tests/ParquetNeo.Enums.Tests`, `tests/ParquetNeo.Generator.Tests`, `tests/ParquetNeo.Compression.*.Tests` | Each project has a test project of its own; the add-on codec projects run the shared codec checks of `tests/ParquetNeo.Tests.Common` |
 | `benchmarks/ParquetNeo.Benchmarks` | [BenchmarkDotNet](https://benchmarkdotnet.org/) benchmarks |

@@ -10,7 +10,7 @@ using ParquetNeo.Storage.S3;
 namespace ParquetNeo.Storage.EmulatorTests;
 
 /// <summary>
-/// An object storage the tests run against: a real server that speaks the protocol of S3 (MinIO, or any other) or of Azure Blob Storage (Azurite),
+/// An object storage the tests run against: a real server that speaks the protocol of S3 (SeaweedFS, moto, MinIO or any other) or of Azure Blob Storage (Azurite),
 /// told by environment variables. A backend that is not set is skipped, unless <c>PARQUETNEO_EMULATOR_TESTS</c> lists it (<c>s3</c>, <c>azure</c>, or both
 /// separated by commas), as the workflow does, and then a missing or unreachable one is a failure.
 /// </summary>

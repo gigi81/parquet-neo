@@ -1,6 +1,6 @@
 name: Storage emulators
 
-# The storages of S3 and of Azure Blob Storage against real servers: MinIO and moto (two servers that speak the protocol of S3) and Azurite (the emulator of
+# The storages of S3 and of Azure Blob Storage against real servers: SeaweedFS and moto (two servers that speak the protocol of S3) and Azurite (the emulator of
 # Azure Blob Storage). The unit tests of the storages use fakes of the SDKs, which only imitate how a server answers a request for a range, a listing in pages,
 # a tag of version (If-Match) or an object that is not there; these tests ask a server. See tests/ParquetNeo.Storage.EmulatorTests.
 
@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        server: [minio, moto]
+        server: [seaweedfs, moto]
     env:
       # The backends that must be there: with this a server that is missing or does not answer is a failure, not a skipped test.
       PARQUETNEO_EMULATOR_TESTS: s3
@@ -42,12 +42,11 @@ jobs:
           global-json-file: global.json # the SDK to build with: 11
           dotnet-version: 10.0.x # and the runtime of .NET 10, which the tests of the net10.0 build run on
 
-      - name: Start MinIO
-        if: matrix.server == 'minio'
+      # MinIO no longer publishes images, so the second implementation of S3 is SeaweedFS: it has no identities configured, so it accepts any key.
+      - name: Start SeaweedFS
+        if: matrix.server == 'seaweedfs'
         run: |
-          docker run -d --name minio -p 9000:9000 \
-            -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin \
-            docker.io/minio/minio:RELEASE.2025-04-22T22-12-26Z server /data
+          docker run -d --name seaweedfs -p 9000:8333 chrislusf/seaweedfs:latest server -s3 -dir=/data
 
       - uses: actions/setup-python@v6
         if: matrix.server == 'moto'
@@ -63,10 +62,10 @@ jobs:
       - name: Wait for the server
         run: |
           for attempt in $(seq 1 60); do
-            if curl -s -o /dev/null -m 2 http://127.0.0.1:9000/; then echo "the server answers"; exit 0; fi
+            if curl -s -o /dev/null -m 2 http://127.0.0.1:9000/; then echo "the server answers"; sleep 5; exit 0; fi
             sleep 1
           done
-          echo "the server did not answer"; docker logs minio 2>&1 | tail -20 || true; cat moto.log 2>/dev/null | tail -20 || true
+          echo "the server did not answer"; docker logs seaweedfs 2>&1 | tail -20 || true; cat moto.log 2>/dev/null | tail -20 || true
           exit 1
 
       - name: Build

@@ -5,7 +5,7 @@ using ParquetNeo.Storage;
 namespace ParquetNeo.Storage.EmulatorTests;
 
 /// <summary>
-/// The storages of S3 and of Azure Blob Storage against real servers (MinIO or another S3 server; Azurite): what the fakes of the unit tests only imitate, which is
+/// The storages of S3 and of Azure Blob Storage against real servers (SeaweedFS, moto or another S3 server; Azurite): what the fakes of the unit tests only imitate, which is
 /// how a server answers a request for a range, a listing in pages, a tag of version, an object that is not there.
 /// </summary>
 public class EmulatorTests
