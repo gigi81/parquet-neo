@@ -16,46 +16,46 @@ namespace ParquetNeo.Diagnostics;
 public sealed class ParquetNeoTracing : IDisposable
 {
     /// <summary>The name of the source, to subscribe to (<c>AddSource(ParquetNeoTracing.SourceName)</c> in OpenTelemetry).</summary>
-    public const string SourceName = "ParquetNeo";
+    public const string SourceName = TelemetryNames.Name;
 
     /// <summary>The name of the span of a request to a storage for a range of an object.</summary>
-    public const string StorageRequestSpan = "parquetneo.storage.request";
+    public const string StorageRequestSpan = TelemetryNames.Storage + ".request";
 
     /// <summary>The name of the span of the opening of an object of a storage for reading.</summary>
-    public const string StorageOpenSpan = "parquetneo.storage.open";
+    public const string StorageOpenSpan = TelemetryNames.Storage + ".open";
 
     /// <summary>The name of the span of the listing of the objects of a prefix of a storage.</summary>
-    public const string StorageListSpan = "parquetneo.storage.list";
+    public const string StorageListSpan = TelemetryNames.Storage + ".list";
 
     /// <summary>The name of the span of the reading of a row group.</summary>
-    public const string RowGroupSpan = "parquetneo.row_group.read";
+    public const string RowGroupSpan = TelemetryNames.RowGroup + ".read";
 
     /// <summary>The name of the span of a query of a dataset.</summary>
-    public const string QuerySpan = "parquetneo.query";
+    public const string QuerySpan = TelemetryNames.Query;
 
     /// <summary>The tag with the kind of storage: the same as <see cref="ParquetNeoMetrics.StorageSystemTag"/>.</summary>
-    public const string StorageSystemTag = ParquetNeoMetrics.StorageSystemTag;
+    public const string StorageSystemTag = TelemetryNames.StorageSystemTag;
 
     /// <summary>The tag of the spans of a storage with the key of the object, or the prefix that is listed.</summary>
-    public const string StorageKeyTag = "parquetneo.storage.key";
+    public const string StorageKeyTag = TelemetryNames.Storage + ".key";
 
     /// <summary>The tag of a request with where in the object the range starts.</summary>
-    public const string StorageOffsetTag = "parquetneo.storage.offset";
+    public const string StorageOffsetTag = TelemetryNames.Storage + ".offset";
 
     /// <summary>The tag of a request with the bytes that were asked for first, and that it received when it ended.</summary>
-    public const string StorageBytesTag = "parquetneo.storage.bytes";
+    public const string StorageBytesTag = TelemetryNames.Storage + ".bytes";
 
     /// <summary>The tag of a row group with its position in the file.</summary>
-    public const string RowGroupIndexTag = "parquetneo.row_group.index";
+    public const string RowGroupIndexTag = TelemetryNames.RowGroup + ".index";
 
     /// <summary>The tag of a row group with the rows it has, after the page index has ruled out some.</summary>
-    public const string RowGroupRowsTag = "parquetneo.row_group.rows";
+    public const string RowGroupRowsTag = TelemetryNames.RowGroup + ".rows";
 
     /// <summary>The tag of a query with whether a condition was used to skip files and row groups: the same as <see cref="ParquetNeoMetrics.FilteredTag"/>.</summary>
-    public const string FilteredTag = ParquetNeoMetrics.FilteredTag;
+    public const string FilteredTag = TelemetryNames.QueryFilteredTag;
 
     /// <summary>The tag of a query with the rows it read from the files, set when it ends.</summary>
-    public const string QueryRowsTag = "parquetneo.query.rows";
+    public const string QueryRowsTag = TelemetryNames.QueryRows;
 
     private readonly ActivitySource _source;
 
@@ -131,7 +131,7 @@ public sealed class ParquetNeoTracing : IDisposable
         }
 
         activity.SetStatus(ActivityStatusCode.Error, exception.Message);
-        activity.SetTag("error.type", exception.GetType().FullName);
+        activity.SetTag(TelemetryNames.ErrorTypeTag, exception.GetType().FullName);
     }
 
     private Activity? StartStorage(string name, string system, string key)

@@ -19,6 +19,30 @@ public class TracingTests
     }
 
     [Test]
+    public async Task TheNamesOfTheSpansAndTheTags_AreAsDocumented_WhateverTheyAreBuiltFrom()
+    {
+        // What users put in dashboards and queries: a change of one of these is a breaking change, so they are written out here.
+        await Assert.That(ParquetNeoTracing.SourceName).IsEqualTo("ParquetNeo");
+        await Assert.That(ParquetNeoMetrics.MeterName).IsEqualTo("ParquetNeo");
+        await Assert.That(ParquetNeoTracing.StorageRequestSpan).IsEqualTo("parquetneo.storage.request");
+        await Assert.That(ParquetNeoTracing.StorageOpenSpan).IsEqualTo("parquetneo.storage.open");
+        await Assert.That(ParquetNeoTracing.StorageListSpan).IsEqualTo("parquetneo.storage.list");
+        await Assert.That(ParquetNeoTracing.RowGroupSpan).IsEqualTo("parquetneo.row_group.read");
+        await Assert.That(ParquetNeoTracing.QuerySpan).IsEqualTo("parquetneo.query");
+        await Assert.That(ParquetNeoTracing.StorageSystemTag).IsEqualTo("parquetneo.storage.system");
+        await Assert.That(ParquetNeoTracing.StorageKeyTag).IsEqualTo("parquetneo.storage.key");
+        await Assert.That(ParquetNeoTracing.StorageOffsetTag).IsEqualTo("parquetneo.storage.offset");
+        await Assert.That(ParquetNeoTracing.StorageBytesTag).IsEqualTo("parquetneo.storage.bytes");
+        await Assert.That(ParquetNeoTracing.RowGroupIndexTag).IsEqualTo("parquetneo.row_group.index");
+        await Assert.That(ParquetNeoTracing.RowGroupRowsTag).IsEqualTo("parquetneo.row_group.rows");
+        await Assert.That(ParquetNeoTracing.FilteredTag).IsEqualTo("parquetneo.query.filtered");
+        await Assert.That(ParquetNeoTracing.QueryRowsTag).IsEqualTo("parquetneo.query.rows");
+        await Assert.That(ParquetNeoMetrics.StorageSystemTag).IsEqualTo("parquetneo.storage.system");
+        await Assert.That(ParquetNeoMetrics.FilteredTag).IsEqualTo("parquetneo.query.filtered");
+        await Assert.That(ParquetNeoMetrics.OutcomeTag).IsEqualTo("parquetneo.outcome");
+    }
+
+    [Test]
     public async Task EachRequestOfAStream_IsASpanOfTheStorageWithWhereItReadAndHowMuch()
     {
         using var tracing = new ParquetNeoTracing();

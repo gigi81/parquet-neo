@@ -18,16 +18,16 @@ namespace ParquetNeo.Diagnostics;
 public sealed class ParquetNeoMetrics : IDisposable
 {
     /// <summary>The name of the meter, to subscribe to (<c>AddMeter(ParquetNeoMetrics.MeterName)</c> in OpenTelemetry).</summary>
-    public const string MeterName = "ParquetNeo";
+    public const string MeterName = TelemetryNames.Name;
 
     /// <summary>The tag of the storage requests and objects with the kind of storage: <c>aws_s3</c>, <c>azure_blob</c>, or what a storage says it is.</summary>
-    public const string StorageSystemTag = "parquetneo.storage.system";
+    public const string StorageSystemTag = TelemetryNames.StorageSystemTag;
 
     /// <summary>The tag of the storage requests with how they ended: <c>ok</c> or <c>error</c>.</summary>
-    public const string OutcomeTag = "parquetneo.outcome";
+    public const string OutcomeTag = TelemetryNames.Root + ".outcome";
 
     /// <summary>The tag of the queries of a dataset with whether a condition was used to skip files and row groups.</summary>
-    public const string FilteredTag = "parquetneo.query.filtered";
+    public const string FilteredTag = TelemetryNames.QueryFilteredTag;
 
     private readonly Meter _meter;
     private readonly bool _ownsMeter;
@@ -52,16 +52,16 @@ public sealed class ParquetNeoMetrics : IDisposable
         _ownsMeter = meterFactory is null;
         _meter = meterFactory?.Create(MeterName, version) ?? new Meter(MeterName, version);
 
-        _requests = _meter.CreateCounter<long>("parquetneo.storage.requests", "{request}", "Requests made to a storage for a range of an object.");
-        _bytesRead = _meter.CreateCounter<long>("parquetneo.storage.bytes_read", "By", "Bytes received from a storage.");
-        _requestDuration = _meter.CreateHistogram<double>("parquetneo.storage.request.duration", "s", "How long a request to a storage took.");
-        _objectsOpened = _meter.CreateCounter<long>("parquetneo.storage.objects_opened", "{object}", "Objects of a storage opened for reading.");
-        _listings = _meter.CreateCounter<long>("parquetneo.storage.listings", "{listing}", "Listings of the objects of a prefix.");
-        _rowGroupsRead = _meter.CreateCounter<long>("parquetneo.row_groups.read", "{row_group}", "Row groups that were read.");
-        _rowGroupsSkipped = _meter.CreateCounter<long>("parquetneo.row_groups.skipped", "{row_group}", "Row groups that a filter ruled out, by their statistics or their bloom filters, so they were not read.");
-        _rowsSkipped = _meter.CreateCounter<long>("parquetneo.rows.skipped", "{row}", "Rows of the row groups that were read but not decoded, because the page index of the file ruled out their pages.");
-        _queryDuration = _meter.CreateHistogram<double>("parquetneo.query.duration", "s", "How long a query of a dataset took, from the first row asked for to the last one given.");
-        _queryRows = _meter.CreateCounter<long>("parquetneo.query.rows", "{row}", "Rows that the queries of a dataset read from the files, before the operators of the query.");
+        _requests = _meter.CreateCounter<long>(TelemetryNames.Storage + ".requests", "{request}", "Requests made to a storage for a range of an object.");
+        _bytesRead = _meter.CreateCounter<long>(TelemetryNames.Storage + ".bytes_read", "By", "Bytes received from a storage.");
+        _requestDuration = _meter.CreateHistogram<double>(TelemetryNames.Storage + ".request.duration", "s", "How long a request to a storage took.");
+        _objectsOpened = _meter.CreateCounter<long>(TelemetryNames.Storage + ".objects_opened", "{object}", "Objects of a storage opened for reading.");
+        _listings = _meter.CreateCounter<long>(TelemetryNames.Storage + ".listings", "{listing}", "Listings of the objects of a prefix.");
+        _rowGroupsRead = _meter.CreateCounter<long>(TelemetryNames.Root + ".row_groups.read", "{row_group}", "Row groups that were read.");
+        _rowGroupsSkipped = _meter.CreateCounter<long>(TelemetryNames.Root + ".row_groups.skipped", "{row_group}", "Row groups that a filter ruled out, by their statistics or their bloom filters, so they were not read.");
+        _rowsSkipped = _meter.CreateCounter<long>(TelemetryNames.Root + ".rows.skipped", "{row}", "Rows of the row groups that were read but not decoded, because the page index of the file ruled out their pages.");
+        _queryDuration = _meter.CreateHistogram<double>(TelemetryNames.Query + ".duration", "s", "How long a query of a dataset took, from the first row asked for to the last one given.");
+        _queryRows = _meter.CreateCounter<long>(TelemetryNames.QueryRows, "{row}", "Rows that the queries of a dataset read from the files, before the operators of the query.");
     }
 
     /// <summary>The meter of these metrics, for code that listens to exactly these metrics and not to every meter of the name (a test, for example).</summary>
