@@ -126,10 +126,13 @@ public sealed class ParquetFileReader : IDisposable, IAsyncDisposable
         }
     }
 
+    /// <summary>The footer of the file.</summary>
     public FileMetaData Metadata { get; }
 
+    /// <summary>The schema of the file.</summary>
     public ParquetSchema Schema { get; }
 
+    /// <summary>The number of row groups in the file.</summary>
     public int RowGroupCount => Metadata.RowGroups.Count;
 
     /// <summary>The total number of rows in the file, as recorded in the footer.</summary>
@@ -173,6 +176,7 @@ public sealed class ParquetFileReader : IDisposable, IAsyncDisposable
     }
 
     /// <param name="useBloomFilters">Whether bloom filters, which are read from the stream, are used as well as the statistics.</param>
+    /// <param name="filter">The filter; a page or row group it rules out is not read.</param>
     internal IReadOnlyList<int> GetMatchingRowGroups(ParquetFilter filter, bool useBloomFilters)
     {
         EnsureOpen();
@@ -286,6 +290,7 @@ public sealed class ParquetFileReader : IDisposable, IAsyncDisposable
         return bytes;
     }
 
+    /// <summary>Releases the reader, and closes the stream unless it was opened to leave it open.</summary>
     public void Dispose()
     {
         if (!_disposed)
@@ -295,6 +300,7 @@ public sealed class ParquetFileReader : IDisposable, IAsyncDisposable
         }
     }
 
+    /// <summary>Releases the reader, and closes the stream unless it was opened to leave it open.</summary>
     public ValueTask DisposeAsync()
     {
         if (_disposed)

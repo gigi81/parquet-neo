@@ -26,6 +26,9 @@ internal sealed class LeafBuffer<TValue> : ILeafBuffer
     private int _entries;
 
     /// <param name="capacity">The number of entries to make room for; the buffer grows when there are more.</param>
+    /// <param name="hasDefinitionLevels">Whether the column has definition levels.</param>
+    /// <param name="hasRepetitionLevels">Whether the column has repetition levels.</param>
+    /// <param name="type">The type of the values of the column.</param>
     public LeafBuffer(bool hasDefinitionLevels, bool hasRepetitionLevels, ColumnType<TValue> type, int capacity)
     {
         capacity = Math.Max(capacity, 1);

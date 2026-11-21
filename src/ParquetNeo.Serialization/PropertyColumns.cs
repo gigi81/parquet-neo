@@ -23,6 +23,7 @@ internal static class PropertyColumns
     /// the attributes of its property, which can suit just one of them.
     /// </param>
     /// <exception cref="InvalidOperationException">An attribute does not suit the type.</exception>
+    /// <param name="property">The property.</param>
     public static ColumnType<TValue> For<TValue>(PropertyInfo property, bool lenient)
     {
         var type = ColumnTypeRegistry.Get<TValue>();

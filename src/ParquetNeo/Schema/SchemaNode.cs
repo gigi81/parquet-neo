@@ -32,6 +32,7 @@ public abstract class SchemaNode
         FieldId = fieldId;
     }
 
+    /// <summary>The name of the node.</summary>
     public string Name { get; }
 
     /// <summary>Always <see cref="FieldRepetitionType.Required"/> for the schema root, which has no repetition.</summary>
@@ -43,6 +44,7 @@ public abstract class SchemaNode
     /// <summary>The legacy annotation, written alongside <see cref="LogicalType"/> for older readers.</summary>
     public ConvertedType? ConvertedType { get; }
 
+    /// <summary>The identifier of the field, which stays when it is renamed; null when it has none.</summary>
     public int? FieldId { get; }
 
     /// <summary>The enclosing group; null for the root, and for a node not yet part of a schema.</summary>

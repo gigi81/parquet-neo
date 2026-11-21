@@ -17,6 +17,13 @@ namespace ParquetNeo.Serialization.Assemblers;
 /// The index of the <see cref="ItemScratch{TItem}"/> of this list among <see cref="ReadContext.Objects"/>, or -1 for a collection
 /// that is created first and added to (anything but an array or a <see cref="List{T}"/>).
 /// </param>
+/// <param name="node">The position of the node of the schema among the nodes that are read.</param>
+/// <param name="firstColumn">The position of the first column of the object among the columns that are read or written.</param>
+/// <param name="columnCount">How many columns the object has.</param>
+/// <param name="description">Describes the column or property, for the messages of errors.</param>
+/// <param name="elementOptional">Whether the elements of the list can be null.</param>
+/// <param name="wrap">Turns an element into an item of the collection.</param>
+/// <param name="element">The assembler of the elements.</param>
 internal sealed class ListAssembler<TCollection, TItem, TElement>(
     int node,
     int firstColumn,

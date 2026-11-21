@@ -5,36 +5,52 @@ namespace ParquetNeo.Metadata;
 /// <summary>Metadata of one column chunk (thrift <c>ColumnMetaData</c>). Geospatial statistics are not read yet.</summary>
 public sealed class ColumnMetaData : IThriftStruct<ColumnMetaData>
 {
+    /// <summary>The physical type of the values.</summary>
     public PhysicalType Type { get; set; }
 
+    /// <summary>The encodings the pages of the column chunk use.</summary>
     public List<ParquetEncoding> Encodings { get; set; } = new();
 
+    /// <summary>The names from the root of the schema down to the column.</summary>
     public List<string> PathInSchema { get; set; } = new();
 
+    /// <summary>The compression codec of the pages.</summary>
     public CompressionCodec Codec { get; set; }
 
+    /// <summary>The number of values in the column chunk, nulls included; for a nested column more than the rows.</summary>
     public long NumValues { get; set; }
 
+    /// <summary>The size of the pages, with their headers, before they are compressed, in bytes.</summary>
     public long TotalUncompressedSize { get; set; }
 
+    /// <summary>The size of the pages, with their headers, as they are stored, in bytes.</summary>
     public long TotalCompressedSize { get; set; }
 
+    /// <summary>Free key and value pairs of the column chunk; null when there are none.</summary>
     public List<KeyValue>? KeyValueMetadata { get; set; }
 
+    /// <summary>Where the first data page is in the file.</summary>
     public long DataPageOffset { get; set; }
 
+    /// <summary>Where the index page is in the file; null when there is none, which is the usual case.</summary>
     public long? IndexPageOffset { get; set; }
 
+    /// <summary>Where the dictionary page is in the file; null or zero when the column chunk has no dictionary.</summary>
     public long? DictionaryPageOffset { get; set; }
 
+    /// <summary>The smallest and largest value of the column chunk and how many are null; null when the writer did not write them.</summary>
     public Statistics? Statistics { get; set; }
 
+    /// <summary>How many pages of each type use each encoding; null when the writer did not write them.</summary>
     public List<PageEncodingStats>? EncodingStats { get; set; }
 
+    /// <summary>Where the bloom filter of the column chunk is in the file; null when it has none.</summary>
     public long? BloomFilterOffset { get; set; }
 
+    /// <summary>The size of the bloom filter with its header, in bytes; null when the writer did not say.</summary>
     public int? BloomFilterLength { get; set; }
 
+    /// <summary>The sizes of the values and the histograms of the levels; null when the writer did not write them.</summary>
     public SizeStatistics? SizeStatistics { get; set; }
 
     static ColumnMetaData IThriftStruct<ColumnMetaData>.Read(ref ThriftCompactReader reader)

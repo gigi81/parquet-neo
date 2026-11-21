@@ -5,10 +5,13 @@ namespace ParquetNeo.Metadata;
 /// <summary>Size statistics of a column chunk (thrift <c>SizeStatistics</c>).</summary>
 public sealed class SizeStatistics : IThriftStruct<SizeStatistics>
 {
+    /// <summary>The size of the byte array values without the lengths and the encoding, in bytes.</summary>
     public long? UnencodedByteArrayDataBytes { get; set; }
 
+    /// <summary>How many levels have each repetition level value.</summary>
     public List<long>? RepetitionLevelHistogram { get; set; }
 
+    /// <summary>How many levels have each definition level value.</summary>
     public List<long>? DefinitionLevelHistogram { get; set; }
 
     static SizeStatistics IThriftStruct<SizeStatistics>.Read(ref ThriftCompactReader reader)

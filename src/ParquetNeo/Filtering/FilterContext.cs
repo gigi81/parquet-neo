@@ -9,6 +9,9 @@ namespace ParquetNeo.Filtering;
 /// <summary>The row group a filter is evaluated for: finds its columns by path and keeps what it works out of them.</summary>
 /// <param name="bloomFilters">Reads the bloom filter of a column chunk; null when filters are not to be read.</param>
 /// <param name="pages">For some columns (by their position in the schema), what the page index says of the stretch of rows the filter is evaluated for, in place of what the statistics say of the whole row group.</param>
+/// <param name="schema">The schema of the file.</param>
+/// <param name="columnOrders">How the values of each column are ordered, as the file says; null when it does not.</param>
+/// <param name="rowGroup">The metadata of the row group.</param>
 internal sealed class FilterContext(
     ParquetSchema schema,
     IReadOnlyList<ColumnOrder>? columnOrders,

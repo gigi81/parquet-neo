@@ -11,6 +11,7 @@ internal static class DeltaLengthByteArrayEncoder
 {
     /// <param name="plain">The values in PLAIN layout: each a 4-byte length and its bytes.</param>
     /// <param name="count">The number of values in <paramref name="plain"/>.</param>
+    /// <param name="output">Where the encoded bytes are written.</param>
     public static void Encode(ReadOnlySpan<byte> plain, int count, IBufferWriter<byte> output)
     {
         var lengths = new int[count];

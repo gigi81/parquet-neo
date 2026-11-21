@@ -110,6 +110,7 @@ public sealed class ParquetFileWriter : IColumnSink, IDisposable, IAsyncDisposab
     /// <summary>Writes the start of the file. Called once, by <see cref="Create"/> and by the sessions that stage the file in memory.</summary>
     internal void Start() => Write(Magic);
 
+    /// <summary>The schema the file is written with.</summary>
     public ParquetSchema Schema { get; }
 
     /// <summary>The number of bytes written so far.</summary>

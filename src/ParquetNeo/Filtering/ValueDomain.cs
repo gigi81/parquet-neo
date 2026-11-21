@@ -41,6 +41,8 @@ internal abstract class ValueDomain
     /// <summary>The key of the value of a filter.</summary>
     /// <param name="ordered">Whether keys of this kind of value are ordered as the values are, so that a comparison for order is decided by them.</param>
     /// <exception cref="ArgumentException">The value is of a type that the column cannot be compared with.</exception>
+    /// <param name="value">The value of the property.</param>
+    /// <param name="path">The path of the column, for the messages of errors.</param>
     public abstract object ConvertValue(object value, IReadOnlyList<string> path, out bool ordered);
 
     public abstract int Compare(object left, object right);

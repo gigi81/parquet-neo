@@ -29,6 +29,10 @@ public sealed class WriteMappingBuilder<TRow>
     /// <summary>Describes a property, or an element, a key or a value, that is a column of its own.</summary>
     /// <param name="name">The name of the column in the file; null for an element, a key or a value.</param>
     /// <param name="description">What it is, for messages: "Property 'Order.Id'"; null for an element, a key or a value.</param>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
+    /// <param name="settings">The settings of the column type (precision, scale, unit); null for the defaults.</param>
+    /// <param name="encoding">The encoding of the values; the default for the type when null.</param>
+    /// <param name="dictionary">The dictionary settings; the default when null.</param>
     public WriteMappingBuilder<TRow> Leaf<TValue>(string? name, string? description, bool optional, ColumnSettings? settings = null, ParquetEncoding? encoding = null, DictionarySettings? dictionary = null)
     {
         var scope = _scopes.Peek();
@@ -46,6 +50,9 @@ public sealed class WriteMappingBuilder<TRow>
 
     /// <summary>Begins describing a property, element, key or value that is an object, until <see cref="End"/>.</summary>
     /// <param name="shred">Gives the properties of the object to what is described inside it.</param>
+    /// <param name="name">The name of the field.</param>
+    /// <param name="description">Describes the column or property, for the messages of errors.</param>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
     public WriteMappingBuilder<TRow> BeginObject<TValue>(string? name, string? description, bool optional, ShredRow<TValue> shred)
     {
         ArgumentNullException.ThrowIfNull(shred);

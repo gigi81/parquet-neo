@@ -7,6 +7,8 @@ namespace ParquetNeo.Serialization.Generated;
 /// <param name="repetition">How many collections the part is in.</param>
 /// <param name="node">The number of the part among the objects, collections and dictionaries.</param>
 /// <param name="firstColumn">The number of the first column below the part.</param>
+/// <param name="description">Describes the column or property, for the messages of errors.</param>
+/// <param name="optional">Whether the value can be null: the field is optional.</param>
 internal abstract class ReadScope(string? name, string description, bool optional, int repetition, int node, int firstColumn)
 {
     public string? Name { get; } = name;

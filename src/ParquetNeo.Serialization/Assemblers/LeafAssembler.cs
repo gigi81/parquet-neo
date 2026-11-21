@@ -7,6 +7,8 @@ namespace ParquetNeo.Serialization.Assemblers;
 
 /// <summary>A value that has a column of its own, read in the way its <see cref="ColumnType{TValue}"/> says.</summary>
 /// <param name="repetition">How many collections the value is in, which is how many repeated nodes its column must have.</param>
+/// <param name="slot">The position of the column among the columns the row type needs.</param>
+/// <param name="description">Describes the column or property, for the messages of errors.</param>
 internal sealed class LeafAssembler<TValue>(int slot, int repetition, string description) : Assembler<TValue>(slot, 1, description)
 {
     private readonly ColumnType<TValue> _type = ColumnTypeRegistry.Get<TValue>();

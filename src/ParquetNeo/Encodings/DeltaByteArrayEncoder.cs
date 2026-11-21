@@ -11,6 +11,8 @@ internal static class DeltaByteArrayEncoder
 {
     /// <param name="plain">The values: PLAIN layout for BYTE_ARRAY, or back to back for FIXED_LEN_BYTE_ARRAY.</param>
     /// <param name="fixedLength">The length of every value of a FIXED_LEN_BYTE_ARRAY column, or 0 for BYTE_ARRAY.</param>
+    /// <param name="count">The number of values.</param>
+    /// <param name="output">Where the encoded bytes are written.</param>
     public static void Encode(ReadOnlySpan<byte> plain, int count, int fixedLength, IBufferWriter<byte> output)
     {
         var prefixes = new int[count];

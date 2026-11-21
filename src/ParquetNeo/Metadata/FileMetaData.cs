@@ -9,25 +9,32 @@ namespace ParquetNeo.Metadata;
 /// </summary>
 public sealed class FileMetaData : IThriftStruct<FileMetaData>
 {
+    /// <summary>The version of the format the file is written in.</summary>
     public int Version { get; set; }
 
     /// <summary>The schema as a flattened depth-first list; the first element is the root.</summary>
     public List<SchemaElement> Schema { get; set; } = new();
 
+    /// <summary>The number of rows in the file.</summary>
     public long NumRows { get; set; }
 
+    /// <summary>The row groups of the file in order.</summary>
     public List<RowGroup> RowGroups { get; set; } = new();
 
+    /// <summary>Free key and value pairs of the file; null when there are none.</summary>
     public List<KeyValue>? KeyValueMetadata { get; set; }
 
+    /// <summary>The name and version of the library that wrote the file.</summary>
     public string? CreatedBy { get; set; }
 
+    /// <summary>The ordering of the values of each column that its statistics use; null when the writer did not say.</summary>
     public List<ColumnOrder>? ColumnOrders { get; set; }
 
     /// <summary>Parses the Thrift-encoded footer. Bytes after the end of the struct are ignored.</summary>
     public static FileMetaData Deserialize(ReadOnlySpan<byte> data) =>
         ThriftStruct.Deserialize<FileMetaData>(data, out _);
 
+    /// <summary>Writes the footer in the Thrift compact protocol.</summary>
     public void Serialize(IBufferWriter<byte> output) => ThriftStruct.Serialize(this, output);
 
     static FileMetaData IThriftStruct<FileMetaData>.Read(ref ThriftCompactReader reader)

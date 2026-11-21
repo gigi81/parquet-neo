@@ -24,6 +24,7 @@ public sealed class S3ParquetStorage(IAmazonS3 client, string bucket, RangeReadS
     private readonly IAmazonS3 _client = client ?? throw new ArgumentNullException(nameof(client));
     private readonly string _bucket = string.IsNullOrEmpty(bucket) ? throw new ArgumentException("The bucket needs a name.", nameof(bucket)) : bucket;
 
+    /// <inheritdoc />
     public IAsyncEnumerable<StorageObject> ListAsync(string prefix, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(prefix);
@@ -61,6 +62,7 @@ public sealed class S3ParquetStorage(IAmazonS3 client, string bucket, RangeReadS
         while (response.IsTruncated == true && !string.IsNullOrEmpty(response.NextContinuationToken));
     }
 
+    /// <inheritdoc />
     public async ValueTask<Stream> OpenReadAsync(string key, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(key);

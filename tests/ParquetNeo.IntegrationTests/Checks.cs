@@ -18,11 +18,12 @@ internal static class Checks
     }
 
     /// <summary>The differences between what pyarrow read of the file and the rows: the columns of the class are compared by their properties.</summary>
-    public static List<string> CompareFlat<T>(JsonElement dump, IReadOnlyList<T> rows)
+    /// <param name="excluded">Columns the reader that made the dump did not read: they are not compared.</param>
+    public static List<string> CompareFlat<T>(JsonElement dump, IReadOnlyList<T> rows, params string[] excluded)
     {
         var differences = new List<string>();
         var columns = dump.GetProperty("columns");
-        var nodes = ParquetSerializer.GetSchema<T>().Columns;
+        var nodes = ParquetSerializer.GetSchema<T>().Columns.Where(c => !excluded.Contains(c.Name)).ToList();
         var names = columns.EnumerateObject().Select(p => p.Name).ToArray();
         if (!names.SequenceEqual(nodes.Select(n => n.Name)))
         {

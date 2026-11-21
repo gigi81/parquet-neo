@@ -14,17 +14,22 @@ public sealed class SchemaElement : IThriftStruct<SchemaElement>
     /// <summary>Absent for the schema root.</summary>
     public FieldRepetitionType? RepetitionType { get; set; }
 
+    /// <summary>The name of the field.</summary>
     public string Name { get; set; } = string.Empty;
 
     /// <summary>Number of children; present for group nodes.</summary>
     public int? NumChildren { get; set; }
 
+    /// <summary>The legacy annotation of the type; null when there is none.</summary>
     public ConvertedType? ConvertedType { get; set; }
 
+    /// <summary>The scale of a decimal.</summary>
     public int? Scale { get; set; }
 
+    /// <summary>The precision of a decimal.</summary>
     public int? Precision { get; set; }
 
+    /// <summary>The identifier of the field that a schema may give it, to find it when it is renamed; null when it has none.</summary>
     public int? FieldId { get; set; }
 
     /// <summary>Null when absent, or when the file uses a logical type this library does not know.</summary>

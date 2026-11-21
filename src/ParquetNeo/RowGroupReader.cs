@@ -19,12 +19,16 @@ public sealed class RowGroupReader
         Metadata = metadata;
     }
 
+    /// <summary>The position of the row group in the file.</summary>
     public int Index { get; }
 
+    /// <summary>The metadata of the row group.</summary>
     public RowGroup Metadata { get; }
 
+    /// <summary>The number of rows in the row group.</summary>
     public long RowCount => Metadata.NumRows;
 
+    /// <summary>The number of columns in the row group.</summary>
     public int ColumnCount => _file.Schema.Columns.Count;
 
     /// <summary>Opens a column by its position in the schema (depth-first order).</summary>
@@ -165,6 +169,7 @@ public sealed class RowGroupReader
     /// the result must hold exactly.
     /// </summary>
     /// <param name="columns">The positions in the schema of the columns that are going to be read.</param>
+    /// <param name="filter">The filter; a page or row group it rules out is not read.</param>
     public RowSelection? SelectRows(ParquetFilter filter, IEnumerable<int> columns)
     {
         _file.EnsureOpen();
@@ -196,6 +201,8 @@ public sealed class RowGroupReader
     /// and bloom filters it needs with asynchronous reads.
     /// </summary>
     /// <param name="columns">The positions in the schema of the columns that are going to be read.</param>
+    /// <param name="filter">The filter; a page or row group it rules out is not read.</param>
+    /// <param name="cancellationToken">A token that cancels the operation.</param>
     public async ValueTask<RowSelection?> SelectRowsAsync(ParquetFilter filter, IEnumerable<int> columns, CancellationToken cancellationToken = default)
     {
         _file.EnsureOpen();

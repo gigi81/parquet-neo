@@ -6,26 +6,34 @@ namespace ParquetNeo.Metadata.Headers;
 /// <summary>Header preceding every page in a column chunk (thrift <c>PageHeader</c>).</summary>
 public sealed class PageHeader : IThriftStruct<PageHeader>
 {
+    /// <summary>The kind of the page.</summary>
     public PageType Type { get; set; }
 
+    /// <summary>The size of the page after it is decompressed, in bytes.</summary>
     public int UncompressedPageSize { get; set; }
 
+    /// <summary>The size of the page as it is stored, in bytes.</summary>
     public int CompressedPageSize { get; set; }
 
     /// <summary>CRC32 of the page data (after the header), when present.</summary>
     public int? Crc { get; set; }
 
+    /// <summary>The header of a data page of version 1; set when the page is of that type.</summary>
     public DataPageHeader? DataPageHeader { get; set; }
 
+    /// <summary>The header of a dictionary page; set when the page is of that type.</summary>
     public DictionaryPageHeader? DictionaryPageHeader { get; set; }
 
+    /// <summary>The header of a data page of version 2; set when the page is of that type.</summary>
     public DataPageV2Header? DataPageHeaderV2 { get; set; }
 
     /// <summary>Parses a page header at the start of <paramref name="data"/>.</summary>
     /// <param name="bytesConsumed">The number of bytes the header occupies; the page data follows.</param>
+    /// <param name="data">The Thrift-encoded header, which can be followed by other bytes.</param>
     public static PageHeader Deserialize(ReadOnlySpan<byte> data, out int bytesConsumed) =>
         ThriftStruct.Deserialize<PageHeader>(data, out bytesConsumed);
 
+    /// <summary>Writes the header in the Thrift compact protocol.</summary>
     public void Serialize(IBufferWriter<byte> output) => ThriftStruct.Serialize(this, output);
 
     static PageHeader IThriftStruct<PageHeader>.Read(ref ThriftCompactReader reader)

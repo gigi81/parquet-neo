@@ -10,5 +10,6 @@ namespace ParquetNeo.DataModel;
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
 public sealed class ParquetEncodingAttribute(ParquetEncoding encoding) : Attribute
 {
+    /// <summary>The encoding of the values of the column.</summary>
     public ParquetEncoding Encoding { get; } = encoding;
 }

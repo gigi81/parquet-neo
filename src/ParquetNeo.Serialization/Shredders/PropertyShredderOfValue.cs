@@ -9,6 +9,8 @@ namespace ParquetNeo.Serialization.Shredders;
 
 /// <param name="property">The property, which the code made by reflection reads; null when a generated mapping supplies that code, and the property is only here for the schema.</param>
 /// <param name="nullable">Whether the property is a <see cref="Nullable{T}"/> of <typeparamref name="TValue"/>.</param>
+/// <param name="name">The name of the property.</param>
+/// <param name="value">The value of the property.</param>
 internal sealed class PropertyShredder<TValue>(string name, Shredder<TValue> value, PropertyInfo? property, bool nullable)
     : PropertyShredder(name)
 {

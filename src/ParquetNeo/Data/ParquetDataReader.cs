@@ -115,20 +115,28 @@ public sealed class ParquetDataReader : DbDataReader
         }
     }
 
+    /// <inheritdoc />
     public override int FieldCount => _columns.Length;
 
+    /// <inheritdoc />
     public override bool HasRows => _file.RowCount > 0;
 
+    /// <inheritdoc />
     public override bool IsClosed => _closed;
 
+    /// <inheritdoc />
     public override int Depth => 0;
 
+    /// <inheritdoc />
     public override int RecordsAffected => -1;
 
+    /// <inheritdoc />
     public override object this[int ordinal] => GetValue(ordinal);
 
+    /// <inheritdoc />
     public override object this[string name] => GetValue(GetOrdinal(name));
 
+    /// <inheritdoc />
     public override bool Read()
     {
         EnsureOpen();
@@ -162,8 +170,10 @@ public sealed class ParquetDataReader : DbDataReader
         return true;
     }
 
+    /// <inheritdoc />
     public override bool NextResult() => false;
 
+    /// <inheritdoc />
     public override void Close()
     {
         if (!_closed)
@@ -173,6 +183,7 @@ public sealed class ParquetDataReader : DbDataReader
         }
     }
 
+    /// <inheritdoc />
     public override async Task CloseAsync()
     {
         if (!_closed)
@@ -182,14 +193,17 @@ public sealed class ParquetDataReader : DbDataReader
         }
     }
 
+    /// <inheritdoc />
     public override async ValueTask DisposeAsync()
     {
         await CloseAsync().ConfigureAwait(false);
         GC.SuppressFinalize(this);
     }
 
+    /// <inheritdoc />
     public override string GetName(int ordinal) => _nodes[ordinal].Name;
 
+    /// <inheritdoc />
     [SuppressMessage("Major Code Smell", "S112:General or reserved exceptions should never be thrown",
         Justification = "IndexOutOfRangeException is what the DbDataReader contract says GetOrdinal throws for an unknown name, and consumers rely on it.")]
     public override int GetOrdinal(string name)
@@ -211,17 +225,22 @@ public sealed class ParquetDataReader : DbDataReader
         throw new IndexOutOfRangeException($"The file has no column named '{name}'.");
     }
 
+    /// <inheritdoc />
     [return: DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties)]
     [UnconditionalSuppressMessage("Trimming", "IL2063:Value returned from method can not be statically determined and may not meet DynamicallyAccessedMembers requirements",
         Justification = "The types of the columns are the primitive types of the column types, whose members the caller of GetFieldType does not use by reflection.")]
     public override Type GetFieldType(int ordinal) => _types[ordinal];
 
+    /// <inheritdoc />
     public override string GetDataTypeName(int ordinal) => _types[ordinal].Name;
 
+    /// <inheritdoc />
     public override bool IsDBNull(int ordinal) => _columns[ordinal].IsNull(CurrentRow());
 
+    /// <inheritdoc />
     public override object GetValue(int ordinal) => _columns[ordinal].GetValue(CurrentRow());
 
+    /// <inheritdoc />
     public override int GetValues(object[] values)
     {
         ArgumentNullException.ThrowIfNull(values);
@@ -234,30 +253,43 @@ public sealed class ParquetDataReader : DbDataReader
         return count;
     }
 
+    /// <inheritdoc />
     public override bool GetBoolean(int ordinal) => Get<bool>(ordinal);
 
+    /// <inheritdoc />
     public override byte GetByte(int ordinal) => Get<byte>(ordinal);
 
+    /// <inheritdoc />
     public override short GetInt16(int ordinal) => Get<short>(ordinal);
 
+    /// <inheritdoc />
     public override int GetInt32(int ordinal) => Get<int>(ordinal);
 
+    /// <inheritdoc />
     public override long GetInt64(int ordinal) => Get<long>(ordinal);
 
+    /// <inheritdoc />
     public override float GetFloat(int ordinal) => Get<float>(ordinal);
 
+    /// <inheritdoc />
     public override double GetDouble(int ordinal) => Get<double>(ordinal);
 
+    /// <inheritdoc />
     public override decimal GetDecimal(int ordinal) => Get<decimal>(ordinal);
 
+    /// <inheritdoc />
     public override string GetString(int ordinal) => Get<string>(ordinal);
 
+    /// <inheritdoc />
     public override DateTime GetDateTime(int ordinal) => Get<DateTime>(ordinal);
 
+    /// <inheritdoc />
     public override Guid GetGuid(int ordinal) => Get<Guid>(ordinal);
 
+    /// <inheritdoc />
     public override char GetChar(int ordinal) => throw new InvalidCastException($"Column '{GetName(ordinal)}' cannot be read as a char; Parquet has no such type.");
 
+    /// <inheritdoc />
     public override long GetBytes(int ordinal, long dataOffset, byte[]? buffer, int bufferOffset, int length)
     {
         var bytes = Get<byte[]>(ordinal);
@@ -277,6 +309,7 @@ public sealed class ParquetDataReader : DbDataReader
         return count;
     }
 
+    /// <inheritdoc />
     public override long GetChars(int ordinal, long dataOffset, char[]? buffer, int bufferOffset, int length)
     {
         string text = Get<string>(ordinal);
@@ -296,8 +329,10 @@ public sealed class ParquetDataReader : DbDataReader
         return count;
     }
 
+    /// <inheritdoc />
     public override IEnumerator GetEnumerator() => new DbEnumerator(this, closeReader: false);
 
+    /// <inheritdoc />
     [UnconditionalSuppressMessage("Trimming", "IL2111:Method with DynamicallyAccessedMembersAttribute is accessed via reflection",
         Justification = "DataTable only stores the Type values it is given as data; it does not read their members.")]
     public override DataTable GetSchemaTable()
@@ -322,6 +357,7 @@ public sealed class ParquetDataReader : DbDataReader
         return table;
     }
 
+    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (disposing)

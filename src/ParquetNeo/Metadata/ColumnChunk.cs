@@ -5,18 +5,25 @@ namespace ParquetNeo.Metadata;
 /// <summary>Location and metadata of one column chunk (thrift <c>ColumnChunk</c>). Encryption fields are skipped.</summary>
 public sealed class ColumnChunk : IThriftStruct<ColumnChunk>
 {
+    /// <summary>The file the column chunk is in when it is not this one; null for the files this library writes.</summary>
     public string? FilePath { get; set; }
 
+    /// <summary>Where the metadata of the column chunk is in the file, for writers that put it after the data; the columns are found from <see cref="MetaData"/>.</summary>
     public long FileOffset { get; set; }
 
+    /// <summary>The metadata of the column chunk: its type, encodings, sizes, offsets and statistics.</summary>
     public ColumnMetaData? MetaData { get; set; }
 
+    /// <summary>Where the offset index of the column chunk is in the file; null when it has none.</summary>
     public long? OffsetIndexOffset { get; set; }
 
+    /// <summary>The size of the offset index in bytes.</summary>
     public int? OffsetIndexLength { get; set; }
 
+    /// <summary>Where the column index of the column chunk is in the file; null when it has none.</summary>
     public long? ColumnIndexOffset { get; set; }
 
+    /// <summary>The size of the column index in bytes.</summary>
     public int? ColumnIndexLength { get; set; }
 
     static ColumnChunk IThriftStruct<ColumnChunk>.Read(ref ThriftCompactReader reader)

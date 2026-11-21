@@ -4,6 +4,7 @@ namespace ParquetNeo;
 [Flags]
 public enum ColumnSettingKinds
 {
+    /// <summary>The type takes no settings.</summary>
     None = 0,
 
     /// <summary>A precision and a scale.</summary>
