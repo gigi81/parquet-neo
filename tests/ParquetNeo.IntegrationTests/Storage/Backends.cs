@@ -7,7 +7,7 @@ using ParquetNeo.Storage;
 using ParquetNeo.Storage.AzureBlobs;
 using ParquetNeo.Storage.S3;
 
-namespace ParquetNeo.Storage.EmulatorTests;
+namespace ParquetNeo.IntegrationTests.Storage;
 
 /// <summary>
 /// An object storage the tests run against: a real server that speaks the protocol of S3 (SeaweedFS, moto, MinIO or any other) or of Azure Blob Storage (Azurite),
@@ -37,10 +37,10 @@ internal abstract class Backend
         {
             if (required)
             {
-                throw new InvalidOperationException($"The tests of '{name}' are required ({RequiredVariable}), but its server is not set: see the README of the project.");
+                throw new InvalidOperationException($"The tests of '{name}' are required ({RequiredVariable}), but its server is not set: see the README of tests/ParquetNeo.IntegrationTests.");
             }
 
-            Skip.Test($"No server for '{name}': see the README of tests/ParquetNeo.Storage.EmulatorTests.");
+            Skip.Test($"No server for '{name}': see the README of tests/ParquetNeo.IntegrationTests.");
         }
 
         return await Started.GetOrAdd(name, key => new Lazy<Task<Backend>>(() => key == "s3" ? S3Backend.CreateAsync() : AzureBackend.CreateAsync())).Value.ConfigureAwait(false);

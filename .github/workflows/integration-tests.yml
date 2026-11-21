@@ -3,6 +3,9 @@ name: Integration tests
 # ParquetNeo against pyarrow (the Python bindings of Apache Arrow's Parquet, the reference implementation) and DuckDB (a second implementation, which
 # also reads the bloom filters and the page index): files written by them are read by ParquetNeo, and files written by ParquetNeo are read by them,
 # and each side must find what the other wrote.
+# The same project has the tests of the storages of S3 and Azure Blob Storage against real servers (SeaweedFS and moto, two servers that speak the protocol of S3,
+# and Azurite, the emulator of Azure Blob Storage): the unit tests of the storages use fakes of the SDKs, which only imitate how a server answers a request for a
+# range, a listing in pages, a tag of version (If-Match) or an object that is not there; these ask a server.
 # See tests/ParquetNeo.IntegrationTests.
 #
 # Which pyarrow:
@@ -16,6 +19,14 @@ on:
   # Only on main (and by hand, from the Actions tab, for any branch): the suite needs Python and pyarrow, and is not part of the checks of a pull request.
   push:
     branches: [main]
+  # The exception is a pull request that changes the storages or the tests of them: it runs the jobs of the servers (not the one of Python).
+  pull_request:
+    paths:
+      - ".github/workflows/integration-tests.yml"
+      - "tests/ParquetNeo.IntegrationTests/Storage/**"
+      - "src/ParquetNeo.Storage.S3/**"
+      - "src/ParquetNeo.Storage.AzureBlobs/**"
+      - "src/ParquetNeo/Storage/**"
   schedule:
     # Mondays at 05:43 UTC. Scheduled workflows run on the default branch, and GitHub stops them after 60 days without activity in the repository.
     - cron: "43 5 * * 1"
@@ -31,6 +42,7 @@ permissions:
 
 jobs:
   python-interop:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     env:
       # Turns the tests on: with it a missing Python or pyarrow is a failure, not a skipped test.
@@ -85,3 +97,108 @@ jobs:
             echo "### Integration tests against pyarrow"
             echo "pyarrow $(python -c 'import pyarrow; print(pyarrow.__version__)'), duckdb $(python -c 'import duckdb; print(duckdb.__version__)') (asked for: \`$PYARROW\`; the pinned pyarrow is $pinned)"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  s3-seaweedfs:
+    name: s3 (seaweedfs)
+    runs-on: ubuntu-latest
+    env:
+      # The backends that must be there: with this a server that is missing or does not answer is a failure, not a skipped test.
+      PARQUETNEO_EMULATOR_TESTS: s3
+      PARQUETNEO_S3_ENDPOINT: http://127.0.0.1:9000
+      PARQUETNEO_S3_ACCESS_KEY: test
+      PARQUETNEO_S3_SECRET_KEY: test
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+          dotnet-version: 10.0.x
+
+      # Not a service container: SeaweedFS has to be started with a command (server -s3), which a service cannot be given.
+      - name: Start SeaweedFS
+        run: |
+          docker run -d --name seaweedfs -p 9000:8333 chrislusf/seaweedfs:latest server -s3 -dir=/data
+          for attempt in $(seq 1 60); do
+            if curl -s -o /dev/null -m 2 http://127.0.0.1:9000/; then echo "the server answers"; sleep 3; exit 0; fi
+            sleep 1
+          done
+          echo "the server did not answer"; docker logs seaweedfs 2>&1 | tail -20
+          exit 1
+
+      - name: Build
+        run: dotnet build tests/ParquetNeo.IntegrationTests -c Release
+
+      - name: Tests
+        run: dotnet test --project tests/ParquetNeo.IntegrationTests -c Release --no-build --results-directory TestResults
+
+  s3-moto:
+    name: s3 (moto)
+    runs-on: ubuntu-latest
+    # Moto answers as S3 does, and its image starts its server by itself, so GitHub starts it, waits for it and removes it.
+    services:
+      moto:
+        image: motoserver/moto:5.2.5
+        ports:
+          - 9000:5000
+    env:
+      PARQUETNEO_EMULATOR_TESTS: s3
+      PARQUETNEO_S3_ENDPOINT: http://127.0.0.1:9000
+      PARQUETNEO_S3_ACCESS_KEY: test
+      PARQUETNEO_S3_SECRET_KEY: test
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+          dotnet-version: 10.0.x
+
+      - name: Wait for the server
+        run: |
+          for attempt in $(seq 1 60); do
+            if curl -s -o /dev/null -m 2 http://127.0.0.1:9000/; then echo "the server answers"; exit 0; fi
+            sleep 1
+          done
+          echo "the server did not answer"
+          exit 1
+
+      - name: Build
+        run: dotnet build tests/ParquetNeo.IntegrationTests -c Release
+
+      - name: Tests
+        run: dotnet test --project tests/ParquetNeo.IntegrationTests -c Release --no-build --results-directory TestResults
+
+  azure:
+    name: azure (azurite)
+    runs-on: ubuntu-latest
+    env:
+      PARQUETNEO_EMULATOR_TESTS: azure
+      # The account and the key of the emulator, which are the same for everyone.
+      PARQUETNEO_AZURE_CONNECTION_STRING: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+          dotnet-version: 10.0.x
+
+      # Not a service container: the version of the API the SDK asks for can be newer than the one the emulator knows, which takes --skipApiVersionCheck, a command.
+      - name: Start Azurite
+        run: |
+          npm install --global azurite@3.38.0
+          mkdir -p "$RUNNER_TEMP/azurite"
+          nohup azurite-blob --silent --skipApiVersionCheck --location "$RUNNER_TEMP/azurite" --blobHost 127.0.0.1 > azurite.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl -s -o /dev/null -m 2 http://127.0.0.1:10000/; then echo "azurite answers"; exit 0; fi
+            sleep 1
+          done
+          echo "azurite did not answer"; tail -20 azurite.log
+          exit 1
+
+      - name: Build
+        run: dotnet build tests/ParquetNeo.IntegrationTests -c Release
+
+      - name: Tests
+        run: dotnet test --project tests/ParquetNeo.IntegrationTests -c Release --no-build --results-directory TestResults

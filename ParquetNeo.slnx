@@ -27,7 +27,6 @@
     <Project Path="tests/ParquetNeo.Linq.Tests/ParquetNeo.Linq.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Serialization.Tests/ParquetNeo.Serialization.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Storage.AzureBlobs.Tests/ParquetNeo.Storage.AzureBlobs.Tests.csproj" />
-    <Project Path="tests/ParquetNeo.Storage.EmulatorTests/ParquetNeo.Storage.EmulatorTests.csproj" />
     <Project Path="tests/ParquetNeo.Storage.S3.Tests/ParquetNeo.Storage.S3.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Tests/ParquetNeo.Tests.csproj" />
     <Project Path="tests/ParquetNeo.Tests.Common/ParquetNeo.Tests.Common.csproj" />
