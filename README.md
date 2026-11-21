@@ -235,6 +235,7 @@ while (reader.Read())
 | `tests/ParquetNeo.Tests` | Unit tests of `ParquetNeo` ([TUnit](https://tunit.dev/)) |
 | `tests/ParquetNeo.Linq.Tests` | Unit tests of `ParquetNeo.Linq`: results against LINQ to objects, random predicates, plans, directories |
 | `tests/ParquetNeo.Serialization.Tests` | Unit tests of `ParquetNeo.Serialization`, including the generated mappings against the reflection path |
+| `tests/ParquetNeo.IntegrationTests` | ParquetNeo against pyarrow: files written by each are read by the other (off unless `PARQUETNEO_PYTHON_TESTS=1`; its own workflow) |
 | `tests/ParquetNeo.AotSmoke` | A program published with Native AOT in CI: it uses the serializer with a generated mapping |
 | `tests/ParquetNeo.Storage.S3.Tests`, `tests/ParquetNeo.Storage.AzureBlobs.Tests` | Unit tests of the storages against fakes of the AWS and Azure SDKs, and datasets and the serializer reading through them |
 | `tests/ParquetNeo.Extensions.DependencyInjection.Tests` | Unit tests of the registration of the metrics |
@@ -258,6 +259,10 @@ dotnet build -c Release
 ```bash
 dotnet test -c Release
 ```
+
+The integration tests against pyarrow (the Python implementation of Parquet: files written by one are read by the other) are skipped by
+that command, which needs no Python; see [tests/ParquetNeo.IntegrationTests](tests/ParquetNeo.IntegrationTests/README.md) to run them. They run in the
+`Integration tests` workflow.
 
 ## License
 

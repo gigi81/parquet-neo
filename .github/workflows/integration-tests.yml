@@ -1,0 +1,61 @@
+name: Integration tests
+
+# ParquetNeo against pyarrow (the Python bindings of Apache Arrow's Parquet, the reference implementation): files written by pyarrow are
+# read by ParquetNeo, and files written by ParquetNeo are read by pyarrow, and each side must find what the other wrote.
+# See tests/ParquetNeo.IntegrationTests.
+
+on:
+  # Only on main (and by hand, from the Actions tab, for any branch): the suite needs Python and pyarrow, and is not part of the checks of a pull request.
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-interop:
+    runs-on: ubuntu-latest
+    env:
+      # Turns the tests on: with it a missing Python or pyarrow is a failure, not a skipped test.
+      PARQUETNEO_PYTHON_TESTS: "1"
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json # the SDK to build with: 11
+          dotnet-version: 10.0.x # and the runtime of .NET 10, which the tests of the net10.0 build run on
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: tests/ParquetNeo.IntegrationTests/python/requirements.txt
+
+      - name: Install pyarrow
+        run: python -m pip install -r tests/ParquetNeo.IntegrationTests/python/requirements.txt
+
+      - name: Python and pyarrow
+        run: |
+          python --version
+          python -c "import pyarrow; print('pyarrow', pyarrow.__version__)"
+
+      - name: Restore
+        run: dotnet restore tests/ParquetNeo.IntegrationTests
+
+      - name: Build
+        run: dotnet build tests/ParquetNeo.IntegrationTests -c Release --no-restore
+
+      - name: Integration tests
+        env:
+          PARQUETNEO_PYTHON: python
+        run: dotnet test --project tests/ParquetNeo.IntegrationTests -c Release --no-build --results-directory TestResults
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Integration tests against pyarrow"
+            echo "pyarrow $(python -c 'import pyarrow; print(pyarrow.__version__)')"
+          } >> "$GITHUB_STEP_SUMMARY"
