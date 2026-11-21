@@ -21,7 +21,7 @@ ones **must** be there, and then a missing server is a failure: the workflow set
 With Docker:
 
 ```bash
-docker run -d -p 9000:9000 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin quay.io/minio/minio server /data
+docker run -d -p 9000:9000 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin minio/minio:RELEASE.2025-04-22T22-12-26Z server /data
 docker run -d -p 10000:10000 mcr.microsoft.com/azure-storage/azurite azurite-blob --blobHost 0.0.0.0 --skipApiVersionCheck
 export PARQUETNEO_EMULATOR_TESTS=s3,azure PARQUETNEO_S3_ENDPOINT=http://127.0.0.1:9000 PARQUETNEO_AZURE_CONNECTION_STRING=UseDevelopmentStorage=true
 dotnet test --project tests/ParquetNeo.Storage.EmulatorTests -c Release
