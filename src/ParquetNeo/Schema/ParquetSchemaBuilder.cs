@@ -10,6 +10,13 @@ namespace ParquetNeo.Schema;
 /// <remarks>
 /// The columns are the ones <c>ParquetSerializer</c> writes for the same .NET types. A builder can <see cref="Build"/> any number of
 /// schemas; each has nodes of its own.
+/// <para>
+/// It does not describe everything a file can hold, since it makes what the serializer writes: required and optional fields, and lists and
+/// maps in the standard layout. A <b>repeated</b> field, a <b>field id</b>, a list in a <b>legacy layout</b>, a list or map whose repeated group
+/// or elements have <b>other names</b>, and a decimal <b>stored another way</b> than the smallest are made by hand (<see cref="PrimitiveNode"/>,
+/// <see cref="GroupNode"/>, <see cref="Nested.NestedSchema"/>) and given to <see cref="Add"/>, or, for a column of another physical type or annotation,
+/// to <see cref="Column"/>. The article on the low-level API has a table of them.
+/// </para>
 /// </remarks>
 /// <example>
 /// <code>
@@ -131,7 +138,10 @@ public sealed class ParquetSchemaBuilder
         return this;
     }
 
-    /// <summary>A node made by hand, for what the builder does not have (a repeated field, a field id, a legacy layout). A node belongs to one schema, so a builder with one builds one.</summary>
+    /// <summary>
+    /// A node made by hand, for what the builder does not have: a repeated field, a field id, a list in a legacy layout, a list or map with other names
+    /// (<see cref="Nested.NestedSchema"/>). A node belongs to one schema, so a builder that was given one builds one schema.
+    /// </summary>
     /// <exception cref="ArgumentException">Another field of this level has its name.</exception>
     /// <exception cref="ArgumentNullException">The node is null.</exception>
     public ParquetSchemaBuilder Add(SchemaNode node)

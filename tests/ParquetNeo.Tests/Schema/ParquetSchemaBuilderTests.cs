@@ -244,6 +244,44 @@ public class ParquetSchemaBuilderTests
         await Assert.That(() => builder.Build()).Throws<InvalidOperationException>();
     }
 
+    /// <summary>The cases the article lists as not covered by the builder, with the code it gives for them.</summary>
+    [Test]
+    public async Task TheCasesTheBuilderDoesNotCover_AreMadeByHand_AsTheArticleSays()
+    {
+        var schema = new ParquetSchemaBuilder()
+            .Int64("Id")
+            .Add(new PrimitiveNode("Ids", PhysicalType.Int32, FieldRepetitionType.Repeated, fieldId: 7))
+            .Add(NestedSchema.List("Tags", FieldRepetitionType.Optional,
+                new PrimitiveNode("item", PhysicalType.ByteArray, FieldRepetitionType.Optional, LogicalType.String), repeatedName: "bag"))
+            .Column("Price", PhysicalType.FixedLenByteArray, LogicalType.Decimal(scale: 2, precision: 10), typeLength: 5)
+            .Build();
+
+        var ids = schema.FindColumn(["Ids"])!;
+        await Assert.That(ids.FieldId).IsEqualTo(7);
+        await Assert.That(ids.Repetition).IsEqualTo(FieldRepetitionType.Repeated);
+        await Assert.That(ids.MaxRepetitionLevel).IsEqualTo(1);
+        await Assert.That(string.Join('.', schema.Columns[2].Path)).IsEqualTo("Tags.bag.item");
+        await Assert.That(NestedSchema.GetListLayout(schema.Root.FindChild("Tags")!)!.Style).IsEqualTo(ListStyle.ThreeLevel);
+        var price = schema.FindColumn(["Price"])!;
+        await Assert.That(price.TypeLength).IsEqualTo(5);
+        await Assert.That(price.LogicalType).IsEqualTo(LogicalType.Decimal(scale: 2, precision: 10));
+    }
+
+    [Test]
+    public async Task AListInTheLegacyLayout_ThatHiveWrites_IsMadeByHand_AndIsRecognizedAsAList()
+    {
+        var tags = new GroupNode(
+            "Tags", FieldRepetitionType.Optional,
+            [new PrimitiveNode("array", PhysicalType.ByteArray, FieldRepetitionType.Repeated, LogicalType.String)],
+            LogicalType.List);
+
+        var schema = new ParquetSchemaBuilder().Int32("Id").Add(tags).Build();
+
+        await Assert.That(NestedSchema.GetListLayout(schema.Root.FindChild("Tags")!)!.Style).IsEqualTo(ListStyle.RepeatedPrimitive);
+        await Assert.That(string.Join('.', schema.Columns[1].Path)).IsEqualTo("Tags.array");
+        await Assert.That(schema.Columns[1].MaxRepetitionLevel).IsEqualTo(1);
+    }
+
     [Test]
     public async Task TheSchema_IsWrittenInTheFooterAndReadBack()
     {
