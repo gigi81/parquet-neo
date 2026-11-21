@@ -24,10 +24,13 @@ public sealed class ZstdCodec : ICodec, IDisposable
         _compressors = new ThreadLocal<Compressor>(() => new Compressor(level), trackAllValues: true);
     }
 
+    /// <summary>The codec this class implements: <see cref="CompressionCodec.Zstd"/>.</summary>
     public CompressionCodec Id => CompressionCodec.Zstd;
 
+    /// <inheritdoc />
     public int GetMaxCompressedLength(int uncompressedLength) => Compressor.GetCompressBound(uncompressedLength);
 
+    /// <inheritdoc />
     public int Compress(ReadOnlySpan<byte> source, Span<byte> destination)
     {
         if (destination.Length < GetMaxCompressedLength(source.Length))
@@ -38,6 +41,7 @@ public sealed class ZstdCodec : ICodec, IDisposable
         return _compressors.Value!.Wrap(source, destination);
     }
 
+    /// <inheritdoc />
     public void Decompress(ReadOnlySpan<byte> source, Span<byte> destination)
     {
         if (source.IsEmpty && destination.IsEmpty)
@@ -62,6 +66,7 @@ public sealed class ZstdCodec : ICodec, IDisposable
         }
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         foreach (var compressor in _compressors.Values)
@@ -79,6 +84,7 @@ public sealed class ZstdCodec : ICodec, IDisposable
     }
 }
 
+/// <summary>Registers the Zstandard codec of <c>ParquetNeo.Compression.Zstd</c> with a <see cref="CodecRegistry"/>.</summary>
 public static class ZstdCodecRegistryExtensions
 {
     /// <summary>Registers a <see cref="ZstdCodec"/> that lives as long as the process (or the registry).</summary>

@@ -9,8 +9,10 @@ public sealed class OffsetIndex : IThriftStruct<OffsetIndex>
     /// <summary>The data pages in the order of the file; the first rows of the pages increase.</summary>
     public List<PageLocation> PageLocations { get; set; } = new();
 
+    /// <summary>Parses the Thrift-encoded offset index.</summary>
     public static OffsetIndex Deserialize(ReadOnlySpan<byte> data) => ThriftStruct.Deserialize<OffsetIndex>(data, out _);
 
+    /// <summary>Writes the offset index in the Thrift compact protocol.</summary>
     public void Serialize(IBufferWriter<byte> output) => ThriftStruct.Serialize(this, output);
 
     static OffsetIndex IThriftStruct<OffsetIndex>.Read(ref ThriftCompactReader reader)

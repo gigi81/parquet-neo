@@ -20,7 +20,9 @@ public sealed class ParquetDecimalAttribute : Attribute
         Scale = scale;
     }
 
+    /// <summary>The number of digits of the numbers.</summary>
     public int Precision { get; }
 
+    /// <summary>The number of digits after the decimal point.</summary>
     public int Scale { get; }
 }

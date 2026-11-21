@@ -12,8 +12,10 @@ public sealed class SnappyCodec : ICodec
     /// <summary>Beyond this the worst-case compressed size would overflow an <see cref="int"/>.</summary>
     private const int MaxUncompressedLength = 1_800_000_000;
 
+    /// <summary>The codec this class implements: <see cref="CompressionCodec.Snappy"/>.</summary>
     public CompressionCodec Id => CompressionCodec.Snappy;
 
+    /// <inheritdoc />
     public int GetMaxCompressedLength(int uncompressedLength)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(uncompressedLength);
@@ -21,6 +23,7 @@ public sealed class SnappyCodec : ICodec
         return SnappierCodec.GetMaxCompressedLength(uncompressedLength);
     }
 
+    /// <inheritdoc />
     public int Compress(ReadOnlySpan<byte> source, Span<byte> destination)
     {
         if (destination.Length < GetMaxCompressedLength(source.Length))
@@ -31,6 +34,7 @@ public sealed class SnappyCodec : ICodec
         return SnappierCodec.Compress(source, destination);
     }
 
+    /// <inheritdoc />
     public void Decompress(ReadOnlySpan<byte> source, Span<byte> destination)
     {
         if (source.IsEmpty && destination.IsEmpty)
@@ -62,7 +66,9 @@ public sealed class SnappyCodec : ICodec
     }
 }
 
+/// <summary>Registers the Snappy codec of <c>ParquetNeo.Compression.Snappy</c> with a <see cref="CodecRegistry"/>.</summary>
 public static class SnappyCodecRegistryExtensions
 {
+    /// <summary>Adds the Snappy codec to the registry, and returns the registry.</summary>
     public static CodecRegistry AddSnappy(this CodecRegistry registry) => registry.Register(new SnappyCodec());
 }

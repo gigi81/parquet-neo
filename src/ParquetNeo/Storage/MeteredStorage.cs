@@ -14,12 +14,14 @@ public sealed class MeteredStorage(IParquetStorage inner, ReadStatistics? statis
     /// <summary>The counts of everything read through this storage.</summary>
     public ReadStatistics Statistics { get; } = statistics ?? new ReadStatistics();
 
+    /// <inheritdoc />
     public IAsyncEnumerable<StorageObject> ListAsync(string prefix, CancellationToken cancellationToken = default)
     {
         Statistics.AddListing();
         return _inner.ListAsync(prefix, cancellationToken);
     }
 
+    /// <inheritdoc />
     public async ValueTask<Stream> OpenReadAsync(string key, CancellationToken cancellationToken = default)
     {
         var stream = await _inner.OpenReadAsync(key, cancellationToken).ConfigureAwait(false);

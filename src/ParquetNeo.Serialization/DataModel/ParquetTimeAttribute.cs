@@ -16,6 +16,7 @@ public sealed class ParquetTimeAttribute : Attribute
         Unit = unit;
     }
 
+    /// <summary>The unit the times are written in.</summary>
     public TimeUnit Unit { get; }
 
     /// <summary>Whether the times are in UTC. Defaults to false: a reading of the clock on the wall.</summary>

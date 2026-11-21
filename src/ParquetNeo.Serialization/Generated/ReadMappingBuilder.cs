@@ -28,6 +28,7 @@ public sealed class ReadMappingBuilder<TRow>
     /// <summary>Describes a property, or an element, a key or a value, that is a column of its own.</summary>
     /// <param name="name">The name of the column in the file; null for an element, a key or a value.</param>
     /// <param name="description">What it is, for messages: "Property 'Order.Id'"; null for an element, a key or a value.</param>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
     public ReadMappingBuilder<TRow> Leaf<TValue>(string? name, string? description, bool optional)
     {
         var scope = _scopes.Peek();
@@ -38,6 +39,9 @@ public sealed class ReadMappingBuilder<TRow>
 
     /// <summary>Begins describing a property, element, key or value that is an object, until <see cref="End"/>.</summary>
     /// <param name="assemble">Creates the object from what its properties read.</param>
+    /// <param name="name">The name of the field.</param>
+    /// <param name="description">Describes the column or property, for the messages of errors.</param>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
     public ReadMappingBuilder<TRow> BeginObject<TValue>(string? name, string? description, bool optional, AssembleRow<TValue> assemble)
     {
         ArgumentNullException.ThrowIfNull(assemble);
@@ -49,6 +53,9 @@ public sealed class ReadMappingBuilder<TRow>
     /// <summary>Begins describing a collection whose elements cannot be null, until <see cref="End"/>, with the element described inside.</summary>
     /// <param name="elementOptional">Whether an element can be null.</param>
     /// <param name="create">Creates the collection to add the elements to; null for an array, a <see cref="List{T}"/> or an interface that one implements, which are made from what was read.</param>
+    /// <param name="name">The name of the field.</param>
+    /// <param name="description">Describes the column or property, for the messages of errors.</param>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
     public ReadMappingBuilder<TRow> BeginList<TCollection, TElement>(string? name, string? description, bool optional, bool elementOptional, Func<ICollection<TElement>>? create = null)
         where TCollection : class
     {
@@ -64,6 +71,9 @@ public sealed class ReadMappingBuilder<TRow>
     /// <summary>Begins describing a collection of <see cref="Nullable{T}"/>s, until <see cref="End"/>, with the element described inside.</summary>
     /// <param name="elementOptional">Whether an element can be null.</param>
     /// <param name="create">Creates the collection to add the elements to; null for an array, a <see cref="List{T}"/> or an interface that one implements, which are made from what was read.</param>
+    /// <param name="name">The name of the field.</param>
+    /// <param name="description">Describes the column or property, for the messages of errors.</param>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
     public ReadMappingBuilder<TRow> BeginNullableList<TCollection, TElement>(string? name, string? description, bool optional, bool elementOptional, Func<ICollection<TElement?>>? create = null)
         where TCollection : class
         where TElement : struct
@@ -80,6 +90,9 @@ public sealed class ReadMappingBuilder<TRow>
     /// <summary>Begins describing a dictionary, until <see cref="End"/>, with the key and then the value described inside.</summary>
     /// <param name="valueOptional">Whether a value can be null.</param>
     /// <param name="create">Creates the dictionary to add the entries to.</param>
+    /// <param name="name">The name of the field.</param>
+    /// <param name="description">Describes the column or property, for the messages of errors.</param>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
     public ReadMappingBuilder<TRow> BeginMap<TMap, TKey, TValue>(string? name, string? description, bool optional, bool valueOptional, Func<IDictionary<TKey, TValue>> create)
         where TMap : class
         where TKey : notnull
@@ -94,6 +107,9 @@ public sealed class ReadMappingBuilder<TRow>
     /// <summary>Begins describing a dictionary whose values are <see cref="Nullable{T}"/>s, until <see cref="End"/>, with the key and then the value described inside.</summary>
     /// <param name="valueOptional">Whether a value can be null.</param>
     /// <param name="create">Creates the dictionary to add the entries to.</param>
+    /// <param name="name">The name of the field.</param>
+    /// <param name="description">Describes the column or property, for the messages of errors.</param>
+    /// <param name="optional">Whether the value can be null: the field is optional.</param>
     public ReadMappingBuilder<TRow> BeginMapOfNullable<TMap, TKey, TValue>(string? name, string? description, bool optional, bool valueOptional, Func<IDictionary<TKey, TValue?>> create)
         where TMap : class
         where TKey : notnull

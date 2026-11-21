@@ -22,6 +22,7 @@ internal sealed class DeserializationSession<TRow>
     /// <exception cref="Exceptions.SchemaMismatchException">The file does not have the columns the row type needs, or has them as other types.</exception>
     /// <param name="useFileIndexes">Whether bloom filters and the page index are read from the stream to rule out row groups and pages: not when only some byte ranges of it have been loaded.</param>
     /// <summary>Works out the row groups to read, which can read bloom filters from the stream: a constructor does not do that.</summary>
+    /// <param name="reader">The reader of the file.</param>
     public static DeserializationSession<TRow> Create(ParquetFileReader reader, ParquetFilter? filter = null, bool useFileIndexes = true) =>
         new(reader, filter, useFileIndexes, filter is null ? Enumerable.Range(0, reader.RowGroupCount).ToArray() : reader.GetMatchingRowGroups(filter, useFileIndexes));
 

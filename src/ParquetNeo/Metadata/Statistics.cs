@@ -11,18 +11,25 @@ public sealed class Statistics : IThriftStruct<Statistics>
     /// <summary>Deprecated min (signed byte-wise order); prefer <see cref="MinValue"/>.</summary>
     public byte[]? Min { get; set; }
 
+    /// <summary>The number of null values.</summary>
     public long? NullCount { get; set; }
 
+    /// <summary>The number of distinct values; null when the writer did not count them.</summary>
     public long? DistinctCount { get; set; }
 
+    /// <summary>The largest value, in the encoding of the type of the column.</summary>
     public byte[]? MaxValue { get; set; }
 
+    /// <summary>The smallest value, in the encoding of the type of the column.</summary>
     public byte[]? MinValue { get; set; }
 
+    /// <summary>Whether <see cref="MaxValue"/> is a value of the column and not only a bound above it.</summary>
     public bool? IsMaxValueExact { get; set; }
 
+    /// <summary>Whether <see cref="MinValue"/> is a value of the column and not only a bound below it.</summary>
     public bool? IsMinValueExact { get; set; }
 
+    /// <summary>The number of NaN values of a floating point column.</summary>
     public long? NanCount { get; set; }
 
     static Statistics IThriftStruct<Statistics>.Read(ref ThriftCompactReader reader)

@@ -6,6 +6,10 @@ namespace ParquetNeo.Serialization.Shredders;
 /// <summary>An object: a group of the properties it is written as, optional when the object may be null.</summary>
 /// <param name="properties">The properties, which say how the object is laid out in the schema.</param>
 /// <param name="shredProperties">One function that reads all the properties and adds them to their columns, compiled for the type or written for it by the source generator.</param>
+/// <param name="optional">Whether the value can be null: the field is optional.</param>
+/// <param name="firstColumn">The position of the first column of the object among the columns that are read or written.</param>
+/// <param name="columnCount">How many columns the object has.</param>
+/// <param name="description">Describes the column or property, for the messages of errors.</param>
 internal sealed class StructShredder<TValue>(
     bool optional,
     int firstColumn,

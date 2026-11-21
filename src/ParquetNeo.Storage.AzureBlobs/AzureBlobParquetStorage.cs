@@ -21,12 +21,14 @@ public sealed class AzureBlobParquetStorage(BlobContainerClient container, Range
 {
     private readonly BlobContainerClient _container = container ?? throw new ArgumentNullException(nameof(container));
 
+    /// <inheritdoc />
     public IAsyncEnumerable<StorageObject> ListAsync(string prefix, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(prefix);
         return ListBlobsAsync(prefix, cancellationToken);
     }
 
+    /// <inheritdoc />
     public async ValueTask<Stream> OpenReadAsync(string key, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(key);

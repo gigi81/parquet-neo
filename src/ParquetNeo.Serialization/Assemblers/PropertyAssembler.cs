@@ -11,6 +11,9 @@ namespace ParquetNeo.Serialization.Assemblers;
 /// <param name="name">The name of the column or field of the file.</param>
 /// <param name="slot">The index of the property among the values waiting for a constructor.</param>
 /// <param name="property">The property, which the code made by reflection for an object created without a constructor sets; null when a generated mapping supplies that code.</param>
+/// <param name="description">Describes the column or property, for the messages of errors.</param>
+/// <param name="optional">Whether the value can be null: the field is optional.</param>
+/// <param name="value">The value.</param>
 internal sealed class PropertyAssembler<TValue>(
     string name,
     string description,

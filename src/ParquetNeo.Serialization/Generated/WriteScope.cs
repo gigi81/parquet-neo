@@ -6,6 +6,9 @@ namespace ParquetNeo.Serialization.Generated;
 /// <param name="name">What the part is called among the properties of the object it is in; null for an element, a key or a value.</param>
 /// <param name="outside">Where the part is in the schema: how many optional and repeated nodes lie above it.</param>
 /// <param name="firstColumn">The number of the first column below the part.</param>
+/// <param name="path">The path of the property, for the messages of errors.</param>
+/// <param name="description">Describes the column or property, for the messages of errors.</param>
+/// <param name="optional">Whether the value can be null: the field is optional.</param>
 internal abstract class WriteScope(string? name, string path, string description, bool optional, Position outside, int firstColumn)
 {
     public string? Name { get; } = name;

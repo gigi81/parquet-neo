@@ -16,8 +16,10 @@ public sealed class StructureLevel
         Offsets = offsets;
     }
 
+    /// <summary>The optional or repeated schema node of the level.</summary>
     public SchemaNode Node { get; }
 
+    /// <summary>Whether the level is the validity of an optional node or the offsets of a repeated one.</summary>
     public StructureLevelKind Kind { get; }
 
     /// <summary>For an optional node, one entry per item: <c>true</c> when the value is present.</summary>

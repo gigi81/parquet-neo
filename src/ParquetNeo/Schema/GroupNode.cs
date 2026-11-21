@@ -42,8 +42,10 @@ public sealed class GroupNode : SchemaNode
         }
     }
 
+    /// <summary>The nodes in the group, in order.</summary>
     public IReadOnlyList<SchemaNode> Children => _children;
 
+    /// <summary>Finds a child by its name; null when there is none.</summary>
     public SchemaNode? FindChild(string name) => Array.Find(_children, c => c.Name == name);
 
     internal override SchemaElement ToElement(bool isRoot)

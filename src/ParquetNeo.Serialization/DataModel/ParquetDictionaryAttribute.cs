@@ -31,6 +31,7 @@ namespace ParquetNeo.DataModel;
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
 public sealed class ParquetDictionaryAttribute(DictionaryMode mode) : Attribute
 {
+    /// <summary>Whether the column is dictionary encoded.</summary>
     public DictionaryMode Mode { get; } = mode;
 
     /// <summary>

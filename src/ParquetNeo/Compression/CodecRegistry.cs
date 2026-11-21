@@ -10,6 +10,7 @@ public sealed class CodecRegistry
 {
     private readonly ConcurrentDictionary<CompressionCodec, ICodec> _codecs = new();
 
+    /// <summary>Makes a registry that has the codecs built into <c>ParquetNeo</c>: uncompressed, Gzip and Brotli.</summary>
     public CodecRegistry()
     {
         Register(new UncompressedCodec());
@@ -29,6 +30,7 @@ public sealed class CodecRegistry
         return this;
     }
 
+    /// <summary>Finds the codec for an identifier; false when none is registered.</summary>
     public bool TryGet(CompressionCodec id, out ICodec codec) => _codecs.TryGetValue(id, out codec!);
 
     /// <exception cref="NotSupportedException">No codec is registered for <paramref name="id"/>.</exception>

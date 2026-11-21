@@ -10,6 +10,8 @@ internal static class VectorMinMax
     /// minimum or maximum, and vector min/max instructions do not treat them consistently.
     /// </summary>
     /// <param name="values">Must not be empty.</param>
+    /// <param name="min">The smallest value.</param>
+    /// <param name="max">The largest value.</param>
     public static bool TryGetMinMax<T>(ReadOnlySpan<T> values, out T min, out T max)
         where T : unmanaged, INumber<T>
     {

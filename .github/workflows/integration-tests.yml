@@ -1,7 +1,8 @@
 name: Integration tests
 
-# ParquetNeo against pyarrow (the Python bindings of Apache Arrow's Parquet, the reference implementation): files written by pyarrow are
-# read by ParquetNeo, and files written by ParquetNeo are read by pyarrow, and each side must find what the other wrote.
+# ParquetNeo against pyarrow (the Python bindings of Apache Arrow's Parquet, the reference implementation) and DuckDB (a second implementation, which
+# also reads the bloom filters and the page index): files written by them are read by ParquetNeo, and files written by ParquetNeo are read by them,
+# and each side must find what the other wrote.
 # See tests/ParquetNeo.IntegrationTests.
 #
 # Which pyarrow:
@@ -21,7 +22,7 @@ on:
   workflow_dispatch:
     inputs:
       pyarrow:
-        description: "The pyarrow to test with: 'pinned' (requirements.txt), 'latest', or a version such as 27.0.0"
+        description: "The pyarrow to test with ('pinned' is requirements.txt, 'latest' also takes the latest DuckDB, or a version of pyarrow such as 27.0.0)"
         type: string
         default: pinned
 
@@ -55,14 +56,14 @@ jobs:
         run: |
           case "$PYARROW" in
             pinned) python -m pip install -r tests/ParquetNeo.IntegrationTests/python/requirements.txt ;;
-            latest) python -m pip install --upgrade pyarrow ;;
-            *) python -m pip install "pyarrow==$PYARROW" ;;
+            latest) python -m pip install --upgrade pyarrow duckdb ;;
+            *) python -m pip install "pyarrow==$PYARROW" "duckdb==$(grep -ioE '^duckdb==[0-9][^ #]*' tests/ParquetNeo.IntegrationTests/python/requirements.txt | cut -d= -f3)" ;;
           esac
 
       - name: Python and pyarrow
         run: |
           python --version
-          python -c "import pyarrow; print('pyarrow', pyarrow.__version__)"
+          python -c "import pyarrow, duckdb; print('pyarrow', pyarrow.__version__, 'duckdb', duckdb.__version__)"
 
       - name: Restore
         run: dotnet restore tests/ParquetNeo.IntegrationTests
@@ -82,5 +83,5 @@ jobs:
           pinned=$(grep -ioE '^pyarrow==[0-9][^ #]*' tests/ParquetNeo.IntegrationTests/python/requirements.txt | head -1 | cut -d= -f3)
           {
             echo "### Integration tests against pyarrow"
-            echo "pyarrow $(python -c 'import pyarrow; print(pyarrow.__version__)') (asked for: \`$PYARROW\`; the pinned version is $pinned)"
+            echo "pyarrow $(python -c 'import pyarrow; print(pyarrow.__version__)'), duckdb $(python -c 'import duckdb; print(duckdb.__version__)') (asked for: \`$PYARROW\`; the pinned pyarrow is $pinned)"
           } >> "$GITHUB_STEP_SUMMARY"

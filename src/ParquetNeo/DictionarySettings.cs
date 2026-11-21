@@ -18,5 +18,6 @@ public sealed record DictionarySettings
     /// <summary>The settings that choose only a mode.</summary>
     public static DictionarySettings FromMode(DictionaryMode mode) => new() { Mode = mode };
 
+    /// <summary>The settings that choose only a mode; see <see cref="FromMode"/>.</summary>
     public static implicit operator DictionarySettings(DictionaryMode mode) => FromMode(mode);
 }

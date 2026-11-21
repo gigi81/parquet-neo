@@ -35,6 +35,7 @@ public sealed class RowSelection
         RowCount = total;
     }
 
+    /// <summary>The ranges of rows, in order, which do not touch or overlap.</summary>
     public IReadOnlyList<RowRange> Ranges { get; }
 
     /// <summary>The number of rows in the selection.</summary>

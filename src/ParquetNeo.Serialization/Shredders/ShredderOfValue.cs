@@ -12,5 +12,7 @@ internal abstract class Shredder<TValue>(bool optional, int firstColumn, int col
     /// <param name="present">False for a null: <paramref name="value"/> is then meaningless.</param>
     /// <param name="definition">The number of optional and repeated ancestors that are present.</param>
     /// <param name="repetition">The repetition level of the first entry: how deep the entry shares its ancestors with the one before.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <param name="buffers">The buffers of the columns that the values are written to.</param>
     public abstract void Shred(TValue value, bool present, int definition, int repetition, ILeafBuffer[] buffers);
 }

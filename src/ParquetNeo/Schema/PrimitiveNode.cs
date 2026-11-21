@@ -56,6 +56,7 @@ public sealed class PrimitiveNode : SchemaNode
         TypeLength = typeLength;
     }
 
+    /// <summary>The physical type of the column.</summary>
     public PhysicalType Type { get; }
 
     /// <summary>Byte length of each value of a <see cref="PhysicalType.FixedLenByteArray"/> column; otherwise null.</summary>

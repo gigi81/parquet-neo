@@ -24,6 +24,8 @@ internal static class PredicateTranslator
     }
 
     /// <param name="exact">Whether the condition holds for exactly the rows the expression is true for, which negating it needs.</param>
+    /// <param name="expression">The expression to translate.</param>
+    /// <param name="parameter">The parameter of the lambda, which stands for a row.</param>
     private static ParquetFilter? Translate(Expression expression, ParameterExpression parameter, out bool exact)
     {
         exact = false;

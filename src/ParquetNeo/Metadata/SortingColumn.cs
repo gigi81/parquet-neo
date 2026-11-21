@@ -5,10 +5,13 @@ namespace ParquetNeo.Metadata;
 /// <summary>A column a row group is sorted by (thrift <c>SortingColumn</c>).</summary>
 public sealed class SortingColumn : IThriftStruct<SortingColumn>
 {
+    /// <summary>The position of the column in the schema.</summary>
     public int ColumnIndex { get; set; }
 
+    /// <summary>Whether the rows are sorted from the largest value to the smallest.</summary>
     public bool Descending { get; set; }
 
+    /// <summary>Whether the nulls come before the other values.</summary>
     public bool NullsFirst { get; set; }
 
     static SortingColumn IThriftStruct<SortingColumn>.Read(ref ThriftCompactReader reader)

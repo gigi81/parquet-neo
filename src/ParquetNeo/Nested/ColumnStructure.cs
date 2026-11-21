@@ -32,11 +32,13 @@ public sealed class ColumnStructure
         RowCount = levels[0].ItemCount;
     }
 
+    /// <summary>The column the structure is of.</summary>
     public PrimitiveNode Column { get; }
 
     /// <summary>The optional and repeated nodes on the way to the column, outermost first.</summary>
     public IReadOnlyList<StructureLevel> Levels { get; }
 
+    /// <summary>The number of rows: the items of the outermost level.</summary>
     public int RowCount { get; }
 
     /// <summary>Builds a structure from its levels, checking that they fit the column and each other.</summary>
@@ -86,6 +88,8 @@ public sealed class ColumnStructure
     /// </summary>
     /// <param name="repetitionLevels">Empty when the column is not repeated.</param>
     /// <exception cref="ArgumentException">The levels are out of range or inconsistent, or the column has no optional or repeated node.</exception>
+    /// <param name="column">The column the levels are of.</param>
+    /// <param name="definitionLevels">The definition level of each entry.</param>
     public static ColumnStructure FromLevels(PrimitiveNode column, ReadOnlySpan<int> definitionLevels, ReadOnlySpan<int> repetitionLevels = default)
     {
         ArgumentNullException.ThrowIfNull(column);
@@ -210,6 +214,7 @@ public sealed class ColumnStructure
 
     /// <summary>The definition and repetition levels of the structure, ready for <see cref="ColumnWriter"/>.</summary>
     /// <param name="repetitionLevels">Empty when the column is not repeated.</param>
+    /// <param name="definitionLevels">Receives the definition level of each entry.</param>
     public void GetLevels(out int[] definitionLevels, out int[] repetitionLevels)
     {
         var definition = new List<int>();

@@ -25,6 +25,7 @@ internal sealed class SerializationSession<TRow> : IDisposable
 
     /// <param name="expectedRows">How many rows will be added, when that is known up front; it sizes the buffers that collect a row group.</param>
     /// <param name="destination">A stream to write the file to as it is encoded, when the caller does not need the pieces staged in memory; then <see cref="TakeStaged"/> is always empty.</param>
+    /// <param name="options">How the rows are written; the defaults when null.</param>
     public SerializationSession(ParquetSerializerOptions? options, int? expectedRows = null, Stream? destination = null)
     {
         options ??= new ParquetSerializerOptions();
