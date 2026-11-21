@@ -221,4 +221,19 @@ public class AzureBlobParquetStorageTests
         await Assert.That(requests.Count).IsEqualTo(2);
         await Assert.That(requests.All(span => (string?)span.GetTagItem(system) == "azure_blob")).IsTrue();
     }
+
+    [Test]
+    public async Task AListingAndAnOpeningThatFail_AreSpansWithAnErrorStatus_AndTheErrorIsThrownAsItWas()
+    {
+        using var tracing = new ParquetNeo.Diagnostics.ParquetNeoTracing();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.TraceRecorder(tracing.Source);
+        var container = new FakeContainer { Failure = new Azure.RequestFailedException(500, "down", "InternalError", null) };
+        var storage = new AzureBlobParquetStorage(container, new RangeReadStreamOptions { Tracing = tracing });
+
+        await Assert.That(async () => await List(storage, "people/")).Throws<Azure.RequestFailedException>();
+        await Assert.That(async () => await storage.OpenReadAsync("a")).Throws<Azure.RequestFailedException>();
+
+        await Assert.That(recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageListSpan).Single().Status).IsEqualTo(System.Diagnostics.ActivityStatusCode.Error);
+        await Assert.That(recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageOpenSpan).Single().Status).IsEqualTo(System.Diagnostics.ActivityStatusCode.Error);
+    }
 }

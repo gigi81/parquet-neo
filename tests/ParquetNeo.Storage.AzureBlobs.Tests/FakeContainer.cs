@@ -29,6 +29,9 @@ public sealed class FakeContainer : BlobContainerClient
 
     public string? LastPrefix { get; private set; }
 
+    /// <summary>When set, the listing and the properties of a blob fail with it, as a storage that is down does.</summary>
+    public Exception? Failure { get; set; }
+
     public override string Name => "fake-container";
 
     public FakeContainer Put(string key, byte[] data, string? etag = null)
@@ -43,6 +46,11 @@ public sealed class FakeContainer : BlobContainerClient
     {
         Interlocked.Increment(ref _listings);
         LastPrefix = prefix;
+        if (Failure is not null)
+        {
+            return new FailingPageable(Failure);
+        }
+
         var matching = _blobs.Where(pair => pair.Key.StartsWith(prefix ?? "", StringComparison.Ordinal)).OrderBy(pair => pair.Key, StringComparer.Ordinal).ToList();
         var pages = new List<Page<BlobItem>>();
         for (int start = 0; start < Math.Max(matching.Count, 1); start += PageSize)
@@ -67,6 +75,11 @@ public sealed class FakeContainer : BlobContainerClient
         public override Task<Response<BlobProperties>> GetPropertiesAsync(BlobRequestConditions? conditions = null, CancellationToken cancellationToken = default)
         {
             Interlocked.Increment(ref container._propertyCalls);
+            if (container.Failure is not null)
+            {
+                throw container.Failure;
+            }
+
             var (data, etag) = Find();
             return Task.FromResult(Response.FromValue(BlobsModelFactory.BlobProperties(contentLength: data.Length, eTag: etag), new FakeResponse(200)));
         }
@@ -95,5 +108,18 @@ public sealed class FakeContainer : BlobContainerClient
             container._blobs.TryGetValue(key, out var found)
                 ? found
                 : throw new RequestFailedException(404, "The specified blob does not exist.", "BlobNotFound", null);
+    }
+
+    /// <summary>A listing whose first page fails.</summary>
+    private sealed class FailingPageable(Exception failure) : AsyncPageable<BlobItem>
+    {
+        public override async IAsyncEnumerable<Page<BlobItem>> AsPages(string? continuationToken = null, int? pageSizeHint = null)
+        {
+            await Task.Yield();
+            throw failure;
+#pragma warning disable CS0162
+            yield break;
+#pragma warning restore CS0162
+        }
     }
 }

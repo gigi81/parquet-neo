@@ -325,4 +325,23 @@ public class StorageDatasetTests
         await Assert.That((long)queries[0].GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.QueryRowsTag)!).IsGreaterThanOrEqualTo(3);
         await Assert.That(queries.All(span => (bool)span.GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.FilteredTag)! == false)).IsTrue();
     }
+
+    [Test]
+    public async Task AQueryOverAFileThatCannotBeRead_IsASpanWithAnErrorStatus_WhateverWayItIsRun()
+    {
+        using var tracing = new ParquetNeo.Diagnostics.ParquetNeoTracing();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.TraceRecorder(tracing.Source);
+        var storage = new InMemoryStorage { Options = new RangeReadStreamOptions { BlockSize = 2 * 1024, TailSize = 6 * 1024 } };
+        storage.Put("broken/not-parquet.parquet", new byte[5000]);
+        var broken = ParquetDataset.Open<Person>(storage, "broken/", new ParquetDatasetOptions { Tracing = tracing, MaxDegreeOfParallelism = 1 });
+
+        await Assert.That(() => broken.Select(p => p.Id).ToList()).Throws<Exception>();
+        await Assert.That(async () => await broken.Select(p => p.Id).ToListAsync()).Throws<Exception>();
+        await Assert.That(() => broken.Count()).Throws<Exception>();
+        await Assert.That(async () => await broken.CountAsync()).Throws<Exception>();
+
+        var queries = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.QuerySpan);
+        await Assert.That(queries.Count).IsEqualTo(4);
+        await Assert.That(queries.All(span => span.Status == System.Diagnostics.ActivityStatusCode.Error && span.GetTagItem("error.type") is not null)).IsTrue();
+    }
 }

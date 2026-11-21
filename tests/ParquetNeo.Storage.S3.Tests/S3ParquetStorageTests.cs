@@ -231,4 +231,20 @@ public class S3ParquetStorageTests
         await Assert.That(requests.Count).IsEqualTo(2);
         await Assert.That(requests.All(span => (string?)span.GetTagItem(system) == "aws_s3")).IsTrue();
     }
+
+    [Test]
+    public async Task AListingAndAnOpeningThatFail_AreSpansWithAnErrorStatus_AndTheErrorIsThrownAsItWas()
+    {
+        using var tracing = new ParquetNeo.Diagnostics.ParquetNeoTracing();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.TraceRecorder(tracing.Source);
+        var (client, fake) = FakeS3.Create();
+        fake.Failure = new Amazon.S3.AmazonS3Exception("down", Amazon.Runtime.ErrorType.Receiver, "InternalError", "request", System.Net.HttpStatusCode.InternalServerError);
+        var storage = new S3ParquetStorage(client, "b", new RangeReadStreamOptions { Tracing = tracing });
+
+        await Assert.That(async () => await List(storage, "people/")).Throws<Amazon.S3.AmazonS3Exception>();
+        await Assert.That(async () => await storage.OpenReadAsync("a")).Throws<Amazon.S3.AmazonS3Exception>();
+
+        await Assert.That(recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageListSpan).Single().Status).IsEqualTo(System.Diagnostics.ActivityStatusCode.Error);
+        await Assert.That(recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageOpenSpan).Single().Status).IsEqualTo(System.Diagnostics.ActivityStatusCode.Error);
+    }
 }
