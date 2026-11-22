@@ -286,12 +286,12 @@ public class RowGroupFilterTests
         var sync = ParquetSerializer.Deserialize<Reading>(new MemoryStream(file.ToArray()), options);
         var asynchronous = await ParquetSerializer.DeserializeAsync<Reading>(new MemoryStream(file.ToArray()), options);
 
-        var spans = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.RowGroupSpan);
+        var spans = recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.RowGroupSpan);
         await Assert.That(sync.Count).IsEqualTo(2000);
         await Assert.That(asynchronous.Count).IsEqualTo(2000);
         await Assert.That(spans.Count).IsEqualTo(4);
-        await Assert.That(spans.Select(span => (int)span.GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.RowGroupIndexTag)!).Order()).IsEquivalentTo(new[] { 3, 3, 4, 4 });
-        await Assert.That(spans.All(span => (int)span.GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.RowGroupRowsTag)! == 1000)).IsTrue();
+        await Assert.That(spans.Select(span => (int)span.GetTagItem(ParquetNeo.Diagnostics.TelemetryNames.RowGroupIndexTag)!).Order()).IsEquivalentTo(new[] { 3, 3, 4, 4 });
+        await Assert.That(spans.All(span => (int)span.GetTagItem(ParquetNeo.Diagnostics.TelemetryNames.RowGroupRowsTag)! == 1000)).IsTrue();
     }
 
     [Test]
@@ -305,7 +305,7 @@ public class RowGroupFilterTests
 
         await Assert.That(() => ParquetSerializer.Deserialize<Reading>(new MemoryStream(file.ToArray()), options)).Throws<Exception>();
 
-        var span = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.RowGroupSpan).Single();
+        var span = recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.RowGroupSpan).Single();
         await Assert.That(span.Status).IsEqualTo(System.Diagnostics.ActivityStatusCode.Error);
     }
 }

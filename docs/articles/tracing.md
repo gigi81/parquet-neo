@@ -25,8 +25,8 @@ builder.Services.AddOpenTelemetry()
         .AddOtlpExporter());
 ```
 
-`AddParquetNeoInstrumentation()` only subscribes to the source or the meter: it is what `AddSource(ParquetNeoTracing.SourceName)` and
-`AddMeter(ParquetNeoMetrics.MeterName)` do. Without the package, those two calls do the same.
+`AddParquetNeoInstrumentation()` only subscribes to the source or the meter: it is what `AddSource(TelemetryNames.Name)` and
+`AddMeter(TelemetryNames.Name)` do. Without the package, those two calls do the same.
 
 Then hand the tracing to what you want traced. Like the metrics, it goes in the options, where the code that records it takes it from, so there is no
 global state:
@@ -55,7 +55,7 @@ builder.Services.AddSingleton(provider => new ParquetDatasetOptions
 using var tracing = new ParquetNeoTracing();       // makes its own ActivitySource, which is disposed with it
 
 using var provider = Sdk.CreateTracerProviderBuilder()
-    .AddSource(ParquetNeoTracing.SourceName)       // or AddParquetNeoInstrumentation()
+    .AddSource(TelemetryNames.Name)       // or AddParquetNeoInstrumentation()
     .AddConsoleExporter()
     .Build();
 

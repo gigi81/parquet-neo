@@ -18,7 +18,7 @@ public class ParquetNeoTracingRegistrationTests
         var second = provider.GetRequiredService<ParquetNeoTracing>();
 
         await Assert.That(first).IsSameReferenceAs(second);
-        await Assert.That(first.Source.Name).IsEqualTo(ParquetNeoTracing.SourceName);
+        await Assert.That(first.Source.Name).IsEqualTo(TelemetryNames.Name);
     }
 
     [Test]
@@ -46,10 +46,10 @@ public class ParquetNeoTracingRegistrationTests
             await stream.ReadExactlyAsync(new byte[10]);
         }
 
-        await Assert.That(recorder.Of(ParquetNeoTracing.StorageRequestSpan).Count).IsEqualTo(1);
+        await Assert.That(recorder.Of(TelemetryNames.StorageRequestSpan).Count).IsEqualTo(1);
         provider.Dispose();
         using var afterwards = tracing.StartStorageOpen("x", "k");
-        await Assert.That(recorder.Of(ParquetNeoTracing.StorageOpenSpan).Count).IsEqualTo(0);
+        await Assert.That(recorder.Of(TelemetryNames.StorageOpenSpan).Count).IsEqualTo(0);
     }
 
     [Test]

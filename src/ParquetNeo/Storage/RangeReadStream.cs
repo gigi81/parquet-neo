@@ -184,7 +184,7 @@ public abstract class RangeReadStream : Stream
         {
             read = await ReadRangeAsync(offset, destination, cancellationToken).ConfigureAwait(false);
             succeeded = true;
-            activity?.SetTag(ParquetNeoTracing.StorageBytesTag, read);
+            activity?.SetTag(TelemetryNames.StorageBytesTag, read);
             return read;
         }
         catch (Exception exception)

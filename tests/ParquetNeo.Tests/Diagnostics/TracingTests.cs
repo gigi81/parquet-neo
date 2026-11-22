@@ -13,8 +13,8 @@ public class TracingTests
     {
         using var tracing = new ParquetNeoTracing();
 
-        await Assert.That(ParquetNeoTracing.SourceName).IsEqualTo("ParquetNeo");
-        await Assert.That(tracing.Source.Name).IsEqualTo(ParquetNeoTracing.SourceName);
+        await Assert.That(TelemetryNames.Name).IsEqualTo("ParquetNeo");
+        await Assert.That(tracing.Source.Name).IsEqualTo(TelemetryNames.Name);
         await Assert.That(tracing.Source.Version).IsNotNull();
     }
 
@@ -22,24 +22,22 @@ public class TracingTests
     public async Task TheNamesOfTheSpansAndTheTags_AreAsDocumented_WhateverTheyAreBuiltFrom()
     {
         // What users put in dashboards and queries: a change of one of these is a breaking change, so they are written out here.
-        await Assert.That(ParquetNeoTracing.SourceName).IsEqualTo("ParquetNeo");
-        await Assert.That(ParquetNeoMetrics.MeterName).IsEqualTo("ParquetNeo");
-        await Assert.That(ParquetNeoTracing.StorageRequestSpan).IsEqualTo("parquetneo.storage.request");
-        await Assert.That(ParquetNeoTracing.StorageOpenSpan).IsEqualTo("parquetneo.storage.open");
-        await Assert.That(ParquetNeoTracing.StorageListSpan).IsEqualTo("parquetneo.storage.list");
-        await Assert.That(ParquetNeoTracing.RowGroupSpan).IsEqualTo("parquetneo.row_group.read");
-        await Assert.That(ParquetNeoTracing.QuerySpan).IsEqualTo("parquetneo.query");
-        await Assert.That(ParquetNeoTracing.StorageSystemTag).IsEqualTo("parquetneo.storage.system");
-        await Assert.That(ParquetNeoTracing.StorageKeyTag).IsEqualTo("parquetneo.storage.key");
-        await Assert.That(ParquetNeoTracing.StorageOffsetTag).IsEqualTo("parquetneo.storage.offset");
-        await Assert.That(ParquetNeoTracing.StorageBytesTag).IsEqualTo("parquetneo.storage.bytes");
-        await Assert.That(ParquetNeoTracing.RowGroupIndexTag).IsEqualTo("parquetneo.row_group.index");
-        await Assert.That(ParquetNeoTracing.RowGroupRowsTag).IsEqualTo("parquetneo.row_group.rows");
-        await Assert.That(ParquetNeoTracing.FilteredTag).IsEqualTo("parquetneo.query.filtered");
-        await Assert.That(ParquetNeoTracing.QueryRowsTag).IsEqualTo("parquetneo.query.rows");
-        await Assert.That(ParquetNeoMetrics.StorageSystemTag).IsEqualTo("parquetneo.storage.system");
-        await Assert.That(ParquetNeoMetrics.FilteredTag).IsEqualTo("parquetneo.query.filtered");
-        await Assert.That(ParquetNeoMetrics.OutcomeTag).IsEqualTo("parquetneo.outcome");
+        await Assert.That(TelemetryNames.Name).IsEqualTo("ParquetNeo");
+        await Assert.That(TelemetryNames.StorageRequestSpan).IsEqualTo("parquetneo.storage.request");
+        await Assert.That(TelemetryNames.StorageOpenSpan).IsEqualTo("parquetneo.storage.open");
+        await Assert.That(TelemetryNames.StorageListSpan).IsEqualTo("parquetneo.storage.list");
+        await Assert.That(TelemetryNames.RowGroupSpan).IsEqualTo("parquetneo.row_group.read");
+        await Assert.That(TelemetryNames.QuerySpan).IsEqualTo("parquetneo.query");
+        await Assert.That(TelemetryNames.StorageSystemTag).IsEqualTo("parquetneo.storage.system");
+        await Assert.That(TelemetryNames.StorageKeyTag).IsEqualTo("parquetneo.storage.key");
+        await Assert.That(TelemetryNames.StorageOffsetTag).IsEqualTo("parquetneo.storage.offset");
+        await Assert.That(TelemetryNames.StorageBytesTag).IsEqualTo("parquetneo.storage.bytes");
+        await Assert.That(TelemetryNames.OutcomeTag).IsEqualTo("parquetneo.outcome");
+        await Assert.That(TelemetryNames.RowGroupIndexTag).IsEqualTo("parquetneo.row_group.index");
+        await Assert.That(TelemetryNames.RowGroupRowsTag).IsEqualTo("parquetneo.row_group.rows");
+        await Assert.That(TelemetryNames.QueryFilteredTag).IsEqualTo("parquetneo.query.filtered");
+        await Assert.That(TelemetryNames.QueryRowsTag).IsEqualTo("parquetneo.query.rows");
+        await Assert.That(TelemetryNames.ErrorTypeTag).IsEqualTo("error.type");
     }
 
     [Test]
@@ -57,12 +55,12 @@ public class TracingTests
             await stream.ReadExactlyAsync(new byte[3000]);
         }
 
-        var spans = recorder.Of(ParquetNeoTracing.StorageRequestSpan);
+        var spans = recorder.Of(TelemetryNames.StorageRequestSpan);
         await Assert.That(spans.Count).IsEqualTo(2);
         await Assert.That(spans.All(span => span.Kind == ActivityKind.Client && span.Status != ActivityStatusCode.Error)).IsTrue();
-        await Assert.That(spans.Select(span => (long)span.GetTagItem(ParquetNeoTracing.StorageOffsetTag)!)).IsEquivalentTo(new long[] { 0, 5000 });
-        await Assert.That(spans.Select(span => (int)span.GetTagItem(ParquetNeoTracing.StorageBytesTag)!)).IsEquivalentTo(new[] { 1000, 3000 });
-        await Assert.That(spans.All(span => (string?)span.GetTagItem(ParquetNeoTracing.StorageSystemTag) == "memory")).IsTrue();
+        await Assert.That(spans.Select(span => (long)span.GetTagItem(TelemetryNames.StorageOffsetTag)!)).IsEquivalentTo(new long[] { 0, 5000 });
+        await Assert.That(spans.Select(span => (int)span.GetTagItem(TelemetryNames.StorageBytesTag)!)).IsEquivalentTo(new[] { 1000, 3000 });
+        await Assert.That(spans.All(span => (string?)span.GetTagItem(TelemetryNames.StorageSystemTag) == "memory")).IsTrue();
     }
 
     [Test]
@@ -74,10 +72,10 @@ public class TracingTests
 
         await Assert.That(async () => await stream.ReadAsync(new byte[10])).Throws<InvalidOperationException>();
 
-        var span = recorder.Of(ParquetNeoTracing.StorageRequestSpan).Single();
+        var span = recorder.Of(TelemetryNames.StorageRequestSpan).Single();
         await Assert.That(span.Status).IsEqualTo(ActivityStatusCode.Error);
         await Assert.That(span.StatusDescription).IsEqualTo("the storage is down");
-        await Assert.That(span.GetTagItem("error.type")).IsEqualTo(typeof(InvalidOperationException).FullName);
+        await Assert.That(span.GetTagItem(TelemetryNames.ErrorTypeTag)).IsEqualTo(typeof(InvalidOperationException).FullName);
     }
 
     [Test]
@@ -98,7 +96,7 @@ public class TracingTests
             await Assert.That(Activity.Current).IsEqualTo(parent);
         }
 
-        var request = recorder.Of(ParquetNeoTracing.StorageRequestSpan).Single();
+        var request = recorder.Of(TelemetryNames.StorageRequestSpan).Single();
         await Assert.That(request.ParentSpanId).IsEqualTo(ownRecorder.Spans.Single().SpanId);
         await Assert.That(request.TraceId).IsEqualTo(ownRecorder.Spans.Single().TraceId);
     }
@@ -122,7 +120,7 @@ public class TracingTests
         // The test runner has a listener of its own, so whether a span is made when nothing listens cannot be seen here.
         ParquetNeoTracing.RecordException(null, new InvalidOperationException());
 
-        await Assert.That(ParquetNeoTracing.SourceName).IsNotEmpty();
+        await Assert.That(TelemetryNames.Name).IsNotEmpty();
     }
 
     [Test]
@@ -139,11 +137,11 @@ public class TracingTests
         {
         }
 
-        var open = recorder.Of(ParquetNeoTracing.StorageOpenSpan).Single();
-        var list = recorder.Of(ParquetNeoTracing.StorageListSpan).Single();
-        await Assert.That(open.GetTagItem(ParquetNeoTracing.StorageKeyTag)).IsEqualTo("people/a.parquet");
-        await Assert.That(list.GetTagItem(ParquetNeoTracing.StorageKeyTag)).IsEqualTo("people/");
-        await Assert.That(open.GetTagItem(ParquetNeoTracing.StorageSystemTag)).IsEqualTo("aws_s3");
+        var open = recorder.Of(TelemetryNames.StorageOpenSpan).Single();
+        var list = recorder.Of(TelemetryNames.StorageListSpan).Single();
+        await Assert.That(open.GetTagItem(TelemetryNames.StorageKeyTag)).IsEqualTo("people/a.parquet");
+        await Assert.That(list.GetTagItem(TelemetryNames.StorageKeyTag)).IsEqualTo("people/");
+        await Assert.That(open.GetTagItem(TelemetryNames.StorageSystemTag)).IsEqualTo("aws_s3");
         await Assert.That(list.Kind).IsEqualTo(ActivityKind.Client);
     }
 

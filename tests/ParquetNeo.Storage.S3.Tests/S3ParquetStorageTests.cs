@@ -192,10 +192,10 @@ public class S3ParquetStorageTests
             await stream.ReadExactlyAsync(new byte[2000]);
         }
 
-        string system = ParquetNeo.Diagnostics.ParquetNeoMetrics.StorageSystemTag;
+        string system = ParquetNeo.Diagnostics.TelemetryNames.StorageSystemTag;
         await Assert.That(recorder.Sum("parquetneo.storage.listings", (system, "aws_s3"))).IsEqualTo(1);
         await Assert.That(recorder.Sum("parquetneo.storage.objects_opened", (system, "aws_s3"))).IsEqualTo(1);
-        await Assert.That(recorder.Sum("parquetneo.storage.requests", (system, "aws_s3"), (ParquetNeo.Diagnostics.ParquetNeoMetrics.OutcomeTag, "ok"))).IsEqualTo(2);
+        await Assert.That(recorder.Sum("parquetneo.storage.requests", (system, "aws_s3"), (ParquetNeo.Diagnostics.TelemetryNames.OutcomeTag, "ok"))).IsEqualTo(2);
         await Assert.That(recorder.Sum("parquetneo.storage.bytes_read", (system, "aws_s3"))).IsEqualTo(1000 + 2000);
         await Assert.That(recorder.Count("parquetneo.storage.request.duration", (system, "aws_s3"))).IsEqualTo(2);
     }
@@ -219,15 +219,15 @@ public class S3ParquetStorageTests
 
         await Assert.That(async () => await storage.OpenReadAsync("missing")).Throws<FileNotFoundException>();
 
-        string system = ParquetNeo.Diagnostics.ParquetNeoTracing.StorageSystemTag;
-        var list = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageListSpan);
-        var open = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageOpenSpan);
-        var requests = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageRequestSpan);
+        string system = ParquetNeo.Diagnostics.TelemetryNames.StorageSystemTag;
+        var list = recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.StorageListSpan);
+        var open = recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.StorageOpenSpan);
+        var requests = recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.StorageRequestSpan);
         await Assert.That(list.Count).IsGreaterThanOrEqualTo(1);
-        await Assert.That(list.All(span => (string?)span.GetTagItem(system) == "aws_s3" && (string?)span.GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageKeyTag) == "people/")).IsTrue();
+        await Assert.That(list.All(span => (string?)span.GetTagItem(system) == "aws_s3" && (string?)span.GetTagItem(ParquetNeo.Diagnostics.TelemetryNames.StorageKeyTag) == "people/")).IsTrue();
         await Assert.That(open.Count).IsEqualTo(2);
         await Assert.That(open.Count(span => span.Status == System.Diagnostics.ActivityStatusCode.Error)).IsEqualTo(1);
-        await Assert.That(open.Single(span => span.Status == System.Diagnostics.ActivityStatusCode.Error).GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageKeyTag)).IsEqualTo("missing");
+        await Assert.That(open.Single(span => span.Status == System.Diagnostics.ActivityStatusCode.Error).GetTagItem(ParquetNeo.Diagnostics.TelemetryNames.StorageKeyTag)).IsEqualTo("missing");
         await Assert.That(requests.Count).IsEqualTo(2);
         await Assert.That(requests.All(span => (string?)span.GetTagItem(system) == "aws_s3")).IsTrue();
     }
@@ -244,7 +244,7 @@ public class S3ParquetStorageTests
         await Assert.That(async () => await List(storage, "people/")).Throws<Amazon.S3.AmazonS3Exception>();
         await Assert.That(async () => await storage.OpenReadAsync("a")).Throws<Amazon.S3.AmazonS3Exception>();
 
-        await Assert.That(recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageListSpan).Single().Status).IsEqualTo(System.Diagnostics.ActivityStatusCode.Error);
-        await Assert.That(recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageOpenSpan).Single().Status).IsEqualTo(System.Diagnostics.ActivityStatusCode.Error);
+        await Assert.That(recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.StorageListSpan).Single().Status).IsEqualTo(System.Diagnostics.ActivityStatusCode.Error);
+        await Assert.That(recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.StorageOpenSpan).Single().Status).IsEqualTo(System.Diagnostics.ActivityStatusCode.Error);
     }
 }

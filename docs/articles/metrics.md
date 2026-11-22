@@ -20,7 +20,7 @@ builder.Services.AddParquetNeoMetrics();     // an extension of IServiceCollecti
 
 builder.Services.AddOpenTelemetry()
     .WithMetrics(metrics => metrics
-        .AddMeter(ParquetNeoMetrics.MeterName)      // "ParquetNeo"; or .AddParquetNeoInstrumentation() of the package ParquetNeo.OpenTelemetry
+        .AddMeter(TelemetryNames.Name)      // "ParquetNeo"; or .AddParquetNeoInstrumentation() of the package ParquetNeo.OpenTelemetry
         .AddPrometheusExporter());                  // or any other exporter
 ```
 

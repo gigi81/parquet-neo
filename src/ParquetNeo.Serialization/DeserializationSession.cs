@@ -73,7 +73,7 @@ internal sealed class DeserializationSession<TRow>
         try
         {
             var rows = ReadRowGroupRows(rowGroup);
-            activity?.SetTag(ParquetNeoTracing.RowGroupRowsTag, rows.Count);
+            activity?.SetTag(TelemetryNames.RowGroupRowsTag, rows.Count);
             return rows;
         }
         catch (Exception exception)

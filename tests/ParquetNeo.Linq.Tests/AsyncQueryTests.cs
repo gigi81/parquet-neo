@@ -253,9 +253,9 @@ public class AsyncQueryTests
         await people.CountAsync();
 
         await Assert.That(recorder.Count("parquetneo.query.duration")).IsEqualTo(3);
-        await Assert.That(recorder.Count("parquetneo.query.duration", (ParquetNeo.Diagnostics.ParquetNeoMetrics.FilteredTag, true))).IsEqualTo(1);
-        await Assert.That(recorder.Sum("parquetneo.query.rows", (ParquetNeo.Diagnostics.ParquetNeoMetrics.FilteredTag, true))).IsGreaterThanOrEqualTo(filtered.Count);
-        await Assert.That(recorder.Sum("parquetneo.query.rows", (ParquetNeo.Diagnostics.ParquetNeoMetrics.FilteredTag, false))).IsEqualTo(all.Count);
+        await Assert.That(recorder.Count("parquetneo.query.duration", (ParquetNeo.Diagnostics.TelemetryNames.QueryFilteredTag, true))).IsEqualTo(1);
+        await Assert.That(recorder.Sum("parquetneo.query.rows", (ParquetNeo.Diagnostics.TelemetryNames.QueryFilteredTag, true))).IsGreaterThanOrEqualTo(filtered.Count);
+        await Assert.That(recorder.Sum("parquetneo.query.rows", (ParquetNeo.Diagnostics.TelemetryNames.QueryFilteredTag, false))).IsEqualTo(all.Count);
     }
 
     [Test]
@@ -268,9 +268,9 @@ public class AsyncQueryTests
 
         var filtered = await people.Where(p => p.Id >= 2000 && p.Id < 2150).Select(p => p.Id).ToListAsync();
 
-        var query = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.QuerySpan).Single();
-        var groups = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.RowGroupSpan);
-        await Assert.That((long)query.GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.QueryRowsTag)!).IsGreaterThanOrEqualTo(filtered.Count);
+        var query = recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.QuerySpan).Single();
+        var groups = recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.RowGroupSpan);
+        await Assert.That((long)query.GetTagItem(ParquetNeo.Diagnostics.TelemetryNames.QueryRowsTag)!).IsGreaterThanOrEqualTo(filtered.Count);
         await Assert.That(groups.Count).IsGreaterThan(0);
         await Assert.That(groups.All(span => span.TraceId == query.TraceId)).IsTrue();
         await Assert.That(System.Diagnostics.Activity.Current).IsEqualTo(before);

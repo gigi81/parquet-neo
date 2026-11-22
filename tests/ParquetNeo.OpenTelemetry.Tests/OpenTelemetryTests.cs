@@ -24,7 +24,7 @@ public class OpenTelemetryTests
             await stream.ReadExactlyAsync(new byte[10]);
         }
 
-        await Assert.That(exported.Select(span => span.OperationName)).Contains(ParquetNeoTracing.StorageRequestSpan);
+        await Assert.That(exported.Select(span => span.OperationName)).Contains(TelemetryNames.StorageRequestSpan);
     }
 
     [Test]

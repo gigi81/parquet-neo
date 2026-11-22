@@ -158,7 +158,7 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
         }
         finally
         {
-            activity?.SetTag(ParquetNeoTracing.QueryRowsTag, count);
+            activity?.SetTag(TelemetryNames.QueryRowsTag, count);
             metrics?.RecordQuery(Stopwatch.GetElapsedTime(started).TotalSeconds, count, filtered);
         }
     }
@@ -236,7 +236,7 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
         }
         finally
         {
-            activity?.SetTag(ParquetNeoTracing.QueryRowsTag, count);
+            activity?.SetTag(TelemetryNames.QueryRowsTag, count);
             metrics?.RecordQuery(Stopwatch.GetElapsedTime(started).TotalSeconds, count, filtered);
         }
     }

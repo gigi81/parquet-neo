@@ -225,10 +225,10 @@ public class StorageDatasetTests
         var all = people.Select(p => p.Id).ToList();
 
         await Assert.That(recorder.Count("parquetneo.query.duration")).IsEqualTo(2);
-        await Assert.That(recorder.Count("parquetneo.query.duration", (ParquetNeo.Diagnostics.ParquetNeoMetrics.FilteredTag, true))).IsEqualTo(1);
-        await Assert.That(recorder.Count("parquetneo.query.duration", (ParquetNeo.Diagnostics.ParquetNeoMetrics.FilteredTag, false))).IsEqualTo(1);
-        await Assert.That(recorder.Sum("parquetneo.query.rows", (ParquetNeo.Diagnostics.ParquetNeoMetrics.FilteredTag, true))).IsGreaterThanOrEqualTo(filtered.Count);
-        await Assert.That(recorder.Sum("parquetneo.query.rows", (ParquetNeo.Diagnostics.ParquetNeoMetrics.FilteredTag, false))).IsEqualTo(all.Count);
+        await Assert.That(recorder.Count("parquetneo.query.duration", (ParquetNeo.Diagnostics.TelemetryNames.QueryFilteredTag, true))).IsEqualTo(1);
+        await Assert.That(recorder.Count("parquetneo.query.duration", (ParquetNeo.Diagnostics.TelemetryNames.QueryFilteredTag, false))).IsEqualTo(1);
+        await Assert.That(recorder.Sum("parquetneo.query.rows", (ParquetNeo.Diagnostics.TelemetryNames.QueryFilteredTag, true))).IsGreaterThanOrEqualTo(filtered.Count);
+        await Assert.That(recorder.Sum("parquetneo.query.rows", (ParquetNeo.Diagnostics.TelemetryNames.QueryFilteredTag, false))).IsEqualTo(all.Count);
 
         // The row groups the filtered query read are those of one file, and the ones of the others were skipped; the query of everything read all of them.
         await Assert.That(recorder.Sum("parquetneo.row_groups.read")).IsGreaterThan(Files * 4);
@@ -294,11 +294,11 @@ public class StorageDatasetTests
             await Assert.That(System.Diagnostics.Activity.Current).IsEqualTo(parent);
         }
 
-        var query = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.QuerySpan).Single();
-        var groups = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.RowGroupSpan);
-        var requests = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.StorageRequestSpan);
-        await Assert.That((bool)query.GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.FilteredTag)!).IsTrue();
-        await Assert.That((long)query.GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.QueryRowsTag)!).IsGreaterThanOrEqualTo(ids.Count);
+        var query = recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.QuerySpan).Single();
+        var groups = recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.RowGroupSpan);
+        var requests = recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.StorageRequestSpan);
+        await Assert.That((bool)query.GetTagItem(ParquetNeo.Diagnostics.TelemetryNames.QueryFilteredTag)!).IsTrue();
+        await Assert.That((long)query.GetTagItem(ParquetNeo.Diagnostics.TelemetryNames.QueryRowsTag)!).IsGreaterThanOrEqualTo(ids.Count);
         await Assert.That(query.ParentSpanId).IsEqualTo(ownRecorder.Spans.Single().SpanId);
         await Assert.That(groups.Count).IsGreaterThan(0);
         await Assert.That(groups.All(span => span.ParentSpanId == query.SpanId)).IsTrue();
@@ -320,10 +320,10 @@ public class StorageDatasetTests
         await Assert.That(few.Count).IsEqualTo(3);
         await Assert.That(count).IsEqualTo(Files * RowsPerFile);
         await Assert.That(counted).IsEqualTo(Files * RowsPerFile);
-        var queries = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.QuerySpan);
+        var queries = recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.QuerySpan);
         await Assert.That(queries.Count).IsEqualTo(3);
-        await Assert.That((long)queries[0].GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.QueryRowsTag)!).IsGreaterThanOrEqualTo(3);
-        await Assert.That(queries.All(span => (bool)span.GetTagItem(ParquetNeo.Diagnostics.ParquetNeoTracing.FilteredTag)! == false)).IsTrue();
+        await Assert.That((long)queries[0].GetTagItem(ParquetNeo.Diagnostics.TelemetryNames.QueryRowsTag)!).IsGreaterThanOrEqualTo(3);
+        await Assert.That(queries.All(span => (bool)span.GetTagItem(ParquetNeo.Diagnostics.TelemetryNames.QueryFilteredTag)! == false)).IsTrue();
     }
 
     [Test]
@@ -340,8 +340,8 @@ public class StorageDatasetTests
         await Assert.That(() => broken.Count()).Throws<Exception>();
         await Assert.That(async () => await broken.CountAsync()).Throws<Exception>();
 
-        var queries = recorder.Of(ParquetNeo.Diagnostics.ParquetNeoTracing.QuerySpan);
+        var queries = recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.QuerySpan);
         await Assert.That(queries.Count).IsEqualTo(4);
-        await Assert.That(queries.All(span => span.Status == System.Diagnostics.ActivityStatusCode.Error && span.GetTagItem("error.type") is not null)).IsTrue();
+        await Assert.That(queries.All(span => span.Status == System.Diagnostics.ActivityStatusCode.Error && span.GetTagItem(ParquetNeo.Diagnostics.TelemetryNames.ErrorTypeTag) is not null)).IsTrue();
     }
 }

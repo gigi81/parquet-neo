@@ -16,8 +16,8 @@ public static class ParquetNeoServiceCollectionExtensions
     /// var metrics = services.GetRequiredService&lt;ParquetNeoMetrics&gt;();
     /// var reader = new ParquetReaderOptions { Metrics = metrics };
     /// </code>
-    /// To collect the measurements, subscribe to the meter named <see cref="ParquetNeoMetrics.MeterName"/> (in OpenTelemetry,
-    /// <c>metrics.AddMeter(ParquetNeoMetrics.MeterName)</c>).
+    /// To collect the measurements, subscribe to the meter named <see cref="TelemetryNames.Name"/> (in OpenTelemetry,
+    /// <c>metrics.AddMeter(TelemetryNames.Name)</c>).
     /// </summary>
     public static IServiceCollection AddParquetNeoMetrics(this IServiceCollection services)
     {
@@ -33,8 +33,8 @@ public static class ParquetNeoServiceCollectionExtensions
     /// var tracing = services.GetRequiredService&lt;ParquetNeoTracing&gt;();
     /// var storage = new S3ParquetStorage(client, "bucket", new RangeReadStreamOptions { Tracing = tracing });
     /// </code>
-    /// To collect the spans, subscribe to the source named <see cref="ParquetNeoTracing.SourceName"/> (in OpenTelemetry,
-    /// <c>tracing.AddSource(ParquetNeoTracing.SourceName)</c>, or <c>AddParquetNeoInstrumentation()</c> of the package <c>ParquetNeo.OpenTelemetry</c>).
+    /// To collect the spans, subscribe to the source named <see cref="TelemetryNames.Name"/> (in OpenTelemetry,
+    /// <c>tracing.AddSource(TelemetryNames.Name)</c>, or <c>AddParquetNeoInstrumentation()</c> of the package <c>ParquetNeo.OpenTelemetry</c>).
     /// </summary>
     public static IServiceCollection AddParquetNeoTracing(this IServiceCollection services)
     {
