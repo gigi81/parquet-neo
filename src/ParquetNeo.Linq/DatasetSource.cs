@@ -66,14 +66,11 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
     }
 
     /// <summary>The options of the readers of the files that are read: those of the dataset, with the metrics and the tracing of the dataset when it has some.</summary>
-    private ParquetReaderOptions ReaderOptions =>
-        Options.Metrics is null && Options.Tracing is null
-            ? Options.Deserializer.Reader
-            : Options.Deserializer.Reader with
-            {
-                Metrics = Options.Metrics ?? Options.Deserializer.Reader.Metrics,
-                Tracing = Options.Tracing ?? Options.Deserializer.Reader.Tracing,
-            };
+    private ParquetReaderOptions ReaderOptions { get; } = options.Deserializer.Reader with
+    {
+        Metrics = options.Metrics ?? options.Deserializer.Reader.Metrics,
+        Tracing = options.Tracing ?? options.Deserializer.Reader.Tracing,
+    };
 
     /// <summary>Opens a file of the list of <see cref="Files"/> for reading, from the disk or from the storage.</summary>
     public Stream OpenFile(string file) => Metered.OpenReadAsync(file).AsTask().GetAwaiter().GetResult();
@@ -105,7 +102,7 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
     public IEnumerable<TRow> Read<TRow>(ParquetFilter? filter)
     {
         var rows = ReadFiles<TRow>(filter);
-        return Options.Metrics is null && Options.Tracing is null ? rows : Measured(rows, Options.Metrics, Options.Tracing, filter is not null);
+        return Measured(rows, Options.Metrics, Options.Tracing, filter is not null);
     }
 
     /// <summary>
@@ -187,7 +184,7 @@ internal sealed class DatasetSource(string path, ParquetDatasetOptions options, 
     public IAsyncEnumerable<TRow> ReadAsync<TRow>(ParquetFilter? filter, CancellationToken cancellationToken = default)
     {
         var rows = ReadFilesAsync<TRow>(filter, cancellationToken);
-        return Options.Metrics is null && Options.Tracing is null ? rows : MeasuredAsync(rows, Options.Metrics, Options.Tracing, filter is not null, cancellationToken);
+        return MeasuredAsync(rows, Options.Metrics, Options.Tracing, filter is not null, cancellationToken);
     }
 
     /// <summary>The asynchronous form of <see cref="Measured{TRow}"/>.</summary>

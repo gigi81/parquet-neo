@@ -171,12 +171,7 @@ public abstract class RangeReadStream : Stream
     /// <summary>A request to the storage, timed and counted when something records the metrics, and a span when something listens to the traces.</summary>
     private async ValueTask<int> RequestAsync(long offset, Memory<byte> destination, CancellationToken cancellationToken)
     {
-        if (_metrics is null && _tracing is null)
-        {
-            return await ReadRangeAsync(offset, destination, cancellationToken).ConfigureAwait(false);
-        }
-
-        long started = Stopwatch.GetTimestamp();
+        long started = _metrics is null ? 0 : Stopwatch.GetTimestamp();
         int read = 0;
         bool succeeded = false;
         using var activity = _tracing?.StartStorageRequest(StorageSystem, offset, destination.Length);
