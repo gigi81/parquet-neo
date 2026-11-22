@@ -2,6 +2,7 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using Amazon.S3;
 using Amazon.S3.Model;
+using ParquetNeo.Diagnostics;
 using ParquetNeo.Storage;
 
 namespace ParquetNeo.Storage.S3;
@@ -37,7 +38,20 @@ public sealed class S3ParquetStorage(IAmazonS3 client, string bucket, RangeReadS
         ListObjectsV2Response response;
         do
         {
-            response = await _client.ListObjectsV2Async(request, cancellationToken).ConfigureAwait(false);
+            // One span for each page, which is the request to the storage; a span held while the consumer has the rows would hold its time.
+            using (var activity = options?.Tracing?.StartStorageList(S3RangeStream.System, prefix))
+            {
+                try
+                {
+                    response = await _client.ListObjectsV2Async(request, cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception exception)
+                {
+                    ParquetNeoTracing.RecordException(activity, exception);
+                    throw;
+                }
+            }
+
             foreach (var item in response.S3Objects ?? [])
             {
                 yield return new StorageObject(item.Key, item.Size ?? 0);
@@ -52,6 +66,7 @@ public sealed class S3ParquetStorage(IAmazonS3 client, string bucket, RangeReadS
     public async ValueTask<Stream> OpenReadAsync(string key, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(key);
+        using var activity = options?.Tracing?.StartStorageOpen(S3RangeStream.System, key);
         GetObjectMetadataResponse metadata;
         try
         {
@@ -59,7 +74,13 @@ public sealed class S3ParquetStorage(IAmazonS3 client, string bucket, RangeReadS
         }
         catch (AmazonS3Exception exception) when (exception.StatusCode == HttpStatusCode.NotFound)
         {
+            ParquetNeoTracing.RecordException(activity, exception);
             throw new FileNotFoundException($"There is no object '{key}' in the bucket '{_bucket}'.", key, exception);
+        }
+        catch (Exception exception)
+        {
+            ParquetNeoTracing.RecordException(activity, exception);
+            throw;
         }
 
         options?.Metrics?.RecordObjectOpened(S3RangeStream.System);

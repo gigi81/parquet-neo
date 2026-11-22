@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Description>Adds the traces and the metrics of ParquetNeo to an OpenTelemetry setup with one call: AddParquetNeoInstrumentation() on the tracer provider and on the meter provider.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenTelemetry.Api.ProviderBuilderExtensions" />
+    <ProjectReference Include="..\ParquetNeo\ParquetNeo.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -270,4 +270,42 @@ public class RowGroupFilterTests
         await Assert.That(recorder.Sum("parquetneo.rows.skipped")).IsEqualTo(1000 - rows.Count);
         await Assert.That(recorder.Sum("parquetneo.rows.skipped")).IsGreaterThan(0);
     }
+
+    [Test]
+    public async Task EachRowGroupThatIsRead_IsASpanWithItsPositionAndItsRows_AndTheOnesSkippedAreNone()
+    {
+        using var tracing = new ParquetNeo.Diagnostics.ParquetNeoTracing();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.TraceRecorder(tracing.Source);
+        var file = new MemoryStream();
+        ParquetSerializer.Serialize(
+            Enumerable.Range(0, 5000).Select(i => new Reading { Id = i, Name = $"name-{i}", Value = i }).ToList(),
+            file,
+            new ParquetSerializerOptions { RowGroupSize = 1000 });
+        var options = new ParquetDeserializerOptions { Reader = new ParquetReaderOptions { Tracing = tracing }, RowGroupFilter = ParquetFilter.Column("Id").GreaterThanOrEqual(3000) };
+
+        var sync = ParquetSerializer.Deserialize<Reading>(new MemoryStream(file.ToArray()), options);
+        var asynchronous = await ParquetSerializer.DeserializeAsync<Reading>(new MemoryStream(file.ToArray()), options);
+
+        var spans = recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.RowGroupSpan);
+        await Assert.That(sync.Count).IsEqualTo(2000);
+        await Assert.That(asynchronous.Count).IsEqualTo(2000);
+        await Assert.That(spans.Count).IsEqualTo(4);
+        await Assert.That(spans.Select(span => (int)span.GetTagItem(ParquetNeo.Diagnostics.TelemetryNames.RowGroupIndexTag)!).Order()).IsEquivalentTo(new[] { 3, 3, 4, 4 });
+        await Assert.That(spans.All(span => (int)span.GetTagItem(ParquetNeo.Diagnostics.TelemetryNames.RowGroupRowsTag)! == 1000)).IsTrue();
+    }
+
+    [Test]
+    public async Task ARowGroupThatCannotBeRead_IsASpanWithAnErrorStatus()
+    {
+        using var tracing = new ParquetNeo.Diagnostics.ParquetNeoTracing();
+        using var recorder = new ParquetNeo.Tests.Diagnostics.TraceRecorder(tracing.Source);
+        var file = new MemoryStream();
+        ParquetSerializer.Serialize(Enumerable.Range(0, 10).Select(i => new Reading { Id = i, Name = "n", Value = i }).ToList(), file);
+        var options = new ParquetDeserializerOptions { Reader = new ParquetReaderOptions { Tracing = tracing, MaxPageSize = 8 } };
+
+        await Assert.That(() => ParquetSerializer.Deserialize<Reading>(new MemoryStream(file.ToArray()), options)).Throws<Exception>();
+
+        var span = recorder.Of(ParquetNeo.Diagnostics.TelemetryNames.RowGroupSpan).Single();
+        await Assert.That(span.Status).IsEqualTo(System.Diagnostics.ActivityStatusCode.Error);
+    }
 }

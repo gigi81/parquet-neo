@@ -25,6 +25,9 @@ public class FakeS3 : DispatchProxy
 
     public string? Bucket { get; private set; }
 
+    /// <summary>When set, every call of the client fails with it, as a storage that is down does.</summary>
+    public Exception? Failure { get; set; }
+
     public static (IAmazonS3 Client, FakeS3 Fake) Create()
     {
         var client = Create<IAmazonS3, FakeS3>();
@@ -47,6 +50,11 @@ public class FakeS3 : DispatchProxy
         lock (_lock)
         {
             Calls.Add(targetMethod.Name);
+        }
+
+        if (Failure is not null)
+        {
+            throw Failure;
         }
 
         return targetMethod.Name switch

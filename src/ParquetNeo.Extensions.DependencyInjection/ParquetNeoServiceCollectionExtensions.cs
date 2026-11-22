@@ -16,14 +16,30 @@ public static class ParquetNeoServiceCollectionExtensions
     /// var metrics = services.GetRequiredService&lt;ParquetNeoMetrics&gt;();
     /// var reader = new ParquetReaderOptions { Metrics = metrics };
     /// </code>
-    /// To collect the measurements, subscribe to the meter named <see cref="ParquetNeoMetrics.MeterName"/> (in OpenTelemetry,
-    /// <c>metrics.AddMeter(ParquetNeoMetrics.MeterName)</c>).
+    /// To collect the measurements, subscribe to the meter named <see cref="TelemetryNames.Name"/> (in OpenTelemetry,
+    /// <c>metrics.AddMeter(TelemetryNames.Name)</c>).
     /// </summary>
     public static IServiceCollection AddParquetNeoMetrics(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
         services.AddMetrics();
         services.TryAddSingleton<ParquetNeoMetrics>();   // its constructor takes the IMeterFactory of the container
+        return services;
+    }
+
+    /// <summary>
+    /// Adds the <see cref="ParquetNeoTracing"/> of the application as a singleton, which is disposed with the container. Give it to what you want traced:
+    /// <code>
+    /// var tracing = services.GetRequiredService&lt;ParquetNeoTracing&gt;();
+    /// var storage = new S3ParquetStorage(client, "bucket", new RangeReadStreamOptions { Tracing = tracing });
+    /// </code>
+    /// To collect the spans, subscribe to the source named <see cref="TelemetryNames.Name"/> (in OpenTelemetry,
+    /// <c>tracing.AddSource(TelemetryNames.Name)</c>, or <c>AddParquetNeoInstrumentation()</c> of the package <c>ParquetNeo.OpenTelemetry</c>).
+    /// </summary>
+    public static IServiceCollection AddParquetNeoTracing(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        services.TryAddSingleton<ParquetNeoTracing>();
         return services;
     }
 }

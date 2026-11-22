@@ -8,7 +8,7 @@ namespace ParquetNeo.Tests.Diagnostics;
 /// <summary>What the instrumented code of the core records into <see cref="ParquetNeoMetrics"/>.</summary>
 public class MetricsTests
 {
-    private const string System = ParquetNeoMetrics.StorageSystemTag;
+    private const string System = TelemetryNames.StorageSystemTag;
 
     [Test]
     public async Task TheInstruments_HaveTheNamesAndUnitsOfTheirKind()
@@ -19,7 +19,7 @@ public class MetricsTests
         {
             InstrumentPublished = (instrument, l) =>
             {
-                if (instrument.Meter.Name == ParquetNeoMetrics.MeterName)
+                if (instrument.Meter.Name == TelemetryNames.Name)
                 {
                     seen[instrument.Name] = instrument.Unit;
                 }
@@ -58,7 +58,7 @@ public class MetricsTests
         await Assert.That(recorder.Sum("parquetneo.storage.bytes_read")).IsEqualTo(storage.BytesRead);
         await Assert.That(recorder.Count("parquetneo.storage.request.duration")).IsEqualTo(2);
         await Assert.That(recorder.Of("parquetneo.storage.request.duration").All(m => m.Value >= 0)).IsTrue();
-        await Assert.That(recorder.Sum("parquetneo.storage.requests", (System, "memory"), (ParquetNeoMetrics.OutcomeTag, "ok"))).IsEqualTo(2);
+        await Assert.That(recorder.Sum("parquetneo.storage.requests", (System, "memory"), (TelemetryNames.OutcomeTag, "ok"))).IsEqualTo(2);
         await Assert.That(recorder.Sum("parquetneo.storage.bytes_read", (System, "memory"))).IsEqualTo(4000);
     }
 
@@ -71,8 +71,8 @@ public class MetricsTests
 
         await Assert.That(async () => await stream.ReadAsync(new byte[10])).Throws<InvalidOperationException>();
 
-        await Assert.That(recorder.Sum("parquetneo.storage.requests", (ParquetNeoMetrics.OutcomeTag, "error"))).IsEqualTo(1);
-        await Assert.That(recorder.Sum("parquetneo.storage.requests", (ParquetNeoMetrics.OutcomeTag, "ok"))).IsEqualTo(0);
+        await Assert.That(recorder.Sum("parquetneo.storage.requests", (TelemetryNames.OutcomeTag, "error"))).IsEqualTo(1);
+        await Assert.That(recorder.Sum("parquetneo.storage.requests", (TelemetryNames.OutcomeTag, "ok"))).IsEqualTo(0);
         await Assert.That(recorder.Sum("parquetneo.storage.bytes_read")).IsEqualTo(0);
         await Assert.That(recorder.Count("parquetneo.storage.request.duration")).IsEqualTo(1);
         await Assert.That(recorder.Of("parquetneo.storage.requests").Single().Tags[System]).IsEqualTo("other");
@@ -146,7 +146,7 @@ public class MetricsTests
         owned.RecordObjectOpened("y");
 
         await Assert.That(factory.Created).IsEqualTo(1);
-        await Assert.That(factory.Meter!.Name).IsEqualTo(ParquetNeoMetrics.MeterName);
+        await Assert.That(factory.Meter!.Name).IsEqualTo(TelemetryNames.Name);
         await Assert.That(recorder.Count("parquetneo.storage.objects_opened")).IsEqualTo(1);
         factory.Dispose();
     }

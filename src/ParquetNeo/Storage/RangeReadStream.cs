@@ -15,6 +15,7 @@ public abstract class RangeReadStream : Stream
     private readonly int _blockSize;
     private readonly int _cachedBlocks;
     private readonly ParquetNeoMetrics? _metrics;
+    private readonly ParquetNeoTracing? _tracing;
     private readonly long _tailStart;
     private byte[]? _tail;
     private readonly List<(long Index, byte[] Data)> _blocks = [];
@@ -33,6 +34,7 @@ public abstract class RangeReadStream : Stream
         Length = length;
         _tailStart = options.TailSize == 0 ? length : Math.Max(0, length - options.TailSize);
         _metrics = options.Metrics;
+        _tracing = options.Tracing;
         _blockSize = options.BlockSize;
         _cachedBlocks = options.CachedBlocks;
     }
@@ -166,26 +168,28 @@ public abstract class RangeReadStream : Stream
         return buffer.Length;
     }
 
-    /// <summary>A request to the storage, timed and counted when something records the metrics.</summary>
+    /// <summary>A request to the storage, timed and counted when something records the metrics, and a span when something listens to the traces.</summary>
     private async ValueTask<int> RequestAsync(long offset, Memory<byte> destination, CancellationToken cancellationToken)
     {
-        if (_metrics is null)
-        {
-            return await ReadRangeAsync(offset, destination, cancellationToken).ConfigureAwait(false);
-        }
-
-        long started = Stopwatch.GetTimestamp();
+        long started = _metrics is null ? 0 : Stopwatch.GetTimestamp();
         int read = 0;
         bool succeeded = false;
+        using var activity = _tracing?.StartStorageRequest(StorageSystem, offset, destination.Length);
         try
         {
             read = await ReadRangeAsync(offset, destination, cancellationToken).ConfigureAwait(false);
             succeeded = true;
+            activity?.SetTag(TelemetryNames.StorageBytesTag, read);
             return read;
+        }
+        catch (Exception exception)
+        {
+            ParquetNeoTracing.RecordException(activity, exception);
+            throw;
         }
         finally
         {
-            _metrics.RecordStorageRequest(StorageSystem, read, ParquetNeoMetrics.SecondsSince(started), succeeded);
+            _metrics?.RecordStorageRequest(StorageSystem, read, ParquetNeoMetrics.SecondsSince(started), succeeded);
         }
     }
 

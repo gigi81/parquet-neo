@@ -32,8 +32,8 @@ public class ParquetNeoMetricsRegistrationTests
 
         var metrics = provider.GetRequiredService<ParquetNeoMetrics>();
 
-        await Assert.That(factory.Names).IsEquivalentTo(new[] { ParquetNeoMetrics.MeterName });
-        await Assert.That(metrics.Meter.Name).IsEqualTo(ParquetNeoMetrics.MeterName);
+        await Assert.That(factory.Names).IsEquivalentTo(new[] { TelemetryNames.Name });
+        await Assert.That(metrics.Meter.Name).IsEqualTo(TelemetryNames.Name);
     }
 
     [Test]

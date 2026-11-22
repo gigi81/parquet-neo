@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Description>Registers the metrics of ParquetNeo with Microsoft.Extensions.DependencyInjection, so that they take their meter from the container (IMeterFactory) and any OpenTelemetry or dotnet-counters setup of the application can collect them.</Description>
+    <Description>Registers the metrics and the traces of ParquetNeo with Microsoft.Extensions.DependencyInjection, so that the metrics take their meter from the container (IMeterFactory) and any OpenTelemetry or dotnet-counters setup of the application can collect them.</Description>
   </PropertyGroup>
 
   <ItemGroup>
