@@ -264,7 +264,7 @@ public class FilterTests
         await Assert.That(() => Col("Id").GreaterThan(null!)).Throws<ArgumentNullException>();
         await Assert.That(() => Col("Id").In()).Throws<ArgumentException>();
         await Assert.That(() => ParquetFilter.AllOf()).Throws<ArgumentException>();
-        await Assert.That(() => Col("Id").Equal(1).And(null!)).Throws<ArgumentNullException>();
+        await Assert.That(() => Col("Id").Equal(1).And((ParquetFilter)null!)).Throws<ArgumentNullException>();
         await Assert.That(ParquetFilter.AllOf(Col("Id").Equal(1)).Columns.Count).IsEqualTo(1);
     }
 }

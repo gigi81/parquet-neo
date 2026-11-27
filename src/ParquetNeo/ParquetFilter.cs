@@ -8,7 +8,7 @@ namespace ParquetNeo;
 /// <summary>
 /// A condition on the values of columns, which a reader checks against the statistics of each row group (the smallest and largest
 /// value, and how many are null) to skip the row groups that cannot hold a row that satisfies it. Build one with
-/// <see cref="Column(string[])"/> and combine with <see cref="And"/>, <see cref="Or"/> and <see cref="Not"/>.
+/// <see cref="Column(string[])"/> and combine with <see cref="And(ParquetFilter)"/>, <see cref="Or(ParquetFilter)"/> and <see cref="Not"/>.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -68,12 +68,33 @@ public abstract class ParquetFilter
         return new AndFilter([this, other]);
     }
 
+    /// <summary>
+    /// Continues the filter with a condition on a column that must hold as well, without starting again from <see cref="Column(string[])"/>:
+    /// <c>ParquetFilter.Column("Age").GreaterThanOrEqual(18).And("City").Equal("Rome")</c>. The filter that the condition gives is this one
+    /// <c>and</c> the condition.
+    /// </summary>
+    /// <remarks>
+    /// A chain is read from left to right, as the calls are made, with no precedence: <c>a.And("x").Equal(1).Or("y").Equal(2)</c> is
+    /// <c>(a and x = 1) or y = 2</c>. To group otherwise, join filters: <c>a.And(Column("x").Equal(1).Or("y").Equal(2))</c> or use <c>&amp;</c> and <c>|</c>.
+    /// </remarks>
+    /// <param name="path">The column, named by its path from just below the root: one name for a top-level column.</param>
+    /// <exception cref="ArgumentException">The path is empty or has an empty name.</exception>
+    public FilterColumn And(params string[] path) => new(path, this, isAnd: true);
+
     /// <summary>A condition that holds when this one or <paramref name="other"/> does.</summary>
     public ParquetFilter Or(ParquetFilter other)
     {
         ArgumentNullException.ThrowIfNull(other);
         return new OrFilter([this, other]);
     }
+
+    /// <summary>
+    /// Continues the filter with a condition on a column that may hold instead, as <see cref="And(string[])"/> does for one that must hold as well:
+    /// <c>ParquetFilter.Column("City").Equal("Rome").Or("City").Equal("Milan")</c>. Read from left to right, with no precedence.
+    /// </summary>
+    /// <param name="path">The column, named by its path from just below the root: one name for a top-level column.</param>
+    /// <exception cref="ArgumentException">The path is empty or has an empty name.</exception>
+    public FilterColumn Or(params string[] path) => new(path, this, isAnd: false);
 
     /// <summary>A condition that holds when this one does not.</summary>
     public ParquetFilter Not() => Negate();
