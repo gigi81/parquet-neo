@@ -22,6 +22,19 @@ var recent = ParquetFilter.Column("Born").GreaterThanOrEqual(new DateOnly(1900, 
 A filter is made of comparisons (`Equal`, `NotEqual`, `GreaterThan`, ..., `Between`, `In`), null tests, and `And` (`&`), `Or`
 (`|`) and `Not` (`!`).
 
+A condition can also continue a filter, naming the next column, so that a filter reads as one chain:
+
+```csharp
+var adults = ParquetFilter.Column("Age").GreaterThanOrEqual(18)
+    .And("City").Equal("Rome")
+    .And("Address", "Country").IsNotNull();       // a column in a group is named by its path
+```
+
+> [!NOTE]
+> A chain is read from left to right, as the calls are made, with no precedence of `and` over `or`:
+> `a.And("x").Equal(1).Or("y").Equal(2)` is `(a and x = 1) or y = 2`. To group another way, join filters:
+> `a.And(ParquetFilter.Column("x").Equal(1) | ParquetFilter.Column("y").Equal(2))`.
+
 > [!IMPORTANT]
 > A filter only **prunes**. It rules out what cannot match, and the rows of what it keeps are all returned, including rows that do
 > not satisfy it. Apply the condition to the rows as well when the result must be exact. (`ParquetNeo.Linq` does that for you.)
